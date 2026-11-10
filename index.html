@@ -1,7 +1,18 @@
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>나눔 보드게임</title>
+<title>치영의 나눔보드게임 | 교회 소모임·셀모임·속회 아이스브레이킹 나눔 게임</title>
+<meta name="apple-mobile-web-app-title" content="나눔보드게임">
+<meta name="description" content="교회 소모임, 셀모임, 속회, 청년부 모임에서 바로 쓰는 무료 아이스브레이킹 나눔 보드게임. 주사위를 굴리며 '나에 대해', '하나님과 나' 나눔 질문과 밸런스 게임으로 서로를 알아가요. 설치 없이 휴대폰으로 바로 시작.">
+<meta name="keywords" content="교회 소모임, 교회 아이스브레이킹, 교회 속회, 교회 셀모임, 교회 나눔, 나눔, 나눔 질문, 소그룹 나눔, 청년부 게임, 셀모임 게임, 아이스브레이킹 게임, 나눔 보드게임">
+<link rel="canonical" href="https://zidane7-creator.github.io/nanum-boardgame/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="치영의 나눔보드게임 — 교회 소모임 아이스브레이킹">
+<meta property="og:description" content="셀모임·속회·소모임에서 주사위를 굴리며 서로의 이야기를 나누는 무료 보드게임">
+<meta property="og:url" content="https://zidane7-creator.github.io/nanum-boardgame/">
+<meta property="og:locale" content="ko_KR">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"치영의 나눔보드게임","url":"https://zidane7-creator.github.io/nanum-boardgame/","applicationCategory":"GameApplication","operatingSystem":"웹 브라우저","inLanguage":"ko","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"description":"교회 소모임, 셀모임, 속회에서 쓰는 아이스브레이킹 나눔 보드게임"}</script>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎲</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#bfe3b4;--ink:#2b2118;--card:#fffaf0;--line:#2b2118;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -52,13 +63,32 @@ button.on{background:#fdba4d;color:#2b2118}
 .card{background:var(--card);border:3px solid var(--ink);border-radius:22px;padding:22px 20px;max-width:320px;width:100%}
 .card .tag{font-size:14px;opacity:.75}
 .card .q{font-size:22px;margin:12px 0 18px;word-break:keep-all;white-space:pre-line}
+#home{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:24px 16px;background:inherit;overflow:auto}
+#home.hide{display:none}
+.hs{font-size:20px;opacity:.75}
+.hh{font-size:clamp(36px,11vw,58px);line-height:1.15;margin:0 0 6px;word-break:keep-all;text-shadow:3px 3px 0 #fffaf0}
+.hh b{color:#e8503a;font-weight:normal}
+.hp{display:flex;gap:4px;justify-content:center;margin:6px 0 10px}
+.hp span{width:56px;height:56px;animation:bob 1s ease-in-out infinite}
+.hp span:nth-child(2){animation-delay:.15s}.hp span:nth-child(3){animation-delay:.3s}.hp span:nth-child(4){animation-delay:.45s}
+.hp svg{width:100%;height:100%}
+@keyframes bob{50%{transform:translateY(-10px)}}
+#hc{max-width:330px}#hc button{min-width:56px}
+#go{font-size:24px;padding:12px 44px;margin-top:14px;background:#e8503a;color:#fff;box-shadow:0 4px 0 #2b2118}
+#go:active{transform:translateY(3px);box-shadow:0 1px 0 #2b2118}
+.tb{display:flex;gap:6px}#homeb{padding:4px 10px}
+.hi{font-size:14px;opacity:.7;margin:14px 0 0;line-height:1.5}
+.about{margin:28px 6px 0;padding:18px 18px 10px;background:rgba(255,250,240,.75);border:2px solid #2b2118;border-radius:18px;text-align:left;font-size:15px;line-height:1.6;word-break:keep-all}
+.about h2{font-size:19px;margin:0 0 6px}.about h3{font-size:16px;margin:14px 0 4px}.about ul{padding-left:20px;margin:0 0 8px}
 </style></head><body><div class="wrap">
-<h1>🎲 나눔 보드게임</h1>
-<div id="top"><div id="status"></div><button id="gear">⚙ 설정</button></div>
+<h1>🎲 치영의 나눔보드게임</h1>
+<div id="top"><div id="status"></div><div class="tb"><button id="homeb" aria-label="홈 화면">🏠</button><button id="gear">⚙ 설정</button></div></div>
 <div id="set"><div class="card" style="max-width:380px;max-height:88vh;overflow:auto;text-align:left"><div style="font-size:20px">⚙ 설정</div><div class="sec">인원 (바꾸면 새 게임)</div><div class="bar" id="pc"></div><div class="sec">말 이름</div><div id="nm"></div><div class="sec">주사위</div><div class="bar" id="ds"></div><div class="sec">바탕색</div><div class="bar" id="bg"></div><div class="bar"><button id="newg">새 게임</button><button id="sx">닫기</button></div></div></div>
 <button id="roll" aria-label="주사위 던지기">🎲</button><div id="big"></div>
 <div id="board"></div>
+<section class="about"><h2>교회 소모임 나눔 보드게임</h2><p>교회 소모임, 셀모임, 속회, 구역 모임, 청년부 모임에서 처음 만난 사이에도 자연스럽게 이야기를 꺼낼 수 있는 아이스브레이킹 나눔 게임이에요. 휴대폰 하나로 1~10명이 함께할 수 있고, 설치나 가입 없이 무료로 바로 쓸 수 있어요.</p><h3>어떻게 하나요?</h3><ul><li>인원을 고르고 차례대로 주사위를 굴려 말을 옮겨요.</li><li>멈춘 칸의 질문에 답하며 서로의 이야기를 나눠요.</li><li>나눔 질문은 '나에 대해', '나의 이야기', '하나님과 나' 세 가지예요.</li><li>밸런스 게임, 사다리, 기도제목 나눔 칸도 있어요.</li><li>가장 먼저 도착한 사람이 우승이에요!</li></ul></section>
 </div>
+<div id="home"><div class="hs">🎲 다 같이 이야기 나눠요</div><div class="hh">치영의<br><b>나눔</b>보드게임</div><div class="hp" id="hp"></div><div class="sec">몇 명이서 할까요?</div><div class="bar" id="hc"></div><button id="go">게임 시작 ▶</button><p class="hi">교회 소모임 · 셀모임 · 속회 · 청년부<br>아이스브레이킹 나눔 게임</p></div>
 <div id="modal"><div class="card"><div class="tag" id="mt"></div><div class="q" id="mq"></div><button id="ok">확인</button></div></div>
 <script>
 const RAW="s출발|p좋아하는 음식|v최근에 만난 은혜|g내가 두려워하는 것|v나의 하나님은 어떤 분?|p나의 가족|v오늘 예배를 드리면서 든 마음|p나의 특기|g내가 두려워하는 것|b밸런스 게임|p좋아하는 카페 음료|o어제 뭐 했나요?|p싫어하는 음식|v하나님의 도우심을 경험한 적|g요즘 나의 고민|v나의 감사제목|g일주일 후에 죽는다면|p나의 취미|v하나님께 물어보고 싶은 것|g가장 슬펐던 순간|p나의 스트레스 해소법|v최근에 만난 은혜|b밸런스 게임|p요즘 많이 듣는 가요|g요즘 나의 고민|p좋아하는 계절|v오늘 예배를 드리면서 든 마음|l사다리|p나의 MBTI|b밸런스 게임|v나의 하나님은 어떤 분?|p나의 이상형|v오늘 예배를 드리면서 든 마음|l사다리|g가장 최근에 운 적|o어제 뭐 했나요?|p감명깊게 읽은 책|r잠시 정지!! 기도제목|v하나님을 원망해본 적|p내가 싫어하는 사람|b밸런스 게임|g가장 행복했던 순간|p올해 이루고 싶은 것|v요즘 많이 듣는 찬양|g가장 무서웠던 순간|p내가 존경하는 사람|g나의 10년 후|v가장 좋아하는 성경말씀|p감명깊게 본 영화|g요즘 나의 고민|p요즘 사고 싶은 것|v하나님의 도우심을 경험한 적|p살아보고 싶은 나라|b밸런스 게임|v나의 하나님은 어떤 분?|g후회되는 것이 있다면|p버킷리스트 한 가지|o어제 뭐 했나요?|v나의 하나님은 어떤 분?|g나에게 가장 중요한 가치 (신앙 빼고)|p내가 좋아하는 사람|v나의 감사제목|g과거로 간다면 언제로?|o어제 뭐 했나요?|v가장 좋아하는 성경 인물|b밸런스 게임|p갖고 싶은 초능력|v하나님께 하고 싶은 말|g요즘 나의 고민|p내가 좋아했던 과목|o어제 뭐 했나요?|p듣고 싶은 말|v하나님의 도우심을 경험한 적|p20억 로또에 당첨된다면|v오늘 예배를 드리면서 든 마음|p재미있게 본 드라마|g나의 소망|p공부해보고 싶은 것|s도착";
@@ -112,4 +142,9 @@ let sv=null;try{sv=localStorage.getItem("bg")}catch(e){}
 setBg(sv||BG[0][1]);
 [6,8,12,16].forEach(m=>{const b=document.createElement("button");b.textContent=m+"면";b.dataset.s=m;if(m==sides)b.className="on";b.onclick=()=>{if(busy)return;sides=m;[...$("ds").querySelectorAll("button")].forEach(x=>x.classList.toggle("on",x.dataset.s==m))};$("ds").appendChild(b)});
 $("gear").onclick=()=>$("set").classList.add("show");$("sx").onclick=()=>$("set").classList.remove("show");$("newg").onclick=()=>{if(!busy){start(np);$("set").classList.remove("show")}};
+let hn=np;$("hp").innerHTML=[0,1,2,3].map(k=>"<span>"+horse(PC[k])+"</span>").join("");
+function renderHome(){$("hc").innerHTML="";for(let m=1;m<=10;m++){const b=document.createElement("button");b.textContent=m+"명";if(m==hn)b.className="on";b.onclick=()=>{hn=m;renderHome()};$("hc").appendChild(b)}}
+renderHome();
+$("go").onclick=()=>{start(hn);$("home").classList.add("hide");scrollTo(0,0)};
+$("homeb").onclick=()=>{if(busy)return;hn=np;renderHome();$("home").classList.remove("hide")};
 </script></body></html>
