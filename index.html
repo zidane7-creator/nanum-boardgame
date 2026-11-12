@@ -18,10 +18,10 @@
 :root{--ink:#3b2a20;--sky1:#7fd0f3;--sky2:#d6f2fc;--grass:#a9d86e;--grass2:#93c95a;--pen:#c3e78f;--fence:#f4bdb6;--fence2:#d98680;--wood:#c98a4b;--wood2:#8a5528;--cream:#fffaf0}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--sky2)}
-body{font-family:"Jua","Apple SD Gothic Neo","Noto Sans KR",sans-serif;color:var(--ink);overflow-x:hidden;background:linear-gradient(var(--sky1) 0,var(--sky2) 360px,var(--sky2) 420px,var(--grass) 421px)}
+body{font-family:"Jua","Apple SD Gothic Neo","Noto Sans KR",sans-serif;color:var(--ink);overflow-x:hidden;background:var(--grass)}
 a{color:inherit}
 /* sky */
-.sky{position:relative;height:330px;overflow:hidden}
+.sky{position:relative;height:330px;overflow:hidden;background:linear-gradient(var(--sky1),var(--sky2))}
 .sun{position:absolute;top:-20px;right:-10px;width:170px;height:170px;animation:spin 40s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .cloud{position:absolute;background:#fff;border-radius:999px;opacity:.95;animation:drift linear infinite}
@@ -118,7 +118,7 @@ a{color:inherit}
 const SITE="치영의 교회 생활 즐기기";
 const ZONES=[
  {name:"예배",items:[["악보제작"],["주보제작"],["설교도우미"],["묵상저장소"]]},
- {name:"교제",items:[["나눔보드게임","board/"],["텔레스트레이션"],["레크레이션"]]},
+ {name:"교제",items:[["나눔보드게임","board/"],["텔레스트레이션","tele/"],["레크레이션"]]},
  {name:"잡동사니",items:[["주일에 뭐 먹지?"],["수련회 장소 레이더"]]},
  {name:"Mall",items:[["전자책"],["굿즈"]]}
 ];
@@ -127,6 +127,18 @@ const $=id=>document.getElementById(id);
 $("cells").innerHTML=[...SITE].map((c,i)=>c==" "?'<span class="sp"></span>':'<span'+(c=="교"||c=="회"?' class="r"':'')+'>'+c+'</span>').join("");
 const SHEEP='<svg viewBox="0 0 110 86" aria-hidden="true"><g fill="#4a3b35"><rect x="28" y="56" width="7" height="22" rx="3.5"/><rect x="42" y="58" width="7" height="22" rx="3.5"/><rect x="60" y="58" width="7" height="22" rx="3.5"/><rect x="72" y="56" width="7" height="22" rx="3.5"/></g><g fill="#fff" stroke="#3b2a20" stroke-width="4"><circle cx="30" cy="40" r="15"/><circle cx="46" cy="30" r="16"/><circle cx="64" cy="30" r="15"/><circle cx="76" cy="42" r="14"/><circle cx="40" cy="54" r="14"/><circle cx="62" cy="56" r="14"/><circle cx="22" cy="50" r="10"/></g><g fill="#fff"><circle cx="30" cy="40" r="15"/><circle cx="46" cy="30" r="16"/><circle cx="64" cy="30" r="15"/><circle cx="76" cy="42" r="14"/><circle cx="40" cy="54" r="14"/><circle cx="62" cy="56" r="14"/><circle cx="22" cy="50" r="10"/><circle cx="52" cy="44" r="18"/></g><g stroke="#3b2a20" stroke-width="2.5"><ellipse cx="78" cy="34" rx="7" ry="4" fill="#f0cfb3" transform="rotate(-25 78 34)"/><ellipse cx="102" cy="34" rx="7" ry="4" fill="#f0cfb3" transform="rotate(25 102 34)"/><ellipse cx="90" cy="44" rx="13" ry="14" fill="#f6dfc9"/></g><g fill="#fff" stroke="#3b2a20" stroke-width="2"><circle cx="84" cy="31" r="5"/><circle cx="96" cy="31" r="5"/><circle cx="90" cy="28" r="5.5"/></g><circle cx="85" cy="45" r="2.3" fill="#3b2a20"/><circle cx="95" cy="45" r="2.3" fill="#3b2a20"/><circle cx="85.7" cy="44.3" r=".7" fill="#fff"/><circle cx="95.7" cy="44.3" r=".7" fill="#fff"/><ellipse cx="81" cy="51" rx="3" ry="2" fill="#ff9fb2" opacity=".8"/><ellipse cx="99" cy="51" rx="3" ry="2" fill="#ff9fb2" opacity=".8"/><path d="M87 52q3 3 6 0" stroke="#3b2a20" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>';
 const SAY=["메에~","음메~","매애!","메~ 🎵"];
+// ---- sheep bleat "메에에~" (synthesized: buzzy voice + fast vibrato + vowel formants) ----
+let AC=null;
+function ac(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state=="suspended")AC.resume();return AC}
+["pointerdown","keydown","touchstart"].forEach(ev=>addEventListener(ev,()=>ac(),{once:true,passive:true}));
+function bleat(pitch){const a=AC;if(!a||a.state!="running")return;const t=a.currentTime,dur=.55+Math.random()*.2,f0=pitch||(260+Math.random()*120);
+ const o=a.createOscillator();o.type="sawtooth";o.frequency.setValueAtTime(f0*1.08,t);o.frequency.linearRampToValueAtTime(f0,t+.08);o.frequency.linearRampToValueAtTime(f0*.9,t+dur);
+ const vib=a.createOscillator(),vg=a.createGain();vib.frequency.value=26+Math.random()*6;vg.gain.value=f0*.035;vib.connect(vg).connect(o.frequency);
+ const trem=a.createGain(),tl=a.createOscillator(),tg=a.createGain();tl.frequency.value=vib.frequency.value;tg.gain.value=.35;trem.gain.value=.65;tl.connect(tg).connect(trem.gain);
+ const env=a.createGain();env.gain.setValueAtTime(.0001,t);env.gain.exponentialRampToValueAtTime(.22,t+.05);env.gain.setValueAtTime(.22,t+dur*.6);env.gain.exponentialRampToValueAtTime(.0001,t+dur);
+ const out=a.createGain();out.gain.value=.9;out.connect(a.destination);
+ [[700,5,1],[1150,6,.7],[2500,8,.35]].forEach(([fr,q,g])=>{const f=a.createBiquadFilter();f.type="bandpass";f.frequency.value=fr;f.Q.value=q;const gg=a.createGain();gg.gain.value=g*2.2;env.connect(f).connect(gg).connect(out)});
+ o.connect(trem).connect(env);[o,vib,tl].forEach(n=>{n.start(t);n.stop(t+dur+.05)})}
 let ti;function toast(t){const e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(ti);ti=setTimeout(()=>e.classList.remove("show"),1800)}
 ZONES.forEach(z=>{
   const pen=document.createElement("section");pen.className="pen";pen.setAttribute("aria-label",z.name);
@@ -137,7 +149,11 @@ ZONES.forEach(z=>{
     b.style.setProperty("--d",(2.4+Math.random()*1.8).toFixed(2)+"s");b.style.setProperty("--dl",(-Math.random()*3).toFixed(2)+"s");
     b.innerHTML=(href?'<span class="tag">OPEN</span>':'')+SHEEP+'<span class="lb">'+label+'</span>';
     b.setAttribute("aria-label",label+(href?"":" (준비 중)"));
+    const voice=240+Math.random()*150;let lastB=0;
+    const baa=()=>{const n=Date.now();if(n-lastB<900)return;lastB=n;bleat(voice)};
+    b.addEventListener("pointerenter",e=>{if(e.pointerType=="mouse")baa()});
     b.onclick=()=>{
+      ac();setTimeout(baa,0);
       b.classList.remove("jump");void b.offsetWidth;b.classList.add("jump");
       const s=document.createElement("span");s.className="bubble";s.textContent=SAY[Math.floor(Math.random()*SAY.length)];b.appendChild(s);setTimeout(()=>s.remove(),900);
       if(href)setTimeout(()=>location.href=href,450);else toast("🐑 '"+label+"'은(는) 준비 중이에요!");
