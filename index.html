@@ -84,6 +84,9 @@ a{color:inherit}
 .about .in{max-width:760px;margin:0 auto;background:rgba(255,250,240,.92);border:2px solid var(--ink);border-radius:18px;padding:18px 20px;line-height:1.6;font-size:15px;word-break:keep-all}
 .about h2{font-size:19px;margin:0 0 6px}.about ul{margin:6px 0 4px;padding-left:20px}.about li b{font-weight:normal;color:#b0442f}
 .about small{display:block;margin-top:10px;opacity:.6;text-align:center}
+.vol{position:fixed;left:12px;top:calc(12px + env(safe-area-inset-top,0px));z-index:25;display:flex;align-items:center;gap:6px;background:rgba(255,250,240,.92);border:2px solid var(--ink);border-radius:20px;padding:4px 10px 4px 6px;box-shadow:0 3px 0 rgba(0,0,0,.15)}
+.vol button{border:0;background:none;font-size:20px;cursor:pointer;padding:0 2px;line-height:1}
+.vol input{width:96px;accent-color:#e8503a}
 #toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,40px);opacity:0;background:var(--cream);border:2px solid var(--ink);border-radius:18px;padding:10px 18px;font-size:16px;box-shadow:0 4px 0 var(--ink);transition:.25s;z-index:20;white-space:nowrap}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 @media (max-width:560px){.sky{height:300px}.ranch{padding:30px 14px 16px}.pen{padding:42px 4px 22px;min-height:0}.flock{gap:8px 0}.sun{width:120px;height:120px}}
@@ -113,6 +116,7 @@ a{color:inherit}
   <small>🐑 계속 새로운 양이 들어올 예정이에요</small>
 </div></section>
 <div id="toast" role="status" aria-live="polite"></div>
+<div class="vol"><button id="volb" aria-label="양 소리 켜기/끄기">🔊</button><input type="range" id="volr" min="0" max="100" aria-label="양 소리 크기"></div>
 
 <script>
 const SITE="치영의 교회 생활 즐기기";
@@ -128,14 +132,14 @@ $("cells").innerHTML=[...SITE].map((c,i)=>c==" "?'<span class="sp"></span>':'<sp
 const SHEEP='<svg viewBox="0 0 110 86" aria-hidden="true"><g fill="#4a3b35"><rect x="28" y="56" width="7" height="22" rx="3.5"/><rect x="42" y="58" width="7" height="22" rx="3.5"/><rect x="60" y="58" width="7" height="22" rx="3.5"/><rect x="72" y="56" width="7" height="22" rx="3.5"/></g><g fill="#fff" stroke="#3b2a20" stroke-width="4"><circle cx="30" cy="40" r="15"/><circle cx="46" cy="30" r="16"/><circle cx="64" cy="30" r="15"/><circle cx="76" cy="42" r="14"/><circle cx="40" cy="54" r="14"/><circle cx="62" cy="56" r="14"/><circle cx="22" cy="50" r="10"/></g><g fill="#fff"><circle cx="30" cy="40" r="15"/><circle cx="46" cy="30" r="16"/><circle cx="64" cy="30" r="15"/><circle cx="76" cy="42" r="14"/><circle cx="40" cy="54" r="14"/><circle cx="62" cy="56" r="14"/><circle cx="22" cy="50" r="10"/><circle cx="52" cy="44" r="18"/></g><g stroke="#3b2a20" stroke-width="2.5"><ellipse cx="78" cy="34" rx="7" ry="4" fill="#f0cfb3" transform="rotate(-25 78 34)"/><ellipse cx="102" cy="34" rx="7" ry="4" fill="#f0cfb3" transform="rotate(25 102 34)"/><ellipse cx="90" cy="44" rx="13" ry="14" fill="#f6dfc9"/></g><g fill="#fff" stroke="#3b2a20" stroke-width="2"><circle cx="84" cy="31" r="5"/><circle cx="96" cy="31" r="5"/><circle cx="90" cy="28" r="5.5"/></g><circle cx="85" cy="45" r="2.3" fill="#3b2a20"/><circle cx="95" cy="45" r="2.3" fill="#3b2a20"/><circle cx="85.7" cy="44.3" r=".7" fill="#fff"/><circle cx="95.7" cy="44.3" r=".7" fill="#fff"/><ellipse cx="81" cy="51" rx="3" ry="2" fill="#ff9fb2" opacity=".8"/><ellipse cx="99" cy="51" rx="3" ry="2" fill="#ff9fb2" opacity=".8"/><path d="M87 52q3 3 6 0" stroke="#3b2a20" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>';
 const SAY=["메에~","음메~","매애!","메~ 🎵"];
 // ---- sheep bleat "메에에~" (synthesized: buzzy voice + fast vibrato + vowel formants) ----
-let AC=null;
+let AC=null,VOL=.7;try{const v=localStorage.getItem("homeVol");if(v!==null)VOL=+v}catch(e){}
 function ac(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state=="suspended")AC.resume();return AC}
 ["pointerdown","keydown","touchstart"].forEach(ev=>addEventListener(ev,()=>ac(),{once:true,passive:true}));
 function bleat(pitch){const a=AC;if(!a||a.state!="running")return;
  // a grazing adult sheep: nasal "mm" opening into a wavering, breathy "baaa-ah", sometimes twice
  const n=Math.random()<.35?2:1;let t=a.currentTime;for(let k=0;k<n;k++){one(t,pitch*(k?0.94:1),k?.55:1);t+=.62+Math.random()*.1}
  function one(t,p,amp){const dur=.75+Math.random()*.45,f0=(p||220)*.78;
-  const out=a.createGain();out.gain.value=.95*amp;out.connect(a.destination);
+  if(VOL<=0)return;const out=a.createGain();out.gain.value=.95*amp*VOL*1.4;out.connect(a.destination);
   // voice: rich buzzy source with a nasal start
   const o=a.createOscillator();o.type="sawtooth";
   o.frequency.setValueAtTime(f0*.9,t);o.frequency.linearRampToValueAtTime(f0*1.12,t+.16);o.frequency.linearRampToValueAtTime(f0*1.04,t+dur*.6);o.frequency.linearRampToValueAtTime(f0*.86,t+dur);
@@ -151,6 +155,13 @@ function bleat(pitch){const a=AC;if(!a||a.state!="running")return;
   const len=Math.ceil(a.sampleRate*dur),buf=a.createBuffer(1,len,a.sampleRate),d=buf.getChannelData(0);for(let i=0;i<len;i++)d[i]=Math.random()*2-1;
   const ns=a.createBufferSource();ns.buffer=buf;const hp=a.createBiquadFilter();hp.type="bandpass";hp.frequency.value=2200;hp.Q.value=.8;const ng=a.createGain();ng.gain.value=.05;ns.connect(hp).connect(ng).connect(env);
   [o,q,ns].forEach(x=>{x.start(t);x.stop(t+dur+.05)})}}
+// ---- sound volume (remembered on this device) ----
+{const r=document.getElementById("volr"),b=document.getElementById("volb");let last=VOL||.7;
+ const sync=()=>{r.value=Math.round(VOL*100);b.textContent=VOL<=0?"🔇":VOL<.4?"🔉":"🔊"};
+ const save=()=>{try{localStorage.setItem("homeVol",VOL)}catch(e){}};
+ r.oninput=()=>{VOL=r.value/100;if(VOL>0)last=VOL;sync();save()};
+ r.onchange=()=>{ac();setTimeout(()=>bleat(250),30)};
+ b.onclick=()=>{ac();VOL=VOL>0?0:last;sync();save();if(VOL>0)setTimeout(()=>bleat(250),30)};sync()}
 let ti;function toast(t){const e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(ti);ti=setTimeout(()=>e.classList.remove("show"),1800)}
 ZONES.forEach(z=>{
   const pen=document.createElement("section");pen.className="pen";pen.setAttribute("aria-label",z.name);
