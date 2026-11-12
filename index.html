@@ -131,14 +131,26 @@ const SAY=["메에~","음메~","매애!","메~ 🎵"];
 let AC=null;
 function ac(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state=="suspended")AC.resume();return AC}
 ["pointerdown","keydown","touchstart"].forEach(ev=>addEventListener(ev,()=>ac(),{once:true,passive:true}));
-function bleat(pitch){const a=AC;if(!a||a.state!="running")return;const t=a.currentTime,dur=.55+Math.random()*.2,f0=pitch||(260+Math.random()*120);
- const o=a.createOscillator();o.type="sawtooth";o.frequency.setValueAtTime(f0*1.08,t);o.frequency.linearRampToValueAtTime(f0,t+.08);o.frequency.linearRampToValueAtTime(f0*.9,t+dur);
- const vib=a.createOscillator(),vg=a.createGain();vib.frequency.value=26+Math.random()*6;vg.gain.value=f0*.035;vib.connect(vg).connect(o.frequency);
- const trem=a.createGain(),tl=a.createOscillator(),tg=a.createGain();tl.frequency.value=vib.frequency.value;tg.gain.value=.35;trem.gain.value=.65;tl.connect(tg).connect(trem.gain);
- const env=a.createGain();env.gain.setValueAtTime(.0001,t);env.gain.exponentialRampToValueAtTime(.22,t+.05);env.gain.setValueAtTime(.22,t+dur*.6);env.gain.exponentialRampToValueAtTime(.0001,t+dur);
- const out=a.createGain();out.gain.value=.9;out.connect(a.destination);
- [[700,5,1],[1150,6,.7],[2500,8,.35]].forEach(([fr,q,g])=>{const f=a.createBiquadFilter();f.type="bandpass";f.frequency.value=fr;f.Q.value=q;const gg=a.createGain();gg.gain.value=g*2.2;env.connect(f).connect(gg).connect(out)});
- o.connect(trem).connect(env);[o,vib,tl].forEach(n=>{n.start(t);n.stop(t+dur+.05)})}
+function bleat(pitch){const a=AC;if(!a||a.state!="running")return;
+ // a grazing adult sheep: nasal "mm" opening into a wavering, breathy "baaa-ah", sometimes twice
+ const n=Math.random()<.35?2:1;let t=a.currentTime;for(let k=0;k<n;k++){one(t,pitch*(k?0.94:1),k?.55:1);t+=.62+Math.random()*.1}
+ function one(t,p,amp){const dur=.75+Math.random()*.45,f0=(p||220)*.78;
+  const out=a.createGain();out.gain.value=.95*amp;out.connect(a.destination);
+  // voice: rich buzzy source with a nasal start
+  const o=a.createOscillator();o.type="sawtooth";
+  o.frequency.setValueAtTime(f0*.9,t);o.frequency.linearRampToValueAtTime(f0*1.12,t+.16);o.frequency.linearRampToValueAtTime(f0*1.04,t+dur*.6);o.frequency.linearRampToValueAtTime(f0*.86,t+dur);
+  // the bleat's wobble: uneven quaver in pitch and loudness
+  const q=a.createOscillator(),qg=a.createGain();q.type="triangle";q.frequency.setValueAtTime(7+Math.random()*3,t);q.frequency.linearRampToValueAtTime(10+Math.random()*4,t+dur);qg.gain.value=f0*.05;q.connect(qg).connect(o.frequency);
+  const am=a.createGain(),qa=a.createGain();am.gain.value=.7;qa.gain.value=.3;q.connect(qa).connect(am.gain);
+  // mouth: closed (mm) -> open (aa)
+  const lp=a.createBiquadFilter();lp.type="lowpass";lp.Q.value=2;lp.frequency.setValueAtTime(450,t);lp.frequency.exponentialRampToValueAtTime(3200,t+.14);lp.frequency.exponentialRampToValueAtTime(1600,t+dur);
+  const env=a.createGain();env.gain.setValueAtTime(.0001,t);env.gain.exponentialRampToValueAtTime(.3,t+.07);env.gain.setValueAtTime(.3,t+dur*.55);env.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(am).connect(lp).connect(env);
+  [[820,6,1.1],[1350,7,.8],[2650,9,.4],[300,3,.5]].forEach(([fr,qq,g])=>{const f=a.createBiquadFilter();f.type="bandpass";f.frequency.value=fr*(.95+Math.random()*.1);f.Q.value=qq;const gg=a.createGain();gg.gain.value=g*2;env.connect(f).connect(gg).connect(out)});
+  // breath
+  const len=Math.ceil(a.sampleRate*dur),buf=a.createBuffer(1,len,a.sampleRate),d=buf.getChannelData(0);for(let i=0;i<len;i++)d[i]=Math.random()*2-1;
+  const ns=a.createBufferSource();ns.buffer=buf;const hp=a.createBiquadFilter();hp.type="bandpass";hp.frequency.value=2200;hp.Q.value=.8;const ng=a.createGain();ng.gain.value=.05;ns.connect(hp).connect(ng).connect(env);
+  [o,q,ns].forEach(x=>{x.start(t);x.stop(t+dur+.05)})}}
 let ti;function toast(t){const e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(ti);ti=setTimeout(()=>e.classList.remove("show"),1800)}
 ZONES.forEach(z=>{
   const pen=document.createElement("section");pen.className="pen";pen.setAttribute("aria-label",z.name);
@@ -149,8 +161,8 @@ ZONES.forEach(z=>{
     b.style.setProperty("--d",(2.4+Math.random()*1.8).toFixed(2)+"s");b.style.setProperty("--dl",(-Math.random()*3).toFixed(2)+"s");
     b.innerHTML=(href?'<span class="tag">OPEN</span>':'')+SHEEP+'<span class="lb">'+label+'</span>';
     b.setAttribute("aria-label",label+(href?"":" (준비 중)"));
-    const voice=240+Math.random()*150;let lastB=0;
-    const baa=()=>{const n=Date.now();if(n-lastB<900)return;lastB=n;bleat(voice)};
+    const voice=200+Math.random()*110;let lastB=0;
+    const baa=()=>{const n=Date.now();if(n-lastB<1400)return;lastB=n;bleat(voice)};
     b.addEventListener("pointerenter",e=>{if(e.pointerType=="mouse")baa()});
     b.onclick=()=>{
       ac();setTimeout(baa,0);
