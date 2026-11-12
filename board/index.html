@@ -96,8 +96,8 @@ button.on{background:#fdba4d;color:#2b2118}
 </style></head><body><div class="wrap">
 <h1>🎲 치영의 나눔보드게임</h1>
 <div id="top"><div id="status"></div><div class="tb"><button id="homeb" aria-label="홈 화면">🏠</button><button id="gear">⚙ 설정</button></div></div>
-<div id="set"><div class="card" style="max-width:380px;max-height:88vh;overflow:auto;text-align:left"><div style="font-size:20px">⚙ 설정</div><div class="sec">인원 (바꾸면 새 게임)</div><div class="bar" id="pc"></div><div class="sec">말 이름</div><div id="nm"></div><div class="sec">주사위</div><div class="bar" id="ds"></div><div class="sec">🔊 효과음 음량 <span id="sfxv"></span></div><input type="range" class="rg" id="sfxr" min="0" max="100"><div class="sec">🎵 배경음악 음량 <span id="bgmv"></span></div><input type="range" class="rg" id="bgmr" min="0" max="100"><div class="sec">바탕색</div><div class="bar" id="bg"></div><div class="bar"><button id="newg">새 게임</button><button id="sx">닫기</button></div></div></div>
-<button id="roll" aria-label="주사위 던지기">🎲</button><div id="big"></div><audio id="bgm" src="bgm.mp3" loop preload="none"></audio>
+<div id="set"><div class="card" style="max-width:380px;max-height:88vh;overflow:auto;text-align:left"><div style="font-size:20px">⚙ 설정</div><div class="sec">인원 (바꾸면 새 게임)</div><div class="bar" id="pc"></div><div class="sec">말 이름</div><div id="nm"></div><div class="sec">주사위</div><div class="bar" id="ds"></div><div class="sec">🔊 효과음 음량 <span id="sfxv"></span></div><input type="range" class="rg" id="sfxr" min="0" max="100"><div id="bgmbox" hidden><div class="sec">🎵 배경음악 음량 <span id="bgmv"></span></div><input type="range" class="rg" id="bgmr" min="0" max="100"></div><div class="sec">바탕색</div><div class="bar" id="bg"></div><div class="bar"><button id="newg">새 게임</button><button id="sx">닫기</button></div></div></div>
+<button id="roll" aria-label="주사위 던지기">🎲</button><div id="big"></div><audio id="bgm" loop preload="none"></audio>
 <div id="board"></div>
 <section class="about"><h2>교회 소모임 나눔 보드게임</h2><p>교회 소모임, 셀모임, 속회, 구역 모임, 청년부 모임에서 처음 만난 사이에도 자연스럽게 이야기를 꺼낼 수 있는 아이스브레이킹 나눔 게임이에요. 휴대폰 하나로 1~10명이 함께할 수 있고, 설치나 가입 없이 무료로 바로 쓸 수 있어요.</p><h3>어떻게 하나요?</h3><ul><li>인원을 고르고 차례대로 주사위를 굴려 말을 옮겨요.</li><li>멈춘 칸의 질문에 답하며 서로의 이야기를 나눠요.</li><li>나눔 질문은 '나에 대해', '나의 이야기', '하나님과 나' 세 가지예요.</li><li>밸런스 게임, 사다리, 기도제목 나눔 칸도 있어요.</li><li>가장 먼저 도착한 사람이 우승이에요!</li></ul></section>
 </div>
@@ -183,8 +183,10 @@ let hn=np;$("hp").innerHTML=[0,1,2,3].map(k=>"<span>"+horse(PC[k])+"</span>").jo
 function renderHome(){$("hc").innerHTML="";for(let m=1;m<=10;m++){const b=document.createElement("button");b.textContent=m+"명";if(m==hn)b.className="on";b.onclick=()=>{hn=m;renderHome()};$("hc").appendChild(b)}}
 renderHome();
 // ---- BGM + volume sliders ----
-const bgm=$("bgm");bgm.volume=bgmVol;
-function playBgm(){if(bgmVol<=0||!bgm.paused)return;bgm.volume=bgmVol;const p=bgm.play();if(p)p.catch(()=>{})}
+// BGM: put a music file you are allowed to use next to this page and set its name here (e.g. "bgm.mp3")
+const BGM_SRC="";
+const bgm=$("bgm");bgm.volume=bgmVol;if(BGM_SRC){bgm.src=BGM_SRC;$("bgmbox").hidden=false}
+function playBgm(){if(!BGM_SRC||bgmVol<=0||!bgm.paused)return;bgm.volume=bgmVol;const p=bgm.play();if(p)p.catch(()=>{})}
 function initRange(id,lab,v0,set){const r=$(id);r.value=Math.round(v0*100);$(lab).textContent=r.value;r.oninput=()=>{set(r.value/100);$(lab).textContent=r.value}}
 initRange("sfxr","sfxv",sfxVol,v=>{sfxVol=v;try{localStorage.setItem("sfxVol",v)}catch(e){}});
 $("sfxr").onchange=()=>sfx.hop();
