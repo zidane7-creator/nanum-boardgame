@@ -103,15 +103,16 @@ function spin(L){if(spinning||!L.length)return;spinning=true;$("#spin").disabled
   let k=0;const total=22;const tick=()=>{s.textContent=k<total?L[Math.floor(Math.random()*L.length)][0]:pick[0];k++;
     if(k<=total)setTimeout(tick,40+k*k*0.6);else{s.classList.add("done");spinning=false;$("#spin").disabled=false;$("#spin").textContent="🎲 다시 뽑기";
       const tag=[CU[pick[5]],pick[1]?"든든":"가볍게",pick[2]=="c"?"차가운":"뜨거운",pick[3]?"국물":"",["안 매움","적당히 매움","매움"][pick[4]]].filter(Boolean);
-      $("#links").innerHTML='<div class="tags" style="width:100%">'+tag.map(t=>'<span>'+esc(t)+'</span>').join("")+'</div><button class="pri" id="near" style="font-size:17px">📍 내 주변 '+esc(pick[0])+' 식당 찾기</button><div class="links" style="width:100%"><a href="https://map.naver.com/p/search/'+encodeURIComponent(pick[0])+'" target="_blank" rel="noopener">네이버 지도</a><a href="https://map.kakao.com/link/search/'+encodeURIComponent(pick[0])+'" target="_blank" rel="noopener">카카오맵</a><a href="https://www.google.com/maps/search/'+encodeURIComponent(pick[0])+'" target="_blank" rel="noopener">구글 지도</a></div><p class="muted" id="nearMsg" style="width:100%;margin:6px 0 0"></p>';$("#near").onclick=()=>nearMe(pick[0])}};
+      $("#links").innerHTML='<div class="tags" style="width:100%">'+tag.map(t=>'<span>'+esc(t)+'</span>').join("")+'</div><button class="pri" id="near" style="font-size:17px">📍 네이버 지도에서 내 주변 '+esc(pick[0])+' 찾기</button><div class="links" style="width:100%"><a href="https://map.naver.com/p/search/'+encodeURIComponent(pick[0])+'" target="_blank" rel="noopener">네이버 지도</a><a href="https://map.kakao.com/link/search/'+encodeURIComponent(pick[0])+'" target="_blank" rel="noopener">카카오맵</a><a href="https://www.google.com/maps/search/'+encodeURIComponent(pick[0])+'" target="_blank" rel="noopener">구글 지도</a></div><p class="muted" id="nearMsg" style="width:100%;margin:6px 0 0"></p>';$("#near").onclick=()=>nearMe(pick[0])}};
   tick()}
-/* search restaurants serving this menu around the user's current location */
+/* search restaurants serving this menu around the user's current location — on 네이버 지도 */
+const naverUrl=(q,la,lo)=>{let u="https://map.naver.com/p/search/"+encodeURIComponent(q);
+  if(la!=null){const R=6378137,x=R*lo*Math.PI/180,y=R*Math.log(Math.tan(Math.PI/4+la*Math.PI/360));u+="?c="+x.toFixed(2)+","+y.toFixed(2)+",15,0,0,0,dh"}return u};
 function nearMe(q){const msg=$("#nearMsg"),open=u=>{const w=window.open(u,"_blank","noopener");if(!w)location.href=u};
-  if(!navigator.geolocation){open("https://www.google.com/maps/search/"+encodeURIComponent(q+" 맛집"));return}
+  if(!navigator.geolocation){open(naverUrl(q));return}
   msg.textContent="📡 지금 위치를 확인하고 있어요… (위치 권한을 허용해 주세요)";
-  navigator.geolocation.getCurrentPosition(p=>{const la=p.coords.latitude.toFixed(5),lo=p.coords.longitude.toFixed(5);msg.textContent="지금 위치 주변의 "+q+" 식당을 지도에서 열었어요 🍽";
-    open("https://www.google.com/maps/search/"+encodeURIComponent(q+" 맛집")+"/@"+la+","+lo+",15z")},
-   ()=>{msg.textContent="위치를 확인하지 못해서, 지도 앱이 아는 위치 기준으로 찾아요. (아래 지도 버튼도 써 보세요)";open("https://map.naver.com/p/search/"+encodeURIComponent(q))},
+  navigator.geolocation.getCurrentPosition(p=>{msg.textContent="네이버 지도에서 지금 위치 주변의 "+q+" 식당을 열었어요 🍽";open(naverUrl(q,p.coords.latitude,p.coords.longitude))},
+   ()=>{msg.textContent="위치를 확인하지 못해서 네이버 지도가 아는 위치 기준으로 찾아요.";open(naverUrl(q))},
    {enableHighAccuracy:false,timeout:8000,maximumAge:300000})}
 renderHome();
 </script>
