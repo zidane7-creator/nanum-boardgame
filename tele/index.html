@@ -102,8 +102,9 @@ canvas.pad{display:block;width:100%;height:auto;border:2px solid var(--line);bor
 <main id="app"></main>
 <div class="wait" id="wait"><div class="card center" style="max-width:420px"><div style="font-size:44px">✋</div><h2>준비 완료!</h2><p class="muted" id="waitTxt">다른 사람을 기다리고 있어요</p><button id="unready">다시 고치기</button></div></div>
 <div id="toast" role="status" aria-live="polite"></div>
-<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js"></script>
 <script src="words.js"></script>
 <script>
 "use strict";
@@ -144,8 +145,8 @@ function createRoom(name){
   isHost=true;C.me="host";C.name=name;
   const code=Array.from({length:4},()=>"ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.floor(Math.random()*32)]).join("");
   ROOM=code;renderMsg("방을 만들고 있어요…");
-  peer=new Peer(PREFIX+code,{debug:0});
-  peer.on("open",()=>{H.players=[{id:"host",name,conn:null}];H.seats=["host"];history.replaceState(null,"","?host="+code);pushLobby();keepAwake()});
+  peer=new Peer(PREFIX+code,PEER_OPTS());
+  peer.on("open",()=>{H.players=[{id:"host",name,conn:null}];H.seats=["host"];startRelayHost();history.replaceState(null,"","?host="+code);pushLobby();keepAwake()});
   peer.on("error",e=>{if(e.type=="unavailable-id"){peer.destroy();createRoom(name)}else if(e.type=="network"||e.type=="server-error"||e.type=="socket-error"){toast("인터넷 연결을 확인해 주세요")}else console.warn(e)});
   peer.on("disconnected",()=>{setTimeout(()=>{try{peer.reconnect()}catch(e){}},1500)});
   peer.on("connection",c=>{
@@ -210,19 +211,66 @@ function scoreMsg(){return{t:"scores",games:H.games,list:H.players.map(p=>({name
 function lastAnswer(b){if(!b)return"";const g=[...b.pages].reverse().find(p=>p.kind=="guess");return g?(g.text||(g.img?"(손글씨)":"")):""}
 
 /* ================= GUEST connection ================= */
-function joinRoom(name){
+/* fast STUN servers first, PeerJS relay servers as a fallback */
+function PEER_OPTS(){const d=(window.peerjs&&peerjs.util&&peerjs.util.defaultConfig||{}).iceServers||[];
+  return{debug:0,config:{iceServers:[{urls:["stun:stun.l.google.com:19302","stun:stun1.l.google.com:19302","stun:stun.cloudflare.com:3478"]},...d.filter(s=>String(s.urls).includes("turn"))],iceCandidatePoolSize:4,sdpSemantics:"unified-plan"}}}
+let warm=null,attempt=0;
+/* open the connection to the game server as soon as the invite page loads, while the person types their name */
+function warmPeer(){if(peer&&!peer.destroyed&&warm)return warm;
+  peer=new Peer(PEER_OPTS());warm=new Promise(res=>{peer.on("open",()=>res(true));setTimeout(()=>res(false),8000)});
+  peer.on("error",onPeerErr);peer.on("disconnected",()=>{try{if(!peer.destroyed)peer.reconnect()}catch(e){}});return warm}
+function onPeerErr(e){
+  if(e.type=="peer-unavailable"){if(!(C.phase=="home"||C.phase=="msg"))setTimeout(reconnect,2000)}
+  else if(e.type=="network"||e.type=="server-error"||e.type=="socket-error")toast("인터넷 연결을 확인해 주세요")}
+async function joinRoom(name){
   C.name=name;let id=store.get("tele-id-"+ROOM);if(!id){id="p"+Math.random().toString(36).slice(2,10);store.set("tele-id-"+ROOM,id)}
-  C.me=id;store.set("tele-name-"+ROOM,name);renderMsg("방에 들어가는 중…");
-  const go=()=>{conn=peer.connect(PREFIX+ROOM,{reliable:true});
-    conn.on("open",()=>{retry=0;conn.send({t:"join",id,name});keepAwake()});
-    conn.on("data",client);
-    conn.on("close",()=>{toast("방장과 연결이 끊겼어요. 다시 연결하는 중…",4000);setTimeout(reconnect,1500)});};
-  if(peer&&!peer.destroyed&&peer.open)go();
-  else{peer=new Peer({debug:0});peer.on("open",go);
-    peer.on("error",e=>{if(e.type=="peer-unavailable"){if(C.phase=="home"||C.phase=="msg")renderMsg("방을 찾을 수 없어요 😢<br><span class='muted'>방 코드가 맞는지, 방장의 화면이 켜져 있는지 확인해 주세요.</span>",true);else setTimeout(reconnect,2500)}else if(e.type=="network")toast("인터넷 연결을 확인해 주세요")});
-    peer.on("disconnected",()=>{try{peer.reconnect()}catch(e){}})}
+  C.me=id;store.set("tele-name-"+ROOM,name);renderMsg("방에 들어가는 중… ①");
+  let ok=await warmPeer();if(!ok||!peer.open){try{peer.destroy()}catch(e){}warm=null;ok=await warmPeer()}
+  attempt=0;usingRelay=false;
+  if(ok)dial(id,name);
+  /* if the direct link isn't up quickly, go through the relay */
+  setTimeout(async()=>{if(conn&&conn.open&&!conn.relay)return;
+    if(C.phase=="msg")renderMsg("방장 기기와 연결하는 중… ③<br><span class='muted'>다른 길로 연결하고 있어요</span>");
+    const r=await relayDial(id,name);
+    if(!r&&!(conn&&conn.open))renderMsg("방장 기기와 연결이 잘 안 돼요 😢<br><span class='muted'>· 방장 화면이 켜져 있는지 확인해 주세요<br>· 방 코드가 맞는지 확인해 주세요<br>· 그래도 안 되면 새로고침해 주세요</span>",true)},ok?2500:0)}
+/* connect to the host; if the link doesn't open within a few seconds, try again instead of waiting forever */
+function dial(id,name){
+  if(C.phase=="msg"&&!usingRelay)renderMsg("방장 기기와 연결하는 중… ②");
+  const c=peer.connect(PREFIX+ROOM,{reliable:true});conn=c;let opened=false;
+  const to=setTimeout(()=>{if(opened)return;try{c.close()}catch(e){}if(!usingRelay&&++attempt<=2)dial(id,name)},6000);
+  c.on("open",()=>{opened=true;clearTimeout(to);if(usingRelay){try{c.close()}catch(e){}return}retry=0;attempt=0;c.send({t:"join",id,name});keepAwake()});
+  c.on("data",client);
+  c.on("close",()=>{clearTimeout(to);if(!opened||conn!==c)return;toast("방장과 연결이 끊겼어요. 다시 연결하는 중…",4000);setTimeout(reconnect,1200)});
 }
-function reconnect(){if(isHost||conn&&conn.open)return;if(++retry>20){renderMsg("방장과 다시 연결하지 못했어요.<br><span class='muted'>방장의 화면이 꺼지지 않았는지 확인하고 새로고침해 주세요.</span>",true);return}joinRoom(C.name)}
+function reconnect(){if(isHost||usingRelay||conn&&conn.open)return;if(++retry>20){renderMsg("방장과 다시 연결하지 못했어요.<br><span class='muted'>방장의 화면이 꺼지지 않았는지 확인하고 새로고침해 주세요.</span>",true);return}joinRoom(C.name)}
+
+/* ================= RELAY fallback =================
+   When the direct device-to-device link can't open (different networks, strict Wi-Fi),
+   messages go through a public relay server instead. Host listens on both. */
+const BROKERS=["wss://broker.emqx.io:8084/mqtt","wss://broker.hivemq.com:8884/mqtt"];
+const relayBase=()=>"chiyoung-tele/v1/"+ROOM;
+let usingRelay=false;
+function mqttOpen(url,ms){return new Promise(res=>{if(typeof mqtt=="undefined")return res(null);let done=false;
+  const cl=mqtt.connect(url,{connectTimeout:ms,reconnectPeriod:2000,clientId:"ct"+Math.random().toString(36).slice(2,12)});
+  cl.on("connect",()=>{if(!done){done=true;res(cl)}});setTimeout(()=>{if(!done){done=true;try{cl.end(true)}catch(e){}res(null)}},ms)})}
+function startRelayHost(){if(typeof mqtt=="undefined")return;
+  BROKERS.forEach(async url=>{const cl=await mqttOpen(url,8000);if(!cl)return;const base=relayBase(),conns={};
+    cl.subscribe(base+"/h",{qos:1});cl.on("connect",()=>cl.subscribe(base+"/h",{qos:1}));
+    cl.on("message",(t,buf)=>{let d;try{d=JSON.parse(buf.toString())}catch(e){return}if(!d||!d.from||!d.m)return;
+      const from=String(d.from).replace(/[^a-z0-9]/gi,"").slice(0,20);
+      const c=conns[from]||(conns[from]={open:true,relay:true,send:m=>cl.publish(base+"/c/"+from,JSON.stringify(m),{qos:1})});
+      if(d.m.t=="join"){d.m.id=from;hostJoin(c,d.m)}else{const pl=P(from);if(pl&&pl.conn===c)hostHandle(pl.id,d.m)}})})}
+async function relayDial(id,name){
+  for(const url of BROKERS){if(conn&&conn.open&&!conn.relay)return true;
+    const cl=await mqttOpen(url,6000);if(!cl)continue;const base=relayBase();
+    cl.subscribe(base+"/c/"+id,{qos:1});cl.on("connect",()=>cl.subscribe(base+"/c/"+id,{qos:1}));
+    let heard=false;cl.on("message",(t,buf)=>{let m;try{m=JSON.parse(buf.toString())}catch(e){return}heard=true;if(usingRelay)client(m)});
+    usingRelay=true;const c={open:true,relay:true,send:m=>cl.publish(base+"/h",JSON.stringify({from:id,m}),{qos:1})};conn=c;
+    c.send({t:"join",id,name});
+    for(let i=0;i<25&&!heard;i++)await new Promise(r=>setTimeout(r,200));
+    if(heard){keepAwake();return true}
+    usingRelay=false;try{cl.end(true)}catch(e){}}
+  return false}
 
 /* ================= CLIENT message handling ================= */
 function client(m){
@@ -246,6 +294,7 @@ function renderHome(){
     app.innerHTML='<div class="hero"><div class="em">🎨</div><h1>텔레스트레이션</h1></div><div class="card"><h2>방 <b style="letter-spacing:4px">'+esc(ROOM)+'</b> 에 들어가요</h2><p class="muted">내 이름을 적어 주세요. 다른 사람 화면에 이 이름이 보여요.</p><input type="text" id="nm" maxlength="10" placeholder="이름" value="'+esc(saved||"")+'"><div class="ready"><button class="pri" id="join">입장하기</button></div></div>'+aboutHTML();
     $("#join").onclick=()=>{const n=$("#nm").value.trim();if(!n){toast("이름을 적어 주세요");return}joinRoom(n)};
     $("#nm").onkeydown=e=>{if(e.key=="Enter")$("#join").click()};
+    warmPeer();
     if(saved)joinRoom(saved);
     return;
   }
@@ -304,7 +353,7 @@ function makePad(cv,w,h){
   cv.onpointermove=e=>{if(!last||!pad.on)return;const evs=e.getCoalescedEvents?e.getCoalescedEvents():[e];for(const ev of evs){const p=pt(ev);seg(last,p);last=p}};
   cv.onpointerup=cv.onpointercancel=()=>{last=null};
   pad.clear=()=>{ctx.fillStyle="#fff";ctx.fillRect(0,0,w,h);pad.dirty=false};
-  pad.data=()=>pad.dirty?cv.toDataURL("image/jpeg",.6):null;
+  pad.data=()=>pad.dirty?cv.toDataURL("image/jpeg",.5):null;
   return pad}
 function toolsHTML(id){return'<div class="tools" id="'+id+'"><button class="sm on" data-tool="pen">✏️ 펜</button><button class="sm" data-tool="eraser">🧽 지우개</button><label class="row" style="gap:4px;font-size:14px">굵기 <input type="range" min="2" max="24" value="6" data-size></label><span style="flex:1"></span><button class="sm" data-clear>🗑 모두 지우기</button></div>'}
 function bindTools(id,pad){const t=$("#"+id),rng=t.querySelector("[data-size]");
