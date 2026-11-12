@@ -210,6 +210,8 @@ body.drawing .memo{pointer-events:auto;cursor:crosshair;touch-action:none}
 .ptitle{display:flex;flex-direction:column;align-items:center;gap:4px;margin-bottom:12px}
 .ptitle input{border:0;background:transparent;text-align:center;font-family:var(--engrave);font-weight:800;font-size:28px;width:100%;outline:none;letter-spacing:-.01em}
 .ptitle input:focus{background:var(--accent-soft);border-radius:4px}
+.ptitle input::placeholder{color:#b6bcc8;font-weight:500}
+.ptitle input:focus::placeholder{color:transparent}
 .pmeta{display:flex;justify-content:space-between;width:100%;font-family:var(--engrave);font-size:13px;color:var(--muted)}
 .pmeta input{border:0;background:transparent;font:inherit;color:inherit;text-align:right;outline:none;width:220px}
 .example{font-family:var(--ui);font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:center;justify-content:center;margin-bottom:8px}
@@ -385,7 +387,7 @@ function emptyScore(){return{v:1,example:false,title:"",composer:"",tempo:null,k
 const LS="ohsun-workbench-v1";
 function load(){try{const t=localStorage.getItem(LS);if(t){const s=JSON.parse(t);if(s&&s.rows&&s.rows.length)return s;}}catch(e){}return null;}
 function save(){try{localStorage.setItem(LS,JSON.stringify(S));}catch(e){}}
-let S=load()||example();
+let S=load();if(!S||S.example)S=emptyScore();/* start from a blank score (no sample song) */
 function migrate(){S.formSeq=(S.formSeq||[]).map(f=>typeof f==="string"?{id:uid(),k:f,n:""}:f);S.rows.forEach(r=>r.measures.forEach(m=>{delete m.form;}));S.marks=S.marks||[];}
 migrate();chordsToMeasures();
 let hist=[],fut=[];
@@ -623,7 +625,7 @@ function render(){
   if(S.example)h+=`<div class="example">예시 악보가 열려 있어요. 바로 고쳐 써도 되고, <button class="btn" data-act="startEmpty">빈 악보로 시작</button></div>`;
   const fs=S.formSeq||[];
   h+=`<div class="formseq${fs.length?"":" empty"}" id="formSeq">${fs.length?fs.map((f,i)=>`<span class="fchip${UI.sel&&UI.sel.type==="fseq"&&UI.sel.i===i?" sel":""}" data-fsidx="${i}" title="누르면 선택 · 끌어서 순서 바꾸기">${fBadge(f,"big")}</span>`).join(""):'<span class="ph">여기에 놓으면 송폼 진행에 들어가요</span>'}</div>`;
-  h+=`<div class="ptitle"><input id="titleIn" value="${esc(S.title)}" placeholder="곡 제목" aria-label="곡 제목"><div class="pmeta"><span>Key: ${esc(keyName(S.key.f,S.key.mode))}${S.tempo?` &nbsp;·&nbsp; <svg width="9" height="15" viewBox="0 0 9 15" style="vertical-align:-2px"><ellipse cx="3.6" cy="12" rx="3.4" ry="2.4" transform="rotate(-22 3.6 12)" fill="currentColor"/><line x1="6.6" y1="11.5" x2="6.6" y2="0.5" stroke="currentColor" stroke-width="1.1"/></svg> = ${S.tempo}`:""}</span><input id="compIn" value="${esc(S.composer||"")}" placeholder="작곡·작사" aria-label="작곡 작사"></div></div>`;
+  h+=`<div class="ptitle"><input id="titleIn" value="${esc(S.title)}" placeholder="제목을 입력하세요" aria-label="곡 제목"><div class="pmeta"><span>Key: ${esc(keyName(S.key.f,S.key.mode))}${S.tempo?` &nbsp;·&nbsp; <svg width="9" height="15" viewBox="0 0 9 15" style="vertical-align:-2px"><ellipse cx="3.6" cy="12" rx="3.4" ry="2.4" transform="rotate(-22 3.6 12)" fill="currentColor"/><line x1="6.6" y1="11.5" x2="6.6" y2="0.5" stroke="currentColor" stroke-width="1.1"/></svg> = ${S.tempo}`:""}</span><input id="compIn" value="${esc(S.composer||"")}" placeholder="작곡가를 입력하세요" aria-label="작곡가"></div></div>`;
   LAY.forEach(L=>{const row=S.rows[L.ri];
     h+=`<div class="row" data-row="${L.ri}" style="width:${L.width}px;height:${L.height}px">`;
     h+=rowSVG(L);
