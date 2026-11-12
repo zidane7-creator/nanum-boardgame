@@ -1,150 +1,151 @@
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>치영의 나눔보드게임 | 교회 소모임·셀모임·속회 아이스브레이킹 나눔 게임</title>
-<meta name="apple-mobile-web-app-title" content="나눔보드게임">
-<meta name="description" content="교회 소모임, 셀모임, 속회, 청년부 모임에서 바로 쓰는 무료 아이스브레이킹 나눔 보드게임. 주사위를 굴리며 '나에 대해', '하나님과 나' 나눔 질문과 밸런스 게임으로 서로를 알아가요. 설치 없이 휴대폰으로 바로 시작.">
-<meta name="keywords" content="교회 소모임, 교회 아이스브레이킹, 교회 속회, 교회 셀모임, 교회 나눔, 나눔, 나눔 질문, 소그룹 나눔, 청년부 게임, 셀모임 게임, 아이스브레이킹 게임, 나눔 보드게임">
+<title>치영의 교회 생활 즐기기 | 교회 소모임·셀모임·속회 나눔과 예배 도구</title>
+<meta name="description" content="치영의 교회 생활 즐기기 — 교회 소모임, 셀모임, 속회, 청년부를 위한 나눔 보드게임과 아이스브레이킹, 레크레이션, 악보·주보 제작, 설교 도우미, 묵상 저장소까지 한곳에 모았어요.">
+<meta name="keywords" content="교회 소모임, 교회 아이스브레이킹, 교회 속회, 교회 셀모임, 교회 나눔, 나눔, 나눔 보드게임, 교회 레크레이션, 주보 제작, 악보 제작, 묵상, 수련회 장소">
+<meta name="apple-mobile-web-app-title" content="교회 생활 즐기기">
 <link rel="canonical" href="https://zidane7-creator.github.io/nanum-boardgame/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="치영의 나눔보드게임 — 교회 소모임 아이스브레이킹">
-<meta property="og:description" content="셀모임·속회·소모임에서 주사위를 굴리며 서로의 이야기를 나누는 무료 보드게임">
+<meta property="og:title" content="치영의 교회 생활 즐기기">
+<meta property="og:description" content="예배 · 교제 · 잡동사니 · Mall — 양을 눌러 들어가 보세요 🐑">
 <meta property="og:url" content="https://zidane7-creator.github.io/nanum-boardgame/">
 <meta property="og:locale" content="ko_KR">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"치영의 나눔보드게임","url":"https://zidane7-creator.github.io/nanum-boardgame/","applicationCategory":"GameApplication","operatingSystem":"웹 브라우저","inLanguage":"ko","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"description":"교회 소모임, 셀모임, 속회에서 쓰는 아이스브레이킹 나눔 보드게임"}</script>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎲</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐑</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"치영의 교회 생활 즐기기","url":"https://zidane7-creator.github.io/nanum-boardgame/","inLanguage":"ko"}</script>
 <style>
-:root{--bg:#bfe3b4;--ink:#2b2118;--card:#fffaf0;--line:#2b2118;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-
-
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:"Jua","Apple SD Gothic Neo","Noto Sans KR",sans-serif;text-align:center}
-.wrap{max-width:560px;margin:0 auto;padding:62px 10px 100px}
-h1{font-size:22px;margin:6px 0}
-.bar{display:flex;gap:6px;justify-content:center;align-items:center;flex-wrap:wrap;margin:6px 0}
-button{font:inherit;border:2px solid var(--ink);background:var(--card);color:var(--ink);border-radius:20px;padding:6px 14px;cursor:pointer}
-button.on{background:#fdba4d;color:#2b2118}
-#roll{font-size:20px;padding:10px 26px;background:#e8503a;color:#fff;border-color:#2b2118}
-#roll:disabled{opacity:.5}
-#dice{width:56px;height:56px;border:3px solid var(--ink);border-radius:12px;background:#fff;color:#2b2118;font-size:34px;line-height:50px}
-#dice.rolling{animation:sh .25s infinite}
-@keyframes sh{50%{transform:rotate(18deg) scale(1.1)}}
-#top{position:fixed;top:0;left:0;right:0;z-index:11;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:calc(6px + env(safe-area-inset-top,0px)) 12px 6px;background:rgba(255,255,255,.93);color:#2b2118;border-bottom:5px solid #e8503a}
-#status{font-size:17px;display:flex;align-items:center;gap:6px;min-height:30px}
-.chip svg{width:30px;height:30px;display:block}
-#gear{padding:4px 12px;white-space:nowrap}
-#set{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:19;padding:16px}
-#set.show{display:flex}
-.sec{font-size:14px;margin:12px 0 4px;opacity:.8}
-.nr{display:flex;align-items:center;gap:8px;margin:4px 0}.nr input{flex:1;min-width:0;font:inherit;padding:5px 10px;border:2px solid var(--ink);border-radius:12px;background:#fff;color:#2b2118}
-#roll{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:72px;height:72px;border-radius:50%;padding:0;font-size:40px;line-height:1;z-index:12;box-shadow:0 4px 10px rgba(0,0,0,.35)}
-#big{position:fixed;left:50%;top:50%;width:130px;height:130px;margin:-65px 0 0 -65px;display:none;align-items:center;justify-content:center;font-size:96px;line-height:1;background:#fff;color:#2b2118;border:4px solid #2b2118;border-radius:26px;z-index:15;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.4)}
-#big.show{display:flex}#big.toss{animation:toss .85s ease-out}#big.pop{animation:pop .35s}
-@keyframes toss{0%{transform:translate(38vw,42vh) rotate(0) scale(.3)}70%{transform:translate(0,-6vh) rotate(540deg) scale(1.15)}100%{transform:translate(0,0) rotate(720deg) scale(1)}}
-@keyframes pop{50%{transform:scale(1.25)}}
-#board{position:relative;width:100%;margin-top:8px}
-#board svg{position:absolute;inset:0;width:100%;height:100%}
-.t{position:absolute;width:13.6%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:clamp(8px,2.3vw,11.5px);line-height:1.15;color:#2b2118;padding:2px;box-sizing:border-box;word-break:keep-all;overflow:hidden}
-.n{font-size:7px;opacity:.6;line-height:1;margin-bottom:1px}.pawn svg{width:100%;height:100%;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
-.sw{width:26px;height:26px;border-radius:50%;padding:0;border-width:2px}.sw.on{outline:3px solid #2b2118}
-.t.b{background:#6aa84f;color:#fff;font-size:clamp(10px,3vw,14px)}
-.t.s{background:#fdba4d;font-size:clamp(11px,3.4vw,16px)}
-.t.r{background:#fff;border:2px solid #2b2118;border-radius:14px;font-size:clamp(9px,2.6vw,12px);width:20%}
-.t.l{background:#b9e6ff;font-size:clamp(10px,3vw,14px)}
-.pawn{position:absolute;width:7.5%;aspect-ratio:1;transition:left .3s linear,top .3s linear;z-index:5}
-.pawn.hop svg{animation:hop .3s ease-out}
-@keyframes hop{0%{transform:translateY(0) scale(1.12,.85)}25%{transform:translateY(-7px) scale(.95,1.1)}50%{transform:translateY(-17px) rotate(-8deg)}80%{transform:translateY(-3px) rotate(5deg)}100%{transform:translateY(0) scale(1,1)}}
-.lg{transform-box:fill-box;transform-origin:50% 0}
-.pawn.hop .lf{animation:lf .3s ease-in-out}.pawn.hop .lb{animation:lb .3s ease-in-out}
-@keyframes lf{50%{transform:rotate(-50deg)}}@keyframes lb{50%{transform:rotate(50deg)}}
-#modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:20;padding:20px}
-#modal.show{display:flex}
-.card{background:var(--card);border:3px solid var(--ink);border-radius:22px;padding:22px 20px;max-width:320px;width:100%}
-.card .tag{font-size:14px;opacity:.75}
-.card .q{font-size:22px;margin:12px 0 18px;word-break:keep-all;white-space:pre-line}
-#home{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:24px 16px;background:inherit;overflow:auto}
-#home.hide{display:none}
-.hs{font-size:20px;opacity:.75}
-.hh{font-size:clamp(36px,11vw,58px);line-height:1.15;margin:0 0 6px;word-break:keep-all;text-shadow:3px 3px 0 #fffaf0}
-.hh b{color:#e8503a;font-weight:normal}
-.hp{display:flex;gap:4px;justify-content:center;margin:6px 0 10px}
-.hp span{width:56px;height:56px;animation:bob 1s ease-in-out infinite}
-.hp span:nth-child(2){animation-delay:.15s}.hp span:nth-child(3){animation-delay:.3s}.hp span:nth-child(4){animation-delay:.45s}
-.hp svg{width:100%;height:100%}
-@keyframes bob{50%{transform:translateY(-10px)}}
-#hc{max-width:330px}#hc button{min-width:56px}
-#go{font-size:24px;padding:12px 44px;margin-top:14px;background:#e8503a;color:#fff;box-shadow:0 4px 0 #2b2118}
-#go:active{transform:translateY(3px);box-shadow:0 1px 0 #2b2118}
-.tb{display:flex;gap:6px}#homeb{padding:4px 10px}
-.hi{font-size:14px;opacity:.7;margin:14px 0 0;line-height:1.5}
-.about{margin:28px 6px 0;padding:18px 18px 10px;background:rgba(255,250,240,.75);border:2px solid #2b2118;border-radius:18px;text-align:left;font-size:15px;line-height:1.6;word-break:keep-all}
-.about h2{font-size:19px;margin:0 0 6px}.about h3{font-size:16px;margin:14px 0 4px}.about ul{padding-left:20px;margin:0 0 8px}
-</style></head><body><div class="wrap">
-<h1>🎲 치영의 나눔보드게임</h1>
-<div id="top"><div id="status"></div><div class="tb"><button id="homeb" aria-label="홈 화면">🏠</button><button id="gear">⚙ 설정</button></div></div>
-<div id="set"><div class="card" style="max-width:380px;max-height:88vh;overflow:auto;text-align:left"><div style="font-size:20px">⚙ 설정</div><div class="sec">인원 (바꾸면 새 게임)</div><div class="bar" id="pc"></div><div class="sec">말 이름</div><div id="nm"></div><div class="sec">주사위</div><div class="bar" id="ds"></div><div class="sec">바탕색</div><div class="bar" id="bg"></div><div class="bar"><button id="newg">새 게임</button><button id="sx">닫기</button></div></div></div>
-<button id="roll" aria-label="주사위 던지기">🎲</button><div id="big"></div>
-<div id="board"></div>
-<section class="about"><h2>교회 소모임 나눔 보드게임</h2><p>교회 소모임, 셀모임, 속회, 구역 모임, 청년부 모임에서 처음 만난 사이에도 자연스럽게 이야기를 꺼낼 수 있는 아이스브레이킹 나눔 게임이에요. 휴대폰 하나로 1~10명이 함께할 수 있고, 설치나 가입 없이 무료로 바로 쓸 수 있어요.</p><h3>어떻게 하나요?</h3><ul><li>인원을 고르고 차례대로 주사위를 굴려 말을 옮겨요.</li><li>멈춘 칸의 질문에 답하며 서로의 이야기를 나눠요.</li><li>나눔 질문은 '나에 대해', '나의 이야기', '하나님과 나' 세 가지예요.</li><li>밸런스 게임, 사다리, 기도제목 나눔 칸도 있어요.</li><li>가장 먼저 도착한 사람이 우승이에요!</li></ul></section>
+:root{--ink:#3b2a20;--sky1:#7fd0f3;--sky2:#d6f2fc;--grass:#a9d86e;--grass2:#93c95a;--pen:#c3e78f;--fence:#f4bdb6;--fence2:#d98680;--wood:#c98a4b;--wood2:#8a5528;--cream:#fffaf0}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--sky2)}
+body{font-family:"Jua","Apple SD Gothic Neo","Noto Sans KR",sans-serif;color:var(--ink);overflow-x:hidden;background:linear-gradient(var(--sky1) 0,var(--sky2) 360px,var(--sky2) 420px,var(--grass) 421px)}
+a{color:inherit}
+/* sky */
+.sky{position:relative;height:330px;overflow:hidden}
+.sun{position:absolute;top:-20px;right:-10px;width:170px;height:170px;animation:spin 40s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.cloud{position:absolute;background:#fff;border-radius:999px;opacity:.95;animation:drift linear infinite}
+.cloud::before,.cloud::after{content:"";position:absolute;background:#fff;border-radius:50%}
+.cloud::before{width:55%;height:150%;left:15%;bottom:20%}
+.cloud::after{width:40%;height:120%;right:12%;bottom:25%}
+.c1{width:220px;height:60px;top:150px;left:-240px;animation-duration:70s}
+.c2{width:160px;height:46px;top:70px;left:-200px;animation-duration:95s;animation-delay:-40s}
+.c3{width:260px;height:70px;top:210px;left:-280px;animation-duration:120s;animation-delay:-80s}
+@keyframes drift{to{transform:translateX(calc(100vw + 560px))}}
+.title{position:absolute;left:0;right:0;top:calc(52px + env(safe-area-inset-top,0px));display:flex;flex-direction:column;align-items:center;gap:12px;padding:0 12px}
+.ttl{display:flex;align-items:center;gap:6px}
+.ttl .chick{font-size:clamp(22px,6vw,34px);animation:bob 1.6s ease-in-out infinite}
+.ttl .chick:last-child{animation-delay:.4s;transform:scaleX(-1)}
+.cells{display:flex;background:#fff;border-top:3px double #6b5a4e;border-bottom:3px double #6b5a4e;padding:2px 0}
+.cells span{width:clamp(20px,5.6vw,46px);height:clamp(28px,7.4vw,52px);display:flex;align-items:center;justify-content:center;font-size:clamp(16px,4.6vw,32px);border-right:1.5px solid #6b5a4e}
+.cells span:first-child{border-left:1.5px solid #6b5a4e}
+.cells span.sp{width:clamp(8px,2vw,18px)}
+.cells span.r{color:#e8503a}
+.sub{background:rgba(255,255,255,.85);border-radius:20px;padding:6px 16px;font-size:clamp(14px,3.8vw,18px)}
+/* hills + trees */
+.hills{position:relative;height:90px;margin-top:-90px}
+.hills::before,.hills::after{content:"";position:absolute;bottom:0;border-radius:50% 50% 0 0;background:var(--grass2)}
+.hills::before{left:-10%;width:70%;height:90px}
+.hills::after{right:-12%;width:75%;height:70px;background:var(--grass)}
+.tree{position:absolute;bottom:20px;z-index:1}
+.t1{left:2%;width:clamp(60px,12vw,120px)}.t2{left:clamp(48px,10vw,110px);width:clamp(46px,9vw,90px)}
+.t3{right:3%;width:clamp(70px,13vw,130px)}
+/* ranch */
+.ranch{position:relative;z-index:2;max-width:980px;margin:0 auto;padding:30px 16px 20px;display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,5vw,48px) clamp(14px,3vw,36px)}
+.pen{position:relative;min-height:220px;padding:46px 10px 24px;background:var(--pen);background-image:radial-gradient(#b2dc78 18%,transparent 20%),radial-gradient(#b2dc78 18%,transparent 20%);background-size:26px 26px;background-position:0 0,13px 13px;border-radius:4px;box-shadow:inset 0 0 0 6px var(--fence),inset 0 0 0 8px var(--fence2),0 6px 0 rgba(0,0,0,.08)}
+.pen::before,.pen::after{content:"";position:absolute;left:-6px;right:-6px;height:22px;background:repeating-linear-gradient(90deg,var(--fence2) 0 2px,var(--fence) 2px 11px,var(--fence2) 11px 13px,transparent 13px 19px);border-radius:3px}
+.pen::before{top:-12px}.pen::after{bottom:-12px}
+.post{position:absolute;width:14px;height:34px;background:var(--fence);border:2px solid var(--fence2);border-radius:4px 4px 2px 2px;z-index:1}
+.post.a{top:-18px;left:-10px}.post.b{top:-18px;right:-10px}.post.c{bottom:-18px;left:-10px}.post.d{bottom:-18px;right:-10px}
+.sign{position:absolute;top:-36px;left:50%;transform:translateX(-50%) rotate(-2deg);z-index:3;display:flex;flex-direction:column;align-items:center}
+.sign b{display:block;font-weight:normal;background:var(--wood);color:var(--cream);border:3px solid var(--wood2);border-radius:10px;padding:5px 22px;font-size:clamp(18px,4.6vw,26px);box-shadow:0 3px 0 var(--wood2);white-space:nowrap;text-shadow:1px 1px 0 var(--wood2)}
+.sign i{display:block;width:8px;height:16px;background:var(--wood2)}
+.pen:nth-child(2) .sign{transform:translateX(-50%) rotate(2deg)}
+.flock{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-end;gap:6px 4px}
+/* sheep */
+.sheep{position:relative;background:none;border:0;padding:0;font:inherit;color:var(--ink);cursor:pointer;width:clamp(74px,19vw,128px);display:flex;flex-direction:column;align-items:center;-webkit-tap-highlight-color:transparent}
+.sheep svg{width:100%;display:block;overflow:visible;animation:graze var(--d,3s) ease-in-out var(--dl,0s) infinite}
+.sheep.flip svg{scale:-1 1}
+.sheep:hover svg,.sheep:focus-visible svg{animation:hopS .5s ease-in-out infinite}
+.sheep.jump svg{animation:jumpS .5s ease-out}
+.sheep:focus-visible{outline:3px dashed var(--ink);outline-offset:4px;border-radius:12px}
+.lb{margin-top:-2px;background:var(--cream);border:2px solid var(--ink);border-radius:12px;padding:2px 8px;font-size:clamp(11px,3vw,15px);line-height:1.25;word-break:keep-all;text-align:center;box-shadow:0 2px 0 var(--ink)}
+.open .lb{background:#ffe27a}
+.tag{position:absolute;top:-6px;right:-2px;background:#e8503a;color:#fff;font-size:10px;border-radius:8px;padding:1px 6px;border:1.5px solid var(--ink);z-index:2}
+.bubble{position:absolute;top:-24px;left:50%;transform:translateX(-50%);background:#fff;border:2px solid var(--ink);border-radius:12px;padding:1px 8px;font-size:13px;white-space:nowrap;animation:pop .5s ease-out forwards;pointer-events:none;z-index:4}
+@keyframes graze{0%,100%{transform:translateY(0) rotate(0)}45%{transform:translateY(-3px) rotate(-1.5deg)}55%{transform:translateY(0) rotate(1deg)}}
+@keyframes hopS{50%{transform:translateY(-10px) rotate(-4deg)}}
+@keyframes jumpS{40%{transform:translateY(-26px) rotate(-8deg) scale(1.05)}100%{transform:translateY(0)}}
+@keyframes bob{50%{transform:translateY(-5px)}}
+@keyframes pop{0%{opacity:0;transform:translate(-50%,6px) scale(.6)}30%{opacity:1;transform:translate(-50%,0) scale(1.05)}100%{opacity:1;transform:translate(-50%,-4px) scale(1)}}
+/* front fence + footer */
+.front{height:44px;margin-top:10px;background:linear-gradient(transparent 14px,var(--fence2) 14px 16px,transparent 16px 28px,var(--fence2) 28px 30px,transparent 30px),repeating-linear-gradient(90deg,var(--fence2) 0 2px,var(--fence) 2px 16px,var(--fence2) 16px 18px,transparent 18px 26px)}
+.about{background:var(--grass2);padding:22px 16px calc(28px + env(safe-area-inset-bottom,0px))}
+.about .in{max-width:760px;margin:0 auto;background:rgba(255,250,240,.92);border:2px solid var(--ink);border-radius:18px;padding:18px 20px;line-height:1.6;font-size:15px;word-break:keep-all}
+.about h2{font-size:19px;margin:0 0 6px}.about ul{margin:6px 0 4px;padding-left:20px}.about li b{font-weight:normal;color:#b0442f}
+.about small{display:block;margin-top:10px;opacity:.6;text-align:center}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,40px);opacity:0;background:var(--cream);border:2px solid var(--ink);border-radius:18px;padding:10px 18px;font-size:16px;box-shadow:0 4px 0 var(--ink);transition:.25s;z-index:20;white-space:nowrap}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+@media (max-width:560px){.sky{height:300px}.ranch{padding:30px 14px 16px}.pen{padding:42px 4px 22px;min-height:0}.flock{gap:8px 0}.sun{width:120px;height:120px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style></head><body>
+<div class="sky" aria-hidden="false">
+  <svg class="sun" viewBox="0 0 200 200" aria-hidden="true"><g stroke="#f7c531" stroke-width="7" stroke-linecap="round"><line x1="100" y1="10" x2="100" y2="34"/><line x1="100" y1="166" x2="100" y2="190"/><line x1="10" y1="100" x2="34" y2="100"/><line x1="166" y1="100" x2="190" y2="100"/><line x1="36" y1="36" x2="53" y2="53"/><line x1="147" y1="147" x2="164" y2="164"/><line x1="36" y1="164" x2="53" y2="147"/><line x1="147" y1="53" x2="164" y2="36"/></g><circle cx="100" cy="100" r="50" fill="#fbd33d"/></svg>
+  <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
+  <header class="title">
+    <h1 class="ttl" aria-label="치영의 교회 생활 즐기기" style="margin:0;font-weight:normal"><span class="chick" aria-hidden="true">🐥</span><span class="cells" id="cells" aria-hidden="true"></span><span class="chick" aria-hidden="true">🐥</span></h1>
+    <div class="sub">양을 눌러 들어가 보세요 🐑</div>
+  </header>
 </div>
-<div id="home"><div class="hs">🎲 다 같이 이야기 나눠요</div><div class="hh">치영의<br><b>나눔</b>보드게임</div><div class="hp" id="hp"></div><div class="sec">몇 명이서 할까요?</div><div class="bar" id="hc"></div><button id="go">게임 시작 ▶</button><p class="hi">교회 소모임 · 셀모임 · 속회 · 청년부<br>아이스브레이킹 나눔 게임</p></div>
-<div id="modal"><div class="card"><div class="tag" id="mt"></div><div class="q" id="mq"></div><button id="ok">확인</button></div></div>
+<div class="hills" aria-hidden="true">
+  <svg class="tree t1" viewBox="0 0 60 100"><rect x="26" y="70" width="8" height="30" fill="#8a5528"/><path d="M30 2L6 40h12L2 66h14L0 84h60L44 66h14L42 40h12Z" fill="#3f8f4a" stroke="#2d6b36" stroke-width="2" stroke-linejoin="round"/></svg>
+  <svg class="tree t2" viewBox="0 0 60 100"><rect x="26" y="70" width="8" height="30" fill="#8a5528"/><path d="M30 6L8 42h12L4 66h14L2 84h56L42 66h14L40 42h12Z" fill="#5aa957" stroke="#3b7d3c" stroke-width="2" stroke-linejoin="round"/></svg>
+  <svg class="tree t3" viewBox="0 0 100 100"><path d="M46 100V60l-12-10M50 70l14-12" stroke="#8a5528" stroke-width="7" fill="none" stroke-linecap="round"/><circle cx="40" cy="38" r="24" fill="#6fbf5a"/><circle cx="64" cy="34" r="22" fill="#86cf6a"/><circle cx="52" cy="18" r="18" fill="#7ac862"/><circle cx="72" cy="54" r="14" fill="#6fbf5a"/></svg>
+</div>
+
+<main class="ranch" id="ranch"></main>
+<div class="front" aria-hidden="true"></div>
+
+<section class="about"><div class="in">
+  <h2>치영의 교회 생활 즐기기</h2>
+  <p style="margin:0">교회 소모임, 셀모임, 속회, 청년부에서 쓰기 좋은 도구들을 모아 둔 작은 목장이에요. 예배 준비부터 아이스브레이킹 나눔, 레크레이션까지 한곳에서 즐겨요.</p>
+  <ul id="list"></ul>
+  <small>🐑 계속 새로운 양이 들어올 예정이에요</small>
+</div></section>
+<div id="toast" role="status" aria-live="polite"></div>
+
 <script>
-const RAW="s출발|p좋아하는 음식|v최근에 만난 은혜|g내가 두려워하는 것|v나의 하나님은 어떤 분?|p나의 가족|v오늘 예배를 드리면서 든 마음|p나의 특기|g내가 두려워하는 것|b밸런스 게임|p좋아하는 카페 음료|o어제 뭐 했나요?|p싫어하는 음식|v하나님의 도우심을 경험한 적|g요즘 나의 고민|v나의 감사제목|g일주일 후에 죽는다면|p나의 취미|v하나님께 물어보고 싶은 것|g가장 슬펐던 순간|p나의 스트레스 해소법|v최근에 만난 은혜|b밸런스 게임|p요즘 많이 듣는 가요|g요즘 나의 고민|p좋아하는 계절|v오늘 예배를 드리면서 든 마음|l사다리|p나의 MBTI|b밸런스 게임|v나의 하나님은 어떤 분?|p나의 이상형|v오늘 예배를 드리면서 든 마음|l사다리|g가장 최근에 운 적|o어제 뭐 했나요?|p감명깊게 읽은 책|r잠시 정지!! 기도제목|v하나님을 원망해본 적|p내가 싫어하는 사람|b밸런스 게임|g가장 행복했던 순간|p올해 이루고 싶은 것|v요즘 많이 듣는 찬양|g가장 무서웠던 순간|p내가 존경하는 사람|g나의 10년 후|v가장 좋아하는 성경말씀|p감명깊게 본 영화|g요즘 나의 고민|p요즘 사고 싶은 것|v하나님의 도우심을 경험한 적|p살아보고 싶은 나라|b밸런스 게임|v나의 하나님은 어떤 분?|g후회되는 것이 있다면|p버킷리스트 한 가지|o어제 뭐 했나요?|v나의 하나님은 어떤 분?|g나에게 가장 중요한 가치 (신앙 빼고)|p내가 좋아하는 사람|v나의 감사제목|g과거로 간다면 언제로?|o어제 뭐 했나요?|v가장 좋아하는 성경 인물|b밸런스 게임|p갖고 싶은 초능력|v하나님께 하고 싶은 말|g요즘 나의 고민|p내가 좋아했던 과목|o어제 뭐 했나요?|p듣고 싶은 말|v하나님의 도우심을 경험한 적|p20억 로또에 당첨된다면|v오늘 예배를 드리면서 든 마음|p재미있게 본 드라마|g나의 소망|p공부해보고 싶은 것|s도착";
-const T=RAW.split("|").map(x=>({k:x[0],t:x.slice(1)}));
-const N=T.length,C=6,R=Math.ceil(N/C);
-const COL={p:"#fbc9c0",g:"#e1efd9",v:"#dcc6ea",o:"#fdba4d"};
-const TAG={p:"나에 대해",g:"나의 이야기",v:"하나님과 나",o:"어제 있었던 일",b:"밸런스 게임",l:"사다리",r:"잠시 정지"};
-const BAL=["식어버린 라면 vs 미지근한 냉면","콜라인 줄 알고 마신 간장 vs 사과주스인 줄 알고 마신 식초","잘생겨지기, 예뻐지기 vs 키 커지기","계속 자도 피곤하기 vs 계속 먹어도 배고프기","유럽 명소 여행 vs 동남아 휴양지 여행","시력 5.0 vs 아이큐 180","공부 1등 vs 노래 1등","기억 다 잃고 다시 태어나기 vs 그냥 살기","에어컨 없는 여름 vs 난방 없는 겨울","하나님의 계획 미리 알기 (무조건 그 계획 따라야 함) vs 그냥 모르고 살기","족발 vs 치킨","제주도 여행 vs 부산 여행","지금 당장 1억 vs 10년 후 20억","불편한 상사랑 호텔뷔페 vs 절친이랑 콩 한 쪽 나눠먹기","나 빼고 다 천재인 팀에서 숨쉬는 자괴감 느끼기 vs 내가 유일한 희망인 팀에서 혼자 밭가는 소처럼 일하기","구걸해서 월 600만 원 vs 일해서 월 250만 원","외모 빼고 모든 게 안 맞는 사람 vs 외모 빼고 모든 게 잘 맞는 사람","새처럼 하늘 날기 vs 물고기처럼 바닷속 헤엄치기","한식 못 먹는 대신 평생 육식 vs 육식 못 하는 대신 평생 한식","한 달 간 영상 시청 금지 vs 한 달 간 카톡, SNS 금지","해산물 파티 vs 고기 파티","전교1등 아싸 vs 전교꼴등 핵인싸","내 모든 사생활 생중계 되고 월 1억 받기 vs 그냥 살기","일주일에 카톡 1개 하는 애인 vs 하루에 카톡 500개 하는 애인","과거로 가기 vs 미래로 가기","순간이동 하기 vs 시간 멈추기","친구 100명 vs 진짜 친구 1명","아침형 인간 vs 저녁형 인간","월급 많은 야근 직장 vs 월급 적은 칼퇴 직장","평생 여름만 살기 vs 평생 겨울만 살기","말 못하기 vs 듣지 못하기","평생 치킨만 먹기 vs 평생 피자만 먹기"];
-const OLDBAL=["평생 여름만 살기 vs 평생 겨울만 살기","평생 치킨만 먹기 vs 평생 피자만 먹기","과거로 가기 vs 미래로 가기","투명인간 되기 vs 하늘 날기","매일 늦잠 자기 vs 매일 새벽기도 가기","말 못하기 vs 듣지 못하기","평생 라면만 먹기 vs 평생 밥만 먹기","순간이동 하기 vs 시간 멈추기","친구 100명 vs 진짜 친구 1명","평생 노래 못 부르기 vs 평생 춤 못 추기","아침형 인간 vs 저녁형 인간","매일 3시간만 자기 vs 매일 12시간 자기"];
-const PC=["#e8503a","#3a7be8","#3aa85a","#9b59b6","#f5a623","#ec6fa8","#19b5b5","#8d6e4a","#f2d22e","#6c7a89"];
-function horse(c){return '<svg viewBox="0 0 40 40"><g stroke="#2b2118" stroke-width="1.2" stroke-linejoin="round"><path d="M7 17Q0 19 3 30Q9 26 10 21Z" fill="#7a4b2a"/><rect class="lg lb" x="8" y="26" width="4" height="10" rx="2" fill="'+c+'"/><rect class="lg lb" x="14" y="27" width="4" height="9" rx="2" fill="'+c+'"/><rect class="lg lf" x="22" y="27" width="4" height="9" rx="2" fill="'+c+'"/><rect class="lg lf" x="28" y="26" width="4" height="10" rx="2" fill="'+c+'"/><ellipse cx="19" cy="22" rx="13" ry="8" fill="'+c+'"/><path d="M24 7L25 0L30 5Z" fill="'+c+'"/><ellipse cx="30" cy="12" rx="8" ry="7.5" fill="'+c+'"/><path d="M22 7Q16 11 19 19Q24 14 26 9Z" fill="#7a4b2a"/><ellipse cx="35" cy="16" rx="4.5" ry="3.5" fill="#fff" fill-opacity=".6"/></g><circle cx="31" cy="11" r="1.8" fill="#2b2118"/><circle cx="31.6" cy="10.4" r=".6" fill="#fff"/><circle cx="27" cy="15" r="2" fill="#ff8fab" opacity=".75"/></svg>'}
-const L=T.map((t,i)=>t.k=="l"?i:-1).filter(i=>i>=0);
-const board=document.getElementById("board");
-board.style.aspectRatio=C+" / "+R;
-function xy(i){const r=Math.floor(i/C);let c=i%C;if(r%2)c=C-1-c;return [(c+.5)/C*100,(R-1-r+.5)/R*100]}
-let pts=T.map((_,i)=>{const p=xy(i);return (p[0]*C).toFixed(1)+","+(p[1]*R).toFixed(1)}).join(" ");
-board.innerHTML='<svg viewBox="0 0 '+C*100+' '+R*100+'" preserveAspectRatio="none"><polyline points="'+T.map((_,i)=>{const p=xy(i);return (p[0]*C/100*100).toFixed(1)+","+(p[1]*R/100*100).toFixed(1)}).join(" ")+'" fill="none" stroke="var(--line)" stroke-width="9" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>';
-const tiles=[];
-T.forEach((t,i)=>{const d=document.createElement("div"),p=xy(i);d.className="t "+(t.k in COL?"":t.k);if(COL[t.k])d.style.background=COL[t.k];d.style.left=p[0]+"%";d.style.top=p[1]+"%";d.innerHTML='<span class="n">'+(i>0&&i<N-1?i:"")+'</span><span class="x"></span>';const x=d.lastChild;x.textContent=COL[t.k]?"?":t.t;if(COL[t.k])x.style.fontSize="clamp(14px,4vw,20px)";tiles[i]=x;board.appendChild(d)});
-let np=2,pos=[],turn=0,skip=[],busy=false,pawns=[],seen=new Set(),again=false,sides=6,balQ={},names=Array(10).fill("");
-const $=id=>document.getElementById(id),sleep=ms=>new Promise(r=>setTimeout(r,ms));
-function place(k){const p=xy(pos[k]),a=6.283*k/np,rr=np>1?9:0,el=pawns[k];el.style.left="calc("+p[0]+"% + "+(Math.cos(a)*rr).toFixed(1)+"px - 3.75%)";el.style.top="calc("+p[1]+"% + "+(Math.sin(a)*rr-6).toFixed(1)+"px - 3.75%)"}
-function start(n){np=n;pos=Array(n).fill(0);skip=Array(n).fill(false);turn=0;busy=false;pawns.forEach(e=>e.remove());pawns=[];seen.clear();again=false;{const pool=[...BAL].sort(()=>Math.random()-.5);let j=0;T.forEach((t,i)=>{if(t.k=="b")balQ[i]=pool[j++%pool.length]})}T.forEach((t,i)=>{if(COL[t.k]){tiles[i].textContent="?";tiles[i].style.fontSize="clamp(14px,4vw,20px)"}});
-for(let k=0;k<n;k++){const e=document.createElement("div");e.className="pawn";e.innerHTML=horse(PC[k]);board.appendChild(e);pawns.push(e);place(k)}
-$("pc").innerHTML="";[1,2,3,4,5,6,7,8,9,10].forEach(m=>{const b=document.createElement("button");b.textContent=m+"명";if(m==n)b.className="on";b.onclick=()=>{if(!busy)start(m)};$("pc").appendChild(b)});
-$("roll").disabled=false;renderNames();say()}
-function scrollToPawn(k){const p=xy(pos[k]),r=board.getBoundingClientRect();window.scrollTo({top:scrollY+r.top+p[1]/100*r.height-innerHeight*.62,behavior:"smooth"})}
-function hop(k,x0){const e=pawns[k],s=e.firstChild,dx=xy(pos[k]+1)[0]-x0;if(dx)s.style.scale=dx<0?"-1 1":"1 1";e.classList.remove("hop");void e.offsetWidth;e.classList.add("hop")}
-const nm=k=>names[k]||(k+1)+"번 말",chip=k=>'<span class="chip">'+horse(PC[k])+'</span>';
-function renderNames(){const w=$("nm");w.innerHTML="";for(let k=0;k<np;k++){const r=document.createElement("div");r.className="nr";r.innerHTML=chip(k);const i=document.createElement("input");i.maxLength=8;i.placeholder=(k+1)+"번 말";i.value=names[k];i.oninput=()=>{names[k]=i.value.trim();if(!busy)say()};r.appendChild(i);w.appendChild(r)}}
-function say(){$("status").innerHTML=chip(turn)+"<b>"+nm(turn)+"</b> 차례예요";$("top").style.borderBottomColor=PC[turn]}
-function ask(tag,q){return new Promise(res=>{$("mt").textContent=tag;$("mq").textContent=q;$("modal").classList.add("show");$("ok").onclick=()=>{$("modal").classList.remove("show");res()}})}
-async function next(){turn=(turn+1)%np;say();busy=false;$("roll").disabled=false}
-async function doRoll(){busy=true;$("roll").disabled=true;const d=$("big");d.className="";void d.offsetWidth;d.classList.add("show","toss");scrollToPawn(turn);
-const F="⚀⚁⚂⚃⚄⚅";let n=1;d.style.fontSize=sides==6?"":"64px";for(let i=0;i<12;i++){n=1+Math.floor(Math.random()*sides);d.textContent=sides==6?F[n-1]:n;await sleep(70)}
-d.classList.remove("toss");d.classList.add("pop");$("status").innerHTML=chip(turn)+"<b>"+nm(turn)+"</b>: "+n+" 나왔어요!";await sleep(800);d.className="";await sleep(150);
-for(let s=0;s<n&&pos[turn]<N-1;s++){hop(turn,xy(pos[turn])[0]);pos[turn]++;place(turn);scrollToPawn(turn);await sleep(340);if(T[pos[turn]].k=="r")break}
-let t=T[pos[turn]];
-if(pos[turn]==N-1){await ask("🎉 도착!",nm(turn)+" — 가장 먼저 도착했어요!");$("status").innerHTML=chip(turn)+"🏆 <b>"+nm(turn)+"</b> 우승!";busy=false;return}
-if(t.k=="l"&&pos[turn]==L[0]){await ask("사다리","🪜 사다리를 타고 앞으로 쭉!");pos[turn]=L[1];place(turn);scrollToPawn(turn);await sleep(500);t=T[pos[turn]]}
-else if(t.k=="b")await ask("밸런스 게임",balQ[pos[turn]].split(" vs ").join("\nVS\n"));
-else if(t.k=="r")await ask("잠시 정지","🙏 기도제목을 나눠요! 주사위가 남았어도 여기서 멈춰요.")
-else if(t.k!="l"){const rep=COL[t.k]&&seen.has(t.t);await ask(rep?"앞에서 나온 질문! 주사위를 한 번 더 던져요 🎲":TAG[t.k],t.t);if(COL[t.k]){seen.add(t.t);tiles[pos[turn]].textContent=t.t;tiles[pos[turn]].style.fontSize="";if(rep)again=true}}
-if(again){again=false;await sleep(300);doRoll()}else next()}
-$("roll").onclick=()=>{if(!busy)doRoll()};
-start(2);
-const BG=[["연두","#c8e6b8"],["하늘","#bfe3f5"],["분홍","#f8cfdc"],["연보라","#dccdf0"],["레몬","#f7f0b0"],["복숭아","#fbd5b5"],["민트","#bdeede"],["베이지","#f6dfae"],["라벤더","#f3c6ea"],["연회색","#dde3e8"]];
-function setBg(c){document.body.style.background=c;document.documentElement.style.background=c;[...$("bg").children].forEach(b=>b.classList.toggle("on",b.dataset.c==c));try{localStorage.setItem("bg",c)}catch(e){}}
-BG.forEach(([n,c])=>{const b=document.createElement("button");b.className="sw";b.style.background=c;b.title=n;b.dataset.c=c;b.onclick=()=>setBg(c);$("bg").appendChild(b)});
-let sv=null;try{sv=localStorage.getItem("bg")}catch(e){}
-setBg(sv||BG[0][1]);
-[6,8,12,16].forEach(m=>{const b=document.createElement("button");b.textContent=m+"면";b.dataset.s=m;if(m==sides)b.className="on";b.onclick=()=>{if(busy)return;sides=m;[...$("ds").querySelectorAll("button")].forEach(x=>x.classList.toggle("on",x.dataset.s==m))};$("ds").appendChild(b)});
-$("gear").onclick=()=>$("set").classList.add("show");$("sx").onclick=()=>$("set").classList.remove("show");$("newg").onclick=()=>{if(!busy){start(np);$("set").classList.remove("show")}};
-let hn=np;$("hp").innerHTML=[0,1,2,3].map(k=>"<span>"+horse(PC[k])+"</span>").join("");
-function renderHome(){$("hc").innerHTML="";for(let m=1;m<=10;m++){const b=document.createElement("button");b.textContent=m+"명";if(m==hn)b.className="on";b.onclick=()=>{hn=m;renderHome()};$("hc").appendChild(b)}}
-renderHome();
-$("go").onclick=()=>{start(hn);$("home").classList.add("hide");scrollTo(0,0)};
-$("homeb").onclick=()=>{if(busy)return;hn=np;renderHome();$("home").classList.remove("hide")};
-</script></body></html>
+const SITE="치영의 교회 생활 즐기기";
+const ZONES=[
+ {name:"예배",items:[["악보제작"],["주보제작"],["설교도우미"],["묵상저장소"]]},
+ {name:"교제",items:[["나눔보드게임","board/"],["텔레스트레이션"],["레크레이션"]]},
+ {name:"잡동사니",items:[["주일에 뭐 먹지?"],["수련회 장소 레이더"]]},
+ {name:"Mall",items:[["전자책"],["굿즈"]]}
+];
+const $=id=>document.getElementById(id);
+// title cells
+$("cells").innerHTML=[...SITE].map((c,i)=>c==" "?'<span class="sp"></span>':'<span'+(c=="교"||c=="회"?' class="r"':'')+'>'+c+'</span>').join("");
+const SHEEP='<svg viewBox="0 0 110 86" aria-hidden="true"><g fill="#4a3b35"><rect x="28" y="56" width="7" height="22" rx="3.5"/><rect x="42" y="58" width="7" height="22" rx="3.5"/><rect x="60" y="58" width="7" height="22" rx="3.5"/><rect x="72" y="56" width="7" height="22" rx="3.5"/></g><g fill="#fff" stroke="#3b2a20" stroke-width="4"><circle cx="30" cy="40" r="15"/><circle cx="46" cy="30" r="16"/><circle cx="64" cy="30" r="15"/><circle cx="76" cy="42" r="14"/><circle cx="40" cy="54" r="14"/><circle cx="62" cy="56" r="14"/><circle cx="22" cy="50" r="10"/></g><g fill="#fff"><circle cx="30" cy="40" r="15"/><circle cx="46" cy="30" r="16"/><circle cx="64" cy="30" r="15"/><circle cx="76" cy="42" r="14"/><circle cx="40" cy="54" r="14"/><circle cx="62" cy="56" r="14"/><circle cx="22" cy="50" r="10"/><circle cx="52" cy="44" r="18"/></g><g stroke="#3b2a20" stroke-width="2.5"><ellipse cx="78" cy="34" rx="7" ry="4" fill="#f0cfb3" transform="rotate(-25 78 34)"/><ellipse cx="102" cy="34" rx="7" ry="4" fill="#f0cfb3" transform="rotate(25 102 34)"/><ellipse cx="90" cy="44" rx="13" ry="14" fill="#f6dfc9"/></g><g fill="#fff" stroke="#3b2a20" stroke-width="2"><circle cx="84" cy="31" r="5"/><circle cx="96" cy="31" r="5"/><circle cx="90" cy="28" r="5.5"/></g><circle cx="85" cy="45" r="2.3" fill="#3b2a20"/><circle cx="95" cy="45" r="2.3" fill="#3b2a20"/><circle cx="85.7" cy="44.3" r=".7" fill="#fff"/><circle cx="95.7" cy="44.3" r=".7" fill="#fff"/><ellipse cx="81" cy="51" rx="3" ry="2" fill="#ff9fb2" opacity=".8"/><ellipse cx="99" cy="51" rx="3" ry="2" fill="#ff9fb2" opacity=".8"/><path d="M87 52q3 3 6 0" stroke="#3b2a20" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>';
+const SAY=["메에~","음메~","매애!","메~ 🎵"];
+let ti;function toast(t){const e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(ti);ti=setTimeout(()=>e.classList.remove("show"),1800)}
+ZONES.forEach(z=>{
+  const pen=document.createElement("section");pen.className="pen";pen.setAttribute("aria-label",z.name);
+  pen.innerHTML='<div class="sign"><b>'+z.name+'</b><i></i></div><span class="post a"></span><span class="post b"></span><span class="post c"></span><span class="post d"></span><div class="flock"></div>';
+  const fl=pen.querySelector(".flock");
+  z.items.forEach(([label,href])=>{
+    const b=document.createElement("button");b.className="sheep"+(href?" open":"")+(Math.random()<.35?" flip":"");
+    b.style.setProperty("--d",(2.4+Math.random()*1.8).toFixed(2)+"s");b.style.setProperty("--dl",(-Math.random()*3).toFixed(2)+"s");
+    b.innerHTML=(href?'<span class="tag">OPEN</span>':'')+SHEEP+'<span class="lb">'+label+'</span>';
+    b.setAttribute("aria-label",label+(href?"":" (준비 중)"));
+    b.onclick=()=>{
+      b.classList.remove("jump");void b.offsetWidth;b.classList.add("jump");
+      const s=document.createElement("span");s.className="bubble";s.textContent=SAY[Math.floor(Math.random()*SAY.length)];b.appendChild(s);setTimeout(()=>s.remove(),900);
+      if(href)setTimeout(()=>location.href=href,450);else toast("🐑 '"+label+"'은(는) 준비 중이에요!");
+    };
+    fl.appendChild(b);
+  });
+  $("ranch").appendChild(pen);
+});
+$("list").innerHTML=ZONES.map(z=>'<li><b>'+z.name+'</b> — '+z.items.map(([l,h])=>h?'<a href="'+h+'">'+l+'</a>':l).join(", ")+'</li>').join("");
+</script>
+</body></html>
