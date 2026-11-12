@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>설교도우미 (목회자용) | 치영의 교회 생활 즐기기 · 설교 준비 도구</title>
+<meta name="description" content="목회자를 위한 무료 설교 준비 도구. 3대지·강해·주제·이야기 설교 틀로 설교문을 구성하고, 예상 설교 시간 계산, 예화 보관함, 준비 체크리스트, 강단 모드, 인쇄까지 한곳에서.">
+<meta name="keywords" content="설교 준비, 설교문 작성, 설교 개요, 3대지 설교, 강해 설교, 설교 예화, 목회자 도구, 설교 원고, 설교 시간">
+<link rel="canonical" href="https://zidane7-creator.github.io/nanum-boardgame/sermon/">
+<meta property="og:title" content="설교도우미 (목회자용) — 치영의 교회 생활 즐기기">
+<meta property="og:description" content="설교 틀, 예상 시간, 예화 보관함, 강단 모드까지. 설교 준비를 돕는 무료 도구">
+<meta property="og:url" content="https://zidane7-creator.github.io/nanum-boardgame/sermon/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📖</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&family=Jua&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#2f2620;--soft:#6f6359;--line:#e3d8c8;--paper:#fffdf8;--bg:#f4efe6;--accent:#8a3b2e;--accent2:#c9822b;--green:#4f7a4a;--chip:#f1e7d6}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans KR","Apple SD Gothic Neo",sans-serif;font-size:15px}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:6px 12px}
+button:hover{border-color:var(--accent2)}
+button.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+button.ghost{background:none}
+button.sm{padding:3px 8px;font-size:13px;border-radius:8px}
+input[type=text],input[type=date],input[type=number],select,textarea{border:1.5px solid var(--line);border-radius:10px;background:#fff;padding:7px 10px;width:100%}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent2);box-shadow:0 0 0 3px rgba(201,130,43,.15)}
+textarea{resize:vertical;line-height:1.75;font-family:"Gowun Batang",serif;font-size:16px;min-height:110px}
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top,0px)) 14px 8px;background:rgba(255,253,248,.95);border-bottom:3px solid var(--accent);backdrop-filter:blur(4px);flex-wrap:wrap}
+.top a.back{color:var(--ink);text-decoration:none;border:1.5px solid var(--line);border-radius:12px;padding:4px 10px;background:#fff;font-size:14px}
+.top h1{font-family:"Jua",sans-serif;font-weight:normal;font-size:20px;margin:0;flex:1;min-width:150px}
+.top h1 small{font-size:14px;color:var(--soft)}
+.top .acts{display:flex;gap:6px;flex-wrap:wrap}
+#saved{font-size:12px;color:var(--soft);min-width:70px;text-align:right}
+.wrap{max-width:1240px;margin:0 auto;padding:16px 14px 60px;display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px}
+@media(max-width:920px){.wrap{grid-template-columns:1fr}}
+.card{background:var(--paper);border:1.5px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
+.card h2{font-family:"Jua",sans-serif;font-weight:normal;font-size:18px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+.card h2 .sp{flex:1}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--soft)}
+.title-in{font-family:"Gowun Batang",serif;font-size:24px;font-weight:700;border:0;border-bottom:2px solid var(--line);border-radius:0;padding:6px 2px;background:none}
+.title-in:focus{box-shadow:none;border-color:var(--accent2)}
+.big{font-family:"Gowun Batang",serif;font-size:17px;min-height:60px}
+.hint{font-size:13px;color:var(--soft);line-height:1.6}
+.block{border:1.5px solid var(--line);border-radius:14px;background:#fff;margin-bottom:10px;overflow:hidden}
+.bh{display:flex;align-items:center;gap:6px;padding:8px 10px;background:var(--chip);border-bottom:1px solid var(--line)}
+.bh input{border:0;background:none;padding:2px 4px;font-weight:700;flex:1;min-width:60px;font-size:15px}
+.bh input:focus{box-shadow:none;background:#fff}
+.bh .t{font-size:12px;color:var(--soft);white-space:nowrap}
+.bh button{padding:2px 7px;font-size:13px;border-radius:7px;background:#fff}
+.block textarea{border:0;border-radius:0;min-height:130px}
+.block textarea:focus{box-shadow:none}
+.addrow{display:flex;gap:6px;flex-wrap:wrap}
+.meter{height:10px;background:#efe6d6;border-radius:6px;overflow:hidden;margin:6px 0}
+.meter i{display:block;height:100%;background:var(--green);width:0;transition:width .3s}
+.meter.over i{background:var(--accent)}
+.stat{display:flex;justify-content:space-between;font-size:14px;margin:3px 0}
+.stat b{font-size:20px;font-family:"Jua",sans-serif;font-weight:normal;color:var(--accent)}
+.chk label{display:flex;gap:8px;align-items:flex-start;padding:4px 0;font-size:14px;cursor:pointer}
+.chk input{margin-top:3px;accent-color:var(--green)}
+.ill{border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:6px;background:#fff;font-size:14px}
+.ill .h{display:flex;gap:6px;align-items:center}.ill .h b{flex:1}
+.ill p{margin:4px 0 0;color:var(--soft);white-space:pre-wrap;max-height:4.8em;overflow:hidden;font-family:"Gowun Batang",serif}
+.tag{display:inline-block;background:var(--chip);border-radius:8px;padding:0 6px;font-size:12px;margin-right:3px}
+/* drawer & modal */
+.drawer{position:fixed;inset:0;z-index:40;background:rgba(40,30,20,.4);display:none}
+.drawer.show{display:block}
+.drawer .panel{position:absolute;left:0;top:0;bottom:0;width:min(380px,92vw);background:var(--paper);padding:16px;overflow:auto;box-shadow:4px 0 20px rgba(0,0,0,.2)}
+.sitem{border:1.5px solid var(--line);border-radius:12px;padding:10px;margin-bottom:8px;cursor:pointer;background:#fff}
+.sitem.on{border-color:var(--accent)}
+.sitem b{display:block;font-family:"Gowun Batang",serif;font-size:16px}
+.sitem small{color:var(--soft)}
+.modal{position:fixed;inset:0;z-index:45;background:rgba(40,30,20,.45);display:none;align-items:center;justify-content:center;padding:16px}
+.modal.show{display:flex}
+.modal .box{background:var(--paper);border-radius:18px;padding:18px;width:min(560px,100%);max-height:88vh;overflow:auto}
+.fmt{display:grid;gap:8px}
+.fmt button{text-align:left;padding:10px 12px;border-radius:12px}
+.fmt button b{display:block;font-size:16px}.fmt button span{font-size:13px;color:var(--soft)}
+/* pulpit */
+#pulpit{position:fixed;inset:0;z-index:60;background:#fffdf6;color:#1d1712;display:none;flex-direction:column}
+#pulpit.show{display:flex}
+#pulpit.dark{background:#16130f;color:#efe6d6}
+#pulpit .pbar{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:1px solid rgba(128,128,128,.3);flex-wrap:wrap}
+#pulpit .pbar .clock{font-family:"Jua",sans-serif;font-size:24px;flex:1}
+#pulpit .pbar button{background:transparent;color:inherit;border-color:rgba(128,128,128,.4)}
+#pulpit .ptext{flex:1;overflow:auto;padding:24px clamp(16px,6vw,90px) 40vh;font-family:"Gowun Batang",serif;line-height:1.8;word-break:keep-all}
+#pulpit h2{font-size:1.5em;margin:0 0 .2em}#pulpit .ref{opacity:.7;margin-bottom:1.2em}
+#pulpit h3{color:var(--accent2);margin:1.4em 0 .3em;font-size:1.1em}
+#pulpit p{white-space:pre-wrap;margin:0}
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,30px);opacity:0;background:var(--ink);color:#fff;padding:9px 16px;border-radius:12px;z-index:80;transition:.25s}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+/* print */
+#printArea{display:none}
+@media print{
+  body *{visibility:hidden}
+  #printArea,#printArea *{visibility:visible}
+  #printArea{display:block;position:absolute;left:0;top:0;width:100%;font-family:"Gowun Batang",serif;color:#000;line-height:1.75}
+  #printArea h1{font-size:22pt;margin:0}#printArea .meta{color:#444;margin:4pt 0 14pt}
+  #printArea h3{font-size:13pt;margin:14pt 0 4pt;border-bottom:1px solid #999}
+  #printArea p{white-space:pre-wrap;margin:0}
+  @page{size:A4;margin:18mm}
+}
+</style></head><body>
+<header class="top">
+  <a class="back" href="../">← 목장</a>
+  <h1>📖 설교도우미 <small>(목회자용)</small></h1>
+  <span id="saved"></span>
+  <div class="acts">
+    <button id="bList">📚 보관함</button>
+    <button id="bNew">＋ 새 설교</button>
+    <button id="bPulpit" class="pri">🎤 강단 모드</button>
+    <button id="bMore">⋯ 내보내기</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <main>
+    <section class="card">
+      <input class="title-in" id="title" placeholder="설교 제목을 입력하세요">
+      <div class="grid" style="margin-top:12px">
+        <label class="f">성경 본문<input type="text" id="text" placeholder="예: 요한복음 15:1-8"></label>
+        <label class="f">설교 날짜<input type="date" id="date"></label>
+        <label class="f">예배<select id="service"><option>주일 낮 예배</option><option>주일 오후·저녁 예배</option><option>수요 예배</option><option>새벽 기도회</option><option>금요 기도회</option><option>청년부·대학부</option><option>중고등부·주일학교</option><option>특별 예배·행사</option><option>소그룹·구역 모임</option></select></label>
+        <label class="f">시리즈 (선택)<input type="text" id="series" placeholder="예: 요한복음 강해 12"></label>
+      </div>
+      <label class="f" style="margin-top:12px">💡 핵심 메시지 — 이 설교를 한 문장으로 말한다면?<textarea class="big" id="big" placeholder="예: 열매는 노력이 아니라 예수님께 붙어 있을 때 맺힌다."></textarea></label>
+      <p class="hint">핵심 메시지가 선명하면 설교가 흔들리지 않아요. 서론부터 결론까지 모든 부분이 이 한 문장을 향하게 해 보세요.</p>
+    </section>
+
+    <section class="card">
+      <h2>🧱 설교 구성 <span class="sp"></span><span class="hint" id="fmtName"></span><button class="sm" id="bFmt">틀 바꾸기</button></h2>
+      <div id="blocks"></div>
+      <div class="addrow">
+        <button class="sm" data-add="대지">＋ 대지</button><button class="sm" data-add="예화">＋ 예화</button><button class="sm" data-add="적용">＋ 적용</button><button class="sm" data-add="본문 해설">＋ 본문 해설</button><button class="sm" data-add="결론">＋ 결론</button><button class="sm" data-add="기도">＋ 기도</button><button class="sm" data-add="">＋ 빈 칸</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>📝 준비 노트</h2>
+      <div class="grid">
+        <label class="f">본문 묵상 (처음 읽고 받은 은혜)<textarea id="nMed" placeholder="본문을 여러 번 소리 내어 읽고 떠오른 것을 적어요"></textarea></label>
+        <label class="f">관찰·주석 메모<textarea id="nCom" placeholder="배경, 단어, 문맥, 참고한 주석"></textarea></label>
+        <label class="f">원어·단어 연구<textarea id="nOrig" placeholder="핵심 단어의 원어 뜻, 다른 번역 비교"></textarea></label>
+        <label class="f">청중 생각하기<textarea id="nAud" placeholder="우리 교회 성도들은 지금 어떤 상황인가? 이 말씀이 누구에게 필요한가?"></textarea></label>
+      </div>
+    </section>
+  </main>
+
+  <aside>
+    <section class="card">
+      <h2>⏱ 예상 설교 시간</h2>
+      <div class="stat"><span>지금 분량</span><b id="mins">0분</b></div>
+      <div class="meter" id="meter"><i></i></div>
+      <div class="stat"><span>목표 시간</span><span><input type="number" id="target" min="3" max="90" style="width:64px;padding:3px 6px"> 분</span></div>
+      <div class="stat"><span>말하는 속도</span><span><input type="number" id="rate" min="150" max="500" step="10" style="width:72px;padding:3px 6px"> 자/분</span></div>
+      <p class="hint" id="charInfo"></p>
+    </section>
+
+    <section class="card chk">
+      <h2>✅ 준비 체크리스트 <span class="sp"></span><span class="hint" id="chkN"></span></h2>
+      <div id="checks"></div>
+    </section>
+
+    <section class="card">
+      <h2>💬 예화 보관함 <span class="sp"></span><button class="sm" id="bIllAdd">＋ 추가</button></h2>
+      <input type="text" id="illQ" placeholder="예화 검색 (제목·내용·태그)" style="margin-bottom:8px">
+      <div id="ills"></div>
+      <p class="hint">예화는 모든 설교에서 함께 쓰는 보관함이에요. "넣기"를 누르면 지금 커서가 있는 칸에 들어가요.</p>
+    </section>
+  </aside>
+</div>
+
+<!-- sermon list -->
+<div class="drawer" id="drawer"><div class="panel">
+  <h2 style="font-family:Jua;font-weight:normal;margin:0 0 10px">📚 설교 보관함</h2>
+  <input type="text" id="q" placeholder="제목·본문·시리즈 검색" style="margin-bottom:10px">
+  <div id="slist"></div>
+  <button id="bClose" style="width:100%;margin-top:6px">닫기</button>
+</div></div>
+
+<!-- format picker -->
+<div class="modal" id="mFmt"><div class="box">
+  <h2 style="font-family:Jua;font-weight:normal;margin:0 0 4px">설교 틀 고르기</h2>
+  <p class="hint" style="margin-top:0">고르면 설교 구성 칸이 그 틀로 준비돼요. 쓰던 내용이 있으면 아래에 그대로 남겨 둬요.</p>
+  <div class="fmt" id="fmts"></div>
+  <button id="fmtClose" style="width:100%;margin-top:10px">닫기</button>
+</div></div>
+
+<!-- export menu -->
+<div class="modal" id="mMore"><div class="box">
+  <h2 style="font-family:Jua;font-weight:normal;margin:0 0 10px">내보내기 · 백업</h2>
+  <div class="fmt">
+    <button id="xPrint"><b>🖨 인쇄 / PDF 저장</b><span>A4 설교 원고로 인쇄해요. 인쇄 창에서 "PDF로 저장"을 고르면 파일로 남아요.</span></button>
+    <button id="xTxt"><b>📄 텍스트 파일로 저장</b><span>지금 설교를 .txt 파일로 내려받아요.</span></button>
+    <button id="xCopy"><b>📋 전체 복사</b><span>설교 원고 전체를 복사해 한글·워드에 붙여 넣어요.</span></button>
+    <button id="xBackup"><b>💾 전체 백업 받기</b><span>보관함의 모든 설교와 예화를 파일 하나로 저장해요. 다른 기기로 옮길 때 써요.</span></button>
+    <button id="xRestore"><b>📂 백업 불러오기</b><span>백업 파일을 불러와 보관함에 합쳐요.</span></button>
+    <button id="xDel" style="border-color:#e3b8b0"><b>🗑 이 설교 지우기</b><span>보관함에서 지금 설교를 지워요.</span></button>
+  </div>
+  <p class="hint">설교는 이 기기의 브라우저에만 저장돼요. 브라우저 기록을 지우면 사라질 수 있으니 가끔 백업을 받아 두세요.</p>
+  <button id="moreClose" style="width:100%;margin-top:6px">닫기</button>
+  <input type="file" id="fileIn" accept=".json,application/json" hidden>
+</div></div>
+
+<!-- illustration editor -->
+<div class="modal" id="mIll"><div class="box">
+  <h2 style="font-family:Jua;font-weight:normal;margin:0 0 10px">예화</h2>
+  <label class="f">제목<input type="text" id="iT" placeholder="예: 포도나무 농부 이야기"></label>
+  <label class="f" style="margin-top:8px">내용<textarea id="iB" style="min-height:160px"></textarea></label>
+  <label class="f" style="margin-top:8px">태그 (쉼표로 구분)<input type="text" id="iG" placeholder="예: 열매, 인내, 가정"></label>
+  <label class="f" style="margin-top:8px">출처 (선택)<input type="text" id="iS" placeholder="책, 기사, 직접 경험"></label>
+  <div class="addrow" style="margin-top:12px;justify-content:flex-end"><button id="iDel" class="ghost">지우기</button><button id="iCancel">취소</button><button id="iSave" class="pri">저장</button></div>
+</div></div>
+
+<!-- pulpit mode -->
+<div id="pulpit"><div class="pbar"><span class="clock" id="pClock">00:00</span><button id="pStart">▶ 시작</button><button id="pReset">↺</button><button id="pMinus">가−</button><button id="pPlus">가＋</button><button id="pDark">🌙</button><button id="pClose">✕ 닫기</button></div><div class="ptext" id="pText"></div></div>
+
+<div id="printArea"></div>
+<div id="toast"></div>
+
+<script>
+"use strict";
+const $=s=>document.querySelector(s),esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let tt;function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>e.classList.remove("show"),2000)}
+const uid=()=>Math.random().toString(36).slice(2,10);
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+
+/* ---------- sermon structures ---------- */
+const FORMATS={
+ three:{name:"대지 설교 (3대지)",desc:"서론 → 대지 셋 → 결론. 가장 익숙하고 정리하기 쉬운 틀",blocks:[
+  ["서론","청중이 공감할 질문, 일상의 장면, 짧은 이야기로 시작하세요. 왜 오늘 이 말씀을 들어야 하는지 보여 주세요."],
+  ["첫째 대지","대지 제목은 한 문장으로. → 본문 설명 → 예화 → 적용 순서로 적어 보세요."],
+  ["둘째 대지","첫째 대지와 같은 흐름으로. 대지끼리 핵심 메시지를 향해 이어지는지 확인하세요."],
+  ["셋째 대지","가장 깊은 곳까지. 복음(예수 그리스도)과 어떻게 연결되는지 보여 주세요."],
+  ["결론","세 대지를 한 번에 묶어 핵심 메시지를 다시 선명하게 말하세요."],
+  ["결단과 기도","이번 주에 붙잡을 한 가지 실천, 함께 드릴 기도를 적으세요."]]},
+ expo:{name:"강해 설교",desc:"본문의 흐름을 따라가며 그 뜻을 풀고 오늘에 적용",blocks:[
+  ["서론","본문으로 들어가는 다리를 놓으세요."],
+  ["본문 배경","누가, 언제, 누구에게, 왜 쓴 말씀인가요? 앞뒤 문맥은?"],
+  ["본문 흐름 ①","(1~3절) 이 단락에서 말하는 것은?"],
+  ["본문 흐름 ②","(4~6절)"],
+  ["본문 흐름 ③","(7~끝절)"],
+  ["중심 진리","본문 전체가 말하는 하나의 진리 — 핵심 메시지와 연결하세요."],
+  ["오늘의 적용","그때 그 사람들에게 하신 말씀이 오늘 우리에게는 무엇인가요?"],
+  ["결론과 기도",""]]},
+ topic:{name:"주제 설교",desc:"하나의 주제(용서, 기도, 감사 등)에 대한 성경의 대답",blocks:[
+  ["서론 — 문제 제기","이 주제가 왜 우리 삶에 중요한지, 어떤 고민이 있는지 꺼내세요."],
+  ["성경의 대답 ①","관련 말씀과 함께"],["성경의 대답 ②",""],["성경의 대답 ③",""],
+  ["삶의 적용","구체적으로, 이번 주에 해 볼 수 있는 것"],["결론과 기도",""]]},
+ story:{name:"이야기(내러티브) 설교",desc:"갈등 → 반전 → 해결로 흘러가는 이야기 구조. 청년부·가정 설교에 좋아요",blocks:[
+  ["평온한 장면","익숙한 상황, 모두가 아는 이야기로 시작"],
+  ["갈등","문제가 생깁니다. 청중이 '맞아, 나도 그래' 할 지점"],
+  ["더 깊어지는 갈등","사람의 방법으로는 풀리지 않음을 보여 주세요"],
+  ["반전 — 복음의 빛","하나님이 일하시는 순간, 말씀이 주는 뜻밖의 답"],
+  ["새로운 삶","그 은혜를 받은 사람은 어떻게 살아가나요?"],
+  ["결단",""]]},
+ short:{name:"짧은 묵상 (새벽·수요)",desc:"10~15분 분량. 본문 → 묵상 → 적용 → 기도",blocks:[
+  ["본문 읽기와 배경",""],["묵상 포인트","오늘 본문에서 붙잡을 한 가지"],["적용","오늘 하루 실천할 것"],["함께 드리는 기도",""]]},
+ blank:{name:"빈 틀",desc:"칸 없이 처음부터 자유롭게",blocks:[["본문",""]]}
+};
+const CHECKS=["본문을 3번 이상 소리 내어 읽었다","본문의 문맥(앞뒤 장)을 확인했다","핵심 메시지를 한 문장으로 정했다","주석·참고 자료를 확인했다","예수 그리스도(복음)와 연결했다","예화가 핵심을 돕는지 확인했다","구체적인 적용을 넣었다","예상 시간이 목표에 맞는다","소리 내어 한 번 연습했다","설교를 위해 기도했다"];
+
+/* ---------- storage ---------- */
+const KEY="sermon-helper-v1";
+let DB={sermons:[],ills:[],cur:null,rate:300};
+try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.sermons)DB=Object.assign(DB,d)}catch(e){}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(DB));$("#saved").textContent="저장됨 ✓ "+new Date().toTimeString().slice(0,5)}catch(e){$("#saved").textContent="⚠ 저장 실패"}}
+let st;function saveSoon(){$("#saved").textContent="저장 중…";clearTimeout(st);st=setTimeout(()=>{cur().updated=Date.now();persist();updateTime()},500)}
+function newSermon(fmt="three"){const s={id:uid(),title:"",text:"",date:today(),service:"주일 낮 예배",series:"",big:"",fmt,blocks:FORMATS[fmt].blocks.map(([t,h])=>({id:uid(),title:t,hint:h,body:""})),notes:{med:"",com:"",orig:"",aud:""},check:{},target:30,created:Date.now(),updated:Date.now()};DB.sermons.unshift(s);DB.cur=s.id;persist();return s}
+const cur=()=>DB.sermons.find(s=>s.id==DB.cur)||newSermon();
+
+/* ---------- render ---------- */
+const F={title:"#title",text:"#text",date:"#date",service:"#service",series:"#series",big:"#big"};
+const N={med:"#nMed",com:"#nCom",orig:"#nOrig",aud:"#nAud"};
+let lastTA=null;
+function render(){const s=cur();
+  for(const k in F)$(F[k]).value=s[k]||"";for(const k in N)$(N[k]).value=s.notes[k]||"";
+  $("#target").value=s.target||30;$("#rate").value=DB.rate||300;$("#fmtName").textContent=(FORMATS[s.fmt]||{}).name||"";
+  renderBlocks();renderChecks();renderIlls();updateTime();document.title=(s.title?s.title+" — ":"")+"설교도우미 (목회자용)"}
+function renderBlocks(){const s=cur(),w=$("#blocks");w.innerHTML="";
+  s.blocks.forEach((b,i)=>{const d=document.createElement("div");d.className="block";
+    d.innerHTML='<div class="bh"><input value="'+esc(b.title)+'" aria-label="칸 제목"><span class="t" data-t></span><button data-up '+(i==0?"disabled":"")+'>▲</button><button data-dn '+(i==s.blocks.length-1?"disabled":"")+'>▼</button><button data-x>✕</button></div><textarea placeholder="'+esc(b.hint||"")+'"></textarea>';
+    const [ti,ta]=[d.querySelector("input"),d.querySelector("textarea")];ta.value=b.body;
+    ti.oninput=()=>{b.title=ti.value;saveSoon()};ta.oninput=()=>{b.body=ta.value;lastTA={ta,b};saveSoon();blockTime(d,b)};ta.onfocus=ta.onclick=ta.onkeyup=()=>lastTA={ta,b};
+    d.querySelector("[data-up]").onclick=()=>{[s.blocks[i-1],s.blocks[i]]=[s.blocks[i],s.blocks[i-1]];saveSoon();renderBlocks()};
+    d.querySelector("[data-dn]").onclick=()=>{[s.blocks[i+1],s.blocks[i]]=[s.blocks[i],s.blocks[i+1]];saveSoon();renderBlocks()};
+    d.querySelector("[data-x]").onclick=()=>{if(b.body.trim()&&!confirm("'"+(b.title||"이 칸")+"' 칸을 지울까요? 쓴 내용도 사라져요."))return;s.blocks.splice(i,1);saveSoon();renderBlocks()};
+    blockTime(d,b);w.appendChild(d)})}
+const chars=t=>String(t||"").replace(/\s/g,"").length;
+function blockTime(d,b){const m=chars(b.body)/(DB.rate||300);d.querySelector("[data-t]").textContent=chars(b.body)?"약 "+(m<1?"1분 미만":Math.round(m*10)/10+"분"):""}
+function updateTime(){const s=cur(),c=s.blocks.reduce((a,b)=>a+chars(b.body),0),m=c/(DB.rate||300),tg=s.target||30;
+  $("#mins").textContent=(m<1&&c?"1분 미만":Math.round(m)+"분");const p=Math.min(100,m/tg*100);$("#meter i").style.width=p+"%";$("#meter").classList.toggle("over",m>tg*1.1);
+  $("#charInfo").textContent="본문 칸 글자 수 "+c.toLocaleString()+"자 (띄어쓰기 제외). 목표까지 "+(m<tg?"약 "+Math.round((tg-m)*(DB.rate||300)).toLocaleString()+"자 더 쓸 수 있어요":"분량이 넘쳤어요. 줄일 곳을 찾아보세요")+"."}
+function renderChecks(){const s=cur(),w=$("#checks");w.innerHTML="";
+  CHECKS.forEach((t,i)=>{const l=document.createElement("label");l.innerHTML='<input type="checkbox" '+(s.check[i]?"checked":"")+'><span>'+esc(t)+'</span>';l.querySelector("input").onchange=e=>{s.check[i]=e.target.checked;saveSoon();chkN()};w.appendChild(l)});chkN()}
+function chkN(){const s=cur();$("#chkN").textContent=CHECKS.filter((_,i)=>s.check[i]).length+" / "+CHECKS.length}
+
+/* ---------- inputs ---------- */
+for(const k in F)$(F[k]).addEventListener("input",e=>{cur()[k]=e.target.value;saveSoon();if(k=="title")document.title=(e.target.value?e.target.value+" — ":"")+"설교도우미 (목회자용)"});
+$("#service").addEventListener("change",e=>{cur().service=e.target.value;saveSoon()});
+for(const k in N){$(N[k]).addEventListener("input",e=>{cur().notes[k]=e.target.value;saveSoon()});$(N[k]).addEventListener("focus",e=>lastTA={ta:e.target,note:k})}
+$("#big").addEventListener("focus",e=>lastTA={ta:e.target,field:"big"});
+$("#target").oninput=e=>{cur().target=Math.max(3,+e.target.value||30);saveSoon()};
+$("#rate").oninput=e=>{DB.rate=Math.max(150,+e.target.value||300);saveSoon();renderBlocks()};
+document.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>{const s=cur(),t=b.dataset.add;s.blocks.push({id:uid(),title:t||"새 칸",hint:"",body:""});saveSoon();renderBlocks();const tas=document.querySelectorAll("#blocks textarea");tas[tas.length-1].focus()});
+
+/* ---------- formats ---------- */
+$("#bFmt").onclick=()=>openFmt(false);
+function openFmt(isNew){const w=$("#fmts");w.innerHTML="";
+  Object.entries(FORMATS).forEach(([k,f])=>{const b=document.createElement("button");b.innerHTML="<b>"+esc(f.name)+"</b><span>"+esc(f.desc)+"</span>";
+    b.onclick=()=>{if(isNew){newSermon(k)}else{const s=cur(),keep=s.blocks.filter(x=>x.body.trim());s.fmt=k;s.blocks=FORMATS[k].blocks.map(([t,h])=>({id:uid(),title:t,hint:h,body:""})).concat(keep.map(x=>({...x,title:x.title+" (이전 내용)"})));persist()}
+      $("#mFmt").classList.remove("show");render();if(isNew)$("#title").focus()};w.appendChild(b)});
+  $("#mFmt").classList.add("show")}
+$("#fmtClose").onclick=()=>$("#mFmt").classList.remove("show");
+$("#bNew").onclick=()=>openFmt(true);
+
+/* ---------- sermon list ---------- */
+$("#bList").onclick=()=>{$("#q").value="";renderList();$("#drawer").classList.add("show")};
+$("#bClose").onclick=()=>$("#drawer").classList.remove("show");
+$("#drawer").onclick=e=>{if(e.target.id=="drawer")$("#drawer").classList.remove("show")};
+$("#q").oninput=renderList;
+function renderList(){const q=$("#q").value.trim(),w=$("#slist");w.innerHTML="";
+  const L=DB.sermons.filter(s=>!q||[s.title,s.text,s.series,s.big].join(" ").includes(q)).sort((a,b)=>(b.date||"").localeCompare(a.date||"")||b.updated-a.updated);
+  if(!L.length)w.innerHTML='<p class="hint">찾는 설교가 없어요.</p>';
+  L.forEach(s=>{const d=document.createElement("div");d.className="sitem"+(s.id==DB.cur?" on":"");
+    d.innerHTML="<b>"+esc(s.title||"(제목 없음)")+"</b><small>"+esc([s.date,s.service,s.text].filter(Boolean).join(" · "))+"</small>"+(s.series?'<div><span class="tag">'+esc(s.series)+'</span></div>':"");
+    d.onclick=()=>{DB.cur=s.id;persist();render();$("#drawer").classList.remove("show")};w.appendChild(d)});
+  const t=cur().text;if(t){const same=DB.sermons.filter(s=>s.id!=DB.cur&&s.text&&s.text.split(":")[0]==t.split(":")[0]);if(same.length){const p=document.createElement("p");p.className="hint";p.textContent="💡 같은 장 본문으로 설교한 기록: "+same.map(s=>(s.date||"")+" "+(s.title||"")).join(", ");w.prepend(p)}}}
+
+/* ---------- illustrations ---------- */
+let editIll=null;
+function renderIlls(){const q=$("#illQ").value.trim(),w=$("#ills");w.innerHTML="";
+  const L=DB.ills.filter(i=>!q||[i.t,i.b,(i.g||[]).join(" ")].join(" ").includes(q));
+  if(!DB.ills.length)w.innerHTML='<p class="hint">아직 예화가 없어요. 좋은 이야기를 만나면 바로 적어 두세요.</p>';
+  L.forEach(i=>{const d=document.createElement("div");d.className="ill";
+    d.innerHTML='<div class="h"><b>'+esc(i.t||"(제목 없음)")+'</b><button class="sm" data-in>넣기</button><button class="sm" data-ed>고치기</button></div>'+((i.g||[]).length?'<div>'+i.g.map(g=>'<span class="tag">'+esc(g)+'</span>').join("")+'</div>':"")+'<p>'+esc(i.b)+'</p>';
+    d.querySelector("[data-in]").onclick=()=>insertIll(i);d.querySelector("[data-ed]").onclick=()=>openIll(i);w.appendChild(d)})}
+$("#illQ").oninput=renderIlls;
+$("#bIllAdd").onclick=()=>openIll(null);
+function openIll(i){editIll=i;$("#iT").value=i?i.t:"";$("#iB").value=i?i.b:"";$("#iG").value=i?(i.g||[]).join(", "):"";$("#iS").value=i?i.s||"":"";$("#iDel").style.display=i?"":"none";$("#mIll").classList.add("show");$("#iT").focus()}
+$("#iCancel").onclick=()=>$("#mIll").classList.remove("show");
+$("#iSave").onclick=()=>{const v={t:$("#iT").value.trim(),b:$("#iB").value.trim(),g:$("#iG").value.split(",").map(x=>x.trim()).filter(Boolean),s:$("#iS").value.trim()};if(!v.t&&!v.b){toast("제목이나 내용을 적어 주세요");return}
+  if(editIll)Object.assign(editIll,v);else DB.ills.unshift({id:uid(),...v});persist();renderIlls();$("#mIll").classList.remove("show");toast("예화를 저장했어요")};
+$("#iDel").onclick=()=>{if(editIll&&confirm("이 예화를 지울까요?")){DB.ills=DB.ills.filter(x=>x!==editIll);persist();renderIlls();$("#mIll").classList.remove("show")}};
+function insertIll(i){if(!lastTA||!document.body.contains(lastTA.ta)){toast("먼저 예화를 넣을 칸을 한 번 눌러 주세요");return}
+  const ta=lastTA.ta,txt="\n[예화] "+(i.t?i.t+"\n":"")+i.b+(i.s?"\n(출처: "+i.s+")":"")+"\n",p=ta.selectionStart??ta.value.length;
+  ta.value=ta.value.slice(0,p)+txt+ta.value.slice(p);ta.dispatchEvent(new Event("input"));ta.focus();toast("예화를 넣었어요")}
+
+/* ---------- manuscript text ---------- */
+function manuscript(){const s=cur();let t=(s.title||"(제목 없음)")+"\n"+[s.text,s.date,s.service,s.series].filter(Boolean).join(" · ")+"\n";
+  if(s.big)t+="\n핵심 메시지: "+s.big+"\n";s.blocks.forEach(b=>{t+="\n■ "+(b.title||"")+"\n"+(b.body||"")+"\n"});return t}
+$("#bMore").onclick=()=>$("#mMore").classList.add("show");$("#moreClose").onclick=()=>$("#mMore").classList.remove("show");
+function download(name,data,type){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([data],{type}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}
+const fname=()=>((cur().date||"")+" "+(cur().title||"설교")).trim().replace(/[\\/:*?"<>|]/g,"");
+$("#xTxt").onclick=()=>download(fname()+".txt",manuscript(),"text/plain;charset=utf-8");
+$("#xCopy").onclick=async()=>{try{await navigator.clipboard.writeText(manuscript());toast("원고를 복사했어요")}catch(e){toast("복사하지 못했어요")}};
+$("#xBackup").onclick=()=>download("설교도우미-백업-"+today()+".json",JSON.stringify(DB,null,1),"application/json");
+$("#xRestore").onclick=()=>$("#fileIn").click();
+$("#fileIn").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const d=JSON.parse(await f.text());if(!d||!Array.isArray(d.sermons))throw 0;let n=0;
+  d.sermons.forEach(s=>{if(s&&s.id&&Array.isArray(s.blocks)&&!DB.sermons.some(x=>x.id==s.id)){DB.sermons.push(s);n++}});(d.ills||[]).forEach(i=>{if(i&&i.id&&!DB.ills.some(x=>x.id==i.id))DB.ills.push(i)});
+  persist();render();toast(n+"개 설교를 불러왔어요")}catch(err){toast("백업 파일을 읽지 못했어요")}e.target.value=""};
+$("#xDel").onclick=()=>{const s=cur();if(!confirm("'"+(s.title||"제목 없음")+"' 설교를 지울까요? 되돌릴 수 없어요."))return;DB.sermons=DB.sermons.filter(x=>x!==s);DB.cur=DB.sermons[0]?DB.sermons[0].id:null;if(!DB.cur)newSermon();persist();render();$("#mMore").classList.remove("show")};
+$("#xPrint").onclick=()=>{const s=cur();$("#printArea").innerHTML="<h1>"+esc(s.title||"")+"</h1><div class='meta'>"+esc([s.text,s.date,s.service,s.series].filter(Boolean).join(" · "))+"</div>"+(s.big?"<p><b>핵심 메시지</b> "+esc(s.big)+"</p>":"")+s.blocks.map(b=>"<h3>"+esc(b.title)+"</h3><p>"+esc(b.body)+"</p>").join("");$("#mMore").classList.remove("show");setTimeout(()=>print(),100)};
+
+/* ---------- pulpit mode ---------- */
+let pSize=+(localStorage.getItem("pulpit-size")||28),pT0=0,pAcc=0,pTick=null;
+function pRender(){const s=cur();$("#pText").style.fontSize=pSize+"px";
+  $("#pText").innerHTML="<h2>"+esc(s.title||"")+"</h2><div class='ref'>"+esc(s.text||"")+"</div>"+(s.big?"<p><b>"+esc(s.big)+"</b></p>":"")+s.blocks.map(b=>"<h3>"+esc(b.title)+"</h3><p>"+esc(b.body)+"</p>").join("")}
+const fmtT=ms=>{const s=Math.floor(ms/1000);return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")};
+function pShow(){const el=pAcc+(pT0?Date.now()-pT0:0);$("#pClock").textContent=fmtT(el)+"  /  목표 "+(cur().target||30)+"분";$("#pClock").style.color=el>(cur().target||30)*60000?"#d0533f":""}
+$("#bPulpit").onclick=()=>{pRender();pShow();$("#pulpit").classList.add("show");try{navigator.wakeLock&&navigator.wakeLock.request("screen")}catch(e){}};
+$("#pClose").onclick=()=>{$("#pulpit").classList.remove("show")};
+$("#pStart").onclick=()=>{if(pT0){pAcc+=Date.now()-pT0;pT0=0;clearInterval(pTick);$("#pStart").textContent="▶ 계속"}else{pT0=Date.now();pTick=setInterval(pShow,500);$("#pStart").textContent="⏸ 멈춤"}pShow()};
+$("#pReset").onclick=()=>{pT0=0;pAcc=0;clearInterval(pTick);$("#pStart").textContent="▶ 시작";pShow()};
+$("#pPlus").onclick=()=>{pSize=Math.min(64,pSize+3);localStorage.setItem("pulpit-size",pSize);pRender()};
+$("#pMinus").onclick=()=>{pSize=Math.max(16,pSize-3);localStorage.setItem("pulpit-size",pSize);pRender()};
+$("#pDark").onclick=()=>$("#pulpit").classList.toggle("dark");
+
+/* ---------- start ---------- */
+if(!DB.sermons.length)newSermon();
+render();if(DB.sermons.length==1&&!cur().title)$("#saved").textContent="자동 저장돼요";
+</script>
+</body></html>
