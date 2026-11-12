@@ -52,6 +52,8 @@ input.name{width:100%;font-size:20px;padding:8px 12px;border:2px solid var(--ink
 .pick.win{animation:win .55s ease-out forwards}.pick.lose{animation:lose .45s ease-in forwards}
 @keyframes win{40%{transform:scale(1.06)}100%{transform:scale(1.02);box-shadow:0 0 0 8px var(--gold),0 7px 0 var(--ink)}}
 @keyframes lose{100%{opacity:.25;transform:scale(.94)}}
+.side{display:flex;flex-direction:column;align-items:center;gap:12px;min-width:0}.side .pick{width:100%}
+.vs .yt{font-size:15px;background:#fff;color:var(--ink);border:2px solid var(--ink);border-radius:14px;padding:6px 14px;text-decoration:none;box-shadow:0 3px 0 var(--ink)}
 .mid{display:flex;align-items:center;justify-content:center;font-size:44px;color:var(--accent);text-shadow:2px 2px 0 #fff}
 .ctrl{display:flex;justify-content:center;gap:8px;margin-top:16px;flex-wrap:wrap}
 .banner{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;background:rgba(40,30,20,.45);pointer-events:none}
@@ -130,15 +132,15 @@ function renderMatch(){
   $("#ttl").textContent="🏆 "+(D.name||"찬양 월드컵");
   const done=(SIZE-n)+G.i/2,totalGames=SIZE-1;
   app.innerHTML='<div class="round">'+rn+(n>2?' <span style="font-size:.6em">'+g+' / '+games+'</span>':'')+'</div><div class="prog"><i style="width:'+(done/totalGames*100)+'%"></i></div>'+
-   '<div class="vs"><div class="pick" data-p="0" role="button" tabindex="0"><div class="t">'+esc(a)+'</div><a class="yt" href="'+yt(a)+'" target="_blank" rel="noopener">▶ 유튜브에서 듣기</a></div><div class="mid">VS</div>'+
-   '<div class="pick b" data-p="1" role="button" tabindex="0"><div class="t">'+esc(b)+'</div><a class="yt" href="'+yt(b)+'" target="_blank" rel="noopener">▶ 유튜브에서 듣기</a></div></div>'+
+   '<div class="vs"><div class="side"><div class="pick" data-p="0" role="button" tabindex="0"><div class="t">'+esc(a)+'</div></div><a class="yt" href="'+yt(a)+'" target="_blank" rel="noopener">▶ 유튜브에서 듣기</a></div><div class="mid">VS</div>'+
+   '<div class="side"><div class="pick b" data-p="1" role="button" tabindex="0"><div class="t">'+esc(b)+'</div></div><a class="yt" href="'+yt(b)+'" target="_blank" rel="noopener">▶ 유튜브에서 듣기</a></div></div>'+
    '<div class="ctrl"><button class="sm" id="undo" '+(G.hist.length?"":"disabled")+'>↩ 이전 선택 취소</button><button class="sm" id="quit">처음으로</button></div>';
   app.querySelectorAll(".pick").forEach(p=>{const go=e=>{if(e.target.closest(".yt"))return;choose(+p.dataset.p)};p.onclick=go;p.onkeydown=e=>{if(e.key=="Enter"||e.key==" "){e.preventDefault();go(e)}}});
   $("#undo").onclick=undo;$("#quit").onclick=()=>{if(confirm("진행 중인 월드컵을 그만둘까요?")){G=null;renderSetup()}};
 }
 let busy=false;
 function choose(k){if(busy)return;busy=true;
-  const els=app.querySelectorAll(".pick");els[k].classList.add("win");els[1-k].classList.add("lose");
+  const els=app.querySelectorAll(".pick");els[k].classList.add("win");els[1-k].classList.add("lose");els[1-k].parentNode.querySelector(".yt").style.opacity=".3";
   const n=G.cur.length,w=G.cur[G.i+k],l=G.cur[G.i+1-k];
   G.hist.push(JSON.stringify({cur:G.cur,next:G.next,i:G.i,log:G.log}));
   G.next.push(w);G.log[n].push([w,l]);G.i+=2;
