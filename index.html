@@ -123,13 +123,25 @@ const SITE="치영의 교회 생활 즐기기";
 const ZONES=[
  {name:"예배",items:[["악보제작","score/"],["주보제작","jubo/"],["설교도우미","sermon/"],["묵상저장소"]]},
  {name:"교제",items:[["나눔보드게임","board/"],["텔레스트레이션","tele/"],["찬양월드컵","worldcup/"],["레크레이션"]]},
- {name:"잡동사니",items:[["주일에 뭐 먹지?"],["수련회 장소 레이더"],["썸네일 제작","https://claude.ai/artifact/AKMrZqNFmFMJEtoCvoiPk8"]]},
+ {name:"잡동사니",items:[["주일에 뭐 먹지?","food/"],["수련회 장소 레이더"],["썸네일 제작","https://claude.ai/artifact/AKMrZqNFmFMJEtoCvoiPk8"]]},
  {name:"Mall",items:[["전자책"],["굿즈"]]}
 ];
 const $=id=>document.getElementById(id);
 // title cells
 $("cells").innerHTML=[...SITE].map((c,i)=>c==" "?'<span class="sp"></span>':'<span'+(c=="교"||c=="회"?' class="r"':'')+'>'+c+'</span>').join("");
-const SHEEP='<svg viewBox="0 0 110 86" aria-hidden="true"><g fill="#4a3b35"><rect x="28" y="56" width="7" height="22" rx="3.5"/><rect x="42" y="58" width="7" height="22" rx="3.5"/><rect x="60" y="58" width="7" height="22" rx="3.5"/><rect x="72" y="56" width="7" height="22" rx="3.5"/></g><g fill="#fff" stroke="#3b2a20" stroke-width="4"><circle cx="30" cy="40" r="15"/><circle cx="46" cy="30" r="16"/><circle cx="64" cy="30" r="15"/><circle cx="76" cy="42" r="14"/><circle cx="40" cy="54" r="14"/><circle cx="62" cy="56" r="14"/><circle cx="22" cy="50" r="10"/></g><g fill="#fff"><circle cx="30" cy="40" r="15"/><circle cx="46" cy="30" r="16"/><circle cx="64" cy="30" r="15"/><circle cx="76" cy="42" r="14"/><circle cx="40" cy="54" r="14"/><circle cx="62" cy="56" r="14"/><circle cx="22" cy="50" r="10"/><circle cx="52" cy="44" r="18"/></g><g stroke="#3b2a20" stroke-width="2.5"><ellipse cx="78" cy="34" rx="7" ry="4" fill="#f0cfb3" transform="rotate(-25 78 34)"/><ellipse cx="102" cy="34" rx="7" ry="4" fill="#f0cfb3" transform="rotate(25 102 34)"/><ellipse cx="90" cy="44" rx="13" ry="14" fill="#f6dfc9"/></g><g fill="#fff" stroke="#3b2a20" stroke-width="2"><circle cx="84" cy="31" r="5"/><circle cx="96" cy="31" r="5"/><circle cx="90" cy="28" r="5.5"/></g><circle cx="85" cy="45" r="2.3" fill="#3b2a20"/><circle cx="95" cy="45" r="2.3" fill="#3b2a20"/><circle cx="85.7" cy="44.3" r=".7" fill="#fff"/><circle cx="95.7" cy="44.3" r=".7" fill="#fff"/><ellipse cx="81" cy="51" rx="3" ry="2" fill="#ff9fb2" opacity=".8"/><ellipse cx="99" cy="51" rx="3" ry="2" fill="#ff9fb2" opacity=".8"/><path d="M87 52q3 3 6 0" stroke="#3b2a20" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>';
+/* cute sheep (fluffy scalloped wool, peach face, white tuft) */
+const SHEEP=(()=>{const O="#8a776a",W="#fffaf2",F="#f6c58e",E="#eab07a",LEG="#f4d8c9";
+ const puff=(cx,cy,rx,ry,n,bump)=>{let d="";for(let i=0;i<=n;i++){const a=i/n*Math.PI*2,x=cx+rx*Math.cos(a),y=cy+ry*Math.sin(a);d+=(i?"A"+bump+" "+bump+" 0 0 1 ":"M")+x.toFixed(1)+" "+y.toFixed(1)+" "}return d+"Z"};
+ const fluff=[[58,40],[74,52],[48,60],[66,66],[82,40]].map(([x,y])=>'<path d="M'+x+' '+y+'q3 -3 6 0" fill="none" stroke="#e4d8cc" stroke-width="2" stroke-linecap="round"/>').join("");
+ return '<svg viewBox="0 0 110 96" aria-hidden="true">'+
+  '<g fill="'+LEG+'" stroke="'+O+'" stroke-width="2.5"><rect x="36" y="70" width="9" height="17" rx="4.5"/><rect x="50" y="72" width="9" height="16" rx="4.5"/><rect x="70" y="70" width="9" height="16" rx="4.5"/><rect x="83" y="68" width="9" height="16" rx="4.5"/></g>'+
+  '<path d="'+puff(64,50,36,26,16,8)+'" fill="'+W+'" stroke="'+O+'" stroke-width="3" stroke-linejoin="round"/>'+fluff+
+  '<g stroke="'+O+'" stroke-width="2.5"><ellipse cx="17" cy="55" rx="8" ry="5" fill="'+E+'" transform="rotate(25 17 55)"/><ellipse cx="51" cy="55" rx="8" ry="5" fill="'+E+'" transform="rotate(-25 51 55)"/></g>'+
+  '<ellipse cx="34" cy="62" rx="16" ry="15" fill="'+F+'" stroke="'+O+'" stroke-width="3"/>'+
+  '<path d="'+puff(34,47,14,7,9,4.5)+'" fill="'+W+'" stroke="'+O+'" stroke-width="2.5" stroke-linejoin="round"/>'+
+  '<circle cx="28" cy="62" r="2" fill="#4a3a30"/><circle cx="40" cy="62" r="2" fill="#4a3a30"/>'+
+  '<ellipse cx="24" cy="68" rx="3.2" ry="2" fill="#ff9fa6" opacity=".7"/><ellipse cx="44" cy="68" rx="3.2" ry="2" fill="#ff9fa6" opacity=".7"/>'+
+  '<path d="M31 68q3 2.5 6 0" fill="none" stroke="#4a3a30" stroke-width="1.6" stroke-linecap="round"/></svg>'})();
 const SAY=["메에~","음메~","매애!","메~ 🎵"];
 // ---- sheep bleat "메에에~" (synthesized: buzzy voice + fast vibrato + vowel formants) ----
 let AC=null,VOL=.7;try{const v=localStorage.getItem("homeVol");if(v!==null)VOL=+v}catch(e){}

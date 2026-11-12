@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>주일에 뭐 먹지? | 치영의 교회 생활 즐기기 · 점심 메뉴 추천</title>
+<meta name="description" content="주일 예배 끝나고 뭐 먹지? 메뉴 1,000개 중에서 질문 5개로 후보를 줄이고 랜덤으로 골라 주는 점심 메뉴 추천. 교회 식구들과 함께 정해 보세요.">
+<meta name="keywords" content="점심 메뉴 추천, 오늘 뭐 먹지, 메뉴 고르기, 메뉴 룰렛, 주일 점심, 교회 점심, 메뉴 랜덤">
+<link rel="canonical" href="https://zidane7-creator.github.io/nanum-boardgame/food/">
+<meta property="og:title" content="주일에 뭐 먹지? — 치영의 교회 생활 즐기기">
+<meta property="og:description" content="메뉴 1,000개 중 질문 5개로 골라 주는 점심 메뉴 추천">
+<meta property="og:url" content="https://zidane7-creator.github.io/nanum-boardgame/food/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍚</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#3b2a20;--cream:#fffaf0;--accent:#e8503a;--gold:#f5b82e;--green:#5aa957}
+*{box-sizing:border-box}
+html,body{margin:0;color:var(--ink);font-family:"Jua","Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+body{min-height:100vh;background:linear-gradient(#ffe8b8,#fff3d6 220px,#c3e78f 221px)}
+button{font:inherit;color:inherit;border:2px solid var(--ink);background:var(--cream);border-radius:16px;padding:8px 16px;cursor:pointer;box-shadow:0 3px 0 var(--ink)}
+button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+button:disabled{opacity:.4;cursor:default;transform:none}
+button.pri{background:var(--accent);color:#fff}button.go{background:var(--green);color:#fff}
+button.sm{padding:4px 10px;font-size:14px;border-radius:12px;box-shadow:0 2px 0 var(--ink)}
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:calc(8px + env(safe-area-inset-top,0px)) 14px 8px;background:rgba(255,255,255,.92);border-bottom:4px solid var(--gold)}
+.top a{color:var(--ink);text-decoration:none;font-size:15px;border:2px solid var(--ink);border-radius:14px;padding:3px 10px;background:var(--cream)}
+.top .ttl{flex:1;font-size:19px}
+.pill{background:var(--accent);color:#fff;border:2px solid var(--ink);border-radius:20px;padding:3px 12px;font-size:16px;transition:transform .2s}
+.pill.bump{transform:scale(1.2)}
+main{max-width:760px;margin:0 auto;padding:16px 14px 50px}
+.card{background:var(--cream);border:3px solid var(--ink);border-radius:22px;padding:20px;margin-bottom:16px;box-shadow:0 5px 0 rgba(0,0,0,.12)}
+.hero{text-align:center;padding:6px 0 10px}.hero .em{font-size:64px;line-height:1}.hero h1{font-weight:normal;font-size:clamp(30px,7vw,44px);margin:4px 0}
+.muted{opacity:.7;font-size:15px;line-height:1.5}
+.center{text-align:center}
+.steps{display:flex;gap:6px;justify-content:center;margin-bottom:10px}
+.steps i{width:34px;height:8px;border-radius:5px;background:rgba(0,0,0,.12)}.steps i.on{background:var(--gold)}.steps i.done{background:var(--green)}
+.q{font-size:clamp(26px,6vw,36px);text-align:center;margin:4px 0 16px}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.opt{display:flex;flex-direction:column;align-items:center;gap:6px;padding:18px 10px;font-size:22px;border-radius:20px;background:#fff}
+.opt .e{font-size:42px;line-height:1}
+.opt small{font-size:13px;opacity:.65}
+.opt.on{background:#ffe27a}
+.opt.any{background:#eef5ff}
+.nav{display:flex;justify-content:space-between;margin-top:16px;gap:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;max-height:260px;overflow:auto;padding:4px}
+.chips span{background:#fff;border:1.5px solid #d9cbb8;border-radius:10px;padding:2px 9px;font-size:14px}
+.slot{height:120px;display:flex;align-items:center;justify-content:center;font-size:clamp(34px,9vw,60px);color:var(--accent);background:#fff;border:3px dashed var(--gold);border-radius:20px;margin:12px 0;overflow:hidden;text-align:center;word-break:keep-all;padding:0 10px}
+.slot.done{border-style:solid;animation:pop .5s ease-out}
+@keyframes pop{40%{transform:scale(1.06)}}
+.tags{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:6px}
+.tags span{background:#fff3c4;border:1.5px solid var(--ink);border-radius:10px;padding:1px 8px;font-size:14px}
+.links{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:6px}
+.links a{color:var(--ink);text-decoration:none;background:#fff;border:2px solid var(--ink);border-radius:14px;padding:5px 12px;box-shadow:0 2px 0 var(--ink);font-size:15px}
+.fly{position:fixed;z-index:30;pointer-events:none;font-size:15px;background:#fff;border:1.5px solid #d9cbb8;border-radius:10px;padding:2px 8px;animation:fly 1s ease-in forwards}
+@keyframes fly{to{transform:translate(var(--dx),-120px) rotate(var(--r));opacity:0}}
+</style></head><body>
+<div class="top"><a href="../">← 목장</a><div class="ttl">🍚 주일에 뭐 먹지?</div><span class="pill" id="left"></span></div>
+<main id="app"></main>
+<script src="menus.js"></script>
+<script>
+"use strict";
+const $=s=>document.querySelector(s),app=$("#app");
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const CU={k:"한식",c:"중식",j:"일식",w:"양식",a:"동양"};
+/* questions: each option filters the list (null = 상관없음) */
+const Q=[
+ {q:"오늘은 어떻게 먹을까요?",opts:[{t:"가볍게",e:"🥗",f:m=>m[1]==0},{t:"든든하게",e:"🍖",f:m=>m[1]==1}]},
+ {q:"차가운 거? 뜨거운 거?",opts:[{t:"차가운 거",e:"🧊",f:m=>m[2]=="c"},{t:"뜨거운 거",e:"🔥",f:m=>m[2]=="h"},{t:"상관없음",e:"🤷",f:null}]},
+ {q:"국물은요?",opts:[{t:"국물 O",e:"🍲",f:m=>m[3]==1},{t:"국물 X",e:"🍛",f:m=>m[3]==0},{t:"상관없음",e:"🤷",f:null}]},
+ {q:"매운 건 어때요?",opts:[{t:"매움",e:"🌶️",f:m=>m[4]==2},{t:"적당",e:"🙂",f:m=>m[4]==1},{t:"안 매움",e:"🍼",f:m=>m[4]==0},{t:"상관없음",e:"🤷",f:null}]},
+ {q:"어떤 음식이 좋아요?",multi:true,sub:"여러 개 골라도 돼요",opts:[{t:"한식",e:"🍚",k:"k"},{t:"중식",e:"🥟",k:"c"},{t:"일식",e:"🍣",k:"j"},{t:"양식",e:"🍝",k:"w"},{t:"동양",e:"🍜",k:"a",note:"베트남·태국·인도 등"},{t:"상관없음",e:"🤷",k:"*"}]}
+];
+let step=-1,picks=[],multi=new Set();
+function pool(upTo){let L=MENUS;for(let i=0;i<upTo;i++){const p=picks[i];if(p==null)continue;if(Q[i].multi){if(!p.has("*"))L=L.filter(m=>p.has(m[5]))}else{const f=Q[i].opts[p].f;if(f)L=L.filter(f)}}return L}
+function setLeft(n){const e=$("#left");e.textContent="후보 "+n.toLocaleString()+"개";e.classList.remove("bump");void e.offsetWidth;e.classList.add("bump");setTimeout(()=>e.classList.remove("bump"),200)}
+function flyAway(before,after){const gone=before.filter(m=>!after.includes(m));for(let i=0;i<Math.min(8,gone.length);i++){const m=gone[Math.floor(Math.random()*gone.length)],d=document.createElement("span");d.className="fly";d.textContent=m[0];d.style.left=(10+Math.random()*75)+"vw";d.style.top=(45+Math.random()*30)+"vh";d.style.setProperty("--dx",(Math.random()*120-60)+"px");d.style.setProperty("--r",(Math.random()*40-20)+"deg");d.style.animationDelay=(i*60)+"ms";document.body.appendChild(d);setTimeout(()=>d.remove(),1400)}}
+function stepsHTML(){return'<div class="steps">'+Q.map((_,i)=>'<i class="'+(i<step?"done":i==step?"on":"")+'"></i>').join("")+'</div>'}
+
+function renderHome(){step=-1;picks=[];multi=new Set();setLeft(MENUS.length);
+  app.innerHTML='<div class="hero"><div class="em">🍚</div><h1>주일에 뭐 먹지?</h1><p class="muted">예배 끝나고 다 같이 고민될 때!<br>메뉴 '+MENUS.length.toLocaleString()+'개 중에서 질문 5개로 줄여 드려요.</p></div><div class="card center"><button class="pri" id="go" style="font-size:24px;padding:12px 44px">시작하기 ▶</button><p class="muted" style="margin:14px 0 0">질문에 답할 때마다 후보가 줄어들고,<br>마지막엔 남은 메뉴 중에서 랜덤으로 골라 줘요 🎲</p></div>';
+  $("#go").onclick=()=>{step=0;renderQ()}}
+function renderQ(){const q=Q[step],base=pool(step);setLeft(base.length);
+  let h='<div class="card">'+stepsHTML()+'<div class="muted center">질문 '+(step+1)+' / '+Q.length+'</div><div class="q">'+esc(q.q)+'</div>'+(q.sub?'<p class="muted center" style="margin:-8px 0 12px">'+esc(q.sub)+'</p>':'')+'<div class="opts">';
+  q.opts.forEach((o,i)=>{let n;if(q.multi)n=o.k=="*"?base.length:base.filter(m=>m[5]==o.k).length;else n=o.f?base.filter(o.f).length:base.length;
+    const on=q.multi?multi.has(o.k):false;h+='<button class="opt'+(o.f===null||o.k=="*"?" any":"")+(on?" on":"")+'" data-i="'+i+'" '+(n==0?"disabled":"")+'><span class="e">'+o.e+'</span>'+esc(o.t)+'<small>'+(o.note?esc(o.note)+' · ':'')+n+'개</small></button>'});
+  h+='</div><div class="nav"><button class="sm" id="back">← 이전</button>'+(q.multi?'<button class="go" id="next" '+(multi.size?"":"disabled")+'>결과 보기 ▶</button>':'<span></span>')+'</div></div>';
+  app.innerHTML=h;
+  app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{const i=+b.dataset.i,o=q.opts[i];
+    if(q.multi){if(o.k=="*"){multi=new Set(["*"])}else{multi.delete("*");multi.has(o.k)?multi.delete(o.k):multi.add(o.k)}picks[step]=new Set(multi);setLeft(pool(step+1).length);renderQ();return}
+    const before=pool(step);picks[step]=i;const after=pool(step+1);flyAway(before,after);step++;renderQ()});
+  $("#back").onclick=()=>{if(step==0){renderHome();return}step--;picks.length=step;if(step<4)multi=new Set();renderQ()};
+  const nx=$("#next");if(nx)nx.onclick=()=>{picks[step]=new Set(multi);const before=pool(step),after=pool(step+1);flyAway(before,after);step++;renderResult()};
+}
+function summary(){const t=[];picks.forEach((p,i)=>{if(Q[i].multi){t.push(p.has("*")?"아무 음식":[...p].map(k=>CU[k]).join("·"))}else{const o=Q[i].opts[p];if(o.f)t.push(o.t)}});return t}
+let spinning=false,last=null;
+function renderResult(){const L=pool(Q.length);setLeft(L.length);
+  app.innerHTML='<div class="card center">'+stepsHTML()+'<div class="tags">'+summary().map(t=>'<span>'+esc(t)+'</span>').join("")+'</div><div class="q" style="margin-bottom:6px">남은 메뉴 '+L.length+'개</div>'+
+   '<div class="slot" id="slot">🎲</div><div class="links" id="links"></div>'+
+   '<div class="nav" style="justify-content:center"><button class="pri" id="spin" style="font-size:22px;padding:10px 34px">🎲 랜덤으로 고르기</button></div></div>'+
+   '<div class="card"><div class="muted" style="margin-bottom:6px">남은 후보</div><div class="chips">'+L.map(m=>'<span>'+esc(m[0])+'</span>').join("")+'</div>'+
+   '<div class="nav"><button class="sm" id="back">← 이전 질문</button><button class="sm" id="home">처음부터 다시</button></div></div>';
+  $("#spin").onclick=()=>spin(L);$("#back").onclick=()=>{step=Q.length-1;multi=new Set(picks[step]);picks.length=step;renderQ()};$("#home").onclick=renderHome}
+function spin(L){if(spinning||!L.length)return;spinning=true;$("#spin").disabled=true;const s=$("#slot");s.classList.remove("done");$("#links").innerHTML="";
+  let pick=L[Math.floor(Math.random()*L.length)];if(L.length>1)while(pick===last)pick=L[Math.floor(Math.random()*L.length)];last=pick;
+  let k=0;const total=22;const tick=()=>{s.textContent=k<total?L[Math.floor(Math.random()*L.length)][0]:pick[0];k++;
+    if(k<=total)setTimeout(tick,40+k*k*0.6);else{s.classList.add("done");spinning=false;$("#spin").disabled=false;$("#spin").textContent="🎲 다시 뽑기";
+      const tag=[CU[pick[5]],pick[1]?"든든":"가볍게",pick[2]=="c"?"차가운":"뜨거운",pick[3]?"국물":"",["안 매움","적당히 매움","매움"][pick[4]]].filter(Boolean);
+      $("#links").innerHTML='<div class="tags" style="width:100%">'+tag.map(t=>'<span>'+esc(t)+'</span>').join("")+'</div><a href="https://map.naver.com/p/search/'+encodeURIComponent(pick[0])+'" target="_blank" rel="noopener">📍 근처 '+esc(pick[0])+' 찾기</a>'}};
+  tick()}
+renderHome();
+</script>
+</body></html>
