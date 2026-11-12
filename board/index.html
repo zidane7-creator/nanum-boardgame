@@ -90,6 +90,13 @@ button.on{background:#fdba4d;color:#2b2118}
 #hc{max-width:330px}#hc button{min-width:56px}
 #go{font-size:24px;padding:12px 44px;margin-top:14px;background:#e8503a;color:#fff;box-shadow:0 4px 0 #2b2118}
 #go:active{transform:translateY(3px);box-shadow:0 1px 0 #2b2118}
+.ordl{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:360px;margin:0 auto}
+.oi{display:flex;align-items:center;gap:2px;background:#fffaf0;border:2px solid #2b2118;border-radius:14px;padding:2px 2px}
+.oi .chip svg{width:24px;height:24px}
+.oi .no{font-size:12px;background:#e8503a;color:#fff;border-radius:50%;min-width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center}
+.oi .onm{font-size:13px;max-width:58px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.oi .mv{padding:2px 5px;border:0;background:none;font-size:12px;border-radius:8px}.oi .mv:disabled{opacity:.2;cursor:default}
+.shuf{display:block;margin:8px auto 0;font-size:14px;padding:4px 14px}
 .tb{display:flex;gap:6px}#homeb,#fs{padding:4px 10px}#fs{font-size:18px;line-height:1}
 .back{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));left:14px;color:#2b2118;text-decoration:none;font-size:15px;background:#fffaf0;border:2px solid #2b2118;border-radius:16px;padding:4px 12px}
 .hi{font-size:14px;opacity:.7;margin:14px 0 0;line-height:1.5}
@@ -98,12 +105,12 @@ button.on{background:#fdba4d;color:#2b2118}
 </style></head><body><div class="wrap">
 <h1>🎲 치영의 나눔보드게임</h1>
 <div id="top"><div id="status"></div><div class="tb"><button id="homeb" aria-label="홈 화면">🏠</button><button id="fs" aria-label="전체화면" title="전체화면" hidden>⛶</button><button id="gear">⚙ 설정</button></div></div>
-<div id="set"><div class="card" style="max-width:380px;max-height:88vh;overflow:auto;text-align:left"><div style="font-size:20px">⚙ 설정</div><div class="sec">인원 (바꾸면 새 게임)</div><div class="bar" id="pc"></div><div class="sec">말 이름</div><div id="nm"></div><div class="sec">주사위</div><div class="bar" id="ds"></div><div class="sec">🔊 효과음 음량 <span id="sfxv"></span></div><input type="range" class="rg" id="sfxr" min="0" max="100"><div id="bgmbox" hidden><div class="sec">🎵 배경음악 음량 <span id="bgmv"></span></div><input type="range" class="rg" id="bgmr" min="0" max="100"></div><div class="sec">바탕색</div><div class="bar" id="bg"></div><div class="bar"><button id="newg">새 게임</button><button id="sx">닫기</button></div></div></div>
+<div id="set"><div class="card" style="max-width:380px;max-height:88vh;overflow:auto;text-align:left"><div style="font-size:20px">⚙ 설정</div><div class="sec">인원 (바꾸면 새 게임)</div><div class="bar" id="pc"></div><div class="sec">순서 (◀ ▶로 바꾸기)</div><div id="ord"></div><div class="sec">말 이름</div><div id="nm"></div><div class="sec">주사위</div><div class="bar" id="ds"></div><div class="sec">🔊 효과음 음량 <span id="sfxv"></span></div><input type="range" class="rg" id="sfxr" min="0" max="100"><div id="bgmbox" hidden><div class="sec">🎵 배경음악 음량 <span id="bgmv"></span></div><input type="range" class="rg" id="bgmr" min="0" max="100"></div><div class="sec">바탕색</div><div class="bar" id="bg"></div><div class="bar"><button id="newg">새 게임</button><button id="sx">닫기</button></div></div></div>
 <button id="roll" aria-label="주사위 던지기">🎲</button><div id="big"></div><audio id="bgm" loop preload="none"></audio>
 <div id="board"></div>
 <section class="about"><h2>교회 소모임 나눔 보드게임</h2><p>교회 소모임, 셀모임, 속회, 구역 모임, 청년부 모임에서 처음 만난 사이에도 자연스럽게 이야기를 꺼낼 수 있는 아이스브레이킹 나눔 게임이에요. 휴대폰 하나로 1~10명이 함께할 수 있고, 설치나 가입 없이 무료로 바로 쓸 수 있어요.</p><h3>어떻게 하나요?</h3><ul><li>인원을 고르고 차례대로 주사위를 굴려 말을 옮겨요.</li><li>멈춘 칸의 질문에 답하며 서로의 이야기를 나눠요.</li><li>나눔 질문은 '나에 대해', '나의 이야기', '하나님과 나' 세 가지예요.</li><li>밸런스 게임, 사다리, 기도제목 나눔 칸도 있어요.</li><li>가장 먼저 도착한 사람이 우승이에요!</li></ul></section>
 </div>
-<div id="home"><a class="back" href="../">← 치영의 교회 생활 즐기기</a><div class="hs">🎲 다 같이 이야기 나눠요</div><div class="hh">치영의<br><b>나눔</b>보드게임</div><div class="hp" id="hp"></div><div class="sec">몇 명이서 할까요?</div><div class="bar" id="hc"></div><button id="go">게임 시작 ▶</button><p class="hi">교회 소모임 · 셀모임 · 속회 · 청년부<br>아이스브레이킹 나눔 게임</p></div>
+<div id="home"><a class="back" href="../">← 치영의 교회 생활 즐기기</a><div class="hs">🎲 다 같이 이야기 나눠요</div><div class="hh">치영의<br><b>나눔</b>보드게임</div><div class="hp" id="hp"></div><div class="sec">몇 명이서 할까요?</div><div class="bar" id="hc"></div><div class="sec">누가 먼저 할까요?</div><div id="hord"></div><button id="go">게임 시작 ▶</button><p class="hi">교회 소모임 · 셀모임 · 속회 · 청년부<br>아이스브레이킹 나눔 게임</p></div>
 <div id="modal"><div class="card"><div class="tag" id="mt"></div><div class="q" id="mq"></div><button id="ok">확인</button></div></div>
 <script>
 const RAW="s출발|p좋아하는 음식|v최근에 만난 은혜|g내가 두려워하는 것|v나의 하나님은 어떤 분?|p나의 가족|v오늘 예배를 드리면서 든 마음|p나의 특기|g내가 두려워하는 것|b밸런스 게임|p좋아하는 카페 음료|o어제 뭐 했나요?|p싫어하는 음식|v하나님의 도우심을 경험한 적|g요즘 나의 고민|v나의 감사제목|g일주일 후에 죽는다면|p나의 취미|v하나님께 물어보고 싶은 것|g가장 슬펐던 순간|p나의 스트레스 해소법|v최근에 만난 은혜|b밸런스 게임|p요즘 많이 듣는 가요|g요즘 나의 고민|p좋아하는 계절|v오늘 예배를 드리면서 든 마음|l사다리|p나의 MBTI|b밸런스 게임|v나의 하나님은 어떤 분?|p나의 이상형|v오늘 예배를 드리면서 든 마음|l사다리|g가장 최근에 운 적|o어제 뭐 했나요?|p감명깊게 읽은 책|r잠시 정지!! 기도제목|v하나님을 원망해본 적|p내가 싫어하는 사람|b밸런스 게임|g가장 행복했던 순간|p올해 이루고 싶은 것|v요즘 많이 듣는 찬양|g가장 무서웠던 순간|p내가 존경하는 사람|g나의 10년 후|v가장 좋아하는 성경말씀|p감명깊게 본 영화|g요즘 나의 고민|p요즘 사고 싶은 것|v하나님의 도우심을 경험한 적|p살아보고 싶은 나라|b밸런스 게임|v나의 하나님은 어떤 분?|g후회되는 것이 있다면|p버킷리스트 한 가지|o어제 뭐 했나요?|v나의 하나님은 어떤 분?|g나에게 가장 중요한 가치 (신앙 빼고)|p내가 좋아하는 사람|v나의 감사제목|g과거로 간다면 언제로?|o어제 뭐 했나요?|v가장 좋아하는 성경 인물|b밸런스 게임|p갖고 싶은 초능력|v하나님께 하고 싶은 말|g요즘 나의 고민|p내가 좋아했던 과목|o어제 뭐 했나요?|p듣고 싶은 말|v하나님의 도우심을 경험한 적|p20억 로또에 당첨된다면|v오늘 예배를 드리면서 든 마음|p재미있게 본 드라마|g나의 소망|p공부해보고 싶은 것|s도착";
@@ -126,10 +133,22 @@ T.forEach((t,i)=>{const d=document.createElement("div"),p=xy(i);d.className="t "
 let np=2,pos=[],turn=0,skip=[],busy=false,pawns=[],seen=[],again=false,sides=6,balQ={},names=Array(10).fill("");
 const $=id=>document.getElementById(id),sleep=ms=>new Promise(r=>setTimeout(r,ms));
 function place(k){const p=xy(pos[k]),a=6.283*k/np,rr=np>1?9:0,el=pawns[k];el.style.left="calc("+p[0]+"% + "+(Math.cos(a)*rr).toFixed(1)+"px - 3.75%)";el.style.top="calc("+p[1]+"% + "+(Math.sin(a)*rr-6).toFixed(1)+"px - 3.75%)"}
-function start(n){np=n;pos=Array(n).fill(0);skip=Array(n).fill(false);turn=0;busy=false;pawns.forEach(e=>e.remove());pawns=[];seen=Array.from({length:n},()=>new Set());again=false;balDeck=[];T.forEach((t,i)=>{if(COL[t.k]){tiles[i].textContent="?";tiles[i].style.fontSize="clamp(14px,4vw,20px)"}});
+let order=[0,1],oi=0;
+function start(n){np=n;pos=Array(n).fill(0);skip=Array(n).fill(false);if(order.length!=n)order=[...Array(n).keys()];oi=0;turn=order[0];busy=false;pawns.forEach(e=>e.remove());pawns=[];seen=Array.from({length:n},()=>new Set());again=false;balDeck=[];T.forEach((t,i)=>{if(COL[t.k]){tiles[i].textContent="?";tiles[i].style.fontSize="clamp(14px,4vw,20px)"}});
 for(let k=0;k<n;k++){const e=document.createElement("div");e.className="pawn";e.innerHTML=horse(PC[k]);board.appendChild(e);pawns.push(e);place(k)}
 $("pc").innerHTML="";[1,2,3,4,5,6,7,8,9,10].forEach(m=>{const b=document.createElement("button");b.textContent=m+"명";if(m==n)b.className="on";b.onclick=()=>{if(!busy)start(m)};$("pc").appendChild(b)});
-$("roll").disabled=false;renderNames();say()}
+$("roll").disabled=false;renderNames();renderSetOrder();say()}
+// ---- turn order: list of horses with ◀ ▶ to move, plus random shuffle ----
+function renderOrder(el,arr,onChange){el.innerHTML="";const l=document.createElement("div");l.className="ordl";
+ arr.forEach((k,i)=>{const d=document.createElement("div");d.className="oi";
+  d.innerHTML='<button class="mv" aria-label="앞으로"'+(i==0?" disabled":"")+'>◀</button><span class="no">'+(i+1)+'</span>'+chip(k)+'<span class="onm"></span><button class="mv" aria-label="뒤로"'+(i==arr.length-1?" disabled":"")+'>▶</button>';
+  d.querySelector(".onm").textContent=nm(k);
+  const [L,R]=d.querySelectorAll(".mv"),sw=j=>{const a=arr.slice();[a[i],a[j]]=[a[j],a[i]];onChange(a)};
+  L.onclick=()=>sw(i-1);R.onclick=()=>sw(i+1);l.appendChild(d)});
+ const s=document.createElement("button");s.className="shuf";s.textContent="🎲 랜덤 순서";
+ s.onclick=()=>{const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}onChange(a)};
+ el.appendChild(l);if(arr.length>1)el.appendChild(s)}
+function renderSetOrder(){renderOrder($("ord"),order,a=>{if(busy)return;order=a;oi=order.indexOf(turn);renderSetOrder()})}
 function scrollToPawn(k){const p=xy(pos[k]),r=board.getBoundingClientRect();window.scrollTo({top:scrollY+r.top+p[1]/100*r.height-innerHeight*.62,behavior:"smooth"})}
 // ---- sound effects (synthesized, no files) ----
 let AC=null,sfxVol=.7,bgmVol=.4;
@@ -166,10 +185,10 @@ const sfx={
 function zoom(k,on){if(on){const p=xy(pos[k]);board.style.transformOrigin=p[0]+"% "+p[1]+"%";board.style.transform="scale(1.9)"}else board.style.transform=""}
 function hop(k,x0){sfx.hop();const e=pawns[k],s=e.firstChild,dx=xy(pos[k]+1)[0]-x0;if(dx)s.style.scale=dx<0?"-1 1":"1 1";e.classList.remove("hop");void e.offsetWidth;e.classList.add("hop")}
 const nm=k=>names[k]||(k+1)+"번 말",chip=k=>'<span class="chip">'+horse(PC[k])+'</span>';
-function renderNames(){const w=$("nm");w.innerHTML="";for(let k=0;k<np;k++){const r=document.createElement("div");r.className="nr";r.innerHTML=chip(k);const i=document.createElement("input");i.maxLength=8;i.placeholder=(k+1)+"번 말";i.value=names[k];i.oninput=()=>{names[k]=i.value.trim();if(!busy)say()};r.appendChild(i);w.appendChild(r)}}
+function renderNames(){const w=$("nm");w.innerHTML="";for(let k=0;k<np;k++){const r=document.createElement("div");r.className="nr";r.innerHTML=chip(k);const i=document.createElement("input");i.maxLength=8;i.placeholder=(k+1)+"번 말";i.value=names[k];i.oninput=()=>{names[k]=i.value.trim();renderSetOrder();if(!busy)say()};r.appendChild(i);w.appendChild(r)}}
 function say(){$("status").innerHTML=chip(turn)+"<b>"+nm(turn)+"</b> 차례예요";$("top").style.borderBottomColor=PC[turn]}
 function ask(tag,q){return new Promise(res=>{$("mt").textContent=tag;$("mq").textContent=q;$("modal").classList.add("show");$("ok").onclick=()=>{$("modal").classList.remove("show");res()}})}
-async function next(){turn=(turn+1)%np;say();busy=false;$("roll").disabled=false}
+async function next(){oi=(oi+1)%np;turn=order[oi];say();busy=false;$("roll").disabled=false}
 // balance game: a new question every time; goes through all of them before any repeats
 let balDeck=[],balLast="";
 function drawBal(){if(!balDeck.length){balDeck=[...BAL];for(let i=balDeck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[balDeck[i],balDeck[j]]=[balDeck[j],balDeck[i]]}if(balDeck[balDeck.length-1]==balLast)balDeck.unshift(balDeck.pop())}return balLast=balDeck.pop()}
@@ -207,7 +226,9 @@ setBg(sv||BG[0][1]);
 [6,8,12,16].forEach(m=>{const b=document.createElement("button");b.textContent=m+"면";b.dataset.s=m;if(m==sides)b.className="on";b.onclick=()=>{if(busy)return;sides=m;[...$("ds").querySelectorAll("button")].forEach(x=>x.classList.toggle("on",x.dataset.s==m))};$("ds").appendChild(b)});
 $("gear").onclick=()=>$("set").classList.add("show");$("sx").onclick=()=>$("set").classList.remove("show");$("newg").onclick=()=>{if(!busy){start(np);$("set").classList.remove("show")}};
 let hn=np;$("hp").innerHTML=[0,1,2,3].map(k=>"<span>"+horse(PC[k])+"</span>").join("");
-function renderHome(){$("hc").innerHTML="";for(let m=1;m<=10;m++){const b=document.createElement("button");b.textContent=m+"명";if(m==hn)b.className="on";b.onclick=()=>{hn=m;renderHome()};$("hc").appendChild(b)}}
+let hord=[...Array(np).keys()];
+function renderHome(){$("hc").innerHTML="";for(let m=1;m<=10;m++){const b=document.createElement("button");b.textContent=m+"명";if(m==hn)b.className="on";b.onclick=()=>{hn=m;hord=[...Array(m).keys()];renderHome()};$("hc").appendChild(b)}
+ if(hord.length!=hn)hord=[...Array(hn).keys()];renderOrder($("hord"),hord,a=>{hord=a;renderHome()})}
 renderHome();
 // ---- fullscreen toggle (hidden where the browser can't do it, e.g. iPhone Safari) ----
 {const de=document.documentElement,b=$("fs"),req=de.requestFullscreen||de.webkitRequestFullscreen,
@@ -226,6 +247,6 @@ function initRange(id,lab,v0,set){const r=$(id);r.value=Math.round(v0*100);$(lab
 initRange("sfxr","sfxv",sfxVol,v=>{sfxVol=v;try{localStorage.setItem("sfxVol",v)}catch(e){}});
 $("sfxr").onchange=()=>sfx.hop();
 initRange("bgmr","bgmv",bgmVol,v=>{bgmVol=v;bgm.volume=v;try{localStorage.setItem("bgmVol",v)}catch(e){}if(v<=0)bgm.pause();else playBgm()});
-$("go").onclick=()=>{ac();playBgm();start(hn);$("home").classList.add("hide");scrollTo(0,0)};
-$("homeb").onclick=()=>{if(busy)return;hn=np;renderHome();$("home").classList.remove("hide")};
+$("go").onclick=()=>{ac();playBgm();order=hord.slice();start(hn);$("home").classList.add("hide");scrollTo(0,0)};
+$("homeb").onclick=()=>{if(busy)return;hn=np;hord=order.slice();renderHome();$("home").classList.remove("hide")};
 </script></body></html>
