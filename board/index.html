@@ -121,10 +121,10 @@ let pts=T.map((_,i)=>{const p=xy(i);return (p[0]*C).toFixed(1)+","+(p[1]*R).toFi
 board.innerHTML='<svg viewBox="0 0 '+C*100+' '+R*100+'" preserveAspectRatio="none"><polyline points="'+T.map((_,i)=>{const p=xy(i);return (p[0]*C/100*100).toFixed(1)+","+(p[1]*R/100*100).toFixed(1)}).join(" ")+'" fill="none" stroke="var(--line)" stroke-width="9" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>';
 const tiles=[];
 T.forEach((t,i)=>{const d=document.createElement("div"),p=xy(i);d.className="t "+(t.k in COL?"":t.k);if(COL[t.k])d.style.backgroundColor=COL[t.k];d.style.left=p[0]+"%";d.style.top=p[1]+"%";d.innerHTML='<span class="n">'+(i>0&&i<N-1?i:"")+'</span><span class="x"></span>';const x=d.lastChild;x.textContent=COL[t.k]?"?":t.t;if(COL[t.k])x.style.fontSize="clamp(14px,4vw,20px)";tiles[i]=x;board.appendChild(d)});
-let np=2,pos=[],turn=0,skip=[],busy=false,pawns=[],seen=new Set(),again=false,sides=6,balQ={},names=Array(10).fill("");
+let np=2,pos=[],turn=0,skip=[],busy=false,pawns=[],seen=[],again=false,sides=6,balQ={},names=Array(10).fill("");
 const $=id=>document.getElementById(id),sleep=ms=>new Promise(r=>setTimeout(r,ms));
 function place(k){const p=xy(pos[k]),a=6.283*k/np,rr=np>1?9:0,el=pawns[k];el.style.left="calc("+p[0]+"% + "+(Math.cos(a)*rr).toFixed(1)+"px - 3.75%)";el.style.top="calc("+p[1]+"% + "+(Math.sin(a)*rr-6).toFixed(1)+"px - 3.75%)"}
-function start(n){np=n;pos=Array(n).fill(0);skip=Array(n).fill(false);turn=0;busy=false;pawns.forEach(e=>e.remove());pawns=[];seen.clear();again=false;{const pool=[...BAL].sort(()=>Math.random()-.5);let j=0;T.forEach((t,i)=>{if(t.k=="b")balQ[i]=pool[j++%pool.length]})}T.forEach((t,i)=>{if(COL[t.k]){tiles[i].textContent="?";tiles[i].style.fontSize="clamp(14px,4vw,20px)"}});
+function start(n){np=n;pos=Array(n).fill(0);skip=Array(n).fill(false);turn=0;busy=false;pawns.forEach(e=>e.remove());pawns=[];seen=Array.from({length:n},()=>new Set());again=false;{const pool=[...BAL].sort(()=>Math.random()-.5);let j=0;T.forEach((t,i)=>{if(t.k=="b")balQ[i]=pool[j++%pool.length]})}T.forEach((t,i)=>{if(COL[t.k]){tiles[i].textContent="?";tiles[i].style.fontSize="clamp(14px,4vw,20px)"}});
 for(let k=0;k<n;k++){const e=document.createElement("div");e.className="pawn";e.innerHTML=horse(PC[k]);board.appendChild(e);pawns.push(e);place(k)}
 $("pc").innerHTML="";[1,2,3,4,5,6,7,8,9,10].forEach(m=>{const b=document.createElement("button");b.textContent=m+"명";if(m==n)b.className="on";b.onclick=()=>{if(!busy)start(m)};$("pc").appendChild(b)});
 $("roll").disabled=false;renderNames();say()}
@@ -147,12 +147,19 @@ function impact(when,e){const a=chain();if(!a||sfxVol<=0)return;const t=a.curren
  // wooden table thud
  s=a.createBufferSource();s.buffer=NB;f=a.createBiquadFilter();f.type="lowpass";f.frequency.value=380;s.connect(f);env(a,f,t,.9*e*e,.05);s.start(t,Math.random()*.5,.08);
  const o=a.createOscillator();o.frequency.setValueAtTime(150,t);o.frequency.exponentialRampToValueAtTime(90,t+.05);env(a,o,t,.35*e*e,.05);o.start(t);o.stop(t+.08)}
+// hoof clop: hollow "tok" (like coconut shells) + short knock + a little ground thud
+function clop(when,e){const a=chain();if(!a||sfxVol<=0)return;const t=a.currentTime+when,j=.9+Math.random()*.2;
+ const o=a.createOscillator();o.type="sine";o.frequency.setValueAtTime(720*j,t);o.frequency.exponentialRampToValueAtTime(430*j,t+.045);env(a,o,t,.5*e,.06);o.start(t);o.stop(t+.09);
+ let s=a.createBufferSource();s.buffer=NB;let f=a.createBiquadFilter();f.type="bandpass";f.frequency.value=1250*j;f.Q.value=3.5;s.connect(f);env(a,f,t,1.5*e,.028);s.start(t,Math.random()*.5,.05);
+ s=a.createBufferSource();s.buffer=NB;f=a.createBiquadFilter();f.type="bandpass";f.frequency.value=3200*j;f.Q.value=1.5;s.connect(f);env(a,f,t,.35*e,.008);s.start(t,Math.random()*.5,.02);
+ s=a.createBufferSource();s.buffer=NB;f=a.createBiquadFilter();f.type="lowpass";f.frequency.value=220;s.connect(f);env(a,f,t,.7*e,.05);s.start(t,Math.random()*.5,.07)}
 const sfx={
  // whole throw: lands, bounces, tumbles over its edges, wobbles to rest (timed to the on-screen dice)
  roll(){const r=()=>Math.random();let t=.6+r()*.04;impact(t,1);t+=.15+r()*.03;impact(t,.7);t+=.1+r()*.02;impact(t,.5);
   let gap=.075,e=.48;while(t<1.32){t+=gap*(.8+r()*.4);impact(t,e*(.75+r()*.35));e*=.9;gap*=1.05}
   impact(1.4,.3);impact(1.46+r()*.01,.17);impact(1.5+r()*.01,.09)},
- hop(){noise(.04,1500,4,.9);noise(.04,1100,4,.7,.09);tone(420,820,.12,.16)}
+ // one gallop stride per square: "다-그-닥" = three hollow hoof clops, last one accented
+ hop(){const r=Math.random;clop(0,.55);clop(.075+r()*.01,.7);clop(.16+r()*.01,1)}
 };
 function zoom(k,on){if(on){const p=xy(pos[k]);board.style.transformOrigin=p[0]+"% "+p[1]+"%";board.style.transform="scale(1.9)"}else board.style.transform=""}
 function hop(k,x0){sfx.hop();const e=pawns[k],s=e.firstChild,dx=xy(pos[k]+1)[0]-x0;if(dx)s.style.scale=dx<0?"-1 1":"1 1";e.classList.remove("hop");void e.offsetWidth;e.classList.add("hop")}
@@ -183,7 +190,7 @@ if(pos[turn]==N-1){await ask("🎉 도착!",nm(turn)+" — 가장 먼저 도착�
 if(t.k=="l"&&pos[turn]==L[0]){await ask("사다리","🪜 사다리를 타고 앞으로 쭉!");pos[turn]=L[1];place(turn);scrollToPawn(turn);await sleep(500);t=T[pos[turn]]}
 else if(t.k=="b")await ask("밸런스 게임",balQ[pos[turn]].split(" vs ").join("\nVS\n"));
 else if(t.k=="r")await ask("잠시 정지","🙏 기도제목을 나눠요! 주사위가 남았어도 여기서 멈춰요.")
-else if(t.k!="l"){const rep=COL[t.k]&&seen.has(t.t);await ask(rep?"앞에서 나온 질문! 주사위를 한 번 더 던져요 🎲":TAG[t.k],t.t);if(COL[t.k]){seen.add(t.t);tiles[pos[turn]].textContent=t.t;tiles[pos[turn]].style.fontSize="";if(rep)again=true}}
+else if(t.k!="l"){const rep=COL[t.k]&&seen[turn].has(t.t);await ask(rep?"앞에서 나온 질문! 주사위를 한 번 더 던져요 🎲":TAG[t.k],t.t);if(COL[t.k]){seen[turn].add(t.t);tiles[pos[turn]].textContent=t.t;tiles[pos[turn]].style.fontSize="";if(rep)again=true}}
 if(again){again=false;await sleep(300);doRoll()}else next()}
 $("roll").onclick=()=>{if(!busy){if(typeof playBgm=="function")playBgm();doRoll()}};
 start(2);
