@@ -113,7 +113,7 @@ button.on{background:#fdba4d;color:#2b2118}
 <div id="home"><a class="back" href="../">← 치영의 교회 생활 즐기기</a><div class="hs">🎲 다 같이 이야기 나눠요</div><div class="hh">치영의<br><b>나눔</b>보드게임</div><div class="hp" id="hp"></div><div class="sec">몇 명이서 할까요?</div><div class="bar" id="hc"></div><div class="sec">누가 먼저 할까요?</div><div id="hord"></div><button id="go">게임 시작 ▶</button><p class="hi">교회 소모임 · 셀모임 · 속회 · 청년부<br>아이스브레이킹 나눔 게임</p></div>
 <div id="modal"><div class="card"><div class="tag" id="mt"></div><div class="q" id="mq"></div><button id="ok">확인</button></div></div>
 <script>
-const RAW="s출발|p좋아하는 음식|v최근에 만난 은혜|g내가 두려워하는 것|v나의 하나님은 어떤 분?|p나의 가족|v오늘 예배를 드리면서 든 마음|p나의 특기|g내가 두려워하는 것|b밸런스 게임|p좋아하는 카페 음료|o어제 뭐 했나요?|p싫어하는 음식|v하나님의 도우심을 경험한 적|g요즘 나의 고민|v나의 감사제목|g일주일 후에 죽는다면|p나의 취미|v하나님께 물어보고 싶은 것|g가장 슬펐던 순간|p나의 스트레스 해소법|v최근에 만난 은혜|b밸런스 게임|p요즘 많이 듣는 가요|g요즘 나의 고민|p좋아하는 계절|v오늘 예배를 드리면서 든 마음|l사다리|p나의 MBTI|b밸런스 게임|v나의 하나님은 어떤 분?|p나의 이상형|v오늘 예배를 드리면서 든 마음|l사다리|g가장 최근에 운 적|o어제 뭐 했나요?|p감명깊게 읽은 책|r잠시 정지!! 기도제목|v하나님을 원망해본 적|p내가 싫어하는 사람|b밸런스 게임|g가장 행복했던 순간|p올해 이루고 싶은 것|v요즘 많이 듣는 찬양|g가장 무서웠던 순간|p내가 존경하는 사람|g나의 10년 후|v가장 좋아하는 성경말씀|p감명깊게 본 영화|g요즘 나의 고민|p요즘 사고 싶은 것|v하나님의 도우심을 경험한 적|p살아보고 싶은 나라|b밸런스 게임|v나의 하나님은 어떤 분?|g후회되는 것이 있다면|p버킷리스트 한 가지|o어제 뭐 했나요?|v나의 하나님은 어떤 분?|g나에게 가장 중요한 가치 (신앙 빼고)|p내가 좋아하는 사람|v나의 감사제목|g과거로 간다면 언제로?|o어제 뭐 했나요?|v가장 좋아하는 성경 인물|b밸런스 게임|p갖고 싶은 초능력|v하나님께 하고 싶은 말|g요즘 나의 고민|p내가 좋아했던 과목|o어제 뭐 했나요?|p듣고 싶은 말|v하나님의 도우심을 경험한 적|p20억 로또에 당첨된다면|v오늘 예배를 드리면서 든 마음|p재미있게 본 드라마|g나의 소망|p공부해보고 싶은 것|s도착";
+const RAW="s출발|p좋아하는 음식|v최근에 만난 은혜|g내가 두려워하는 것|v나의 하나님은 어떤 분?|p나의 가족|v오늘 예배를 드리면서 든 마음|p나의 특기|g내가 두려워하는 것|b밸런스 게임|p좋아하는 카페 음료|o어제 뭐 했나요?|p싫어하는 음식|v하나님의 도우심을 경험한 적|g요즘 나의 고민|v나의 감사제목|g일주일 후에 죽는다면|p나의 취미|v하나님께 물어보고 싶은 것|g가장 슬펐던 순간|p나의 스트레스 해소법|v최근에 만난 은혜|b밸런스 게임|p요즘 많이 듣는 가요|g요즘 나의 고민|p좋아하는 계절|v오늘 예배를 드리면서 든 마음|l사다리|p나의 MBTI|b밸런스 게임|v나의 하나님은 어떤 분?|p나의 이상형|v오늘 예배를 드리면서 든 마음|l사다리|g가장 최근에 운 적|o어제 뭐 했나요?|p감명깊게 읽은 책|r잠시 정지!! 기도제목|v하나님을 원망해본 적|p내가 싫어하는 사람|b밸런스 게임|g가장 행복했던 순간|p올해 이루고 싶은 것|v요즘 많이 듣는 찬양|g가장 무서웠던 순간|p내가 존경하는 사람|g나의 10년 후|v가장 좋아하는 성경말씀|p감명깊게 본 영화|g요즘 나의 고민|p요즘 사고 싶은 것|v하나님의 도우심을 경험한 적|p살아보고 싶은 나라|b밸런스 게임|v나의 하나님은 어떤 분?|g후회되는 것이 있다면|p버킷리스트 한 가지|o어제 뭐 했나요?|v나의 하나님은 어떤 분?|g나에게 가장 중요한 가치 (신앙 빼고)|p내가 좋아하는 사람|v나의 감사제목|g과거로 간다면 언제로?|o어제 뭐 했나요?|v가장 좋아하는 성경 인물|b밸런스 게임|p갖고 싶은 초능력|v하나님께 하고 싶은 말|g요즘 나의 고민|p내가 좋아했던 과목|o어제 뭐 했나요?|p듣고 싶은 말|v하나님의 도우심을 경험한 적|p20억 로또에 당첨된다면|v오늘 예배를 드리면서 든 마음|p재미있게 본 드라마|g나의 소망|p공부해보고 싶은 것|g교회에 어떻게 오게 됐나요?|p듣기 싫은 말|g최선을 다해봤던 경험|v성령의 열매 중 내게 가장 필요한 것|p가장 많이 보는 유튜브 채널|s도착";
 const T=RAW.split("|").map(x=>({k:x[0],t:x.slice(1)}));
 const N=T.length,C=6,R=Math.ceil(N/C);
 const COL={p:"#fbc9c0",g:"#e1efd9",v:"#dcc6ea",o:"#fdba4d"};
@@ -126,8 +126,14 @@ const L=T.map((t,i)=>t.k=="l"?i:-1).filter(i=>i>=0);
 const board=document.getElementById("board");
 board.style.aspectRatio=C+" / "+R;
 function xy(i){const r=Math.floor(i/C);let c=i%C;if(r%2)c=C-1-c;return [(c+.5)/C*100,(R-1-r+.5)/R*100]}
+// wooden ladder drawn between two squares (board units: each cell is 100x100)
+function ladderSvg(i0,i1){if(i0==null||i1==null)return"";const P=i=>{const p=xy(i);return[p[0]*C,p[1]*R]},[ax,ay]=P(i0),[bx,by]=P(i1),dx=bx-ax,dy=by-ay,len=Math.hypot(dx,dy),ux=dx/len,uy=dy/len,nx=-uy*15,ny=ux*15;
+ let s='<g stroke-linecap="round">';const rails=w=>[[1,1],[-1,-1]].map(([k])=>'<line x1="'+(ax+nx*k)+'" y1="'+(ay+ny*k)+'" x2="'+(bx+nx*k)+'" y2="'+(by+ny*k)+'" '+w+'/>').join("");
+ let rungs="";for(let d=22;d<len-10;d+=17){const cx=ax+ux*d,cy=ay+uy*d;rungs+='<line x1="'+(cx+nx)+'" y1="'+(cy+ny)+'" x2="'+(cx-nx)+'" y2="'+(cy-ny)+'" STROKE/>'}
+ s+=rungs.split("STROKE").join('stroke="#5a3415" stroke-width="9"')+rungs.split("STROKE").join('stroke="#e0a25c" stroke-width="5"');
+ s+=rails('stroke="#5a3415" stroke-width="12"')+rails('stroke="#c9813f" stroke-width="7"');return s+"</g>"}
 let pts=T.map((_,i)=>{const p=xy(i);return (p[0]*C).toFixed(1)+","+(p[1]*R).toFixed(1)}).join(" ");
-board.innerHTML='<svg viewBox="0 0 '+C*100+' '+R*100+'" preserveAspectRatio="none"><polyline points="'+T.map((_,i)=>{const p=xy(i);return (p[0]*C/100*100).toFixed(1)+","+(p[1]*R/100*100).toFixed(1)}).join(" ")+'" fill="none" stroke="var(--line)" stroke-width="9" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>';
+board.innerHTML='<svg viewBox="0 0 '+C*100+' '+R*100+'" preserveAspectRatio="none"><polyline points="'+T.map((_,i)=>{const p=xy(i);return (p[0]*C/100*100).toFixed(1)+","+(p[1]*R/100*100).toFixed(1)}).join(" ")+'" fill="none" stroke="var(--line)" stroke-width="9" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>'+ladderSvg(L[0],L[1])+'</svg>';
 const tiles=[];
 T.forEach((t,i)=>{const d=document.createElement("div"),p=xy(i);d.className="t "+(t.k in COL?"":t.k);if(COL[t.k])d.style.backgroundColor=COL[t.k];d.style.left=p[0]+"%";d.style.top=p[1]+"%";d.innerHTML='<span class="n">'+(i>0&&i<N-1?i:"")+'</span><span class="x"></span>';const x=d.lastChild;x.textContent=COL[t.k]?"?":t.t;if(COL[t.k])x.style.fontSize="clamp(14px,4vw,20px)";tiles[i]=x;board.appendChild(d)});
 let np=2,pos=[],turn=0,skip=[],busy=false,pawns=[],seen=[],again=false,sides=6,balQ={},names=Array(10).fill("");
@@ -211,7 +217,7 @@ for(let s=0;s<n&&pos[turn]<N-1;s++){hop(turn,xy(pos[turn])[0]);pos[turn]++;place
 await sleep(250);zoom(turn,false);await sleep(480);
 let t=T[pos[turn]];
 if(pos[turn]==N-1){await ask("🎉 도착!",nm(turn)+" — 가장 먼저 도착했어요!");$("status").innerHTML=chip(turn)+"🏆 <b>"+nm(turn)+"</b> 우승!";busy=false;return}
-if(t.k=="l"&&pos[turn]==L[0]){await ask("사다리","🪜 사다리를 타고 앞으로 쭉!");pos[turn]=L[1];place(turn);scrollToPawn(turn);await sleep(500);t=T[pos[turn]]}
+if(t.k=="l"&&pos[turn]==L[0]){await ask("사다리","🪜 사다리를 타고 앞으로 쭉!");pos[turn]=L[1];place(turn);scrollToPawn(turn);await sleep(500);t=T[pos[turn]];await ask("밸런스 게임",drawBal().split(" vs ").join("\nVS\n"))}
 else if(t.k=="b")await ask("밸런스 게임",drawBal().split(" vs ").join("\nVS\n"));
 else if(t.k=="r")await ask("잠시 정지","🙏 기도제목을 나눠요! 주사위가 남았어도 여기서 멈춰요.")
 else if(t.k!="l"){const rep=COL[t.k]&&seen[turn].has(t.t);await ask(rep?"앞에서 나온 질문! 주사위를 한 번 더 던져요 🎲":TAG[t.k],t.t);if(COL[t.k]){seen[turn].add(t.t);tiles[pos[turn]].textContent=t.t;tiles[pos[turn]].style.fontSize="";if(rep)again=true}}
