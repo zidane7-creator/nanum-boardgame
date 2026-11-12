@@ -62,7 +62,7 @@ button.on{background:#fdba4d;color:#2b2118}
 .t{border:2px solid rgba(43,33,24,.75);background-image:radial-gradient(circle at 34% 26%,rgba(255,255,255,.75),rgba(255,255,255,0) 52%),linear-gradient(rgba(255,255,255,0) 55%,rgba(0,0,0,.10));box-shadow:inset 0 -4px 0 rgba(0,0,0,.13),inset 0 3px 0 rgba(255,255,255,.6),0 5px 0 rgba(43,33,24,.7),0 9px 8px rgba(0,0,0,.25)}
 .t.b{background-color:#6aa84f;color:#fff;font-size:clamp(10px,3vw,14px)}
 .t.s{background-color:#fdba4d;font-size:clamp(11px,3.4vw,16px)}
-.t.r{background-color:#fff;border-radius:14px;font-size:clamp(9px,2.6vw,12px);width:20%}
+.t.r{background-color:#fff;border-radius:14px;font-size:clamp(8px,2.3vw,11px);width:16%}
 .t.l{background-color:#b9e6ff;font-size:clamp(10px,3vw,14px)}
 .pawn{position:absolute;width:7.5%;aspect-ratio:1;transition:left .3s linear,top .3s linear;z-index:5}
 .pawn.hop svg{animation:hop .3s ease-out}
@@ -135,9 +135,23 @@ try{const a=localStorage.getItem("sfxVol"),b=localStorage.getItem("bgmVol");if(a
 function ac(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state=="suspended")AC.resume();return AC}
 function noise(dur,freq,q,vol,when=0){const a=ac();if(!a||sfxVol<=0)return;const t=a.currentTime+when,len=Math.ceil(a.sampleRate*dur),buf=a.createBuffer(1,len,a.sampleRate),d=buf.getChannelData(0);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,3);const s=a.createBufferSource();s.buffer=buf;const f=a.createBiquadFilter();f.type="bandpass";f.frequency.value=freq;f.Q.value=q;const g=a.createGain();g.gain.value=vol*sfxVol;s.connect(f).connect(g).connect(a.destination);s.start(t)}
 function tone(f0,f1,dur,vol,type="sine",when=0){const a=ac();if(!a||sfxVol<=0)return;const t=a.currentTime+when,o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(f1,t+dur);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol*sfxVol,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g).connect(a.destination);o.start(t);o.stop(t+dur+.02)}
+// one die hitting a wooden table: sharp click + ringing plastic modes + low table thud
+let NB=null,MASTER=null;
+function chain(){const a=ac();if(!a)return null;if(!MASTER){const c=a.createDynamicsCompressor();c.threshold.value=-14;c.ratio.value=6;MASTER=a.createGain();MASTER.connect(c).connect(a.destination);NB=a.createBuffer(1,a.sampleRate,a.sampleRate);const d=NB.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}MASTER.gain.value=sfxVol;return a}
+function env(a,node,t,peak,decay){const g=a.createGain();g.gain.setValueAtTime(peak,t);g.gain.exponentialRampToValueAtTime(.0001,t+decay);node.connect(g).connect(MASTER);return g}
+function impact(when,e){const a=chain();if(!a||sfxVol<=0)return;const t=a.currentTime+when,j=.88+Math.random()*.24;
+ // click transient
+ let s=a.createBufferSource();s.buffer=NB;let f=a.createBiquadFilter();f.type="bandpass";f.frequency.value=3800*j;f.Q.value=1.1;s.connect(f);env(a,f,t,1.1*e,.012);s.start(t,Math.random()*.5,.03);
+ // plastic body ringing
+ [[1900,.16,.032],[3050,.12,.024],[4550,.09,.016],[6300,.05,.010]].forEach(([fr,amp,dc])=>{const o=a.createOscillator();o.frequency.value=fr*j*(.97+Math.random()*.06);env(a,o,t,amp*e,dc*(.8+e*.4));o.start(t);o.stop(t+dc*2)});
+ // wooden table thud
+ s=a.createBufferSource();s.buffer=NB;f=a.createBiquadFilter();f.type="lowpass";f.frequency.value=380;s.connect(f);env(a,f,t,.9*e*e,.05);s.start(t,Math.random()*.5,.08);
+ const o=a.createOscillator();o.frequency.setValueAtTime(150,t);o.frequency.exponentialRampToValueAtTime(90,t+.05);env(a,o,t,.35*e*e,.05);o.start(t);o.stop(t+.08)}
 const sfx={
- rattle(){for(let i=0;i<2;i++)noise(.035,1800+Math.random()*1800,6,1,i*.03+Math.random()*.01)},
- clack(){noise(.09,900,2.5,1.4);tone(200,110,.14,.4,"triangle")},
+ // whole throw: lands, bounces, tumbles over its edges, wobbles to rest (timed to the on-screen dice)
+ roll(){const r=()=>Math.random();let t=.6+r()*.04;impact(t,1);t+=.15+r()*.03;impact(t,.7);t+=.1+r()*.02;impact(t,.5);
+  let gap=.075,e=.48;while(t<1.32){t+=gap*(.8+r()*.4);impact(t,e*(.75+r()*.35));e*=.9;gap*=1.05}
+  impact(1.4,.3);impact(1.46+r()*.01,.17);impact(1.5+r()*.01,.09)},
  hop(){noise(.04,1500,4,.9);noise(.04,1100,4,.7,.09);tone(420,820,.12,.16)}
 };
 function zoom(k,on){if(on){const p=xy(pos[k]);board.style.transformOrigin=p[0]+"% "+p[1]+"%";board.style.transform="scale(1.9)"}else board.style.transform=""}
@@ -157,8 +171,9 @@ function dieFaces(n){if(sides==6){[1,2,3,4,5,6].forEach((v,i)=>pips(faces[[0,1,2
 const k=Math.floor(Math.random()*6);faces.forEach((f,i)=>{f.className=f.className.replace(/ (num|red)/g,"")+" num";f.textContent=i==k?n:1+Math.floor(Math.random()*sides)});return k}
 async function doRoll(){busy=true;$("roll").disabled=true;const d=$("big");d.className="";void d.offsetWidth;d.classList.add("show","toss");scrollToPawn(turn);
 const n=1+Math.floor(Math.random()*sides);const k=dieFaces(n);const rot=()=>cube.style.transform="rotateX("+rx+"deg) rotateZ("+rz+"deg)";
-for(let i=0;i<12;i++){rx+=60+Math.random()*120;rz+=60+Math.random()*120;cube.style.transition="transform 70ms linear";rot();if(i%2==0)sfx.rattle();await sleep(70)}
-const [tx,tz]=SHOW[k];rx=Math.ceil(rx/360)*360+360+tx;rz=Math.ceil(rz/360)*360+360+tz;cube.style.transition="transform .7s cubic-bezier(.2,.9,.3,1.15)";rot();setTimeout(()=>sfx.clack(),380);await sleep(650);
+sfx.roll();
+for(let i=0;i<12;i++){rx+=60+Math.random()*120;rz+=60+Math.random()*120;cube.style.transition="transform 70ms linear";rot();await sleep(70)}
+const [tx,tz]=SHOW[k];rx=Math.ceil(rx/360)*360+360+tx;rz=Math.ceil(rz/360)*360+360+tz;cube.style.transition="transform .7s cubic-bezier(.2,.9,.3,1.15)";rot();await sleep(650);
 d.classList.remove("toss");d.classList.add("pop");$("status").innerHTML=chip(turn)+"<b>"+nm(turn)+"</b>: "+n+" 나왔어요!";await sleep(800);d.className="";await sleep(150);
 zoom(turn,true);scrollToPawn(turn);await sleep(420);
 for(let s=0;s<n&&pos[turn]<N-1;s++){hop(turn,xy(pos[turn])[0]);pos[turn]++;place(turn);zoom(turn,true);scrollToPawn(turn);await sleep(340);if(T[pos[turn]].k=="r")break}
