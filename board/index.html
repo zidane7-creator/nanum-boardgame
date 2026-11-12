@@ -96,6 +96,7 @@ button.on{background:#fdba4d;color:#2b2118}
 .oi .no{font-size:12px;background:#e8503a;color:#fff;border-radius:50%;min-width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center}
 .oi .onm{font-size:13px;max-width:58px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .oi .mv{padding:2px 5px;border:0;background:none;font-size:12px;border-radius:8px}.oi .mv:disabled{opacity:.2;cursor:default}
+.oin{width:76px;font:inherit;font-size:14px;padding:3px 6px;border:1.5px solid #2b2118;border-radius:10px;background:#fff;color:#2b2118;min-width:0}
 .shuf{display:block;margin:8px auto 0;font-size:14px;padding:4px 14px}
 .tb{display:flex;gap:6px}#homeb,#fs{padding:4px 10px}#fs{font-size:18px;line-height:1}
 .back{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));left:14px;color:#2b2118;text-decoration:none;font-size:15px;background:#fffaf0;border:2px solid #2b2118;border-radius:16px;padding:4px 12px}
@@ -110,7 +111,7 @@ button.on{background:#fdba4d;color:#2b2118}
 <div id="board"></div>
 <section class="about"><h2>교회 소모임 나눔 보드게임</h2><p>교회 소모임, 셀모임, 속회, 구역 모임, 청년부 모임에서 처음 만난 사이에도 자연스럽게 이야기를 꺼낼 수 있는 아이스브레이킹 나눔 게임이에요. 휴대폰 하나로 1~10명이 함께할 수 있고, 설치나 가입 없이 무료로 바로 쓸 수 있어요.</p><h3>어떻게 하나요?</h3><ul><li>인원을 고르고 차례대로 주사위를 굴려 말을 옮겨요.</li><li>멈춘 칸의 질문에 답하며 서로의 이야기를 나눠요.</li><li>나눔 질문은 '나에 대해', '나의 이야기', '하나님과 나' 세 가지예요.</li><li>밸런스 게임, 사다리, 기도제목 나눔 칸도 있어요.</li><li>가장 먼저 도착한 사람이 우승이에요!</li></ul></section>
 </div>
-<div id="home"><a class="back" href="../">← 치영의 교회 생활 즐기기</a><div class="hs">🎲 다 같이 이야기 나눠요</div><div class="hh">치영의<br><b>나눔</b>보드게임</div><div class="hp" id="hp"></div><div class="sec">몇 명이서 할까요?</div><div class="bar" id="hc"></div><div class="sec">누가 먼저 할까요?</div><div id="hord"></div><button id="go">게임 시작 ▶</button><p class="hi">교회 소모임 · 셀모임 · 속회 · 청년부<br>아이스브레이킹 나눔 게임</p></div>
+<div id="home"><a class="back" href="../">← 치영의 교회 생활 즐기기</a><div class="hs">🎲 다 같이 이야기 나눠요</div><div class="hh">치영의<br><b>나눔</b>보드게임</div><div class="hp" id="hp"></div><div class="sec">몇 명이서 할까요?</div><div class="bar" id="hc"></div><div class="sec">이름과 순서를 정해요 (◀ ▶로 순서 바꾸기)</div><div id="hord"></div><button id="go">게임 시작 ▶</button><p class="hi">교회 소모임 · 셀모임 · 속회 · 청년부<br>아이스브레이킹 나눔 게임</p></div>
 <div id="modal"><div class="card"><div class="tag" id="mt"></div><div class="q" id="mq"></div><button id="ok">확인</button></div></div>
 <script>
 const RAW="s출발|p좋아하는 음식|v최근에 만난 은혜|g내가 두려워하는 것|v나의 하나님은 어떤 분?|p나의 가족|v오늘 예배를 드리면서 든 마음|p나의 특기|g내가 두려워하는 것|b밸런스 게임|p좋아하는 카페 음료|o어제 뭐 했나요?|p싫어하는 음식|v하나님의 도우심을 경험한 적|g요즘 나의 고민|v나의 감사제목|g일주일 후에 죽는다면|p나의 취미|v하나님께 물어보고 싶은 것|g가장 슬펐던 순간|p나의 스트레스 해소법|v최근에 만난 은혜|b밸런스 게임|p요즘 많이 듣는 가요|g요즘 나의 고민|p좋아하는 계절|v오늘 예배를 드리면서 든 마음|l사다리|p나의 MBTI|b밸런스 게임|v나의 하나님은 어떤 분?|p나의 이상형|v오늘 예배를 드리면서 든 마음|l사다리|g가장 최근에 운 적|o어제 뭐 했나요?|p감명깊게 읽은 책|r잠시 정지!! 기도제목|v하나님을 원망해본 적|p내가 싫어하는 사람|b밸런스 게임|g가장 행복했던 순간|p올해 이루고 싶은 것|v요즘 많이 듣는 찬양|g가장 무서웠던 순간|p내가 존경하는 사람|g나의 10년 후|v가장 좋아하는 성경말씀|p감명깊게 본 영화|g요즘 나의 고민|p요즘 사고 싶은 것|v하나님의 도우심을 경험한 적|p살아보고 싶은 나라|b밸런스 게임|v나의 하나님은 어떤 분?|g후회되는 것이 있다면|p버킷리스트 한 가지|o어제 뭐 했나요?|v나의 하나님은 어떤 분?|g나에게 가장 중요한 가치 (신앙 빼고)|p내가 좋아하는 사람|v나의 감사제목|g과거로 간다면 언제로?|o어제 뭐 했나요?|v가장 좋아하는 성경 인물|b밸런스 게임|p갖고 싶은 초능력|v하나님께 하고 싶은 말|g요즘 나의 고민|p내가 좋아했던 과목|o어제 뭐 했나요?|p듣고 싶은 말|v하나님의 도우심을 경험한 적|p20억 로또에 당첨된다면|v오늘 예배를 드리면서 든 마음|p재미있게 본 드라마|g나의 소망|p공부해보고 싶은 것|g교회에 어떻게 오게 됐나요?|p듣기 싫은 말|g최선을 다해봤던 경험|v성령의 열매 중 내게 가장 필요한 것|p가장 많이 보는 유튜브 채널|s도착";
@@ -145,10 +146,11 @@ for(let k=0;k<n;k++){const e=document.createElement("div");e.className="pawn";e.
 $("pc").innerHTML="";[1,2,3,4,5,6,7,8,9,10].forEach(m=>{const b=document.createElement("button");b.textContent=m+"명";if(m==n)b.className="on";b.onclick=()=>{if(!busy)start(m)};$("pc").appendChild(b)});
 $("roll").disabled=false;renderNames();renderSetOrder();say()}
 // ---- turn order: list of horses with ◀ ▶ to move, plus random shuffle ----
-function renderOrder(el,arr,onChange){el.innerHTML="";const l=document.createElement("div");l.className="ordl";
+function renderOrder(el,arr,onChange,editable){el.innerHTML="";const l=document.createElement("div");l.className="ordl";
  arr.forEach((k,i)=>{const d=document.createElement("div");d.className="oi";
   d.innerHTML='<button class="mv" aria-label="앞으로"'+(i==0?" disabled":"")+'>◀</button><span class="no">'+(i+1)+'</span>'+chip(k)+'<span class="onm"></span><button class="mv" aria-label="뒤로"'+(i==arr.length-1?" disabled":"")+'>▶</button>';
-  d.querySelector(".onm").textContent=nm(k);
+  if(editable){const i=document.createElement("input");i.className="oin";i.maxLength=8;i.placeholder=(k+1)+"번 말";i.value=names[k];i.setAttribute("aria-label",(k+1)+"번 말 이름");i.oninput=()=>{names[k]=i.value.trim()};d.querySelector(".onm").replaceWith(i)}
+  else d.querySelector(".onm").textContent=nm(k);
   const [L,R]=d.querySelectorAll(".mv"),sw=j=>{const a=arr.slice();[a[i],a[j]]=[a[j],a[i]];onChange(a)};
   L.onclick=()=>sw(i-1);R.onclick=()=>sw(i+1);l.appendChild(d)});
  const s=document.createElement("button");s.className="shuf";s.textContent="🎲 랜덤 순서";
@@ -234,7 +236,7 @@ $("gear").onclick=()=>$("set").classList.add("show");$("sx").onclick=()=>$("set"
 let hn=np;$("hp").innerHTML=[0,1,2,3].map(k=>"<span>"+horse(PC[k])+"</span>").join("");
 let hord=[...Array(np).keys()];
 function renderHome(){$("hc").innerHTML="";for(let m=1;m<=10;m++){const b=document.createElement("button");b.textContent=m+"명";if(m==hn)b.className="on";b.onclick=()=>{hn=m;hord=[...Array(m).keys()];renderHome()};$("hc").appendChild(b)}
- if(hord.length!=hn)hord=[...Array(hn).keys()];renderOrder($("hord"),hord,a=>{hord=a;renderHome()})}
+ if(hord.length!=hn)hord=[...Array(hn).keys()];renderOrder($("hord"),hord,a=>{hord=a;renderHome()},true)}
 renderHome();
 // ---- fullscreen toggle (hidden where the browser can't do it, e.g. iPhone Safari) ----
 {const de=document.documentElement,b=$("fs"),req=de.requestFullscreen||de.webkitRequestFullscreen,
