@@ -47,10 +47,11 @@ button.on{background:#fdba4d;color:#2b2118}
 .rg{width:100%;accent-color:#e8503a;margin:2px 0 4px}
 .tilt{transform-style:preserve-3d;transform:rotateX(-52deg) rotateY(28deg)}
 .cube{position:relative;width:110px;height:110px;transform-style:preserve-3d}
-.face{position:absolute;inset:0;background:linear-gradient(145deg,#fff 0%,#f4efe6 70%,#e6dfd2 100%);border:3px solid #2b2118;border-radius:20px;box-sizing:border-box;display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);padding:12px;backface-visibility:hidden;box-shadow:inset 0 0 0 4px #fff,inset -6px -8px 14px rgba(0,0,0,.08)}
-.face i{border-radius:50%;margin:3px;visibility:hidden;background:radial-gradient(circle at 35% 30%,#5a4a3e,#1e1610 70%)}
-.face i.on{visibility:visible}.face.red i{background:radial-gradient(circle at 35% 30%,#ff7a66,#c62f1d 70%)}
-.face.num{display:flex;align-items:center;justify-content:center;font-size:56px;color:#2b2118;padding:0}
+.face{position:absolute;inset:0;background:linear-gradient(150deg,#ffffff 0%,#f7f7f9 55%,#e7e7ec 100%);border:1.5px solid #d4d4da;border-radius:22px;box-sizing:border-box;display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);padding:12px;backface-visibility:hidden;box-shadow:inset 0 0 0 3px rgba(255,255,255,.9),inset -8px -10px 18px rgba(0,0,0,.07)}
+.face i{border-radius:50%;margin:4px;visibility:hidden;background:radial-gradient(circle at 40% 35%,#5b5b60,#2f2f33 72%)}
+.face i.on{visibility:visible}
+.face.num{display:flex;align-items:center;justify-content:center;font-size:56px;color:#2f2f33;padding:0}
+.poly{width:132px;height:132px;transform-style:preserve-3d;display:none}.poly svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 6px 6px rgba(0,0,0,.18))}
 .f0{transform:translateZ(55px)}.f1{transform:rotateY(90deg) translateZ(55px)}.f2{transform:rotateX(90deg) translateZ(55px)}.f3{transform:rotateX(-90deg) translateZ(55px)}.f4{transform:rotateY(-90deg) translateZ(55px)}.f5{transform:rotateY(180deg) translateZ(55px)}
 .shadow{position:absolute;left:15px;right:15px;bottom:-26px;height:18px;border-radius:50%;background:radial-gradient(rgba(0,0,0,.35),transparent 70%)}
 #big.show{display:flex}#big.toss{animation:toss .85s ease-out}#big.pop{animation:pop .35s}
@@ -203,16 +204,41 @@ function drawBal(){if(!balDeck.length){balDeck=[...BAL];for(let i=balDeck.length
 const PIP={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
 // face index -> value on a standard die (opposites sum to 7); SHOW = [rotateX, rotateZ] that brings face index to the TOP
 const STD=[1,2,3,4,5,6],SHOW=[[90,0],[0,-90],[0,0],[180,0],[0,90],[-90,0]];
-$("big").innerHTML='<div class="tilt"><div class="cube">'+[0,1,2,3,4,5].map(i=>'<div class="face f'+i+'"></div>').join("")+'</div></div><div class="shadow"></div>';
+$("big").innerHTML='<div class="tilt"><div class="cube">'+[0,1,2,3,4,5].map(i=>'<div class="face f'+i+'"></div>').join("")+'</div></div><div class="poly" id="poly"></div><div class="shadow"></div>';
 const cube=$("big").firstChild.firstChild,faces=[...cube.children];let rx=0,rz=0;
 function pips(f,v){f.className=f.className.replace(/ (num|red)/g,"");f.innerHTML=Array.from({length:9},(_,j)=>'<i'+(PIP[v].includes(j)?' class="on"':'')+'></i>').join("");if(v==1)f.className+=" red"}
 function dieFaces(n){if(sides==6){[1,2,3,4,5,6].forEach((v,i)=>pips(faces[[0,1,2,3,4,5][i]],[1,2,3,4,5,6][i]));return [0,1,2,3,4,5][STD.indexOf(n)]}
 const k=Math.floor(Math.random()*6);faces.forEach((f,i)=>{f.className=f.className.replace(/ (num|red)/g,"")+" num";f.textContent=i==k?n:1+Math.floor(Math.random()*sides)});return k}
+
+/* ---- white polyhedral dice (8 / 12 / 16 sides) ---- */
+const P2=(cx,cy,r,a)=>[cx+r*Math.cos(a*Math.PI/180),cy+r*Math.sin(a*Math.PI/180)];
+const ctr=pts=>[pts.reduce((a,p)=>a+p[0],0)/pts.length,pts.reduce((a,p)=>a+p[1],0)/pts.length];
+function polyShape(sd){/* returns faces: [{pts,shade,size,rot}] ; face 0 = result face */
+ if(sd==8){const T=[64,6],R=[114,66],B=[54,116],L=[6,54],C=[50,60];
+  return[{pts:[T,R,C],shade:"#ffffff",size:30,rot:0},{pts:[T,C,L],shade:"#f2f2f5",size:19,rot:-38},{pts:[C,R,B],shade:"#e4e4e9",size:21,rot:36},{pts:[L,C,B],shade:"#d9d9df",size:15,rot:-24}]}
+ const inner=sd==12?5:6,ri=sd==12?25:24,ro=56,cx=60,cy=62,a0=-90;
+ const I=[...Array(inner)].map((_,i)=>P2(cx,cy,ri,a0+360/inner*i)),O=[...Array(inner*2)].map((_,j)=>P2(cx,cy,ro,a0+180/inner*j));
+ const out=[{pts:I,shade:"#ffffff",size:sd==12?27:25,rot:0}];
+ for(let i=0;i<inner;i++){const pts=[I[i],O[2*i],O[2*i+1],O[(2*i+2)%(inner*2)],I[(i+1)%inner]],mid=a0+360/inner*(i+.5),lit=Math.cos((mid+135)*Math.PI/180);
+  const g=Math.round(236+lit*14);out.push({pts,shade:"rgb("+g+","+g+","+(g+3>255?255:g+3)+")",size:15,rot:mid+90})}
+ return out}
+const numTxt=(v,sd)=>(v==6||v==9)&&sd>=8?v+".":String(v);
+function polySvg(sd,nums){const F=polyShape(sd);let h='<svg viewBox="0 0 120 124">';
+ F.forEach((f,i)=>{h+='<polygon points="'+f.pts.map(p=>p.map(v=>v.toFixed(1)).join(",")).join(" ")+'" fill="'+f.shade+'" stroke="#cfcfd6" stroke-width="1.6" stroke-linejoin="round"/>'});
+ const all=F.flatMap(f=>f.pts),hull=all;/* outline */
+ F.forEach((f,i)=>{const [x,y]=ctr(f.pts);h+='<text x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" font-family="Jua,sans-serif" font-size="'+f.size+'" fill="#2f2f33" text-anchor="middle" dominant-baseline="central" transform="rotate('+f.rot.toFixed(0)+' '+x.toFixed(1)+' '+y.toFixed(1)+')">'+numTxt(nums[i],sd)+'</text>'});
+ return h+'</svg>'}
+function polyNums(sd,n){const F=polyShape(sd).length,pool=[...Array(sd)].map((_,i)=>i+1).filter(v=>v!=n);for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}return[n,...pool.slice(0,F-1)]}
+async function polyRoll(n){const el=$("poly");let ax=0,ay=0,az=0;
+ for(let i=0;i<12;i++){ax=(Math.random()*110-55);ay=(Math.random()*110-55);az+=70+Math.random()*90;
+  el.innerHTML=polySvg(sides,polyNums(sides,1+Math.floor(Math.random()*sides)));el.style.transition="transform 70ms linear";el.style.transform="rotateX("+ax+"deg) rotateY("+ay+"deg) rotateZ("+az+"deg)";await sleep(70)}
+ el.innerHTML=polySvg(sides,polyNums(sides,n));el.style.transition="transform .7s cubic-bezier(.2,.9,.3,1.15)";el.style.transform="rotateX(0deg) rotateY(0deg) rotateZ("+(Math.ceil(az/360)*360+(Math.random()*16-8)).toFixed(0)+"deg)";await sleep(650)}
 async function doRoll(){busy=true;$("roll").disabled=true;const d=$("big");d.className="";void d.offsetWidth;d.classList.add("show","toss");scrollToPawn(turn);
-const n=1+Math.floor(Math.random()*sides);const k=dieFaces(n);const rot=()=>cube.style.transform="rotateX("+rx+"deg) rotateZ("+rz+"deg)";
+const n=1+Math.floor(Math.random()*sides);const isCube=sides==6;$("big").firstChild.style.display=isCube?"":"none";$("poly").style.display=isCube?"none":"block";
 sfx.roll();
+if(!isCube){await polyRoll(n)}else{const k=dieFaces(n);const rot=()=>cube.style.transform="rotateX("+rx+"deg) rotateZ("+rz+"deg)";
 for(let i=0;i<12;i++){rx+=60+Math.random()*120;rz+=60+Math.random()*120;cube.style.transition="transform 70ms linear";rot();await sleep(70)}
-const [tx,tz]=SHOW[k];rx=Math.ceil(rx/360)*360+360+tx;rz=Math.ceil(rz/360)*360+360+tz;cube.style.transition="transform .7s cubic-bezier(.2,.9,.3,1.15)";rot();await sleep(650);
+const [tx,tz]=SHOW[k];rx=Math.ceil(rx/360)*360+360+tx;rz=Math.ceil(rz/360)*360+360+tz;cube.style.transition="transform .7s cubic-bezier(.2,.9,.3,1.15)";rot();await sleep(650);}
 d.classList.remove("toss");d.classList.add("pop");$("status").innerHTML=chip(turn)+"<b>"+nm(turn)+"</b>: "+n+" 나왔어요!";await sleep(800);d.className="";await sleep(150);
 zoom(turn,true);scrollToPawn(turn);await sleep(420);
 for(let s=0;s<n&&pos[turn]<N-1;s++){hop(turn,xy(pos[turn])[0]);pos[turn]++;place(turn);zoom(turn,true);scrollToPawn(turn);await sleep(340);if(T[pos[turn]].k=="r")break}
