@@ -227,7 +227,7 @@ if(again){again=false;await sleep(300);doRoll()}else next()}
 $("roll").onclick=()=>{if(!busy){if(typeof playBgm=="function")playBgm();doRoll()}};
 start(2);
 const BG=[["연두","#c8e6b8"],["하늘","#bfe3f5"],["분홍","#f8cfdc"],["연보라","#dccdf0"],["레몬","#f7f0b0"],["복숭아","#fbd5b5"],["민트","#bdeede"],["베이지","#f6dfae"],["라벤더","#f3c6ea"],["연회색","#dde3e8"]];
-function setBg(c){document.body.style.background=c;document.documentElement.style.background=c;[...$("bg").children].forEach(b=>b.classList.toggle("on",b.dataset.c==c));try{localStorage.setItem("bg",c)}catch(e){}}
+function setBg(c){document.documentElement.style.setProperty('--scene-grass',c);[...$("bg").children].forEach(b=>b.classList.toggle("on",b.dataset.c==c));try{localStorage.setItem("bg",c)}catch(e){}}
 BG.forEach(([n,c])=>{const b=document.createElement("button");b.className="sw";b.style.background=c;b.title=n;b.dataset.c=c;b.onclick=()=>setBg(c);$("bg").appendChild(b)});
 let sv=null;try{sv=localStorage.getItem("bg")}catch(e){}
 setBg(sv||BG[0][1]);
@@ -257,4 +257,4 @@ $("sfxr").onchange=()=>sfx.hop();
 initRange("bgmr","bgmv",bgmVol,v=>{bgmVol=v;bgm.volume=v;try{localStorage.setItem("bgmVol",v)}catch(e){}if(v<=0)bgm.pause();else playBgm()});
 $("go").onclick=()=>{ac();playBgm();order=hord.slice();start(hn);$("home").classList.add("hide");scrollTo(0,0)};
 $("homeb").onclick=()=>{if(busy)return;hn=np;hord=order.slice();renderHome();$("home").classList.remove("hide")};
-</script></body></html>
+</script><style>#home{background:transparent}body:has(#home:not(.hide)) .wrap{visibility:hidden}</style><script src="../assets/scene.js"></script></body></html>
