@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>찬양 월드컵 | 치영의 교회 생활 즐기기 · 32강 찬양 이상형 월드컵</title>
+<meta name="description" content="내 최애 찬양은? 32곡을 직접 넣거나 인기 찬양으로 자동으로 채워 32강부터 결승까지 고르는 찬양 이상형 월드컵. 교회 소모임·청년부 레크레이션으로 좋아요.">
+<meta name="keywords" content="찬양 월드컵, 찬양 이상형 월드컵, CCM 월드컵, 교회 레크레이션, 청년부 게임, 찬양 추천, 인기 찬양">
+<link rel="canonical" href="https://zidane7-creator.github.io/nanum-boardgame/worldcup/">
+<meta property="og:title" content="찬양 월드컵 — 치영의 교회 생활 즐기기">
+<meta property="og:description" content="32강부터 결승까지, 내 최애 찬양을 골라 보세요!">
+<meta property="og:url" content="https://zidane7-creator.github.io/nanum-boardgame/worldcup/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏆</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#3b2a20;--cream:#fffaf0;--accent:#e8503a;--gold:#f5b82e;--green:#5aa957;--blue:#3a7be8}
+*{box-sizing:border-box}
+html,body{margin:0;color:var(--ink);font-family:"Jua","Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+body{min-height:100vh;background:linear-gradient(#a9e2f8,#d6f2fc 220px,#c3e78f 221px)}
+button,input{font:inherit;color:inherit}
+button{border:2px solid var(--ink);background:var(--cream);border-radius:16px;padding:8px 16px;cursor:pointer;box-shadow:0 3px 0 var(--ink)}
+button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+button:disabled{opacity:.45;cursor:default;transform:none}
+button.pri{background:var(--accent);color:#fff}button.go{background:var(--green);color:#fff}
+button.sm{padding:4px 10px;font-size:14px;border-radius:12px;box-shadow:0 2px 0 var(--ink)}
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:calc(8px + env(safe-area-inset-top,0px)) 14px 8px;background:rgba(255,255,255,.92);border-bottom:4px solid var(--gold)}
+.top a{color:var(--ink);text-decoration:none;font-size:15px;border:2px solid var(--ink);border-radius:14px;padding:3px 10px;background:var(--cream)}
+.top .ttl{flex:1;font-size:19px}
+main{max-width:1000px;margin:0 auto;padding:16px 14px 50px}
+.card{background:var(--cream);border:3px solid var(--ink);border-radius:22px;padding:18px;margin-bottom:16px;box-shadow:0 5px 0 rgba(0,0,0,.12)}
+.hero{text-align:center;padding:6px 0 10px}.hero .em{font-size:60px;line-height:1}.hero h1{font-weight:normal;font-size:clamp(30px,7vw,44px);margin:4px 0}
+.muted{opacity:.7;font-size:15px;line-height:1.5}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.center{text-align:center;justify-content:center}
+input.name{width:100%;font-size:20px;padding:8px 12px;border:2px solid var(--ink);border-radius:14px;background:#fff;text-align:center}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px;margin:12px 0}
+.slot{display:flex;align-items:center;gap:6px;background:#fff;border:2px solid #d9cbb8;border-radius:12px;padding:4px 6px}
+.slot.dup{border-color:var(--accent)}
+.slot b{min-width:26px;height:26px;border-radius:50%;background:var(--gold);display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:normal}
+.slot input{flex:1;min-width:0;border:0;font-size:16px;padding:4px;background:none}
+.slot input:focus{outline:none}
+.count{font-size:18px}
+/* match */
+.round{text-align:center;margin:4px 0 2px;font-size:clamp(26px,6vw,40px)}
+.prog{height:12px;background:rgba(255,255,255,.7);border:2px solid var(--ink);border-radius:8px;overflow:hidden;margin:8px auto 14px;max-width:520px}
+.prog i{display:block;height:100%;background:var(--gold);transition:width .3s}
+.vs{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:stretch}
+@media(max-width:640px){.vs{grid-template-columns:1fr}.vs .mid{padding:2px 0}}
+.pick{position:relative;min-height:clamp(170px,32vh,300px);border:4px solid var(--ink);border-radius:26px;padding:20px 14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;color:#fff;text-align:center;box-shadow:0 7px 0 var(--ink);transition:transform .15s;background:linear-gradient(135deg,#4f8df0,#2c5fc1)}
+.pick.b{background:linear-gradient(135deg,#f06b55,#c43a26)}
+.pick:hover{transform:translateY(-3px)}
+.pick .t{font-size:clamp(24px,5vw,40px);line-height:1.2;word-break:keep-all;overflow-wrap:anywhere;max-width:100%;text-shadow:0 3px 0 rgba(0,0,0,.25)}
+.pick .yt{font-size:14px;background:rgba(255,255,255,.92);color:var(--ink);border:2px solid var(--ink);border-radius:12px;padding:3px 10px;text-decoration:none;box-shadow:0 2px 0 var(--ink)}
+.pick.win{animation:win .55s ease-out forwards}.pick.lose{animation:lose .45s ease-in forwards}
+@keyframes win{40%{transform:scale(1.06)}100%{transform:scale(1.02);box-shadow:0 0 0 8px var(--gold),0 7px 0 var(--ink)}}
+@keyframes lose{100%{opacity:.25;transform:scale(.94)}}
+.mid{display:flex;align-items:center;justify-content:center;font-size:44px;color:var(--accent);text-shadow:2px 2px 0 #fff}
+.ctrl{display:flex;justify-content:center;gap:8px;margin-top:16px;flex-wrap:wrap}
+.banner{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;background:rgba(40,30,20,.45);pointer-events:none}
+.banner.show{display:flex}
+.banner div{background:var(--cream);border:4px solid var(--ink);border-radius:26px;padding:22px 40px;font-size:clamp(30px,8vw,56px);animation:pop .9s ease-out}
+@keyframes pop{0%{transform:scale(.5);opacity:0}30%{transform:scale(1.1);opacity:1}100%{transform:scale(1)}}
+/* winner */
+.trophy{font-size:96px;line-height:1;animation:bounce 1.4s ease-in-out infinite}
+@keyframes bounce{50%{transform:translateY(-12px)}}
+.champ{font-size:clamp(30px,7vw,52px);color:var(--accent);margin:8px 0;word-break:keep-all;overflow-wrap:anywhere}
+.bracket{display:grid;gap:10px;margin-top:10px}
+.bracket h3{margin:0 0 4px;font-weight:normal;font-size:18px}
+.bracket .m{display:flex;flex-wrap:wrap;gap:6px}
+.bracket .m span{background:#fff;border:2px solid #d9cbb8;border-radius:10px;padding:2px 8px;font-size:14px}
+.bracket .m span b{color:var(--accent);font-weight:normal}
+#toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,40px);opacity:0;background:var(--cream);border:2px solid var(--ink);border-radius:16px;padding:10px 18px;z-index:40;transition:.25s;box-shadow:0 4px 0 var(--ink);max-width:90vw;text-align:center}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+.confetti{position:fixed;top:-20px;width:10px;height:14px;z-index:35;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+</style></head><body>
+<div class="top"><a href="../">← 목장</a><div class="ttl" id="ttl">🏆 찬양 월드컵</div></div>
+<main id="app"></main>
+<div class="banner" id="banner"><div id="bannerTxt"></div></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script>
+"use strict";
+const $=s=>document.querySelector(s),app=$("#app");
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+let tt;function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>e.classList.remove("show"),2000)}
+const SIZE=32;
+/* 많이 불리고 많이 찾는 찬양 (제목만) — 자동 채우기에서 32곡을 무작위로 뽑아요 */
+const POPULAR=["은혜","주 품에","원하고 바라고 기도합니다","오직 예수 뿐이네","예수 피를 힘입어","나는 믿네","주님의 마음을 가진 자","하나님의 세계","이 땅의 황무함을 보소서","주 하나님 지으신 모든 세계","나 같은 죄인 살리신","나의 가장 낮은 마음","시선","꽃들도","감사함으로 그 문에 들어가며","나 무엇과도 주님을","주님 다시 오실 때까지","아버지 사랑 내가 노래해","주 은혜임을","그 사랑","예수 사랑해요","길을 만드시는 주 (Way Maker)","송축해 내 영혼 (10,000 Reasons)","주가 일하시네","내 구주 예수를 더욱 사랑","실로암","주를 향한 나의 사랑을","전부","축복의 사람","당신은 사랑받기 위해 태어난 사람","일어나라 주의 백성","너는 시냇가에 심은","주님의 선하심 (Goodness of God)","내 모습 이대로","비전","은혜 아니면","나를 지으신 주님","날 구원하신 주 감사","하나님은 너를 지키시는 자","주의 친절한 팔에 안기세","예수 나의 좋은 친구","여호와께 돌아가자","내 영혼이 은총 입어","우리 함께 기뻐해","나의 안에 거하라","주님 손 잡고 일어서세요","주 예수보다 더 귀한 것은 없네","온 땅이여 주를 찬양","주의 이름 높이며","주께 가오니"];
+const KEY="praise-worldcup-v1";
+let D={name:"찬양 월드컵",slots:Array(SIZE).fill("")};
+try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&Array.isArray(s.slots)&&s.slots.length==SIZE)D=s}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){}};
+const yt=t=>"https://www.youtube.com/results?search_query="+encodeURIComponent(t.replace(/\s*\(.*?\)\s*/g," ")+" 찬양");
+const ROUNDS={32:"32강",16:"16강",8:"8강",4:"4강",2:"결승"};
+
+/* ---------- setup ---------- */
+function renderSetup(){
+  $("#ttl").textContent="🏆 찬양 월드컵";
+  const filled=D.slots.filter(s=>s.trim()).length;
+  app.innerHTML='<div class="hero"><div class="em">🏆</div><h1>찬양 월드컵</h1><p class="muted">32곡 중 나의 최애 찬양은? 둘 중 하나를 고르며 결승까지!</p></div>'+
+  '<div class="card"><input class="name" id="nm" maxlength="30" value="'+esc(D.name)+'" aria-label="월드컵 이름">'+
+  '<div class="row center" style="margin-top:12px"><button class="pri" id="auto">✨ 자동으로 채우기</button><button id="mix" '+(filled<SIZE?"disabled":"")+'>🔀 섞기</button><button id="clr">🧹 모두 비우기</button></div>'+
+  '<p class="muted center" style="margin:10px 0 0">직접 입력하려면 아래 칸에 찬양 제목을 적어 주세요. 자동으로 채우면 많이 불리는 찬양 32곡이 무작위 순서로 들어가요.</p>'+
+  '<div class="slots" id="slots"></div><div class="row center"><span class="count" id="cnt"></span></div>'+
+  '<div class="row center" style="margin-top:12px"><button class="go" id="start" style="font-size:22px;padding:10px 40px">게임 시작 ▶</button></div></div>';
+  const w=$("#slots");
+  D.slots.forEach((v,i)=>{const d=document.createElement("label");d.className="slot";d.innerHTML='<b>'+(i+1)+'</b><input maxlength="40" placeholder="찬양 제목">';const inp=d.querySelector("input");inp.value=v;
+    inp.oninput=()=>{D.slots[i]=inp.value;save();status()};inp.onkeydown=e=>{if(e.key=="Enter"){const n=w.querySelectorAll("input")[i+1];if(n)n.focus()}};w.appendChild(d)});
+  $("#nm").oninput=e=>{D.name=e.target.value;save()};
+  $("#auto").onclick=()=>{if(D.slots.some(s=>s.trim())&&!confirm("지금 적힌 곡을 지우고 자동으로 채울까요?"))return;D.slots=shuffle(POPULAR).slice(0,SIZE);save();renderSetup();toast("인기 찬양 32곡을 넣었어요")};
+  $("#mix").onclick=()=>{D.slots=shuffle(D.slots);save();renderSetup();toast("순서를 섞었어요 🔀")};
+  $("#clr").onclick=()=>{if(!confirm("32칸을 모두 비울까요?"))return;D.slots=Array(SIZE).fill("");save();renderSetup()};
+  $("#start").onclick=start;
+  status();
+}
+function status(){
+  const t=D.slots.map(s=>s.trim()),filled=t.filter(Boolean).length,seen={},dups=new Set();
+  t.forEach((s,i)=>{if(!s)return;const k=s.replace(/\s/g,"");if(k in seen){dups.add(i);dups.add(seen[k])}else seen[k]=i});
+  document.querySelectorAll(".slot").forEach((el,i)=>el.classList.toggle("dup",dups.has(i)));
+  $("#cnt").textContent=filled==SIZE?(dups.size?"⚠ 같은 곡이 있어요 (빨간 칸)":"✅ 32곡이 모두 채워졌어요!"):filled+" / 32곡";
+  $("#mix").disabled=filled<SIZE;$("#start").disabled=filled<SIZE||dups.size>0;
+}
+
+/* ---------- tournament ---------- */
+let G=null;
+function start(){G={cur:D.slots.map(s=>s.trim()),next:[],i:0,hist:[],log:{}};keepRound();renderMatch();banner("32강 시작!")}
+function keepRound(){G.log[G.cur.length]=G.log[G.cur.length]||[]}
+function banner(t){$("#bannerTxt").textContent=t;$("#banner").classList.add("show");setTimeout(()=>$("#banner").classList.remove("show"),900)}
+function renderMatch(){
+  const n=G.cur.length,games=n/2,g=G.i/2+1,a=G.cur[G.i],b=G.cur[G.i+1],rn=ROUNDS[n];
+  $("#ttl").textContent="🏆 "+(D.name||"찬양 월드컵");
+  const done=(SIZE-n)+G.i/2,totalGames=SIZE-1;
+  app.innerHTML='<div class="round">'+rn+(n>2?' <span style="font-size:.6em">'+g+' / '+games+'</span>':'')+'</div><div class="prog"><i style="width:'+(done/totalGames*100)+'%"></i></div>'+
+   '<div class="vs"><div class="pick" data-p="0" role="button" tabindex="0"><div class="t">'+esc(a)+'</div><a class="yt" href="'+yt(a)+'" target="_blank" rel="noopener">▶ 유튜브에서 듣기</a></div><div class="mid">VS</div>'+
+   '<div class="pick b" data-p="1" role="button" tabindex="0"><div class="t">'+esc(b)+'</div><a class="yt" href="'+yt(b)+'" target="_blank" rel="noopener">▶ 유튜브에서 듣기</a></div></div>'+
+   '<div class="ctrl"><button class="sm" id="undo" '+(G.hist.length?"":"disabled")+'>↩ 이전 선택 취소</button><button class="sm" id="quit">처음으로</button></div>';
+  app.querySelectorAll(".pick").forEach(p=>{const go=e=>{if(e.target.closest(".yt"))return;choose(+p.dataset.p)};p.onclick=go;p.onkeydown=e=>{if(e.key=="Enter"||e.key==" "){e.preventDefault();go(e)}}});
+  $("#undo").onclick=undo;$("#quit").onclick=()=>{if(confirm("진행 중인 월드컵을 그만둘까요?")){G=null;renderSetup()}};
+}
+let busy=false;
+function choose(k){if(busy)return;busy=true;
+  const els=app.querySelectorAll(".pick");els[k].classList.add("win");els[1-k].classList.add("lose");
+  const n=G.cur.length,w=G.cur[G.i+k],l=G.cur[G.i+1-k];
+  G.hist.push(JSON.stringify({cur:G.cur,next:G.next,i:G.i,log:G.log}));
+  G.next.push(w);G.log[n].push([w,l]);G.i+=2;
+  setTimeout(()=>{busy=false;
+    if(G.i>=G.cur.length){
+      if(G.next.length==1){renderWinner(G.next[0]);return}
+      G.cur=G.next;G.next=[];G.i=0;keepRound();renderMatch();banner(ROUNDS[G.cur.length]+(G.cur.length==2?"!":" 진출!"))}
+    else renderMatch()},600)}
+function undo(){if(!G.hist.length)return;const s=JSON.parse(G.hist.pop());Object.assign(G,s);renderMatch()}
+function renderWinner(w){
+  $("#ttl").textContent="🏆 우승!";
+  let br='';[2,4,8,16,32].forEach(n=>{const L=G.log[n]||[];if(!L.length)return;br+='<div><h3>'+ROUNDS[n]+'</h3><div class="m">'+L.map(([a,b])=>'<span><b>'+esc(a)+'</b> vs '+esc(b)+'</span>').join("")+'</div></div>'});
+  app.innerHTML='<div class="card center" style="text-align:center"><div class="trophy">🏆</div><div class="muted">'+esc(D.name||"찬양 월드컵")+' 우승</div><div class="champ">'+esc(w)+'</div>'+
+   '<div class="row center"><a class="yt" href="'+yt(w)+'" target="_blank" rel="noopener" style="font-size:16px;color:var(--ink);background:#fff;border:2px solid var(--ink);border-radius:14px;padding:6px 14px;text-decoration:none;box-shadow:0 3px 0 var(--ink)">▶ 유튜브에서 듣기</a></div>'+
+   '<div class="row center" style="margin-top:16px"><button class="go" id="again">🔀 섞어서 다시 하기</button><button id="same">같은 순서로 다시</button><button id="edit">곡 바꾸기</button></div></div>'+
+   '<div class="card"><h2 style="font-weight:normal;margin:0 0 6px">📋 대진 결과</h2><div class="bracket">'+br+'</div></div>';
+  $("#again").onclick=()=>{D.slots=shuffle(D.slots);save();start()};$("#same").onclick=start;$("#edit").onclick=()=>{G=null;renderSetup()};
+  confetti();
+}
+function confetti(){const C=["#e8503a","#f5b82e","#3a7be8","#5aa957","#ec6fa8"];for(let i=0;i<80;i++){const c=document.createElement("i");c.className="confetti";c.style.left=Math.random()*100+"vw";c.style.background=C[i%C.length];c.style.animationDuration=(2+Math.random()*2.5)+"s";c.style.animationDelay=Math.random()*.8+"s";document.body.appendChild(c);setTimeout(()=>c.remove(),5500)}}
+renderSetup();
+</script>
+</body></html>
