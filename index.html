@@ -121,7 +121,7 @@ a{color:inherit}
 <script>
 const SITE="치영의 교회 생활 즐기기";
 const ZONES=[
- {name:"예배",items:[["악보제작","score/"],["주보제작"],["설교도우미"],["묵상저장소"]]},
+ {name:"예배",items:[["악보제작","score/"],["주보제작","https://claude.ai/artifact/AKMrZqNFmFMJEtoCvoiPk8"],["설교도우미"],["묵상저장소"]]},
  {name:"교제",items:[["나눔보드게임","board/"],["텔레스트레이션","tele/"],["레크레이션"]]},
  {name:"잡동사니",items:[["주일에 뭐 먹지?"],["수련회 장소 레이더"]]},
  {name:"Mall",items:[["전자책"],["굿즈"]]}
@@ -179,12 +179,12 @@ ZONES.forEach(z=>{
       ac();setTimeout(baa,0);
       b.classList.remove("jump");void b.offsetWidth;b.classList.add("jump");
       const s=document.createElement("span");s.className="bubble";s.textContent=SAY[Math.floor(Math.random()*SAY.length)];b.appendChild(s);setTimeout(()=>s.remove(),900);
-      if(href)setTimeout(()=>location.href=href,450);else toast("🐑 '"+label+"'은(는) 준비 중이에요!");
+      if(href&&/^https?:/.test(href)){window.open(href,"_blank","noopener")}else if(href)setTimeout(()=>location.href=href,450);else toast("🐑 '"+label+"'은(는) 준비 중이에요!");
     };
     fl.appendChild(b);
   });
   $("ranch").appendChild(pen);
 });
-$("list").innerHTML=ZONES.map(z=>'<li><b>'+z.name+'</b> — '+z.items.map(([l,h])=>h?'<a href="'+h+'">'+l+'</a>':l).join(", ")+'</li>').join("");
+$("list").innerHTML=ZONES.map(z=>'<li><b>'+z.name+'</b> — '+z.items.map(([l,h])=>h?'<a href="'+h+'"'+(/^https?:/.test(h)?' target="_blank" rel="noopener"':'')+'>'+l+'</a>':l).join(", ")+'</li>').join("");
 </script>
 </body></html>
