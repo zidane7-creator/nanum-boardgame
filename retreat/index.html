@@ -37,7 +37,7 @@ main{max-width:1060px;margin:0 auto;padding:16px 14px 60px}
 .kmap path:hover{filter:brightness(.92)}
 .kmap text{font-size:11px;fill:#3b2a20;pointer-events:none;text-anchor:middle;paint-order:stroke;stroke:#fff;stroke-width:2.5px}
 .sel{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;font-size:18px}
-.sel .pill{background:var(--accent);color:#fff;border:2px solid var(--ink);border-radius:999px;padding:4px 12px}
+.sel .pill{background:var(--accent);color:#fff;border:2px solid var(--ink);border-radius:999px;padding:4px 8px 4px 12px;font-size:16px;display:inline-flex;align-items:center;gap:4px}.sel .pill .xk{border:0;background:rgba(255,255,255,.25);color:#fff;border-radius:50%;width:22px;height:22px;padding:0;font-size:12px;cursor:pointer}
 .sel button{border:1.5px solid var(--ink);background:#fff;border-radius:999px;padding:2px 10px;cursor:pointer;font-size:14px}
 .count{margin:6px 2px 10px;font-size:18px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
@@ -56,6 +56,7 @@ main{max-width:1060px;margin:0 auto;padding:16px 14px 60px}
 .more{display:block;margin:16px auto 0;border:2px solid var(--ink);background:var(--gold);border-radius:14px;padding:8px 24px;font-size:17px;cursor:pointer;box-shadow:0 3px 0 var(--ink)}
 .empty{text-align:center;padding:30px;opacity:.7}
 .v.out{opacity:.45}.v .adm{margin-top:4px;border:2px dashed #c0503a;background:#fff4f1;color:#a03a26;border-radius:12px;padding:5px 10px;font:inherit;font-size:14px;cursor:pointer}
+body:has(#admbar){padding-bottom:90px}
 #admbar{position:fixed;left:50%;bottom:calc(12px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:35;display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;background:#fff;border:3px solid #a03a26;border-radius:18px;padding:8px 12px;box-shadow:0 6px 18px rgba(0,0,0,.25);max-width:calc(100vw - 20px);font-size:15px}
 #admbar button{border:2px solid var(--ink);background:var(--cream);border-radius:12px;padding:4px 10px;font:inherit;font-size:14px;cursor:pointer}#admbar button:disabled{opacity:.4}
 #admbar #apply{background:#03c75a;color:#fff}
@@ -81,7 +82,7 @@ main{max-width:1060px;margin:0 auto;padding:16px 14px 60px}
       <div><div class="kmap" id="kmap"></div><p class="muted" style="font-size:13px;margin:6px 4px 0">도를 누르면 시·군을 고를 수 있어요. 마우스 휠·두 손가락·＋－ 버튼으로 확대하고, 끌어서 옮겨요.</p></div>
       <div>
         <div class="sel" id="sel"></div>
-        <div class="lbl">도·광역시</div><div class="chips" id="provChips"></div>
+        <div class="lbl">도·광역시 <span style="opacity:.7">(지역·종류는 여러 개 고를 수 있어요)</span></div><div class="chips" id="provChips"></div>
         <div class="lbl">우리 인원</div><div class="chips" id="cap"></div>
         <div class="lbl">종류</div><div class="chips" id="types"></div>
       </div>
@@ -89,10 +90,9 @@ main{max-width:1060px;margin:0 auto;padding:16px 14px 60px}
   </section>
   <div class="count" id="cnt"></div>
   <div class="grid" id="grid"></div>
-  <button class="more" id="more" hidden>더 보기 ▼</button>
+  <div id="more" class="muted" style="text-align:center;padding:18px" hidden></div>
   <section class="card" style="margin-top:16px">
     <div class="note">📌 장소 정보는 각 출처(성평등가족부 청소년수련시설 공공데이터, 카카오맵 장소 검색, 교회수련회장소·갓스쿨·크리스천투데이, 교단 연수시설 목록, 신학교 안내, OpenStreetMap, 기사·커뮤니티 글)에 적힌 내용을 옮겼어요. 수용 인원·운영 여부·요금은 바뀌었을 수 있으니 <b>예약 전에 꼭 전화로 확인</b>해 주세요. 사진은 <b>사진·자세히</b>나 <b>홈페이지</b>, <b>지도</b>에서 볼 수 있어요.<br>지도 경계: 통계청 행정경계(2013, southkorea-maps) · 일부 장소 위치: © OpenStreetMap 기여자</div>
-    <p style="text-align:right;margin:8px 0 0"><a href="?admin" id="admLink" style="font-size:13px;color:inherit;opacity:.55">🔧 관리자 모드</a></p>
   </section>
 </main>
 <div class="pop" id="pop"><div class="box"><button class="x" id="px" aria-label="닫기">✕</button><h2 id="ptitle"></h2><div class="pmap" id="pmap"></div><div class="chips" id="munChips"></div></div></div>
@@ -105,7 +105,10 @@ const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const ORDER=["서울","경기","인천","강원","충북","충남","대전","세종","경북","경남","대구","부산","울산","전북","전남","광주","제주"];
 const CAPS=[["전체",0],["30명 이상",30],["50명 이상",50],["100명 이상",100],["200명 이상",200],["500명 이상",500]];
 const TYPEG=[["전체",null],["기도원·수양관",["기도원","수양관"]],["수련원",["수련원","수련시설","단체 수련시설","교회수련원","선교센터","연수원","교육센터","치유센터","세미나하우스"]],["청소년수련원",["청소년수련원"]],["유스호스텔",["유스호스텔"]],["교회",["교회"]],["펜션·리조트",["펜션","리조트","글램핑","캠핑장","캠프·글램핑","공간대관"]],["신학교",["신학교"]]];
-let prov="",sgg="",need=0,tgrp=0,shown=30;
+let REG=new Set(),need=0,TSEL=new Set(),shown=30;   /* REG: "경기|" (whole 도) or "경기|가평군" — several can be picked */
+const provSel=p=>[...REG].some(k=>k.split("|")[0]==p);
+const matchReg=v=>!REG.size||REG.has(v.sido+"|")||REG.has(v.sido+"|"+v.sgg);
+function toggleReg(k){const [p,m]=k.split("|");if(REG.has(k))REG.delete(k);else{REG.add(k);if(m)REG.delete(p+"|");else[...REG].forEach(x=>{if(x.startsWith(p+"|")&&x!=k)REG.delete(x)})}shown=30;drawKorea();chips();render()}
 /* ---- hidden venues (removed by the site admin) + admin mode ---- */
 let HIDDEN=new Set();
 const ADMIN=/[?&]admin\b/.test(location.search)||(()=>{try{return localStorage.getItem("retreat-admin")=="1"}catch(e){return false}})();
@@ -143,35 +146,45 @@ function zoomable(wrap,svg){const vb0=svg.getAttribute("viewBox").split(" ").map
   const[bi,bo,br]=zc.querySelectorAll("button");bi.onclick=()=>zoom(.7);bo.onclick=()=>zoom(1.4);br.onclick=()=>{vb=vb0.slice();set()};wrap.appendChild(zc)}
 function drawKorea(){const B=bboxOf(KPROV),pad=6,mx=Math.max(...Object.values(PC));
   let h='<svg viewBox="'+(B[0]-pad)+' '+(B[1]-pad)+' '+(B[2]-B[0]+pad*2)+' '+(B[3]-B[1]+pad*2)+'" role="img" aria-label="대한민국 지도">';
-  KPROV.forEach(p=>{h+='<path d="'+p.d+'" fill="'+(prov==p.n?"#f5b82e":shade(PC[p.n]||0,mx))+'" data-p="'+p.n+'"><title>'+p.n+' '+(PC[p.n]||0)+'곳</title></path>'});
+  KPROV.forEach(p=>{h+='<path d="'+p.d+'" fill="'+(provSel(p.n)?"#f5b82e":shade(PC[p.n]||0,mx))+'" data-p="'+p.n+'"><title>'+p.n+' '+(PC[p.n]||0)+'곳</title></path>'});
   const LBL={서울:[-3,-5],인천:[-6,0],경기:[10,20],세종:[-3,0],대전:[2,3],광주:[0,0],대구:[0,0],울산:[3,0],부산:[3,2]};
   KPROV.forEach(p=>{const n=PC[p.n]||0;if(!n)return;const o=LBL[p.n]||[0,0];const cx=(p.b[0]+p.b[2])/2+o[0],cy=(p.b[1]+p.b[3])/2+o[1];h+='<text x="'+cx.toFixed(1)+'" y="'+cy.toFixed(1)+'">'+p.n+' '+n+'</text>'});
   const keep=$("#kmap svg")?.getAttribute("viewBox");$("#kmap").innerHTML=h+'</svg>';const sv=$("#kmap svg");zoomable($("#kmap"),sv);if(keep&&keep!=sv.getAttribute("viewBox"))sv.setAttribute("viewBox",keep);
   $("#kmap").querySelectorAll("path").forEach(e=>e.onclick=()=>openProv(e.dataset.p))}
-function openProv(p){const L=KMUN.filter(m=>m.p==p);if(!L.length){setSel(p,"");return}
+let popProv="";
+function openProv(p){const L=KMUN.filter(m=>m.p==p);if(!L.length){toggleReg(p+"|");return}
+  const first=popProv!=p||!$("#pop").classList.contains("show");popProv=p;
   const MC=cntBy(v=>v.sido==p?v.sgg:null),mx=Math.max(1,...Object.values(MC)),B=bboxOf(L),pad=2;
+  const on=n=>REG.has(p+"|"+n)||REG.has(p+"|");
   let h='<svg viewBox="'+(B[0]-pad)+' '+(B[1]-pad)+' '+(B[2]-B[0]+pad*2)+' '+(B[3]-B[1]+pad*2)+'">';
-  L.forEach(m=>{h+='<path d="'+m.d+'" fill="'+(sgg==m.n&&prov==p?"#f5b82e":shade(MC[m.n]||0,mx))+'" data-m="'+esc(m.n)+'"><title>'+esc(m.n)+' '+(MC[m.n]||0)+'곳</title></path>'});
+  L.forEach(m=>{h+='<path d="'+m.d+'" fill="'+(on(m.n)?"#f5b82e":shade(MC[m.n]||0,mx))+'" data-m="'+esc(m.n)+'"><title>'+esc(m.n)+' '+(MC[m.n]||0)+'곳</title></path>'});
   const fs=Math.max(2.2,Math.min(5,(B[2]-B[0])/28));
   L.forEach(m=>{const cx=(m.b[0]+m.b[2])/2,cy=(m.b[1]+m.b[3])/2;h+='<text x="'+cx.toFixed(1)+'" y="'+cy.toFixed(1)+'" style="font-size:'+fs.toFixed(1)+'px;stroke-width:'+(fs/4).toFixed(2)+'px">'+esc(m.n.replace(/(특별자치시|광역시)$/,""))+((MC[m.n]||0)?" "+MC[m.n]:"")+'</text>'});
-  $("#pmap").innerHTML=h+'</svg>';zoomable($("#pmap"),$("#pmap svg"));$("#ptitle").textContent=p+" — 시·군을 골라 주세요";
+  const keep=first?null:$("#pmap svg")?.getAttribute("viewBox");
+  $("#pmap").innerHTML=h+'</svg>';zoomable($("#pmap"),$("#pmap svg"));if(keep)$("#pmap svg").setAttribute("viewBox",keep);
+  const picked=[...REG].filter(k=>k.startsWith(p+"|")&&k!=p+"|").length;
+  $("#ptitle").textContent=p+" — 시·군을 골라 주세요 (여러 곳 선택 가능)";
   const names=[...new Set([...L.map(m=>m.n),...Object.keys(MC)])].sort((a,b)=>(MC[b]||0)-(MC[a]||0)||a.localeCompare(b,"ko"));
-  $("#munChips").innerHTML='<button class="chip on" data-all="1">'+p+' 전체 <small>'+(PC[p]||0)+'</small></button>'+names.map(n=>'<button class="chip" data-m="'+esc(n)+'" '+(MC[n]?"":'style="opacity:.55"')+'>'+esc(n)+' <small>'+(MC[n]||0)+'</small></button>').join("");
-  $("#pmap").querySelectorAll("path").forEach(e=>e.onclick=()=>{setSel(p,e.dataset.m);closePop()});
-  $("#munChips").querySelectorAll(".chip").forEach(b=>b.onclick=()=>{setSel(p,b.dataset.all?"":b.dataset.m);closePop()});
+  $("#munChips").innerHTML='<button class="chip'+(REG.has(p+"|")?" on":"")+'" data-all="1">'+p+' 전체 <small>'+(PC[p]||0)+'</small></button>'+names.map(n=>'<button class="chip'+(REG.has(p+"|"+n)?" on":"")+'" data-m="'+esc(n)+'" '+(MC[n]?"":'style="opacity:.55"')+'>'+esc(n)+' <small>'+(MC[n]||0)+'</small></button>').join("")+
+    '<div style="width:100%;display:flex;justify-content:flex-end;gap:8px;margin-top:10px"><span class="muted" style="align-self:center">'+(REG.has(p+"|")?p+" 전체 선택됨":picked?picked+"곳 선택됨":"")+'</span><button class="more" style="margin:0" id="popDone">선택 완료</button></div>';
+  const tog=k=>{toggleReg(k);openProv(p)};
+  $("#pmap").querySelectorAll("path").forEach(e=>e.onclick=()=>tog(p+"|"+e.dataset.m));
+  $("#munChips").querySelectorAll(".chip").forEach(b=>b.onclick=()=>tog(p+"|"+(b.dataset.all?"":b.dataset.m)));
+  $("#popDone").onclick=closePop;
   $("#pop").classList.add("show")}
 const closePop=()=>$("#pop").classList.remove("show");
 $("#px").onclick=closePop;$("#pop").onclick=e=>{if(e.target.id=="pop")closePop()};addEventListener("keydown",e=>{if(e.key=="Escape")closePop()});
-function setSel(p,s){prov=p;sgg=s;shown=30;drawKorea();chips();render()}
 function chips(){
-  $("#sel").innerHTML='<span>📍</span><span class="pill">'+(prov?esc(prov)+(sgg?" › "+esc(sgg):" 전체"):"전국")+'</span>'+(prov?'<button id="clr">전국으로</button>':'')+(prov&&!sgg?'<button id="pick">시·군 고르기</button>':'');
-  if($("#clr"))$("#clr").onclick=()=>setSel("","");if($("#pick"))$("#pick").onclick=()=>openProv(prov);
-  $("#provChips").innerHTML=ORDER.filter(p=>PC[p]).map(p=>'<button class="chip'+(p==prov?" on":"")+'" data-p="'+p+'">'+p+' <small>'+PC[p]+'</small></button>').join("");
+  const keys=[...REG].sort((a,b)=>ORDER.indexOf(a.split("|")[0])-ORDER.indexOf(b.split("|")[0])||a.localeCompare(b,"ko"));
+  $("#sel").innerHTML='<span>📍</span>'+(keys.length?keys.map(k=>{const[p,m]=k.split("|");return'<span class="pill">'+esc(p)+(m?" › "+esc(m):" 전체")+' <button class="xk" data-k="'+esc(k)+'" aria-label="빼기">✕</button></span>'}).join("")+'<button id="clr">전국으로</button>':'<span class="pill">전국</span>');
+  $("#sel").querySelectorAll(".xk").forEach(b=>b.onclick=()=>toggleReg(b.dataset.k));
+  if($("#clr"))$("#clr").onclick=()=>{REG.clear();shown=30;drawKorea();chips();render()};
+  $("#provChips").innerHTML=ORDER.filter(p=>PC[p]).map(p=>'<button class="chip'+(provSel(p)?" on":"")+'" data-p="'+p+'">'+p+' <small>'+PC[p]+'</small></button>').join("");
   $("#provChips").querySelectorAll(".chip").forEach(b=>b.onclick=()=>openProv(b.dataset.p));
   $("#cap").innerHTML=CAPS.map(([t,n])=>'<button class="chip'+(n==need?" on":"")+'" data-n="'+n+'">'+t+'</button>').join("");
   $("#cap").querySelectorAll(".chip").forEach(b=>b.onclick=()=>{need=+b.dataset.n;shown=30;chips();render()});
-  $("#types").innerHTML=TYPEG.map(([t],i)=>'<button class="chip'+(i==tgrp?" on":"")+'" data-i="'+i+'">'+t+'</button>').join("");
-  $("#types").querySelectorAll(".chip").forEach(b=>b.onclick=()=>{tgrp=+b.dataset.i;shown=30;chips();render()})}
+  $("#types").innerHTML=TYPEG.map(([t],i)=>'<button class="chip'+((i==0&&!TSEL.size)||TSEL.has(i)?" on":"")+'" data-i="'+i+'">'+t+'</button>').join("");
+  $("#types").querySelectorAll(".chip").forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(i==0)TSEL.clear();else TSEL.has(i)?TSEL.delete(i):TSEL.add(i);shown=30;chips();render()})}
 const naver=v=>"https://map.naver.com/p/search/"+encodeURIComponent(v.addr&&v.addr.split(" ").length>=3&&!/참고/.test(v.addr)?v.addr:((v.sgg||v.sido||"")+" "+v.name).trim());
 function adminBtn(v){if(!ADMIN)return"";const srv=HIDDEN.has(v.id);
   if(srv)return'<button class="adm" data-id="'+v.id+'" data-k="un">'+(UNMARK.has(v.id)?"↩ 복구 취소":"♻ 다시 보이기")+'</button>';
@@ -182,12 +195,12 @@ function card(v){return'<article class="v'+(ADMIN&&isOut(v)?" out":"")+'"><h3>'+
    '<div class="btns"><a class="map" href="'+naver(v)+'" target="_blank" rel="noopener">📍 지도</a>'+(v.detail?'<a href="'+esc(v.detail)+'" target="_blank" rel="noopener">'+(v.src=="카카오맵"?"📷 사진·후기 (카카오맵)":/naver/.test(v.detail)?"📷 사진·자세히 (네이버 지도)":"📷 사진·자세히")+'</a>':'')+(v.web?'<a href="'+esc(v.web)+'" target="_blank" rel="noopener">🏠 홈페이지</a>':'')+'</div>'+
    '<div class="src">출처: <a href="'+esc(v.srcUrl)+'" target="_blank" rel="noopener">'+esc(v.src)+'</a></div>'+adminBtn(v)+'</article>'}
 const RANK=v=>/^직접 추가/.test(v.src)?-2:(v.src=="OpenStreetMap"?2:v.src=="카카오맵"?1:0)*2+(v.old?1:0);
-function render(){const q=$("#q").value.trim().replace(/\s/g,""),tg=TYPEG[tgrp][1];
-  const L=VENUES.filter(v=>(ADMIN||!isOut(v))&&(!prov||v.sido==prov)&&(!sgg||v.sgg==sgg)&&(!need||(v.capMax!=null&&v.capMax>=need))&&(!tg||tg.includes(v.type))&&(!q||(v.name+v.addr+v.type+v.sido+v.sgg).replace(/\s/g,"").includes(q)))
+function render(){const q=$("#q").value.trim().replace(/\s/g,""),tg=TSEL.size?[...TSEL].flatMap(i=>TYPEG[i][1]):null;
+  const L=VENUES.filter(v=>(ADMIN||!isOut(v))&&matchReg(v)&&(!need||(v.capMax!=null&&v.capMax>=need))&&(!tg||tg.includes(v.type))&&(!q||(v.name+v.addr+v.type+v.sido+v.sgg).replace(/\s/g,"").includes(q)))
    .sort((a,b)=>(isOut(a)-isOut(b))||RANK(a)-RANK(b)||(b.capMax||0)-(a.capMax||0)||ORDER.indexOf(a.sido)-ORDER.indexOf(b.sido)||a.name.localeCompare(b.name,"ko"));
   $("#cnt").textContent="📍 "+L.length+"곳"+(need?" (인원이 적혀 있는 곳만)":"");
   $("#grid").innerHTML=L.length?L.slice(0,shown).map(card).join(""):'<div class="card empty" style="grid-column:1/-1">조건에 맞는 장소가 없어요 😢<br>지역·인원·종류 조건을 바꿔 보세요.</div>';
-  $("#more").hidden=L.length<=shown;$("#more").textContent="더 보기 ▼ ("+(L.length-shown)+"곳 더)";
+  $("#more").hidden=L.length<=shown;$("#more").textContent="⬇ 아래로 내리면 더 나와요 ("+Math.min(shown,L.length)+" / "+L.length+"곳)";
   document.querySelectorAll(".adm").forEach(b=>b.onclick=()=>{const id=b.dataset.id,S=b.dataset.k=="mk"?MARK:UNMARK;S.has(id)?S.delete(id):S.add(id);lsSet("retreat-mark",[...MARK]);lsSet("retreat-unmark",[...UNMARK]);adminBar();render()});}
 function adminBar(){if(!ADMIN)return;let b=$("#admbar");if(!b){b=document.createElement("div");b.id="admbar";document.body.appendChild(b)}
   const ch=MARK.size||UNMARK.size||ADDS.length;
@@ -219,15 +232,17 @@ async function applyHidden(){
 async function applyExtra(ext){let copied=false;try{await navigator.clipboard.writeText(ext);copied=true}catch(e){}
   const m=document.createElement("div");m.className="pop show";m.innerHTML='<div class="box"><button class="x" aria-label="닫기">✕</button><h2>추가한 장소 GitHub에 반영하기</h2><ol style="line-height:1.8;font-size:16px;padding-left:20px"><li>'+(copied?'장소 목록을 <b>복사해 뒀어요.</b>':'아래 칸의 내용을 <b>전체 선택해서 복사</b>해 주세요.')+'</li><li>아래 버튼으로 GitHub의 <b>extra.json 고치기 화면</b>을 열어요.</li><li>편집 칸을 <b>전체 선택(Ctrl+A) → 붙여넣기(Ctrl+V)</b> 해요.</li><li>초록색 <b>Commit changes</b>를 두 번 눌러요.</li><li>1~2분 뒤 새로고침하면 모두에게 보여요.</li></ol><p><a class="more" style="display:inline-block;text-decoration:none;color:inherit" href="https://github.com/zidane7-creator/nanum-boardgame/edit/main/retreat/extra.json" target="_blank" rel="noopener">GitHub에서 extra.json 열기 ↗</a></p><textarea readonly style="width:100%;height:140px;font-size:12px">'+esc(ext)+'</textarea></div>';
   document.body.appendChild(m);m.querySelector(".x").onclick=()=>m.remove();m.onclick=e=>{if(e.target===m)m.remove()}}
-async function loadHidden(){try{const r=await fetch("extra.json?v="+Date.now(),{cache:"no-store"});if(r.ok){EXTRA=await r.json();EXTRA.forEach(e=>VENUES.unshift(toVenue(e)))}}catch(e){}
+async function loadHidden(){try{const r=await fetch("extra.json?v="+Date.now(),{cache:"no-store"});if(r.ok){EXTRA=await r.json();const nn=x=>String(x).replace(/\s/g,"");const have=new Set(VENUES.map(v=>nn(v.name))),tels=new Set(VENUES.map(v=>(v.tel||"").replace(/\D/g,"")).filter(Boolean));EXTRA.forEach(e=>{const t=(e.tel||"").replace(/\D/g,"");if(!have.has(nn(e.name))&&!(t&&tels.has(t)))VENUES.unshift(toVenue(e))})}}catch(e){}
   ADDS=ADDS.filter(a=>!EXTRA.some(e=>e.name==a.name&&e.addr==a.addr));lsSet("retreat-adds",ADDS);if(ADMIN)ADDS.forEach(a=>VENUES.unshift(toVenue(a,true)));
   try{const r=await fetch("hidden.json?v="+Date.now(),{cache:"no-store"});if(r.ok){const L=await r.json();HIDDEN=new Set(L.map(x=>typeof x=="string"?x:x.id))}}catch(e){}
   /* marks that are already applied on the server are done */
   [...MARK].forEach(id=>{if(HIDDEN.has(id))MARK.delete(id)});[...UNMARK].forEach(id=>{if(!HIDDEN.has(id))UNMARK.delete(id)});lsSet("retreat-mark",[...MARK]);lsSet("retreat-unmark",[...UNMARK]);
   PC=cntBy(v=>v.sido);$("#sub").textContent="전국 교회 수련회 장소 "+VENUES.filter(v=>!isOut(v)).length+"곳을 지도에서 골라 찾아보세요.";drawKorea();chips();render();adminBar()}
-$("#more").onclick=()=>{shown+=30;render()};
+/* load more cards automatically near the end of the list */
+let moreBusy=0;function moreCheck(){const m=$("#more");if(moreBusy||m.hidden)return;if(m.getBoundingClientRect().top<innerHeight+500){moreBusy=1;shown+=30;render();moreBusy=0}}
+addEventListener("scroll",moreCheck,{passive:true});$("#more").style.cursor="pointer";$("#more").onclick=()=>{shown+=30;render()};addEventListener("resize",moreCheck);
 $("#q").oninput=()=>{shown=30;render()};
-$("#admLink").onclick=()=>{try{localStorage.setItem("retreat-admin","1")}catch(e){}};
+if(ADMIN){try{localStorage.setItem("retreat-admin","1")}catch(e){}}
 drawKorea();chips();render();loadHidden();
 </script>
 <script src="../assets/scene.js"></script>
