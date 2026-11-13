@@ -54,6 +54,7 @@ label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--so
 .meter.over i{background:var(--accent)}
 .stat{display:flex;justify-content:space-between;font-size:14px;margin:3px 0}
 .stat b{font-size:20px;font-family:"Jua",sans-serif;font-weight:normal;color:var(--accent)}
+.lrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.dict{display:inline-flex;gap:4px;margin-left:auto}.dict a{font-size:12px;text-decoration:none;color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:8px;padding:1px 7px}.dict a:hover{border-color:var(--accent2)}
 .chk label{display:flex;gap:8px;align-items:flex-start;padding:4px 0;font-size:14px;cursor:pointer}
 .chk input{margin-top:3px;accent-color:var(--green)}
 .ill{border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:6px;background:#fff;font-size:14px}
@@ -118,7 +119,7 @@ label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--so
       <div class="grid">
         <label class="f">본문 묵상 (처음 읽고 받은 은혜)<textarea id="nMed" placeholder="본문을 여러 번 소리 내어 읽고 떠오른 것을 적어요"></textarea></label>
         <label class="f">관찰·주석 메모<textarea id="nCom" placeholder="배경, 단어, 문맥, 참고한 주석"></textarea></label>
-        <label class="f">원어·단어 연구<textarea id="nOrig" placeholder="핵심 단어의 원어 뜻, 다른 번역 비교"></textarea></label>
+        <label class="f"><span class="lrow">원어·단어 연구<span class="dict"><a href="https://dict.naver.com/hbokodict/#/main" target="_blank" rel="noopener">📘 히브리어사전</a><a href="https://dict.naver.com/grckodict/#/main" target="_blank" rel="noopener">📗 헬라어사전</a></span></span><textarea id="nOrig" placeholder="핵심 단어의 원어 뜻, 다른 번역 비교"></textarea></label>
         <label class="f">청중 생각하기<textarea id="nAud" placeholder="우리 교회 성도들은 지금 어떤 상황인가? 이 말씀이 누구에게 필요한가?"></textarea></label>
       </div>
     </section>
@@ -153,7 +154,7 @@ label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--so
       <div class="meter" id="meter"><i></i></div>
       <div class="stat"><span>목표 시간</span><span><input type="number" id="target" min="3" max="90" style="width:64px;padding:3px 6px"> 분</span></div>
       <div class="stat"><span>말하는 속도</span><span><input type="number" id="rate" min="150" max="500" step="10" style="width:72px;padding:3px 6px"> 자/분</span></div>
-      <p class="hint" id="charInfo"></p>
+      <div class="stat"><span>A4 원고 분량</span><b id="pages">0장</b></div><p class="hint" id="charInfo"></p><p class="hint" style="margin-top:0">A4 기본 여백, 11pt 고딕체, 줄 간격 160% 기준으로 대략 계산해요.</p>
     </section>
 
     <section class="card chk">
@@ -288,7 +289,12 @@ function renderBlocks(){const s=cur(),w=$("#blocks");w.innerHTML="";
     blockTime(d,b);w.appendChild(d)})}
 const chars=t=>String(t||"").replace(/\s/g,"").length;
 function blockTime(d,b){const m=chars(b.body)/(DB.rate||300);d.querySelector("[data-t]").textContent=chars(b.body)?"약 "+(m<1?"1분 미만":Math.round(m*10)/10+"분"):""}
-function updateTime(){const s=cur(),c=s.blocks.reduce((a,b)=>a+chars(b.body),0),m=c/(DB.rate||300),tg=s.target||30;
+/* rough A4 page count: A4 with 2.54cm margins, 11pt Gothic, 160% line spacing */
+function a4Pages(){const s=cur(),W=159.2/3.88,LINES=Math.floor(246.2/6.21);
+  const paras=[s.title||"",[s.text,s.date].filter(Boolean).join(" "),s.big?"핵심 메시지: "+s.big:""].concat(...s.blocks.map(b=>[b.title||"",...String(b.body||"").split(/\r?\n/)])).filter((p,i)=>!(p===""&&i==0));
+  let lines=0;paras.forEach(p=>{let w=0;for(const ch of p)w+=/[가-힣ㄱ-ㆎ一-鿿]/.test(ch)?1:ch==" "?.32:/[A-Z]/.test(ch)?.62:.55;lines+=Math.max(1,Math.ceil(w/W))});
+  return lines/LINES}
+function updateTime(){const pg=a4Pages();const pe=document.getElementById("pages");if(pe)pe.textContent=pg<.1?"0장":"약 "+(Math.round(pg*10)/10)+"장";const s=cur(),c=s.blocks.reduce((a,b)=>a+chars(b.body),0),m=c/(DB.rate||300),tg=s.target||30;
   $("#mins").textContent=(m<1&&c?"1분 미만":Math.round(m)+"분");const p=Math.min(100,m/tg*100);$("#meter i").style.width=p+"%";$("#meter").classList.toggle("over",m>tg*1.1);
   $("#charInfo").textContent="본문 칸 글자 수 "+c.toLocaleString()+"자 (띄어쓰기 제외). 목표까지 "+(m<tg?"약 "+Math.round((tg-m)*(DB.rate||300)).toLocaleString()+"자 더 쓸 수 있어요":"분량이 넘쳤어요. 줄일 곳을 찾아보세요")+"."}
 function renderChecks(){const s=cur(),w=$("#checks");w.innerHTML="";
