@@ -47,12 +47,14 @@ button.on{background:#fdba4d;color:#2b2118}
 .rg{width:100%;accent-color:#e8503a;margin:2px 0 4px}
 .tilt{transform-style:preserve-3d;transform:rotateX(-52deg) rotateY(28deg)}
 .cube{position:relative;width:110px;height:110px;transform-style:preserve-3d}
-.face{position:absolute;inset:0;background:linear-gradient(150deg,#ffffff 0%,#f7f7f9 55%,#e7e7ec 100%);border:1.5px solid #d4d4da;border-radius:22px;box-sizing:border-box;display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);padding:12px;backface-visibility:hidden;box-shadow:inset 0 0 0 3px rgba(255,255,255,.9),inset -8px -10px 18px rgba(0,0,0,.07)}
+.face{position:absolute;inset:0;background:linear-gradient(150deg,#ffffff 0%,#f7f7f9 55%,#e7e7ec 100%);border:1.5px solid #d4d4da;border-radius:16px;box-sizing:border-box;display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);padding:12px;backface-visibility:hidden;box-shadow:inset 0 0 0 3px rgba(255,255,255,.9),inset -8px -10px 18px rgba(0,0,0,.07)}
 .face i{border-radius:50%;margin:4px;visibility:hidden;background:radial-gradient(circle at 40% 35%,#5b5b60,#2f2f33 72%)}
 .face i.on{visibility:visible}
 .face.num{display:flex;align-items:center;justify-content:center;font-size:56px;color:#2f2f33;padding:0}
 .poly{width:132px;height:132px;transform-style:preserve-3d;display:none}.poly svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 6px 6px rgba(0,0,0,.18))}
 .f0{transform:translateZ(55px)}.f1{transform:rotateY(90deg) translateZ(55px)}.f2{transform:rotateX(90deg) translateZ(55px)}.f3{transform:rotateX(-90deg) translateZ(55px)}.f4{transform:rotateY(-90deg) translateZ(55px)}.f5{transform:rotateY(180deg) translateZ(55px)}
+.core{position:absolute;left:1px;top:1px;width:108px;height:108px;background:#dcdce2}
+.k0{transform:translateZ(54px)}.k1{transform:rotateY(90deg) translateZ(54px)}.k2{transform:rotateX(90deg) translateZ(54px)}.k3{transform:rotateX(-90deg) translateZ(54px)}.k4{transform:rotateY(-90deg) translateZ(54px)}.k5{transform:rotateY(180deg) translateZ(54px)}
 .shadow{position:absolute;left:15px;right:15px;bottom:-26px;height:18px;border-radius:50%;background:radial-gradient(rgba(0,0,0,.35),transparent 70%)}
 #big.show{display:flex}#big.toss{animation:toss .85s ease-out}#big.pop{animation:pop .35s}
 @keyframes toss{0%{transform:translate(38vw,42vh) scale(.3)}60%{transform:translate(0,-8vh) scale(1.15)}80%{transform:translate(0,1vh) scale(.97)}100%{transform:translate(0,0) scale(1)}}
@@ -204,8 +206,8 @@ function drawBal(){if(!balDeck.length){balDeck=[...BAL];for(let i=balDeck.length
 const PIP={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
 // face index -> value on a standard die (opposites sum to 7); SHOW = [rotateX, rotateZ] that brings face index to the TOP
 const STD=[1,2,3,4,5,6],SHOW=[[90,0],[0,-90],[0,0],[180,0],[0,90],[-90,0]];
-$("big").innerHTML='<div class="tilt"><div class="cube">'+[0,1,2,3,4,5].map(i=>'<div class="face f'+i+'"></div>').join("")+'</div></div><div class="poly" id="poly"></div><div class="shadow"></div>';
-const cube=$("big").firstChild.firstChild,faces=[...cube.children];let rx=0,rz=0;
+$("big").innerHTML='<div class="tilt"><div class="cube">'+[0,1,2,3,4,5].map(i=>'<div class="core k'+i+'"></div>').join("")+[0,1,2,3,4,5].map(i=>'<div class="face f'+i+'"></div>').join("")+'</div></div><div class="poly" id="poly"></div><div class="shadow"></div>';
+const cube=$("big").firstChild.firstChild,faces=[...cube.querySelectorAll('.face')];let rx=0,rz=0;
 function pips(f,v){f.className=f.className.replace(/ (num|red)/g,"");f.innerHTML=Array.from({length:9},(_,j)=>'<i'+(PIP[v].includes(j)?' class="on"':'')+'></i>').join("");if(v==1)f.className+=" red"}
 function dieFaces(n){if(sides==6){[1,2,3,4,5,6].forEach((v,i)=>pips(faces[[0,1,2,3,4,5][i]],[1,2,3,4,5,6][i]));return [0,1,2,3,4,5][STD.indexOf(n)]}
 const k=Math.floor(Math.random()*6);faces.forEach((f,i)=>{f.className=f.className.replace(/ (num|red)/g,"")+" num";f.textContent=i==k?n:1+Math.floor(Math.random()*sides)});return k}
@@ -283,4 +285,4 @@ $("sfxr").onchange=()=>sfx.hop();
 initRange("bgmr","bgmv",bgmVol,v=>{bgmVol=v;bgm.volume=v;try{localStorage.setItem("bgmVol",v)}catch(e){}if(v<=0)bgm.pause();else playBgm()});
 $("go").onclick=()=>{ac();playBgm();order=hord.slice();start(hn);$("home").classList.add("hide");scrollTo(0,0)};
 $("homeb").onclick=()=>{if(busy)return;hn=np;hord=order.slice();renderHome();$("home").classList.remove("hide")};
-</script><style>#home{background:transparent}body:has(#home:not(.hide)) .wrap{visibility:hidden}</style><script src="../assets/scene.js"></script></body></html>
+</script><style>#home{background:transparent}body:has(#home:not(.hide)) .wrap{visibility:hidden}</style><script src="../assets/scene.js"></script><script src="../assets/home.js"></script></body></html>
