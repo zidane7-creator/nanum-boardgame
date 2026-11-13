@@ -54,7 +54,7 @@ label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--so
 .meter.over i{background:var(--accent)}
 .stat{display:flex;justify-content:space-between;font-size:14px;margin:3px 0}
 .stat b{font-size:20px;font-family:"Jua",sans-serif;font-weight:normal;color:var(--accent)}
-.lrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.dict{display:inline-flex;gap:4px;margin-left:auto}.dict a{font-size:12px;text-decoration:none;color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:8px;padding:1px 7px}.dict a:hover{border-color:var(--accent2)}
+.lrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.dict{display:flex;gap:4px;flex-wrap:wrap}.dict a{font-size:12px;text-decoration:none;color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:8px;padding:1px 7px}.dict a:hover{border-color:var(--accent2)}
 .chk label{display:flex;gap:8px;align-items:flex-start;padding:4px 0;font-size:14px;cursor:pointer}
 .chk input{margin-top:3px;accent-color:var(--green)}
 .ill{border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:6px;background:#fff;font-size:14px}
@@ -121,7 +121,7 @@ label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--so
       <div class="grid">
         <label class="f">본문 묵상 (처음 읽고 받은 은혜)<textarea id="nMed" placeholder="본문을 여러 번 소리 내어 읽고 떠오른 것을 적어요"></textarea></label>
         <label class="f">관찰·주석 메모<textarea id="nCom" placeholder="배경, 단어, 문맥, 참고한 주석"></textarea></label>
-        <label class="f"><span class="lrow">원어·단어 연구<span class="dict"><a href="https://dict.naver.com/hbokodict/#/main" target="_blank" rel="noopener">📘 히브리어사전</a><a href="https://dict.naver.com/grckodict/#/main" target="_blank" rel="noopener">📗 헬라어사전</a></span></span><textarea id="nOrig" placeholder="핵심 단어의 원어 뜻, 다른 번역 비교"></textarea></label>
+        <label class="f">원어·단어 연구<textarea id="nOrig" placeholder="핵심 단어의 원어 뜻, 다른 번역 비교"></textarea><span class="dict"><a href="https://dict.naver.com/hbokodict/#/main" target="_blank" rel="noopener">📘 히브리어사전</a><a href="https://dict.naver.com/grckodict/#/main" target="_blank" rel="noopener">📗 헬라어사전</a></span></label>
         <label class="f">청중 생각하기<textarea id="nAud" placeholder="우리 교회 성도들은 지금 어떤 상황인가? 이 말씀이 누구에게 필요한가?"></textarea></label>
       </div>
     </section>
