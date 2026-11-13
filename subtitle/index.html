@@ -146,6 +146,24 @@ button{cursor:pointer}
 .search input{flex:1;min-width:200px;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:11px 14px;font-size:15px}
 .lib-status{color:var(--muted);padding:6px 0 14px}
 .lib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+.lib-grid.as-list{display:block;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.vtog{display:inline-flex;gap:0;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.vtog .btn{border:0;border-radius:0}.vtog .btn.on{background:var(--accent);color:var(--accent-fg)}
+.lhead,.lrow{display:grid;grid-template-columns:34px 64px minmax(0,2.2fr) minmax(0,1.2fr) 64px 70px minmax(0,1.4fr) auto;gap:10px;align-items:center;padding:8px 12px}
+.lhead{background:var(--panel2);font-size:12px;font-weight:700;color:var(--muted);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:1}
+.lhead button{border:0;background:none;font:inherit;color:inherit;cursor:pointer;padding:0;text-align:left}
+.lrow{border-bottom:1px solid var(--line)}.lrow:last-child{border-bottom:0}
+.lrow.picked{background:var(--accent-soft)}
+.lrow .lth{width:64px;aspect-ratio:16/9;object-fit:cover;border-radius:4px;background:#111;display:block}
+.lrow .lt{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lrow .ls{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lrow .ltags{display:flex;gap:4px;flex-wrap:wrap;overflow:hidden;max-height:22px}
+.lrow .ltags span{font-size:11px;background:var(--panel2);border:1px solid var(--line);padding:1px 7px;border-radius:999px}
+.lrow .lca{display:flex;gap:4px;flex-wrap:nowrap}
+.lrow input[type=checkbox]{width:16px;height:16px;accent-color:var(--sel)}
+.lrow .lmeta{display:none}
+@media (max-width:760px){.lhead{display:none}.lrow{grid-template-columns:28px 56px minmax(0,1fr);grid-template-areas:"c t n" "c t s" "a a a"}.lrow>.lpk{grid-area:c}.lrow>.lth{grid-area:t;width:56px}.lrow>.lt{grid-area:n}.lrow>.lmeta{grid-area:s;display:block}.lrow>.lca{grid-area:a;justify-content:flex-end}.lrow>.lart,.lrow>.lsl,.lrow>.lrat,.lrow>.ltags{display:none}}
+
 .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
 .card .th{aspect-ratio:16/9;background:#111;display:block;width:100%;object-fit:contain}
 .card .cb{padding:10px 12px;display:flex;flex-direction:column;gap:4px;flex:1}
@@ -223,7 +241,7 @@ button{cursor:pointer}
     </div>
     <div class="search">
       <input id="libQ" type="search" placeholder="곡 제목, 가사, 태그, 초성(예: ㅈㄴㅇㅎ)으로 검색" aria-label="자료실 검색">
-      <select id="libSort" aria-label="정렬"><option value="new">최근 올린 순</option><option value="title">제목 순</option></select>
+      <select id="libSort" aria-label="정렬"><option value="new">최근 올린 순</option><option value="title">가나다순 (ㄱ→ㅎ)</option><option value="titleDesc">가나다순 (ㅎ→ㄱ)</option></select><div class="vtog" role="group" aria-label="보기 방식"><button type="button" class="btn sm" data-view="card" title="카드로 보기">▦ 카드</button><button type="button" class="btn sm" data-view="list" title="목록으로 보기">☰ 목록</button></div>
     </div>
     <div class="lib-status" id="libStatus"></div>
     <div class="lib-grid" id="libGrid"></div>
@@ -1236,10 +1254,23 @@ function renderLib(){
   const g=$('#libGrid'),q=$('#libQ').value.trim();
   if(!libReady){libStatus('자료실을 불러오는 중…');return}
   let items=LIB.filter(it=>libMatch(it,q));
-  if($('#libSort').value==='title')items=[...items].sort((a,b)=>String(a.title).localeCompare(String(b.title),'ko'));
+  const so=$('#libSort').value;
+  if(so==='title'||so==='titleDesc')items=[...items].sort((a,b)=>String(a.title).localeCompare(String(b.title),'ko',{numeric:true})*(so==='titleDesc'?-1:1));
+  g.classList.toggle('as-list',libView==='list');$$('.vtog [data-view]').forEach(b=>b.classList.toggle('on',b.dataset.view===libView));
   libStatus(q?`'${q}' 검색 결과 ${items.length}곡`:`모두 ${LIB.length}곡`);
   if(!LIB.length){g.innerHTML=`<div class="empty" style="grid-column:1/-1">아직 올린 찬양이 없습니다.${GH.admin()?'<br><b>만들기</b>에서 슬라이드를 만든 뒤 <b>자료실로 보내기</b>를 누르거나, 위의 <b>PPT 파일 바로 올리기</b>로 가지고 있는 PPT를 올려 보세요.':''}</div>`;return}
   if(!items.length){g.innerHTML=`<div class="empty" style="grid-column:1/-1">찾는 곡이 없습니다. 제목의 일부나 가사 한 구절, 초성으로도 찾아보세요.</div>`;return}
+  if(libView==='list'){const arrow=so==='title'?' ▲':so==='titleDesc'?' ▼':'';
+    g.innerHTML=`<div class="lhead"><span></span><span></span><button type="button" data-sorttitle title="제목 가나다순으로 정렬">제목${arrow}</button><span>부른 이</span><span>장수</span><span>비율</span><span>태그</span><span></span></div>`+items.map(it=>{const k=picked.indexOf(it.id);const ad=GH.admin();return`<div class="lrow${k>=0?' picked':''}" data-id="${esc(it.id)}">
+      <label class="lpk" title="여러 곡을 골라 한 파일로 묶기"><input type="checkbox" data-pick ${k>=0?'checked':''} aria-label="${esc(it.title)} 선택"></label>
+      <img class="lth" alt="" loading="lazy" src="${it.thumb?esc(freshThumb[it.thumb]||libURL(it.thumb)):''}" onerror="this.style.visibility='hidden'">
+      <div class="lt" title="${esc(it.title)}">${k>=0?`<small style="color:var(--sel)">${k+1}번째 · </small>`:''}${esc(it.title)}</div>
+      <div class="ls lart">${esc(it.artist||'')}</div><div class="ls lsl">${it.slides||0}장</div><div class="ls lrat">${esc(it.ratio||'')}</div>
+      <div class="ls lmeta">${esc(it.artist||'')}${it.artist?' · ':''}${it.slides||0}장 · ${esc(it.ratio||'')}</div>
+      <div class="ltags">${(it.tags||[]).map(t=>`<span>${esc(t)}</span>`).join('')}</div>
+      <div class="lca"><button class="btn pri sm" data-la="pptx">PPT</button><button class="btn sm" data-la="jpg">JPG</button><button class="btn sm" data-la="edit">열기</button>${ad?`<button class="btn sm ghost danger" data-la="del">삭제</button>`:''}</div></div>`}).join('');
+    const st=g.querySelector('[data-sorttitle]');if(st)st.onclick=()=>{$('#libSort').value=so==='title'?'titleDesc':'title';renderLib()};
+    renderSelbar();return}
   g.innerHTML=items.map(it=>{const k=picked.indexOf(it.id);return`<article class="card${k>=0?' picked':''}" data-id="${esc(it.id)}">
     <img class="th" alt="" loading="lazy" src="${it.thumb?esc(freshThumb[it.thumb]||libURL(it.thumb)):''}" onerror="this.style.visibility='hidden'">
     <label class="pick" title="여러 곡을 골라 한 파일로 묶기"><input type="checkbox" data-pick ${k>=0?'checked':''} aria-label="${esc(it.title)} 선택"><span class="ord">${k>=0?k+1+'번째':'선택'}</span></label>
@@ -1257,7 +1288,7 @@ function renderSelbar(){
   $('#selInfo').textContent=`${picked.length}곡 선택 · 슬라이드 약 ${n}장`;
 }
 $('#libGrid').addEventListener('change',e=>{
-  if(!e.target.matches('[data-pick]'))return;const id=e.target.closest('.card').dataset.id;
+  if(!e.target.matches('[data-pick]'))return;const id=e.target.closest('[data-id]').dataset.id;
   if(e.target.checked){if(!picked.includes(id))picked.push(id)}else picked=picked.filter(x=>x!==id);
   renderLib();
 });
@@ -1310,9 +1341,12 @@ async function mergeSongs(list,{ratio,gap,titles,name}){
   return out;
 }
 $('#libQ').addEventListener('input',renderLib);$('#libSort').addEventListener('change',renderLib);
+/* 카드형 / 목록형 보기 (이 브라우저에 기억) */
+let libView=(()=>{try{return localStorage.getItem('csub:libView')||'card'}catch(_){return'card'}})();
+$$('.vtog [data-view]').forEach(b=>b.onclick=()=>{libView=b.dataset.view;try{localStorage.setItem('csub:libView',libView)}catch(_){}renderLib()});
 async function fetchLibProject(it){let r;if(GH.admin()){try{r=await GH.raw(it.data)}catch(_){r=null}}if(!r)r=await fetch(libURL(it.data));if(!r.ok)throw new Error('fetch '+r.status);return normalizeProject(await r.json())}
 $('#libGrid').addEventListener('click',async e=>{
-  const b=e.target.closest('[data-la]');if(!b)return;const id=b.closest('.card').dataset.id;const it=LIB.find(x=>x.id===id);if(!it)return;const a=b.dataset.la;
+  const b=e.target.closest('[data-la]');if(!b)return;const id=b.closest('[data-id]').dataset.id;const it=LIB.find(x=>x.id===id);if(!it)return;const a=b.dataset.la;
   if(a==='del'){if(b.dataset.sure!=='1'){b.dataset.sure='1';b.textContent='정말 삭제할까요?';setTimeout(()=>{if(b.isConnected){b.dataset.sure='';b.textContent='삭제'}},4000);return}
     const done=busy('자료실에서 지우는 중…');try{const idx=(await loadIndex()).filter(x=>x.id!==id);await GH.commit('자료실: '+it.title+' 삭제',[{path:'index.json',b64:b64txt(JSON.stringify(idx,null,1))}],[it.data,it.thumb].filter(Boolean));LIB=idx;done();renderLib();toast(`'${it.title}'을(를) 자료실에서 지웠습니다`)}catch(err){done();showGhError('삭제',err)}return}
   let proj;const done=busy('자료를 불러오는 중…');
