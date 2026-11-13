@@ -252,7 +252,7 @@ button{cursor:pointer}
       <button class="btn ghost" id="bUndo" title="되돌리기 (Ctrl+Z)">↶</button>
       <button class="btn ghost" id="bRedo" title="다시 실행 (Ctrl+Y)">↷</button>
       <div class="spacer"></div>
-      <button class="btn" id="bUpload" hidden>자료실에 올리기</button>
+      <button class="btn" id="bUpload">📚 자료실에 올리기</button>
       <div class="menu">
         <button class="btn pri" id="bExport">내보내기 ▾</button>
         <div class="menu-pop" id="exportPop" hidden>
@@ -759,7 +759,19 @@ $('#exportPop').addEventListener('click',async e=>{const b=e.target.closest('but
   if(k==='pptx')await exportPptx(P);else if(k==='jpgall')await exportJpg(P,'all');else if(k==='jpgcur')await exportJpg(P,'cur');
   else if(k==='json')await saveFile(fileBase(P.title)+'.json',new Blob([JSON.stringify(P)],{type:'application/json'}))});
 $('#bLyrics').onclick=openLyricsModal;
-$('#bUpload').onclick=()=>openUploadModal(P);
+$('#bUpload').onclick=()=>{if(CAP.assets&&CAP.db){openUploadModal(P);return}handoffUpload()};
+/* 사이트(GitHub)에서는 자료실 저장소에 직접 쓸 수 없어서, 프로젝트 파일을 받아 자료실 페이지에서 올린다 */
+const LIB_URL='https://claude.ai/artifact/CF5TJfK6bQUd568ouDfUXc#library';
+function handoffUpload(){
+  const name=fileBase(P.title)+'.json';
+  modal(`<h2>자료실에 올리기</h2>
+    <p class="note">찬양 자료실은 따로 있는 페이지라서 두 단계로 올려요. (자료실에 올리는 것은 관리자만 할 수 있어요)</p>
+    <ol style="margin:0;padding-left:20px;line-height:1.9">
+      <li><b>${esc(name)}</b> 파일을 받아요. (지금 만든 슬라이드 ${P.slides.length}장 전체)</li>
+      <li>자료실이 새 창으로 열리면 <b>PPT 파일 바로 올리기</b>를 누르고 방금 받은 파일을 고르세요.</li>
+      <li>곡 제목·태그를 확인하고 <b>올리기</b>를 누르면 끝!</li></ol>
+    <div class="acts"><button class="btn" data-close>취소</button><button class="btn pri" id="hoGo">파일 받고 자료실 열기</button></div>`,m=>{
+    $('#hoGo',m).onclick=async()=>{await saveFile(name,new Blob([JSON.stringify(P)],{type:'application/json'}));window.open(LIB_URL,'_blank','noopener');closeModal()}})}
 
 /* ================= panel ================= */
 let ptab='tpl';
@@ -1304,7 +1316,7 @@ async function uploadToLibrary(proj,meta,existing){
   }catch(err){done();console.error(err);toast(err?.code==='too_large'?'파일이 너무 큽니다. 사진 수를 줄여 다시 시도해 주세요':'올리지 못했습니다: '+(err?.message||err?.code||''),4500)}
 }
 function initLibrary(){
-  $('#libAdmin').hidden=!(CAP.assets&&CAP.db);$('#bUpload').hidden=!(CAP.assets&&CAP.db);
+  $('#libAdmin').hidden=!(CAP.assets&&CAP.db);
   if(!CAP.db){renderLib();return}
   const timer=setTimeout(()=>{if(!libReady)libStatus('자료실 연결이 늦어지고 있습니다. 잠시 기다려 주세요…')},10000);
   CAP.db.collection('songs').orderBy('created','desc').limit(1000).onSnapshot(snap=>{
