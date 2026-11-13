@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko"><head><meta charset="utf-8">
+<html lang="ko"><head><meta charset="utf-8"><script async src="https://www.googletagmanager.com/gtag/js?id=G-0WTWY3TPES"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-0WTWY3TPES");</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>치영의 교회 생활 즐기기 | 교회 소모임·셀모임·속회 나눔과 예배 도구</title>
 <meta name="description" content="치영의 교회 생활 즐기기 — 교회 소모임, 셀모임, 속회, 청년부를 위한 나눔 보드게임과 아이스브레이킹, 레크레이션, 악보·주보 제작, 설교 도우미, 묵상 저장소까지 한곳에 모았어요.">
@@ -192,6 +192,7 @@ function makeSheep(label,href,kids){
   b.addEventListener("pointerenter",e=>{if(e.pointerType=="mouse")baa()});
   b.onclick=()=>{
     ac();setTimeout(baa,0);
+    try{gtag("event","menu_click",{menu_name:label,menu_type:kids?"모음":href?"열림":"준비 중"})}catch(e){}
     b.classList.remove("jump");void b.offsetWidth;b.classList.add("jump");
     const s=document.createElement("span");s.className="bubble";s.textContent=SAY[Math.floor(Math.random()*SAY.length)];b.appendChild(s);setTimeout(()=>s.remove(),900);
     if(kids)setTimeout(()=>openGroup(label,kids),250);
