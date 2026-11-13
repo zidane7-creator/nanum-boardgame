@@ -2,8 +2,8 @@
 <html lang="ko"><head><meta charset="utf-8"><script async src="https://www.googletagmanager.com/gtag/js?id=G-0WTWY3TPES"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-0WTWY3TPES");</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>치영의 교회 생활 즐기기 | 교회 소모임·셀모임·속회 나눔과 예배 도구</title>
-<meta name="description" content="치영의 교회 생활 즐기기 — 교회 소모임, 셀모임, 속회, 청년부를 위한 나눔 보드게임과 아이스브레이킹, 레크레이션, 악보·주보 제작, 설교 도우미, 묵상 저장소까지 한곳에 모았어요.">
-<meta name="keywords" content="교회 소모임, 교회 아이스브레이킹, 교회 속회, 교회 셀모임, 교회 나눔, 나눔, 나눔 보드게임, 교회 레크레이션, 주보 제작, 악보 제작, 묵상, 수련회 장소">
+<meta name="description" content="치영의 교회 생활 즐기기 — 교회 소모임, 셀모임, 속회, 청년부를 위한 나눔 보드게임과 아이스브레이킹, 레크리에이션, 악보·주보 제작, 설교 도우미, 묵상 저장소까지 한곳에 모았어요.">
+<meta name="keywords" content="교회 소모임, 교회 아이스브레이킹, 교회 속회, 교회 셀모임, 교회 나눔, 나눔, 나눔 보드게임, 교회 레크리에이션, 주보 제작, 악보 제작, 묵상, 수련회 장소">
 <meta name="apple-mobile-web-app-title" content="교회 생활 즐기기">
 <link rel="canonical" href="https://zidane7-creator.github.io/nanum-boardgame/">
 <meta property="og:type" content="website">
@@ -156,7 +156,7 @@ html.sc-night .tree,html.sc-night .hills,html.sc-night .front{filter:brightness(
 
 <section class="about"><div class="in">
   <h2>치영의 교회 생활 즐기기</h2>
-  <p style="margin:0">교회 소모임, 셀모임, 속회, 청년부에서 쓰기 좋은 도구들을 모아 둔 작은 목장이에요. 예배 준비부터 아이스브레이킹 나눔, 레크레이션까지 한곳에서 즐겨요.</p>
+  <p style="margin:0">교회 소모임, 셀모임, 속회, 청년부에서 쓰기 좋은 도구들을 모아 둔 작은 목장이에요. 예배 준비부터 아이스브레이킹 나눔, 레크리에이션까지 한곳에서 즐겨요.</p>
   <ul id="list"></ul>
   <small>🐑 계속 새로운 양이 들어올 예정이에요</small>
 </div></section>
@@ -168,9 +168,12 @@ html.sc-night .tree,html.sc-night .hills,html.sc-night .front{filter:brightness(
 const SITE="치영의 교회 생활 즐기기";
 const ZONES=[
  {name:"예배",items:[["악보제작","score/"],["주보제작","jubo/"],["설교도우미","sermon/"],["자막스튜디오","subtitle/"],["성경 읽기","bible/"],["묵상저장소","meditation/"]]},
- {name:"교제",items:[["셀교제",null,[["나눔보드게임","board/"],["텔레스트레이션","tele/"]]],["레크레이션",null,[["성경골든벨"],["OX퀴즈"],["찬양월드컵","worldcup/"],["윷놀이"],["부루마불"],["추수꾼"]]]]},
+ {name:"교제",items:[["셀교제",null,[["나눔보드게임","board/"],["텔레스트레이션","tele/"]]],["레크리에이션",null,[["성경골든벨"],["OX퀴즈"],["찬양월드컵","worldcup/"],["윷놀이"],["부루마불"],["추수꾼"],["밸런스게임"],["빙고게임"]]]]},
  {name:"잡동사니",items:[["주일에 뭐 먹지?","food/"],["수련회 장소 레이더","retreat/"],["수련회 강사 레이더"],["MT 장소 레이더"],["이미지 제작","image/"]]},
- {name:"Mall",items:[["전자책","ebook/"],["굿즈"],["백드롭"],["말씀카드"],["말씀배경"]]}
+ {name:"Mall",items:[["전자책","ebook/"],["굿즈"],["백드롭"],["말씀카드"],["말씀배경"]]},
+ {name:"교회학교",items:[]},
+ {name:"선교",items:[]},
+ {name:"섬김",items:[]}
 ];
 const $=id=>document.getElementById(id);
 // title cells
@@ -254,7 +257,7 @@ ZONES.forEach(z=>{
   $("ranch").appendChild(pen);
 });
 const link=([l,h])=>h?'<a href="'+h+'"'+(/^https?:/.test(h)?' target="_blank" rel="noopener"':'')+'>'+l+'</a>':l;
-$("list").innerHTML=ZONES.map(z=>'<li><b>'+z.name+'</b> — '+z.items.map(it=>it[2]?it[0]+"("+it[2].map(link).join(", ")+")":link(it)).join(", ")+'</li>').join("");
+$("list").innerHTML=ZONES.map(z=>'<li><b>'+z.name+'</b> — '+(z.items.length?z.items.map(it=>it[2]?it[0]+"("+it[2].map(link).join(", ")+")":link(it)).join(", "):"준비 중")+'</li>').join("");
 </script>
 <script>
 /* 양 이름표: 늘 한 줄, 긴 이름은 글자만 조금 줄여서 모든 이름표 높이를 같게 */
