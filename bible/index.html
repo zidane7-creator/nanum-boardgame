@@ -32,21 +32,30 @@ h1{font-weight:normal;text-align:center;font-size:clamp(30px,7vw,42px);margin:6p
 .pen::before{content:"";position:absolute;left:0;right:0;top:34%;height:26px;margin-top:-26px;
   background:repeating-linear-gradient(90deg,#c98d5a 0 6px,transparent 6px 34px),linear-gradient(transparent 6px,#c98d5a 6px 10px,transparent 10px 17px,#c98d5a 17px 21px,transparent 21px)}
 .pen::after{content:"";position:absolute;inset:34% 0 0;background-image:radial-gradient(#b2dc78 18%,transparent 20%);background-size:28px 28px;opacity:.7}
-.lamb{position:absolute;bottom:14%;left:40%;z-index:3;transition:left 1s ease-in-out;transform-origin:50% 100%}
-.lamb svg{display:block;overflow:visible}
-.lamb .flipper{transition:transform .3s}
-.lamb.left .flipper{transform:scaleX(-1)}
-.lamb.walk svg{animation:walk .35s ease-in-out infinite}
-.lamb.eat .head{animation:munch .3s ease-in-out 4}
-.lamb.happy svg{animation:hop .5s ease-out}
-@keyframes walk{50%{transform:translateY(-4px)}}
-@keyframes munch{50%{transform:translate(4px,9px) rotate(14deg)}}
-@keyframes hop{40%{transform:translateY(-22px)}}
+.sh{position:absolute;transform:translate(-50%,-100%);transition-property:left,top;transition-timing-function:linear;cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none}
+.sh .fl{transition:transform .25s}.sh.flip .fl{transform:scaleX(-1)}
+.sh img{display:block;pointer-events:none;transform-origin:50% 100%;-webkit-user-drag:none}
+.sh.walking img{animation:walk .34s ease-in-out infinite}
+.sh.grazing img{animation:graze 1.8s ease-in-out infinite}
+.sh.eating img{animation:munch .3s ease-in-out infinite}
+.sh.resting img{animation:breathe 3.2s ease-in-out infinite}
+.sh.sleeping img{animation:breathe 2.6s ease-in-out infinite}
+.sh.hop img{animation:hop .55s ease-out}
+.sh .zz{position:absolute;right:4%;top:-4px;font-size:18px;display:none;pointer-events:none}
+.sh.sleeping .zz{display:block;animation:zz 2.4s ease-in-out infinite}
+.sh .nm{position:absolute;left:50%;bottom:-13px;transform:translateX(-50%);font-size:11px;line-height:1.3;background:rgba(255,255,255,.88);border:1.5px solid var(--ink);border-radius:8px;padding:0 6px;white-space:nowrap}
+@keyframes walk{50%{transform:translateY(-5px) rotate(1.5deg)}}
+@keyframes graze{0%,100%{transform:none}50%{transform:translateY(2px) rotate(-1.5deg)}}
+@keyframes munch{50%{transform:translateY(3px) rotate(2deg)}}
+@keyframes breathe{50%{transform:scale(1.025,.975)}}
+@keyframes hop{40%{transform:translateY(-24px)}}
+@keyframes zz{0%{opacity:0;transform:translate(0,8px)}30%{opacity:1}100%{opacity:0;transform:translate(12px,-20px)}}
 .feed{position:absolute;z-index:2;font-size:26px;line-height:1;transform:translate(-50%,-100%);animation:drop .5s ease-out;transition:transform .5s,opacity .5s}
 .feed.gone{transform:translate(-50%,-100%) scale(0);opacity:0}
 @keyframes drop{0%{transform:translate(-50%,-260%) rotate(-30deg);opacity:0}70%{transform:translate(-50%,-90%)}100%{transform:translate(-50%,-100%)}}
-.adult{position:absolute;z-index:1;text-align:center;font-size:12px;line-height:1.1}
-.adult span{display:inline-block;background:rgba(255,255,255,.85);border:1.5px solid var(--ink);border-radius:8px;padding:1px 6px;margin-top:-4px}
+.more{position:absolute;right:10px;top:38%;z-index:1;font-size:12px;background:rgba(255,255,255,.88);border:1.5px solid var(--ink);border-radius:8px;padding:1px 7px}
+.credit{font-size:11px;opacity:.55;text-align:right;margin-top:6px}
+.credit a{color:inherit}
 .bubble{position:absolute;z-index:5;background:#fff;border:2px solid var(--ink);border-radius:12px;padding:2px 9px;font-size:15px;white-space:nowrap;transform:translate(-50%,-100%);animation:pop 1.4s ease-out forwards;pointer-events:none}
 @keyframes pop{0%{opacity:0;transform:translate(-50%,-60%) scale(.6)}15%{opacity:1;transform:translate(-50%,-100%) scale(1.05)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-160%)}}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px;text-align:center}
@@ -91,6 +100,7 @@ h1{font-weight:normal;text-align:center;font-size:clamp(30px,7vw,42px);margin:6p
 
   <section class="card">
     <div class="pen" id="pen" aria-label="양 우리"></div>
+    <div class="credit">양 그림: <a href="https://www.freepik.com" target="_blank" rel="noopener">Freepik</a></div>
     <div class="stage" id="stage"></div>
     <div class="bar"><i id="bar"></i></div>
     <div class="stats">
@@ -164,35 +174,79 @@ function sheepSVG(t,w){
     <g fill="none" stroke="#d8cabb" stroke-width="2.4" stroke-linecap="round">${curls}</g>
     ${head}</g></svg>`}
 
-/* ---------- pen ---------- */
+/* ---------- pen: sheep sprites cut from one picture (4 poses) ---------- */
 const pen=$("pen");
-const lamb=document.createElement("div");lamb.className="lamb";pen.appendChild(lamb);
-let lambX=40,lastT=-1;
-function drawLamb(){const t=count()/TOTAL;if(Math.abs(t-lastT)<.002&&lamb.innerHTML)return;lastT=t;
-  const w=Math.round(pen.clientWidth*(.2+.22*t));lamb.innerHTML=sheepSVG(t,Math.max(70,w))}
-function drawFlock(){pen.querySelectorAll(".adult").forEach(e=>e.remove());const F=S.flock,show=F.slice(-8);
-  show.forEach((f,i)=>{const d=document.createElement("div");d.className="adult";const k=show.length;
-    d.style.left=(3+(i%4)*13+(i>=4?6:0))+"%";d.style.top=(i>=4?"46%":"30%");
-    d.innerHTML=sheepSVG(1,Math.max(60,Math.round(pen.clientWidth*.13)))+'<span>'+esc(f.name||((F.length-show.length+i+1)+"독 양"))+'</span>';
-    d.title=(F.length-show.length+i+1)+"독 · "+new Date(f.done).toLocaleDateString("ko-KR");pen.appendChild(d)});
-  if(F.length>8){const m=document.createElement("div");m.className="adult";m.style.left="56%";m.style.top="36%";m.innerHTML='<span>+'+(F.length-8)+'마리 더</span>';pen.appendChild(m)}}
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const POSES={eat:[55,55,260,310],walk:[400,60,260,285],lie:[45,405,350,240],sleep:[395,455,305,225]};
+const SPR={};
+function cutOne(img,x,y,w,h){const c=document.createElement("canvas");c.width=w;c.height=h;const g=c.getContext("2d",{willReadFrequently:true});g.drawImage(img,-x,-y);
+  const id=g.getImageData(0,0,w,h),d=id.data,N=w*h,bg=[d[0],d[1],d[2]],dist=i=>Math.hypot(d[i*4]-bg[0],d[i*4+1]-bg[1],d[i*4+2]-bg[2]);
+  /* background = paper colour connected to the crop edge */
+  const isBg=new Uint8Array(N),q=new Int32Array(N);let qn=0;const pushBg=i=>{if(!isBg[i]&&dist(i)<30){isBg[i]=1;q[qn++]=i}};
+  for(let i=0;i<w;i++){pushBg(i);pushBg(N-w+i)}for(let j=0;j<h;j++){pushBg(j*w);pushBg(j*w+w-1)}
+  while(qn){const i=q[--qn],px=i%w;if(px>0)pushBg(i-1);if(px<w-1)pushBg(i+1);if(i>=w)pushBg(i-w);if(i<N-w)pushBg(i+w)}
+  /* keep only the biggest blob (the sheep sticker); clouds, clovers and letters fall away */
+  const lab=new Int32Array(N).fill(-1);let best=-1,bestN=0;
+  for(let s0=0;s0<N;s0++){if(isBg[s0]||lab[s0]>=0)continue;let n=0;qn=0;lab[s0]=s0;q[qn++]=s0;
+    while(qn){const i=q[--qn];n++;const px=i%w;for(const j of[px>0?i-1:-1,px<w-1?i+1:-1,i>=w?i-w:-1,i<N-w?i+w:-1])if(j>=0&&!isBg[j]&&lab[j]<0){lab[j]=s0;q[qn++]=j}}
+    if(n>bestN){bestN=n;best=s0}}
+  let x0=w,y0=h,x1=0,y1=0;
+  for(let i=0;i<N;i++){if(lab[i]!==best){d[i*4+3]=0;continue}const px=i%w,py=(i/w)|0;if(px<x0)x0=px;if(px>x1)x1=px;if(py<y0)y0=py;if(py>y1)y1=py;
+    const edge=(px>0&&isBg[i-1])||(px<w-1&&isBg[i+1])||(i>=w&&isBg[i-w])||(i<N-w&&isBg[i+w]);if(edge){const dd=dist(i);if(dd<70)d[i*4+3]=Math.round(255*Math.max(.15,(dd-30)/40))}}
+  g.putImageData(id,0,0);const o=document.createElement("canvas");o.width=x1-x0+1;o.height=y1-y0+1;o.getContext("2d").drawImage(c,-x0,-y0);return{url:o.toDataURL("image/png"),w:o.width,h:o.height}}
+const ready=new Promise(res=>{const img=new Image();img.onload=()=>{try{for(const k in POSES)SPR[k]=cutOne(img,...POSES[k])}catch(e){}res()};img.onerror=()=>res();img.src="sheep.avif"});
+/* fallback when the picture can't be read: the drawn lamb */
+const svgURL=t=>"data:image/svg+xml;charset=utf-8,"+encodeURIComponent(sheepSVG(t,200).replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" '));
+const rnd=(a,b)=>a+Math.random()*(b-a);
+const night=()=>{const h=new Date().getHours();return h>=22||h<6};
+class Sheep{
+  constructor(o){this.lamb=!!o.lamb;this.size=o.size;this.x=o.x;this.y=o.y;this.dir=1;this.pose="";this.mode="";this.gen=0;
+    const e=this.el=document.createElement("div");e.className="sh";e.innerHTML='<div class="fl"><img alt="" draggable="false"></div><span class="zz">💤</span>'+(o.label?'<span class="nm"></span>':"");
+    if(o.label)e.querySelector(".nm").textContent=o.label;if(o.title)e.title=o.title;this.img=e.querySelector("img");pen.appendChild(e);
+    e.addEventListener("click",()=>this.poke());this.place(0);this.setPose("eat");this.setMode("grazing");this.next(rnd(600,2500))}
+  scale(){const ref=SPR.eat?SPR.eat.w:200;return this.size/ref}
+  setPose(p){this.pose=p;const sp=SPR[p];if(sp){this.img.src=sp.url;this.img.style.width=(sp.w*this.scale()).toFixed(1)+"px"}else{this.img.src=svgURL(this.lamb?count()/TOTAL:1);this.img.style.width=this.size+"px"}}
+  setSize(px){this.size=px;this.setPose(this.pose)}
+  setMode(m){this.mode=m;["walking","grazing","eating","resting","sleeping"].forEach(c=>this.el.classList.toggle(c,c===m))}
+  place(ms){const e=this.el;e.style.transitionDuration=ms+"ms";e.style.left=this.x+"%";e.style.top=this.y+"%";e.style.zIndex=10+Math.round(this.y)}
+  face(d){this.dir=d;this.el.classList.toggle("flip",d<0)}
+  next(ms){clearTimeout(this.t);const g=this.gen;this.t=setTimeout(()=>{if(g===this.gen)this.decide()},ms)}
+  stop(){this.gen++;clearTimeout(this.t)}
+  walkTo(tx,ty){const g=this.gen;const W=pen.clientWidth,H=pen.clientHeight,dx=(tx-this.x)*W/100,dy=(ty-this.y)*H/100,L=Math.hypot(dx,dy);
+    const speed=(this.lamb?55:38)*(.8+.4*Math.random()),ms=Math.max(250,L/speed*1000);
+    this.setPose(dy<-Math.abs(dx)*.6?"walk":"eat");this.face(dx<0?-1:1);this.setMode("walking");this.x=tx;this.y=ty;this.place(ms);
+    return new Promise(r=>setTimeout(()=>r(g===this.gen),ms))}
+  async decide(){const r=Math.random(),sleepy=night()?.55:.14;
+    if(r<sleepy){this.setPose("sleep");this.face(Math.random()<.5?-1:1);this.setMode("sleeping");this.next(rnd(9000,16000))}
+    else if(r<sleepy+.18){this.setPose("lie");this.face(Math.random()<.5?-1:1);this.setMode("resting");this.next(rnd(5000,9000))}
+    else if(r<sleepy+.6){const ok=await this.walkTo(rnd(8,90),rnd(52,93));if(ok){this.setPose("eat");this.setMode("grazing");this.next(rnd(1500,4000))}}
+    else{this.setPose("eat");this.setMode("grazing");this.next(rnd(2500,5000))}}
+  hop(){this.el.classList.remove("hop");void this.el.offsetWidth;this.el.classList.add("hop");setTimeout(()=>this.el.classList.remove("hop"),600)}
+  poke(){const was=this.mode;this.stop();this.setPose("eat");this.setMode("grazing");this.hop();say(this,was==="sleeping"?"하암~ 깼어요":was==="resting"?"쉬는 중이었어요":["매에~","음메~","냠냠!","😊"][Math.floor(Math.random()*4)]);this.next(rnd(1500,3000))}
+  async eatAt(x,y){this.stop();const woke=this.mode==="sleeping";if(woke)say(this,"앗, 먹이다!");
+    const ok=await this.walkTo(Math.max(6,Math.min(92,x+(x<this.x?4:-4))),Math.max(50,Math.min(94,y+4)));if(!ok)return false;
+    this.setPose("eat");this.setMode("eating");await wait(1100);this.setMode("grazing");this.next(rnd(2000,4000));return true}
+  remove(){this.stop();this.el.remove()}}
+function say(sh,txt){const b=document.createElement("div");b.className="bubble";b.textContent=txt;b.style.left=sh.x+"%";b.style.top=Math.max(4,sh.el.offsetTop-sh.el.offsetHeight-4)+"px";pen.appendChild(b);setTimeout(()=>b.remove(),1500)}
 function bubble(txt,x,y){const b=document.createElement("div");b.className="bubble";b.textContent=txt;b.style.left=x+"%";b.style.top=y+"%";pen.appendChild(b);setTimeout(()=>b.remove(),1500)}
+const lambPx=()=>Math.max(38,Math.round(pen.clientWidth*(.07+.13*count()/TOTAL)));
+const adultPx=()=>Math.max(64,Math.round(pen.clientWidth*.2));
+let lamb=null,flock=[];
+function lambResize(){if(lamb)lamb.setSize(lambPx())}
+function drawFlock(){flock.forEach(f=>f.remove());flock=[];pen.querySelectorAll(".more").forEach(e=>e.remove());const F=S.flock,show=F.slice(-8);
+  show.forEach((f,i)=>{const n=F.length-show.length+i+1;flock.push(new Sheep({size:adultPx(),x:rnd(8,90),y:rnd(50,90),label:f.name||(n+"독 양"),title:n+"독 · "+new Date(f.done).toLocaleDateString("ko-KR")}))});
+  if(F.length>8){const m=document.createElement("div");m.className="more";m.textContent="+"+(F.length-8)+"마리 더";pen.appendChild(m)}}
+let lastW=0;addEventListener("resize",()=>{if(Math.abs(pen.clientWidth-lastW)<4)return;lastW=pen.clientWidth;lambResize();flock.forEach(f=>f.setSize(adultPx()))});
 
 /* feeding queue: each checked chapter drops one feed; the lamb walks over and eats it */
 const FOODS=["🌿","🍀","🌾","🥬","🌱"];let queue=0,busy=false;
 function addFeed(n){queue+=n;if(!busy)feedLoop()}
-async function feedLoop(){busy=true;
-  while(queue>0){const many=queue>6;const take=many?queue:1;queue-=take;
-    const x=12+Math.random()*70,y=72+Math.random()*16;
-    const f=document.createElement("div");f.className="feed";f.textContent=FOODS[Math.floor(Math.random()*FOODS.length)];f.style.left=x+"%";f.style.top=y+"%";pen.appendChild(f);
-    if(take>1)bubble("먹이 +"+take,x,y-12);
-    await wait(350);
-    const goLeft=x<lambX;lamb.classList.toggle("left",goLeft);lamb.classList.add("walk");
-    lambX=Math.max(0,Math.min(78,goLeft?x+2:x-18));lamb.style.left=lambX+"%";
-    await wait(1000);lamb.classList.remove("walk");lamb.classList.add("eat");
-    await wait(900);f.classList.add("gone");lamb.classList.remove("eat");
-    drawLamb();bubble("냠냠 +"+(take*(MAX-MIN)/TOTAL).toFixed(2)+"kg",lambX+12,30);
+async function feedLoop(){busy=true;await ready;
+  while(queue>0){const take=queue>6?queue:1;queue-=take;
+    const x=rnd(10,88),y=rnd(58,92);
+    const f=document.createElement("div");f.className="feed";f.textContent=FOODS[Math.floor(Math.random()*FOODS.length)];f.style.left=x+"%";f.style.top=y+"%";f.style.zIndex=9+Math.round(y);pen.appendChild(f);
+    if(take>1)bubble("먹이 +"+take,x,y-14);
+    await wait(350);await lamb.eatAt(x,y);f.classList.add("gone");
+    lambResize();say(lamb,"냠냠 +"+(take*(MAX-MIN)/TOTAL).toFixed(2)+"kg");
     await wait(400);f.remove()}
   busy=false}
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
@@ -220,7 +274,7 @@ $("books").addEventListener("click",e=>{const btn=e.target.closest("button");if(
   if(btn.dataset.c!==undefined){const i=+btn.dataset.c;delta=setCh(i,CH[i]?0:1);btn.classList.toggle("on",!!CH[i]);btn.setAttribute("aria-pressed",CH[i]?"true":"false")}
   else if(btn.dataset.all!==undefined){const v=+btn.dataset.all,[,len,,o]=BOOKS[bi];for(let k=0;k<len;k++)delta+=setCh(o+k,v);d.querySelectorAll(".ch").forEach(b=>{b.classList.toggle("on",!!v);b.setAttribute("aria-pressed",v?"true":"false")})}
   if(!delta)return;save();refreshBook(bi);stats();
-  if(delta>0){addFeed(delta);if(count()===TOTAL)setTimeout(celebrate,2500)}else{drawLamb();bubble("몸무게 "+(delta*(MAX-MIN)/TOTAL).toFixed(2)+"kg",lambX+12,30)}
+  if(delta>0){addFeed(delta);if(count()===TOTAL)setTimeout(celebrate,2500)}else{lambResize();if(lamb)say(lamb,"몸무게 "+(delta*(MAX-MIN)/TOTAL).toFixed(2)+"kg")}
   try{gtag("event","bible_check",{chapters:delta})}catch(e){}});
 $("tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;tab=b.dataset.t;document.querySelectorAll("#tabs button").forEach(x=>x.classList.toggle("on",x===b));drawBooks()});
 $("openAll").onclick=()=>document.querySelectorAll(".book").forEach(d=>d.open=true);
@@ -228,11 +282,11 @@ $("closeAll").onclick=()=>document.querySelectorAll(".book").forEach(d=>d.open=f
 
 /* ---------- name, completion, new lamb ---------- */
 $("lname").value=S.name||"";$("lname").addEventListener("input",()=>{S.name=$("lname").value.trim();save();stats()});
-function celebrate(){lamb.classList.remove("happy");void lamb.offsetWidth;lamb.classList.add("happy");bubble("🎉 120kg 어른 양!",lambX+12,22);
+function celebrate(){if(lamb){lamb.stop();lamb.setPose("eat");lamb.setMode("grazing");lamb.hop();say(lamb,"🎉 120kg 어른 양!");lamb.next(3000)}
   const C=["#e8503a","#f5b82e","#5aa957","#3a7be8","#ec6fa8"];for(let i=0;i<70;i++){const c=document.createElement("i");c.className="confetti";c.style.left=Math.random()*100+"vw";c.style.background=C[i%5];c.style.animationDuration=(2+Math.random()*2.5)+"s";c.style.animationDelay=Math.random()*.6+"s";document.body.appendChild(c);setTimeout(()=>c.remove(),5200)}}
 $("newLamb").onclick=()=>{if(count()!==TOTAL)return;
   S.flock.push({name:S.name||((S.flock.length+1)+"독 양"),done:Date.now(),start:S.start});
-  CH=new Uint8Array(TOTAL);S.name="";S.start=Date.now();$("lname").value="";save();lastT=-1;drawLamb();drawFlock();drawBooks();stats();
+  CH=new Uint8Array(TOTAL);S.name="";S.start=Date.now();$("lname").value="";save();lambResize();drawFlock();drawBooks();stats();
   bubble("새 아기 양이 태어났어요! 🍼",50,40);window.scrollTo({top:0,behavior:"smooth"});try{gtag("event","bible_complete",{count:S.flock.length})}catch(e){}};
 
 /* ---------- backup / restore ---------- */
@@ -240,10 +294,10 @@ $("backup").onclick=()=>{save();const blob=new Blob([JSON.stringify({app:"bible-
 $("restore").onclick=()=>$("file").click();
 $("file").onchange=async()=>{const f=$("file").files[0];if(!f)return;try{const o=JSON.parse(await f.text());if(typeof o.ch!=="string"||!Array.isArray(o.flock))throw 0;
   if(!confirm("지금 기록을 이 파일 내용으로 바꿀까요?"))return;S={ch:o.ch,flock:o.flock,name:o.name||"",start:o.start||Date.now()};for(let i=0;i<TOTAL;i++)CH[i]=S.ch[i]==="1"?1:0;save();
-  $("lname").value=S.name;lastT=-1;drawLamb();drawFlock();drawBooks();stats();bubble("기록을 불러왔어요",50,40)}catch(e){alert("성경 읽기 기록 파일이 아니에요.")}$("file").value=""};
+  $("lname").value=S.name;lambResize();drawFlock();drawBooks();stats();bubble("기록을 불러왔어요",50,40)}catch(e){alert("성경 읽기 기록 파일이 아니에요.")}$("file").value=""};
 
-addEventListener("resize",()=>{lastT=-1;drawLamb();drawFlock()});
-drawLamb();drawFlock();drawBooks();stats();
+drawBooks();stats();
+ready.then(()=>{lastW=pen.clientWidth;lamb=new Sheep({lamb:true,size:lambPx(),x:45,y:80});drawFlock()});
 </script>
 <script src="../assets/scene.js"></script><script src="../assets/home.js"></script>
 </body></html>

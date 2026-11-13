@@ -1,0 +1,3 @@
+This HWPX skeleton is taken from python-hwpx (https://pypi.org/project/python-hwpx/).
+python-hwpx - Copyright 2025-2026 airmang. This product includes software developed by airmang.
+Licensed under the Apache License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0

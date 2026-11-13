@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><script async src="https://www.googletagmanager.com/gtag/js?id=G-0WTWY3TPES"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-0WTWY3TPES");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>묵상저장소 | 치영의 교회 생활 즐기기 · 설교메모·QT·말씀 묵상 기록장</title>
+<meta name="description" content="설교메모, QT 묵상, 찬양 묵상, 말씀 묵상, 일상 묵상을 기록하고 보관하는 묵상 노트. 성경 본문 장·절 선택, 검색과 기간 필터, 캘린더, 카톡 복사·TXT·PDF·한글·JPG 내보내기.">
+<meta name="keywords" content="묵상노트, 설교노트, 설교메모, QT 노트, 큐티 기록, 말씀 묵상, 찬양 묵상, 묵상일기, 신앙일기">
+<link rel="canonical" href="https://zidane7-creator.github.io/nanum-boardgame/meditation/">
+<meta property="og:title" content="묵상저장소 — 치영의 교회 생활 즐기기">
+<meta property="og:description" content="설교메모·QT·찬양·말씀·일상 묵상을 기록하고 캘린더로 모아 보는 묵상 노트">
+<meta property="og:url" content="https://zidane7-creator.github.io/nanum-boardgame/meditation/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📝</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#3b2a20;--cream:#fffaf0;--accent:#e8503a;--gold:#f5b82e;--green:#5aa957;
+  --sermon:#ffd3e0;--qt:#fff1a8;--praise:#cdeafe;--word:#e3d7ff;--daily:#dcf5c6;
+  --sermon-d:#e0628a;--qt-d:#c9a400;--praise-d:#3c95cf;--word-d:#8a6bd6;--daily-d:#5aa957}
+*{box-sizing:border-box}
+html,body{margin:0;color:var(--ink);font-family:"Jua","Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+body{min-height:100vh;background:linear-gradient(#ffe8b8,#fff3d6 220px,#c3e78f 221px)}
+button,select,input,textarea{font:inherit;color:inherit}
+button{border:2px solid var(--ink);background:var(--cream);border-radius:14px;padding:7px 14px;cursor:pointer;box-shadow:0 3px 0 var(--ink)}
+button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+button.pri{background:var(--accent);color:#fff}button.go{background:var(--green);color:#fff}
+button.sm{padding:4px 10px;font-size:14px;border-radius:11px;box-shadow:0 2px 0 var(--ink)}
+button.ghost{border-color:transparent;box-shadow:none;background:none}
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:calc(8px + env(safe-area-inset-top,0px)) 14px 8px;background:rgba(255,255,255,.92);border-bottom:4px solid var(--gold)}
+.top a{color:var(--ink);text-decoration:none;font-size:15px;border:2px solid var(--ink);border-radius:14px;padding:3px 10px;background:var(--cream)}
+.top .ttl{flex:1;font-size:19px}
+main{max-width:1000px;margin:0 auto;padding:16px 14px 80px}
+h1{font-weight:normal;text-align:center;font-size:clamp(30px,7vw,42px);margin:6px 0 2px}
+.sub{text-align:center;margin:0 0 14px;opacity:.75}
+.card{background:var(--cream);border:3px solid var(--ink);border-radius:22px;padding:18px;margin-bottom:16px;box-shadow:0 5px 0 rgba(0,0,0,.12)}
+.card h2{font-weight:normal;font-size:22px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+.card h2 .sp{flex:1}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+@media (max-width:860px){.grid2{grid-template-columns:1fr}}
+/* type chips */
+.types{display:flex;flex-wrap:wrap;gap:8px}
+.tchip{border-radius:999px;padding:6px 14px;box-shadow:0 2px 0 var(--ink);font-size:16px}
+.tchip.on{outline:3px solid var(--ink);outline-offset:1px}
+.t-sermon{background:var(--sermon)}.t-qt{background:var(--qt)}.t-praise{background:var(--praise)}.t-word{background:var(--word)}.t-daily{background:var(--daily)}
+.t-all{background:#fff}
+/* form */
+.f{display:grid;gap:10px;margin-top:14px}
+.f label{display:grid;gap:4px;font-size:15px}
+.f input,.f select,.f textarea{border:2px solid var(--ink);border-radius:12px;padding:8px 10px;background:#fff;width:100%;font-family:"Gowun Dodum","Apple SD Gothic Neo",sans-serif;font-size:16px}
+.f textarea{min-height:190px;resize:vertical;line-height:1.6}
+.passage{display:grid;grid-template-columns:2fr 1fr 1fr auto 1fr;gap:6px;align-items:center}
+.passage span{text-align:center}
+@media (max-width:520px){.passage{grid-template-columns:1fr 1fr 1fr;}.passage select:first-child{grid-column:1/-1}.passage span{display:none}}
+.pv{font-size:14px;opacity:.75}
+.factions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.editing{background:#fff3cf;border:2px dashed var(--gold);border-radius:12px;padding:6px 10px;font-size:14px;display:none}
+.editing.show{display:block}
+/* calendar */
+.calh{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.calh b{flex:1;text-align:center;font-weight:normal;font-size:20px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal .dow{text-align:center;font-size:13px;opacity:.7;padding:2px 0}
+.cal .dow:first-child{color:#d0453a}.cal .dow:last-child{color:#3a7be8}
+.day{min-height:62px;border:2px solid #e8dcc6;border-radius:10px;background:#fff;padding:3px 4px;cursor:pointer;display:flex;flex-direction:column;gap:2px;text-align:left;box-shadow:none;font-size:13px}
+.day:active{transform:none}
+.day.out{opacity:.35}
+.day.today{border-color:var(--gold)}
+.day.sel{border-color:var(--ink);background:#fff8e6}
+.day .n{font-size:13px}
+.day.sun .n{color:#d0453a}.day.sat .n{color:#3a7be8}
+.day .bars{display:flex;flex-direction:column;gap:2px}
+.day .bars i{display:block;height:7px;border-radius:4px;border:1px solid rgba(0,0,0,.15)}
+.day .more{font-size:11px;opacity:.7}
+@media (max-width:520px){.day{min-height:48px;padding:2px}.day .bars i{height:6px}}
+.legend{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:13px;margin-top:8px}
+.legend span{display:inline-flex;align-items:center;gap:4px}
+.legend i{width:14px;height:10px;border-radius:3px;border:1px solid rgba(0,0,0,.2);display:inline-block}
+.daylist{margin-top:12px}
+/* archive */
+.filters{display:grid;gap:10px}
+.frow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.frow input[type=search]{flex:1;min-width:180px;border:2px solid var(--ink);border-radius:12px;padding:8px 12px;background:#fff}
+.frow input[type=date],.frow select{border:2px solid var(--ink);border-radius:10px;padding:6px 8px;background:#fff}
+.count{font-size:14px;opacity:.75;margin:10px 0 6px}
+.item{display:block;width:100%;text-align:left;border:2px solid var(--ink);border-left-width:10px;border-radius:14px;background:#fff;padding:10px 12px;margin-bottom:8px;box-shadow:0 2px 0 var(--ink);cursor:pointer}
+.item .meta{display:flex;gap:8px;align-items:center;font-size:13px;flex-wrap:wrap}
+.item .tag{border-radius:999px;padding:1px 8px;border:1.5px solid rgba(0,0,0,.25)}
+.item .ti{font-size:17px;margin:4px 0 2px}
+.item .sn{font-family:"Gowun Dodum",sans-serif;font-size:14px;opacity:.75;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.item mark{background:#ffe27a;border-radius:3px}
+.empty{text-align:center;padding:24px;opacity:.65}
+/* modal */
+.back{position:fixed;inset:0;background:rgba(30,20,10,.45);z-index:100;display:none;align-items:center;justify-content:center;padding:14px}
+.back.show{display:flex}
+.modal{background:var(--cream);border:3px solid var(--ink);border-radius:22px;width:min(720px,100%);max-height:92vh;display:flex;flex-direction:column;overflow:hidden}
+.mhead{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:3px solid var(--ink)}
+.mhead b{flex:1;font-weight:normal;font-size:19px}
+.mbody{overflow:auto;padding:16px;font-family:"Gowun Dodum",sans-serif}
+.mbody dl{margin:0 0 10px;display:grid;grid-template-columns:auto 1fr;gap:6px 12px}
+.mbody dt{font-family:"Jua",sans-serif;opacity:.7}
+.mbody dd{margin:0}
+.mbody .txt{white-space:pre-wrap;line-height:1.75;background:#fff;border:2px solid #eadfca;border-radius:12px;padding:12px;font-size:16px}
+.mfoot{padding:12px 16px;border-top:3px solid var(--ink);display:grid;gap:8px}
+.mfoot .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.mfoot .lb{font-size:14px;opacity:.75;margin-right:4px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(30px);background:var(--ink);color:#fff;padding:9px 18px;border-radius:999px;opacity:0;transition:.3s;z-index:200;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%)}
+.tools{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:12px}
+.note{font-size:13px;opacity:.7;text-align:center;margin-top:8px;line-height:1.5}
+/* export card (rendered off-screen for JPG / PDF) */
+#xcard{position:fixed;left:-10000px;top:0;width:800px;background:#fff;color:#2b2118;font-family:"Gowun Dodum","Apple SD Gothic Neo",sans-serif}
+#xcard .xh{padding:26px 34px 20px;font-family:"Jua",sans-serif}
+#xcard .xh .k{font-size:20px;opacity:.8}
+#xcard .xh .tt{font-size:34px;margin-top:6px;line-height:1.3}
+#xcard .xb{padding:22px 34px 30px}
+#xcard dl{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;margin:0 0 18px;font-size:19px}
+#xcard dt{font-family:"Jua",sans-serif;opacity:.65}#xcard dd{margin:0}
+#xcard .xt{white-space:pre-wrap;line-height:1.85;font-size:20px}
+#xcard .xf{padding:12px 34px 20px;font-family:"Jua",sans-serif;font-size:15px;opacity:.5;text-align:right}
+</style>
+</head><body>
+<div class="top"><a href="../">← 목장</a><span class="ttl">📝 묵상저장소</span></div>
+<main>
+  <h1>묵상저장소</h1>
+  <p class="sub">설교 메모부터 일상 묵상까지, 한곳에 차곡차곡 쌓아 두세요.</p>
+
+  <div class="grid2">
+    <section class="card" id="writeCard">
+      <h2>✍️ 묵상 쓰기</h2>
+      <div class="types" id="wtypes"></div>
+      <div class="editing" id="editing">✏️ 예전에 쓴 글을 고치는 중이에요. <button class="sm ghost" id="cancelEdit" type="button">고치기 그만두기</button></div>
+      <form class="f" id="form" autocomplete="off"></form>
+    </section>
+
+    <section class="card">
+      <h2>📅 캘린더<span class="sp"></span></h2>
+      <div class="calh"><button class="sm" id="prevM" aria-label="이전 달">◀</button><b id="ym"></b><button class="sm" id="nextM" aria-label="다음 달">▶</button><button class="sm" id="todayM">오늘</button></div>
+      <div class="cal" id="cal"></div>
+      <div class="legend" id="legend"></div>
+      <div class="daylist" id="daylist"></div>
+    </section>
+  </div>
+
+  <section class="card">
+    <h2>🗂️ 보관함<span class="sp"></span><span id="total" style="font-size:15px;opacity:.7"></span></h2>
+    <div class="filters">
+      <div class="types" id="ftypes"></div>
+      <div class="frow"><input type="search" id="q" placeholder="🔍 설교 제목, 본문, 설교자, 내용… 무엇이든 검색"></div>
+      <div class="frow">
+        <label>기간 <input type="date" id="from"></label> ~ <input type="date" id="to" aria-label="기간 끝">
+        <button class="sm" data-range="7">1주</button><button class="sm" data-range="30">1달</button><button class="sm" data-range="365">1년</button><button class="sm" data-range="0">전체 기간</button>
+        <span style="flex:1"></span>
+        <select id="sort" aria-label="정렬"><option value="desc">작성일 최신순 ↓</option><option value="asc">작성일 오래된순 ↑</option></select>
+      </div>
+    </div>
+    <div class="count" id="count"></div>
+    <div id="list"></div>
+    <div class="tools">
+      <button class="sm" id="backup">💾 전체 백업 저장</button>
+      <button class="sm" id="restore">📂 백업 불러오기</button>
+      <input type="file" id="file" accept=".json,application/json" hidden>
+    </div>
+    <p class="note">기록은 이 기기의 브라우저에 저장돼요. 폰·컴퓨터를 바꾸거나 브라우저 기록을 지우기 전에는 <b>전체 백업 저장</b>으로 파일을 받아 두세요.</p>
+  </section>
+</main>
+
+<div class="back" id="back"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="mtitle">
+  <div class="mhead" id="mhead"><b id="mtitle"></b><button class="sm" id="mclose" aria-label="닫기">✕</button></div>
+  <div class="mbody" id="mbody"></div>
+  <div class="mfoot">
+    <div class="row"><span class="lb">내보내기</span>
+      <button class="sm" data-x="kakao">💬 카톡 복사</button><button class="sm" data-x="txt">📄 TXT</button><button class="sm" data-x="pdf">📕 PDF</button><button class="sm" data-x="hwp">📘 한글(HWP)</button><button class="sm" data-x="jpg">🖼️ JPG</button></div>
+    <div class="row"><span style="flex:1"></span><button class="sm" id="mEdit">✏️ 수정</button><button class="sm pri" id="mDel">🗑️ 삭제</button></div>
+  </div>
+</div></div>
+<div id="xcard"></div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const toast=m=>{const t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("show"),2200)};
+
+/* ---------- Bible: 66 books (개신교) + verse counts per chapter ---------- */
+const BOOKS=["창세기","출애굽기","레위기","민수기","신명기","여호수아","사사기","룻기","사무엘상","사무엘하","열왕기상","열왕기하","역대상","역대하","에스라","느헤미야","에스더","욥기","시편","잠언","전도서","아가","이사야","예레미야","예레미야애가","에스겔","다니엘","호세아","요엘","아모스","오바댜","요나","미가","나훔","하박국","스바냐","학개","스가랴","말라기","마태복음","마가복음","누가복음","요한복음","사도행전","로마서","고린도전서","고린도후서","갈라디아서","에베소서","빌립보서","골로새서","데살로니가전서","데살로니가후서","디모데전서","디모데후서","디도서","빌레몬서","히브리서","야고보서","베드로전서","베드로후서","요한일서","요한이서","요한삼서","유다서","요한계시록"];
+const VERSES=[[31,25,24,26,32,22,24,22,29,32,32,20,18,24,21,16,27,33,38,18,34,24,20,67,34,35,46,22,35,43,55,32,20,31,29,43,36,30,23,23,57,38,34,34,28,34,31,22,33,26],[22,25,22,31,23,30,25,32,35,29,10,51,22,31,27,36,16,27,25,26,36,31,33,18,40,37,21,43,46,38,18,35,23,35,35,38,29,31,43,38],[17,16,17,35,19,30,38,36,24,20,47,8,59,57,33,34,16,30,37,27,24,33,44,23,55,46,34],[54,34,51,49,31,27,89,26,23,36,35,16,33,45,41,50,13,32,22,29,35,41,30,25,18,65,23,31,40,16,54,42,56,29,34,13],[46,37,29,49,33,25,26,20,29,22,32,32,18,29,23,22,20,22,21,20,23,30,25,22,19,19,26,68,29,20,30,52,29,12],[18,24,17,24,15,27,26,35,27,43,23,24,33,15,63,10,18,28,51,9,45,34,16,33],[36,23,31,24,31,40,25,35,57,18,40,15,25,20,20,31,13,31,30,48,25],[22,23,18,22],[28,36,21,22,12,21,17,22,27,27,15,25,23,52,35,23,58,30,24,42,15,23,29,22,44,25,12,25,11,31,13],[27,32,39,12,25,23,29,18,13,19,27,31,39,33,37,23,29,33,43,26,22,51,39,25],[53,46,28,34,18,38,51,66,28,29,43,33,34,31,34,34,24,46,21,43,29,53],[18,25,27,44,27,33,20,29,37,36,21,21,25,29,38,20,41,37,37,21,26,20,37,20,30],[54,55,24,43,26,81,40,40,44,14,47,40,14,17,29,43,27,17,19,8,30,19,32,31,31,32,34,21,30],[17,18,17,22,14,42,22,18,31,19,23,16,22,15,19,14,19,34,11,37,20,12,21,27,28,23,9,27,36,27,21,33,25,33,27,23],[11,70,13,24,17,22,28,36,15,44],[11,20,32,23,19,19,73,18,38,39,36,47,31],[22,23,15,17,14,14,10,17,32,3],[22,13,26,21,27,30,21,22,35,22,20,25,28,22,35,22,16,21,29,29,34,30,17,25,6,14,23,28,25,31,40,22,33,37,16,33,24,41,30,24,34,17],[6,12,8,8,12,10,17,9,20,18,7,8,6,7,5,11,15,50,14,9,13,31,6,10,22,12,14,9,11,12,24,11,22,22,28,12,40,22,13,17,13,11,5,26,17,11,9,14,20,23,19,9,6,7,23,13,11,11,17,12,8,12,11,10,13,20,7,35,36,5,24,20,28,23,10,12,20,72,13,19,16,8,18,12,13,17,7,18,52,17,16,15,5,23,11,13,12,9,9,5,8,28,22,35,45,48,43,13,31,7,10,10,9,8,18,19,2,29,176,7,8,9,4,8,5,6,5,6,8,8,3,18,3,3,21,26,9,8,24,13,10,7,12,15,21,10,20,14,9,6],[33,22,35,27,23,35,27,36,18,32,31,28,25,35,33,33,28,24,29,30,31,29,35,34,28,28,27,28,27,33,31],[18,26,22,16,20,12,29,17,18,20,10,14],[17,17,11,16,16,13,13,14],[31,22,26,6,30,13,25,22,21,34,16,6,22,32,9,14,14,7,25,6,17,25,18,23,12,21,13,29,24,33,9,20,24,17,10,22,38,22,8,31,29,25,28,28,25,13,15,22,26,11,23,15,12,17,13,12,21,14,21,22,11,12,19,12,25,24],[19,37,25,31,31,30,34,22,26,25,23,17,27,22,21,21,27,23,15,18,14,30,40,10,38,24,22,17,32,24,40,44,26,22,19,32,21,28,18,16,18,22,13,30,5,28,7,47,39,46,64,34],[22,22,66,22,22],[28,10,27,17,17,14,27,18,11,22,25,28,23,23,8,63,24,32,14,49,32,31,49,27,17,21,36,26,21,26,18,32,33,31,15,38,28,23,29,49,26,20,27,31,25,24,23,35],[21,49,30,37,31,28,28,27,27,21,45,13],[11,23,5,19,15,11,16,14,17,15,12,14,16,9],[20,32,21],[15,16,15,13,27,14,17,14,15],[21],[17,10,10,11],[16,13,12,13,15,16,20],[15,13,19],[17,20,19],[18,15,20],[15,23],[21,13,10,14,11,15,14,23,17,12,17,14,9,21],[14,17,18,6],[25,23,17,25,48,34,29,34,38,42,30,50,58,36,39,28,27,35,30,34,46,46,39,51,46,75,66,20],[45,28,35,41,43,56,37,38,50,52,33,44,37,72,47,20],[80,52,38,44,39,49,50,56,62,42,54,59,35,35,32,31,37,43,48,47,38,71,56,53],[51,25,36,54,47,71,53,59,41,42,57,50,38,31,27,33,26,40,42,31,25],[26,47,26,37,42,15,60,40,43,48,30,25,52,28,41,40,34,28,41,38,40,30,35,27,27,32,44,31],[32,29,31,25,21,23,25,39,33,21,36,21,14,23,33,27],[31,16,23,21,13,20,40,13,27,33,34,31,13,40,58,24],[24,17,18,18,21,18,16,24,15,18,33,21,14],[24,21,29,31,26,18],[23,22,21,32,33,24],[30,30,21,23],[29,23,25,18],[10,20,13,18,28],[12,17,18],[20,15,16,16,25,21],[18,26,17,22],[16,15,15],[25],[14,18,19,16,14,20,28,13,28,39,40,29,25],[27,26,18,17,20],[25,25,22,19,14],[21,22,18],[10,29,24,21,21],[13],[14],[25],[20,29,22,11,14,17,17,13,21,11,19,17,18,20,8,21,18,24,21,15,27,21]];
+const pText=p=>{if(!p||p.b==null||p.b==="")return"";const b=BOOKS[p.b];if(!p.c)return b;if(!p.v1)return b+" "+p.c+"장";return b+" "+p.c+":"+p.v1+(p.v2&&p.v2!=p.v1?"-"+p.v2:"")};
+
+/* ---------- types ---------- */
+const T={
+  sermon:{n:"설교메모",e:"⛪",f:["title","passage","preacher","body"],L:{title:"설교 제목",passage:"설교 본문",preacher:"설교자",body:"메모"}},
+  qt:{n:"QT묵상",e:"☀️",f:["passage","body"],L:{passage:"QT 본문",body:"묵상 내용"}},
+  praise:{n:"찬양묵상",e:"🎵",f:["title","body"],L:{title:"찬양 제목",body:"묵상 내용"}},
+  word:{n:"말씀묵상",e:"📖",f:["passage","body"],L:{passage:"말씀 본문",body:"묵상 내용"}},
+  daily:{n:"일상묵상",e:"🌿",f:["body"],L:{body:"묵상 내용"}}};
+const TK=Object.keys(T);
+const C=k=>getComputedStyle(document.documentElement).getPropertyValue("--"+k).trim();
+
+/* ---------- storage ---------- */
+const KEY="meditations";
+let DB=[];try{DB=JSON.parse(localStorage.getItem(KEY)||"[]");if(!Array.isArray(DB))DB=[]}catch(e){DB=[]}
+const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){alert("저장 공간이 부족해서 저장하지 못했어요. 백업을 받아 두세요.")}};
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const pad=n=>String(n).padStart(2,"0");
+const ymd=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const today=()=>ymd(new Date());
+const DOW="일월화수목금토";
+const fmtDate=s=>{const d=new Date(s+"T00:00:00");return s.replace(/-/g,".")+" ("+DOW[d.getDay()]+")"};
+
+/* ---------- write form ---------- */
+let wtype="sermon",editId=null;
+function typeChips(el,cur,onPick,withAll){el.innerHTML=(withAll?'<button type="button" class="tchip t-all'+(cur.size===0?" on":"")+'" data-k="">전체</button>':"")+TK.map(k=>'<button type="button" class="tchip t-'+k+((withAll?cur.has(k):cur===k)?" on":"")+'" data-k="'+k+'">'+T[k].e+" "+T[k].n+'</button>').join("");
+  el.querySelectorAll(".tchip").forEach(b=>b.onclick=()=>onPick(b.dataset.k))}
+function passageHTML(){const og=(a,b,lab)=>'<optgroup label="'+lab+'">'+BOOKS.slice(a,b).map((n,i)=>'<option value="'+(a+i)+'">'+n+'</option>').join("")+'</optgroup>';
+  return '<div class="passage"><select id="pb" aria-label="성경"><option value="">책 선택</option>'+og(0,39,"구약")+og(39,66,"신약")+'</select><select id="pc" aria-label="장"></select><select id="pv1" aria-label="시작 절"></select><span>~</span><select id="pv2" aria-label="끝 절"></select></div><div class="pv" id="pvText"></div>'}
+function drawForm(e){const t=T[wtype],v=e||{};
+  let h='<label>날짜 <input type="date" id="fdate" value="'+(v.date||today())+'" required></label>';
+  t.f.forEach(f=>{const L=t.L[f];
+    if(f==="title")h+='<label>'+L+' <input id="ftitle" maxlength="120" placeholder="'+L+'을 적어 주세요" value="'+esc(v.title)+'"></label>';
+    if(f==="preacher")h+='<label>'+L+' <input id="fpreacher" maxlength="40" placeholder="예) 홍길동 목사" value="'+esc(v.preacher)+'"></label>';
+    if(f==="passage")h+='<label>'+L+' '+passageHTML()+'</label>';
+    if(f==="body")h+='<label>'+L+' <textarea id="fbody" placeholder="'+(wtype==="sermon"?"설교를 들으며 기억하고 싶은 내용을 적어 보세요":"오늘 주신 마음을 적어 보세요")+'">'+esc(v.body)+'</textarea></label>'});
+  h+='<div class="factions"><button type="button" class="sm" id="fclear">비우기</button><button type="submit" class="go">💾 '+(editId?"수정한 내용 저장":"저장")+'</button></div>';
+  $("form").innerHTML=h;
+  if($("pb"))setupPassage(v.passage)}
+function opts(n,sel,first){let h=first?'<option value="">'+first+'</option>':"";for(let i=1;i<=n;i++)h+='<option'+(i==sel?" selected":"")+'>'+i+'</option>';return h}
+function setupPassage(p){const pb=$("pb"),pc=$("pc"),v1=$("pv1"),v2=$("pv2");
+  const fillC=()=>{const b=pb.value;pc.innerHTML=b===""?'<option value="">장</option>':opts(VERSES[b].length,null,"장");pc.disabled=b==="";fillV()};
+  const fillV=()=>{const b=pb.value,c=+pc.value;if(b===""||!c){v1.innerHTML='<option value="">절</option>';v2.innerHTML='<option value="">절</option>';v1.disabled=v2.disabled=true;show();return}
+    const n=VERSES[b][c-1];v1.disabled=v2.disabled=false;v1.innerHTML=opts(n,null,"시작 절");fillV2()};
+  const fillV2=()=>{const b=pb.value,c=+pc.value,s=+v1.value||1;if(b===""||!c)return;const n=VERSES[b][c-1];let h='<option value="">끝 절</option>';for(let i=s;i<=n;i++)h+='<option>'+i+'</option>';const keep=v2.value;v2.innerHTML=h;if(keep&&+keep>=s)v2.value=keep;show()};
+  const show=()=>{const t=pText(readPassage());$("pvText").textContent=t?"📜 "+t:"책 → 장 → 절 순서로 골라 주세요 (절은 비워도 돼요)"};
+  pb.onchange=fillC;pc.onchange=fillV;v1.onchange=fillV2;v2.onchange=show;
+  if(p&&p.b!==""&&p.b!=null){pb.value=p.b;fillC();if(p.c){pc.value=p.c;fillV();if(p.v1){v1.value=p.v1;fillV2();if(p.v2)v2.value=p.v2}}show()}else fillC()}
+function readPassage(){if(!$("pb")||$("pb").value==="")return null;const p={b:+$("pb").value,c:+$("pc").value||0,v1:+$("pv1").value||0,v2:+$("pv2").value||0};if(p.v1&&!p.v2)p.v2=p.v1;return p}
+function pickW(k){if(!k)return;const keep=collect();wtype=k;typeChips($("wtypes"),wtype,pickW);drawForm({date:keep.date,title:keep.title,preacher:keep.preacher,body:keep.body,passage:keep.passage})}
+function collect(){const g=id=>$(id)?$(id).value.trim():"";return{date:g("fdate")||today(),title:g("ftitle"),preacher:g("fpreacher"),body:$("fbody")?$("fbody").value:"",passage:readPassage()}}
+$("form").addEventListener("submit",ev=>{ev.preventDefault();const v=collect();const t=T[wtype];
+  if(!v.body.trim()&&!v.title&&!v.passage){toast("내용을 조금이라도 적어 주세요");return}
+  const rec={type:wtype,date:v.date};t.f.forEach(f=>{if(f==="passage")rec.passage=v.passage;else rec[f]=v[f]});
+  if(editId){const i=DB.findIndex(x=>x.id===editId);if(i>=0){DB[i]=Object.assign({id:editId,created:DB[i].created},rec,{updated:Date.now()})}const id=editId;endEdit();persist();refresh();toast("수정했어요");openView(id)}
+  else{const r=Object.assign({id:uid(),created:Date.now()},rec);DB.push(r);persist();drawForm({});refresh();toast("저장했어요 🙏");openView(r.id)}
+  try{gtag("event","meditation_save",{type:wtype})}catch(e){}});
+$("form").addEventListener("click",e=>{if(e.target.id==="fclear"){if(confirm("입력한 내용을 비울까요?"))drawForm({})}});
+function startEdit(id){const r=DB.find(x=>x.id===id);if(!r)return;editId=id;wtype=r.type;typeChips($("wtypes"),wtype,pickW);drawForm(r);$("editing").classList.add("show");closeView();$("writeCard").scrollIntoView({behavior:"smooth",block:"start"})}
+function endEdit(){editId=null;$("editing").classList.remove("show")}
+$("cancelEdit").onclick=()=>{endEdit();drawForm({})};
+
+/* ---------- archive: filter / search / sort / period ---------- */
+let FT=new Set();
+const hay=r=>[T[r.type].n,r.title,r.preacher,r.body,pText(r.passage),r.passage?BOOKS[r.passage.b]:"",r.date,r.date&&r.date.replace(/-/g,".")].join(" \n ").toLowerCase();
+function filtered(){const q=$("q").value.trim().toLowerCase(),words=q.split(/\s+/).filter(Boolean),from=$("from").value,to=$("to").value,dir=$("sort").value;
+  return DB.filter(r=>(!FT.size||FT.has(r.type))&&(!from||r.date>=from)&&(!to||r.date<=to)&&(!words.length||(h=>words.every(w=>h.includes(w)))(hay(r))))
+    .sort((a,b)=>(a.date<b.date?-1:a.date>b.date?1:a.created-b.created)*(dir==="asc"?1:-1))}
+function hl(s,words){let o=esc(s);words.forEach(w=>{if(!w)return;const re=new RegExp(w.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"),"gi");o=o.replace(re,m=>"<mark>"+m+"</mark>")});return o}
+function itemHTML(r,words=[]){const t=T[r.type],head=r.title||pText(r.passage)||(r.body||"").split("\n")[0].slice(0,40)||t.n,sub=[r.title&&pText(r.passage),r.preacher].filter(Boolean).join(" · ");
+  let sn=(r.body||"").replace(/\s+/g," ").trim();if(words.length){const i=sn.toLowerCase().indexOf(words[0]);if(i>40)sn="…"+sn.slice(i-30)}
+  return '<button class="item" data-id="'+r.id+'" style="border-left-color:'+C(r.type+"-d")+'"><div class="meta"><span class="tag t-'+r.type+'">'+t.e+" "+t.n+'</span><span>'+fmtDate(r.date)+'</span>'+(r.updated?'<span style="opacity:.6">수정됨</span>':"")+'</div><div class="ti">'+hl(head,words)+'</div>'+(sub?'<div class="sn" style="opacity:.85">'+hl(sub,words)+'</div>':"")+(sn&&head!==sn?'<div class="sn">'+hl(sn.slice(0,160),words)+'</div>':"")+'</button>'}
+function drawList(){const L=filtered(),words=$("q").value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  $("total").textContent="전체 "+DB.length+"개";
+  $("count").textContent=DB.length?(L.length+"개 찾았어요"+(FT.size||words.length||$("from").value||$("to").value?" (필터 적용 중)":"")):"";
+  $("list").innerHTML=L.length?L.map(r=>itemHTML(r,words)).join(""):'<div class="empty">'+(DB.length?"조건에 맞는 묵상이 없어요.":"아직 저장한 묵상이 없어요. 위에서 첫 묵상을 적어 보세요 ✍️")+'</div>'}
+function pickF(k){if(!k)FT.clear();else FT.has(k)?FT.delete(k):FT.add(k);typeChips($("ftypes"),FT,pickF,true);drawList()}
+$("q").addEventListener("input",drawList);["from","to","sort"].forEach(id=>$(id).addEventListener("change",drawList));
+document.querySelectorAll("[data-range]").forEach(b=>b.onclick=()=>{const n=+b.dataset.range;if(!n){$("from").value="";$("to").value=""}else{const d=new Date();d.setDate(d.getDate()-n+1);$("from").value=ymd(d);$("to").value=today()}drawList()});
+$("list").addEventListener("click",e=>{const b=e.target.closest(".item");if(b)openView(b.dataset.id)});
+
+/* ---------- calendar ---------- */
+let cy=new Date().getFullYear(),cm=new Date().getMonth(),selDay=null;
+function drawCal(){const first=new Date(cy,cm,1),start=new Date(cy,cm,1-first.getDay()),by={};
+  DB.forEach(r=>(by[r.date]=by[r.date]||[]).push(r));
+  $("ym").textContent=cy+"년 "+(cm+1)+"월";
+  let h=[..."일월화수목금토"].map(d=>'<div class="dow">'+d+'</div>').join("");
+  for(let i=0;i<42;i++){const d=new Date(start);d.setDate(start.getDate()+i);const k=ymd(d),L=(by[k]||[]).sort((a,b)=>TK.indexOf(a.type)-TK.indexOf(b.type));
+    if(i>=35&&d.getMonth()!==cm)break;
+    h+='<button class="day'+(d.getMonth()!==cm?" out":"")+(k===today()?" today":"")+(k===selDay?" sel":"")+(d.getDay()===0?" sun":d.getDay()===6?" sat":"")+'" data-d="'+k+'" aria-label="'+k+' 묵상 '+L.length+'개"><span class="n">'+d.getDate()+'</span><span class="bars">'+L.slice(0,3).map(r=>'<i style="background:'+C(r.type)+'" title="'+T[r.type].n+'"></i>').join("")+'</span>'+(L.length>3?'<span class="more">+'+(L.length-3)+'</span>':"")+'</button>'}
+  $("cal").innerHTML=h;
+  $("legend").innerHTML=TK.map(k=>'<span><i style="background:'+C(k)+'"></i>'+T[k].n+'</span>').join("");
+  drawDay()}
+function drawDay(){if(!selDay){$("daylist").innerHTML="";return}const L=DB.filter(r=>r.date===selDay).sort((a,b)=>a.created-b.created);
+  $("daylist").innerHTML='<div style="margin-bottom:6px">📌 '+fmtDate(selDay)+' — '+(L.length?L.length+"개":"기록 없음")+' <button class="sm" id="writeOn">이 날짜로 쓰기</button></div>'+L.map(r=>itemHTML(r)).join("");
+  $("daylist").querySelectorAll(".item").forEach(b=>b.onclick=()=>openView(b.dataset.id));
+  $("writeOn").onclick=()=>{if($("fdate"))$("fdate").value=selDay;$("writeCard").scrollIntoView({behavior:"smooth"});setTimeout(()=>$("fbody")&&$("fbody").focus(),400)}}
+$("cal").addEventListener("click",e=>{const b=e.target.closest(".day");if(!b)return;selDay=selDay===b.dataset.d?null:b.dataset.d;const d=new Date(b.dataset.d+"T00:00:00");if(d.getMonth()!==cm){cy=d.getFullYear();cm=d.getMonth()}drawCal()});
+$("prevM").onclick=()=>{cm--;if(cm<0){cm=11;cy--}drawCal()};$("nextM").onclick=()=>{cm++;if(cm>11){cm=0;cy++}drawCal()};
+$("todayM").onclick=()=>{const d=new Date();cy=d.getFullYear();cm=d.getMonth();selDay=today();drawCal()};
+
+/* ---------- view modal ---------- */
+let viewId=null;
+function fields(r){const t=T[r.type],out=[];t.f.forEach(f=>{if(f==="body")return;const v=f==="passage"?pText(r.passage):r[f];if(v)out.push([t.L[f],v])});return out}
+function openView(id){const r=DB.find(x=>x.id===id);if(!r)return;viewId=id;const t=T[r.type];
+  $("mhead").style.background=C(r.type);$("mtitle").textContent=t.e+" "+t.n+" · "+fmtDate(r.date);
+  $("mbody").innerHTML='<dl>'+fields(r).map(([k,v])=>'<dt>'+esc(k)+'</dt><dd>'+esc(v)+'</dd>').join("")+'</dl>'+(r.body?'<div style="font-family:Jua;opacity:.7;margin-bottom:4px">'+esc(t.L.body)+'</div><div class="txt">'+esc(r.body)+'</div>':"");
+  $("back").classList.add("show")}
+function closeView(){$("back").classList.remove("show");viewId=null}
+$("mclose").onclick=closeView;$("back").onclick=e=>{if(e.target.id==="back")closeView()};addEventListener("keydown",e=>{if(e.key==="Escape"&&viewId)closeView()});
+$("mEdit").onclick=()=>startEdit(viewId);
+$("mDel").onclick=()=>{const r=DB.find(x=>x.id===viewId);if(!r)return;if(!confirm("이 묵상을 삭제할까요? 삭제하면 되돌릴 수 없어요.\n(필요하면 먼저 내보내기나 전체 백업을 해 두세요)"))return;DB=DB.filter(x=>x.id!==viewId);persist();if(editId===r.id){endEdit();drawForm({})}closeView();refresh();toast("삭제했어요")};
+document.querySelector(".mfoot").addEventListener("click",e=>{const b=e.target.closest("[data-x]");if(!b)return;const r=DB.find(x=>x.id===viewId);if(r)exportAs(b.dataset.x,r)});
+
+/* ---------- export ---------- */
+function plain(r){const t=T[r.type];let s="["+t.n+"] "+fmtDate(r.date)+"\n";
+  const icon={title:r.type==="praise"?"🎵":"📌",passage:"📜",preacher:"🙏"};
+  t.f.forEach(f=>{if(f==="body")return;const v=f==="passage"?pText(r.passage):r[f];if(v)s+=icon[f]+" "+t.L[f]+": "+v+"\n"});
+  if(r.body)s+="\n"+(r.type==="sermon"?"✏️ 메모":"✏️ 묵상")+"\n"+r.body.trim()+"\n";return s}
+const fname=(r,ext)=>("묵상_"+T[r.type].n+"_"+r.date+(r.title?"_"+r.title:r.passage?"_"+pText(r.passage):"")).replace(/[\\/:*?"<>|\n\r]+/g," ").slice(0,80).trim()+"."+ext;
+function download(blob,name){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
+async function copyText(s){try{await navigator.clipboard.writeText(s);return true}catch(e){const ta=document.createElement("textarea");ta.value=s;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand("copy")}catch(_){}ta.remove();return ok}}
+async function renderCard(r){const t=T[r.type],x=$("xcard");
+  x.innerHTML='<div class="xh" style="background:'+C(r.type)+'"><div class="k">'+t.e+" "+t.n+" · "+fmtDate(r.date)+'</div><div class="tt">'+esc(r.title||pText(r.passage)||t.n)+'</div></div><div class="xb"><dl>'+fields(r).map(([k,v])=>'<dt>'+esc(k)+'</dt><dd>'+esc(v)+'</dd>').join("")+'</dl><div class="xt">'+esc((r.body||"").trim())+'</div></div><div class="xf">치영의 교회 생활 즐기기 · 묵상저장소</div>';
+  await document.fonts.ready;return html2canvas(x,{scale:2,backgroundColor:"#ffffff",useCORS:true,logging:false})}
+const xmlEsc=s=>String(s).replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g,"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let HWPX=null;
+async function hwpxBlob(r){
+  if(!HWPX){const files=["version.xml","settings.xml","Contents/header.xml","Contents/section0.xml","Contents/content.hpf","META-INF/container.xml","META-INF/container.rdf","META-INF/manifest.xml"];
+    HWPX={};for(const f of files){const res=await fetch("hwpx/"+f);if(!res.ok)throw new Error(f);HWPX[f]=await res.text()}}
+  const t=T[r.type],paras=[[t.e+" "+t.n+" · "+fmtDate(r.date),6],[r.title||pText(r.passage)||t.n,5],["",0]];
+  fields(r).forEach(([k,v])=>paras.push([k+" : "+v,0]));
+  if(r.body){paras.push(["",0],[t.L.body,6]);r.body.replace(/\r/g,"").split("\n").forEach(l=>paras.push([l,0]))}
+  let id=1;const P=paras.map(([s,cp])=>'<hp:p id="'+(id++)+'" paraPrIDRef="0" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0"><hp:run charPrIDRef="'+cp+'">'+(s?'<hp:t>'+xmlEsc(s)+'</hp:t>':'<hp:t/>')+'</hp:run></hp:p>').join("");
+  const sec=HWPX["Contents/section0.xml"].replace("</hs:sec>",P+"</hs:sec>");
+  const now=new Date().toISOString().replace(/\.\d+Z$/,"Z");
+  const hpf=HWPX["Contents/content.hpf"].replace(/synthetic-fixture-author/g,"치영의 교회 생활 즐기기").replace(/<opf:title\/>/,"<opf:title>"+xmlEsc(r.title||t.n)+"</opf:title>").replace(/(CreatedDate" content="text">)[^<]*/,"$1"+now).replace(/(ModifiedDate" content="text">)[^<]*/,"$1"+now).replace(/(name="date" content="text">)[^<]*/,"$1"+xmlEsc(fmtDate(r.date)));
+  const z=new JSZip(),NF={createFolders:false};z.file("mimetype","application/hwp+zip",{compression:"STORE",createFolders:false});
+  z.file("version.xml",HWPX["version.xml"],NF);z.file("Contents/header.xml",HWPX["Contents/header.xml"],NF);z.file("Contents/section0.xml",sec,NF);
+  z.file("Preview/PrvText.txt",plain(r).slice(0,1000),NF);z.file("settings.xml",HWPX["settings.xml"],NF);
+  z.file("META-INF/container.rdf",HWPX["META-INF/container.rdf"],NF);z.file("Contents/content.hpf",hpf,NF);z.file("META-INF/container.xml",HWPX["META-INF/container.xml"],NF);z.file("META-INF/manifest.xml",HWPX["META-INF/manifest.xml"],NF);
+  return z.generateAsync({type:"blob",mimeType:"application/hwp+zip",compression:"DEFLATE"})}
+async function exportAs(kind,r){try{
+  if(kind==="kakao"){toast(await copyText(plain(r))?"복사했어요! 카톡 대화창에 붙여 넣으세요 💬":"복사하지 못했어요");return}
+  if(kind==="txt"){download(new Blob(["\ufeff"+plain(r).replace(/\n/g,"\r\n")],{type:"text/plain;charset=utf-8"}),fname(r,"txt"));return}
+  if(kind==="hwp"){toast("한글 문서를 만드는 중…");download(await hwpxBlob(r),fname(r,"hwpx"));toast("한글 파일(.hwpx)을 저장했어요");return}
+  toast(kind==="pdf"?"PDF를 만드는 중…":"이미지를 만드는 중…");const cv=await renderCard(r);
+  if(kind==="jpg"){cv.toBlob(b=>download(b,fname(r,"jpg")),"image/jpeg",.92);return}
+  if(kind==="pdf"){const{jsPDF}=window.jspdf,pdf=new jsPDF({unit:"mm",format:"a4"}),W=210,H=297,m=12,iw=W-m*2,pagePx=Math.floor(cv.width*(H-m*2)/iw);
+    for(let y=0,pg=0;y<cv.height;y+=pagePx,pg++){const h=Math.min(pagePx,cv.height-y),c=document.createElement("canvas");c.width=cv.width;c.height=h;c.getContext("2d").drawImage(cv,0,y,cv.width,h,0,0,cv.width,h);
+      if(pg)pdf.addPage();pdf.addImage(c.toDataURL("image/jpeg",.92),"JPEG",m,m,iw,h*iw/cv.width)}
+    pdf.save(fname(r,"pdf"))}
+  try{gtag("event","meditation_export",{kind})}catch(e){}
+}catch(e){console.error(e);toast("내보내기에 실패했어요. 다시 시도해 주세요")}}
+
+/* ---------- backup ---------- */
+$("backup").onclick=()=>download(new Blob([JSON.stringify({app:"meditations",v:1,items:DB},null,1)],{type:"application/json"}),"묵상저장소-백업-"+today()+".json");
+$("restore").onclick=()=>$("file").click();
+$("file").onchange=async()=>{const f=$("file").files[0];$("file").value="";if(!f)return;try{const o=JSON.parse(await f.text()),items=Array.isArray(o)?o:o.items;if(!Array.isArray(items))throw 0;
+  const ok=items.filter(r=>r&&T[r.type]&&/^\d{4}-\d{2}-\d{2}$/.test(r.date));const have=new Set(DB.map(r=>r.id));let n=0;ok.forEach(r=>{if(!r.id)r.id=uid();if(!have.has(r.id)){DB.push(r);n++}});persist();refresh();toast(n+"개를 불러왔어요 (겹치는 글은 건너뛰었어요)")}catch(e){alert("묵상저장소 백업 파일이 아니에요.")}};
+
+function refresh(){drawList();drawCal()}
+typeChips($("wtypes"),wtype,pickW);typeChips($("ftypes"),FT,pickF,true);drawForm({});refresh();
+</script>
+<script src="../assets/scene.js"></script><script src="../assets/home.js"></script>
+</body></html>
