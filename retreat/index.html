@@ -30,7 +30,9 @@ main{max-width:1060px;margin:0 auto;padding:16px 14px 60px}
 .finder{display:grid;grid-template-columns:minmax(0,340px) 1fr;gap:16px;align-items:start}
 @media(max-width:760px){.finder{grid-template-columns:1fr}}
 .kmap{background:#dff3fb;border:2px solid #b9dcea;border-radius:18px;padding:6px}
-.kmap svg{display:block;width:100%;height:auto}
+.kmap{position:relative}.kmap svg{display:block;width:100%;height:auto;touch-action:none;cursor:grab}.kmap svg.drag{cursor:grabbing}
+.zc{position:absolute;right:10px;top:10px;display:flex;flex-direction:column;gap:4px;z-index:2}.zc button{width:32px;height:32px;border-radius:10px;border:2px solid var(--ink);background:#fff;font-size:18px;line-height:1;cursor:pointer;box-shadow:0 2px 0 var(--ink)}
+.pop .pmap{position:relative}.pop .pmap svg{touch-action:none;cursor:grab}
 .kmap path{stroke:#fff;stroke-width:.6;cursor:pointer;transition:fill .15s}
 .kmap path:hover{filter:brightness(.92)}
 .kmap text{font-size:11px;fill:#3b2a20;pointer-events:none;text-anchor:middle;paint-order:stroke;stroke:#fff;stroke-width:2.5px}
@@ -72,7 +74,7 @@ main{max-width:1060px;margin:0 auto;padding:16px 14px 60px}
   <section class="card">
     <input class="search" id="q" placeholder="🔍 장소 이름이나 지역으로 찾기 (예: 가평, 기도원, 휴양림)" aria-label="장소 검색">
     <div class="finder" style="margin-top:12px">
-      <div><div class="kmap" id="kmap"></div><p class="muted" style="font-size:13px;margin:6px 4px 0">도를 누르면 시·군을 고를 수 있어요.</p></div>
+      <div><div class="kmap" id="kmap"></div><p class="muted" style="font-size:13px;margin:6px 4px 0">도를 누르면 시·군을 고를 수 있어요. 마우스 휠·두 손가락·＋－ 버튼으로 확대하고, 끌어서 옮겨요.</p></div>
       <div>
         <div class="sel" id="sel"></div>
         <div class="lbl">도·광역시</div><div class="chips" id="provChips"></div>
@@ -105,12 +107,29 @@ $("#sub").textContent="전국 교회 수련회 장소 "+VENUES.length+"곳을 �
 /* color scale by count */
 const shade=(n,max)=>{if(!n)return"#e9efe4";const t=Math.min(1,Math.sqrt(n/max));const r=Math.round(214-t*120),g=Math.round(236-t*70),b=Math.round(190-t*120);return"rgb("+r+","+g+","+b+")"};
 function bboxOf(list){let b=[1e9,1e9,-1e9,-1e9];list.forEach(x=>{b=[Math.min(b[0],x.b[0]),Math.min(b[1],x.b[1]),Math.max(b[2],x.b[2]),Math.max(b[3],x.b[3])]});return b}
+/* zoom & pan for an SVG map: wheel, drag, pinch, +/- buttons */
+function zoomable(wrap,svg){const vb0=svg.getAttribute("viewBox").split(" ").map(Number);let vb=vb0.slice(),moved=false;
+  const set=()=>svg.setAttribute("viewBox",vb.map(v=>v.toFixed(2)).join(" "));
+  const pt=(cx,cy)=>{const r=svg.getBoundingClientRect();return[vb[0]+(cx-r.left)/r.width*vb[2],vb[1]+(cy-r.top)/r.height*vb[3]]};
+  const zoom=(f,cx,cy)=>{const r=svg.getBoundingClientRect();if(cx==null){cx=r.left+r.width/2;cy=r.top+r.height/2}
+    const nw=Math.min(vb0[2],Math.max(vb0[2]/12,vb[2]*f)),k=nw/vb[2];const[px,py]=pt(cx,cy);vb=[px-(px-vb[0])*k,py-(py-vb[1])*k,nw,vb[3]*k];if(nw>=vb0[2])vb=vb0.slice();set()};
+  svg.addEventListener("wheel",e=>{e.preventDefault();zoom(e.deltaY<0?.8:1.25,e.clientX,e.clientY)},{passive:false});
+  const P=new Map();let last=null,dist0=0;
+  svg.addEventListener("pointerdown",e=>{P.set(e.pointerId,[e.clientX,e.clientY]);moved=false;last=[e.clientX,e.clientY];if(P.size==2){const[a,b]=[...P.values()];dist0=Math.hypot(a[0]-b[0],a[1]-b[1])}});
+  svg.addEventListener("pointermove",e=>{if(!P.has(e.pointerId))return;P.set(e.pointerId,[e.clientX,e.clientY]);
+    if(P.size==2){const[a,b]=[...P.values()],d=Math.hypot(a[0]-b[0],a[1]-b[1]);if(dist0){zoom(dist0/d,(a[0]+b[0])/2,(a[1]+b[1])/2);moved=true}dist0=d;return}
+    if(!last)return;const dx=e.clientX-last[0],dy=e.clientY-last[1];if(Math.abs(dx)+Math.abs(dy)>3||moved){if(!moved){moved=true;svg.setPointerCapture(e.pointerId);svg.classList.add("drag")}const r=svg.getBoundingClientRect();vb[0]-=dx/r.width*vb[2];vb[1]-=dy/r.height*vb[3];set();last=[e.clientX,e.clientY]}});
+  const up=e=>{P.delete(e.pointerId);if(!P.size){last=null;dist0=0;svg.classList.remove("drag")}};
+  svg.addEventListener("pointerup",up);svg.addEventListener("pointercancel",up);
+  svg.addEventListener("click",e=>{if(moved){e.stopPropagation();e.preventDefault();moved=false}},true);
+  const zc=document.createElement("div");zc.className="zc";zc.innerHTML='<button type="button" aria-label="확대">＋</button><button type="button" aria-label="축소">－</button><button type="button" aria-label="원래대로" style="font-size:13px">⟲</button>';
+  const[bi,bo,br]=zc.querySelectorAll("button");bi.onclick=()=>zoom(.7);bo.onclick=()=>zoom(1.4);br.onclick=()=>{vb=vb0.slice();set()};wrap.appendChild(zc)}
 function drawKorea(){const B=bboxOf(KPROV),pad=6,mx=Math.max(...Object.values(PC));
   let h='<svg viewBox="'+(B[0]-pad)+' '+(B[1]-pad)+' '+(B[2]-B[0]+pad*2)+' '+(B[3]-B[1]+pad*2)+'" role="img" aria-label="대한민국 지도">';
   KPROV.forEach(p=>{h+='<path d="'+p.d+'" fill="'+(prov==p.n?"#f5b82e":shade(PC[p.n]||0,mx))+'" data-p="'+p.n+'"><title>'+p.n+' '+(PC[p.n]||0)+'곳</title></path>'});
   const LBL={서울:[-3,-5],인천:[-6,0],경기:[10,20],세종:[-3,0],대전:[2,3],광주:[0,0],대구:[0,0],울산:[3,0],부산:[3,2]};
   KPROV.forEach(p=>{const n=PC[p.n]||0;if(!n)return;const o=LBL[p.n]||[0,0];const cx=(p.b[0]+p.b[2])/2+o[0],cy=(p.b[1]+p.b[3])/2+o[1];h+='<text x="'+cx.toFixed(1)+'" y="'+cy.toFixed(1)+'">'+p.n+' '+n+'</text>'});
-  $("#kmap").innerHTML=h+'</svg>';
+  const keep=$("#kmap svg")?.getAttribute("viewBox");$("#kmap").innerHTML=h+'</svg>';const sv=$("#kmap svg");zoomable($("#kmap"),sv);if(keep&&keep!=sv.getAttribute("viewBox"))sv.setAttribute("viewBox",keep);
   $("#kmap").querySelectorAll("path").forEach(e=>e.onclick=()=>openProv(e.dataset.p))}
 function openProv(p){const L=KMUN.filter(m=>m.p==p);if(!L.length){setSel(p,"");return}
   const MC=cntBy(v=>v.sido==p?v.sgg:null),mx=Math.max(1,...Object.values(MC)),B=bboxOf(L),pad=2;
@@ -118,7 +137,7 @@ function openProv(p){const L=KMUN.filter(m=>m.p==p);if(!L.length){setSel(p,"");r
   L.forEach(m=>{h+='<path d="'+m.d+'" fill="'+(sgg==m.n&&prov==p?"#f5b82e":shade(MC[m.n]||0,mx))+'" data-m="'+esc(m.n)+'"><title>'+esc(m.n)+' '+(MC[m.n]||0)+'곳</title></path>'});
   const fs=Math.max(2.2,Math.min(5,(B[2]-B[0])/28));
   L.forEach(m=>{const cx=(m.b[0]+m.b[2])/2,cy=(m.b[1]+m.b[3])/2;h+='<text x="'+cx.toFixed(1)+'" y="'+cy.toFixed(1)+'" style="font-size:'+fs.toFixed(1)+'px;stroke-width:'+(fs/4).toFixed(2)+'px">'+esc(m.n.replace(/(특별자치시|광역시)$/,""))+((MC[m.n]||0)?" "+MC[m.n]:"")+'</text>'});
-  $("#pmap").innerHTML=h+'</svg>';$("#ptitle").textContent=p+" — 시·군을 골라 주세요";
+  $("#pmap").innerHTML=h+'</svg>';zoomable($("#pmap"),$("#pmap svg"));$("#ptitle").textContent=p+" — 시·군을 골라 주세요";
   const names=[...new Set([...L.map(m=>m.n),...Object.keys(MC)])].sort((a,b)=>(MC[b]||0)-(MC[a]||0)||a.localeCompare(b,"ko"));
   $("#munChips").innerHTML='<button class="chip on" data-all="1">'+p+' 전체 <small>'+(PC[p]||0)+'</small></button>'+names.map(n=>'<button class="chip" data-m="'+esc(n)+'" '+(MC[n]?"":'style="opacity:.55"')+'>'+esc(n)+' <small>'+(MC[n]||0)+'</small></button>').join("");
   $("#pmap").querySelectorAll("path").forEach(e=>e.onclick=()=>{setSel(p,e.dataset.m);closePop()});
