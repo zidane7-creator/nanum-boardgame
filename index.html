@@ -122,6 +122,17 @@ html.sc-night .tree,html.sc-night .hills,html.sc-night .front{filter:brightness(
 .parade .jesus{cursor:pointer}
 .parade .say{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:4px;background:#fff;border:2px solid var(--ink);border-radius:12px;padding:3px 10px;font-size:13px;white-space:nowrap;pointer-events:none;z-index:9}
 @media (prefers-reduced-motion:reduce){.parade .pw svg,.parade .pw img{animation:none!important}}
+.parade .jesus .ft,.parade .jesus .armB,.parade .jesus .staff{transform-box:fill-box}
+.parade .jesus .armB{transform-origin:20% 5%}.parade .jesus .staff{transform-origin:85% 15%}
+.parade .jesus.walk .ftL{animation:jstep .9s ease-in-out infinite}
+.parade .jesus.walk .ftR{animation:jstep .9s ease-in-out -.45s infinite}
+.parade .jesus.walk .armB{animation:jarm .9s ease-in-out infinite}
+.parade .jesus.walk .staff{animation:jstaff 1.8s ease-in-out infinite}
+.parade .jesus.graze .staff{animation:jstaff 3.6s ease-in-out infinite}
+@keyframes jstep{0%,100%{transform:translate(-7px,0)}25%{transform:translate(0,-7px)}50%{transform:translate(7px,0)}}
+@keyframes jarm{0%,100%{transform:rotate(-9deg)}50%{transform:rotate(9deg)}}
+@keyframes jstaff{0%,100%{transform:rotate(4deg)}50%{transform:rotate(-7deg)}}
+@media (prefers-reduced-motion:reduce){.parade .jesus *{animation:none!important}}
 </style><meta property="og:image" content="https://zidane7-creator.github.io/nanum-boardgame/assets/og.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:site_name" content="치영의 교회 생활 즐기기"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://zidane7-creator.github.io/nanum-boardgame/assets/og.jpg">
 <script src="assets/jua.js"></script>
 </head><body>
@@ -250,12 +261,12 @@ $("list").innerHTML=ZONES.map(z=>'<li><b>'+z.name+'</b> — '+z.items.map(it=>it
 /* 예수님이 언덕 위에서 양 떼를 몰고 다님 (앞 양이 길을 내고, 나머지 양과 예수님이 그 길을 따라감) */
 (function(){
 const hills=document.querySelector(".hills");if(!hills)return;
-const JESUS='<img src="assets/jesus.png" alt="" draggable="false">';
+const JESUS='<svg viewBox="-10 0 240 340" aria-hidden="true"><g class="ft ftL"><ellipse cx="88" cy="312" rx="17" ry="8" fill="#8a5528"/><ellipse cx="84" cy="306" rx="11" ry="7" fill="#f2c7a5" stroke="#7d6a5e" stroke-width="3"/></g><g class="ft ftR"><ellipse cx="132" cy="312" rx="17" ry="8" fill="#8a5528"/><ellipse cx="136" cy="306" rx="11" ry="7" fill="#f2c7a5" stroke="#7d6a5e" stroke-width="3"/></g><g class="armB"><path d="M150 162Q178 196 176 238L156 242Q156 204 136 178Z" fill="#eef8fb" stroke="#7d6a5e" stroke-width="5" stroke-linejoin="round"/><circle cx="167" cy="244" r="11" fill="#f2c7a5" stroke="#7d6a5e" stroke-width="4"/></g><path d="M64 150Q110 136 156 150L178 300Q110 314 42 300Z" fill="#eef8fb" stroke="#7d6a5e" stroke-width="5" stroke-linejoin="round"/><path d="M134 146L158 154L80 282L58 270Z" fill="#c8102e"/><path d="M42 300Q110 314 178 300" fill="none" stroke="#7d6a5e" stroke-width="5" stroke-linecap="round"/><g class="staff"><path d="M14 318L4 104" stroke="#a0703f" stroke-width="8" stroke-linecap="round"/><path d="M5 106Q-6 66 22 64Q50 64 44 96" fill="none" stroke="#a0703f" stroke-width="8" stroke-linecap="round"/><path d="M72 164Q40 186 22 214L40 228Q58 200 86 184Z" fill="#eef8fb" stroke="#7d6a5e" stroke-width="5" stroke-linejoin="round"/><circle cx="24" cy="222" r="12" fill="#f2c7a5" stroke="#7d6a5e" stroke-width="4"/></g><image href="assets/jesus-head.png" x="1" y="0" width="218" height="170"/></svg>';
 const lane=document.createElement("div");lane.className="parade";hills.appendChild(lane);
 const mk=(html,cls,w)=>{const d=document.createElement("div");d.className="pw "+cls;d.innerHTML=html;d.firstChild.style.width=w+"px";lane.appendChild(d);return d};
-const small=innerWidth<560,SW=small?40:56,JW=small?82:118,GAP=small?34:46,N=small?3:4;
+const small=innerWidth<560,SW=small?40:56,JW=small?58:80,GAP=small?34:46,N=small?3:4;
 const flock=[];for(let i=0;i<N;i++){const w=Math.round(SW*(i===N-1?.8:1-.06*i));flock.push({el:mk(SHEEP,"sheep",w),gap:i?GAP:0,x:0,lx:0})}
-const J={el:mk(JESUS,"jesus",JW),gap:small?62:88,x:0,lx:0};
+const J={el:mk(JESUS,"jesus",JW),gap:small?50:68,x:0,lx:0};
 flock.forEach((f,i)=>{f.el.style.bottom=((i%2)*5)+"px";f.el.style.zIndex=3+(i%2?0:1)});J.el.style.zIndex=5;
 const rnd=(a,b)=>a+Math.random()*(b-a);
 /* path the lead sheep has walked, one point per pixel; the others stand further back along it */
