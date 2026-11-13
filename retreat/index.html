@@ -111,6 +111,12 @@ let HIDDEN=new Set();
 const ADMIN=/[?&]admin\b/.test(location.search)||(()=>{try{return localStorage.getItem("retreat-admin")=="1"}catch(e){return false}})();
 const ls=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}},lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
 let MARK=new Set(ls("retreat-mark",[])),UNMARK=new Set(ls("retreat-unmark",[]));
+let EXTRA=[],ADDS=ls("retreat-adds",[]);
+const SIDOMAP={"서울특별시":"서울","부산광역시":"부산","대구광역시":"대구","인천광역시":"인천","광주광역시":"광주","대전광역시":"대전","울산광역시":"울산","세종특별자치시":"세종","경기도":"경기","강원도":"강원","강원특별자치도":"강원","충청북도":"충북","충청남도":"충남","전라북도":"전북","전북특별자치도":"전북","전라남도":"전남","경상북도":"경북","경상남도":"경남","제주특별자치도":"제주"};
+function parseAddr(a){const t=String(a||"").trim().split(/\s+/);let sido=SIDOMAP[t[0]]||t[0]||"";if(!ORDER.includes(sido))sido="";let sgg="";
+  if(sido=="세종")sgg="세종특별자치시";else if(t[1]&&/[시군구]$/.test(t[1]))sgg=t[1];return{sido,sgg}}
+function hid(s){let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))|0;return"x"+(h>>>0).toString(16)}
+function toVenue(e,pending){const p=parseAddr(e.addr);return{id:hid(e.name+"|"+e.addr),name:e.name,sido:e.sido||p.sido,sgg:e.sgg||p.sgg,addr:e.addr,cap:e.cap||(e.capMax?"최대 "+e.capMax+"명":"인원 미표기"),capMax:e.capMax||null,type:e.type||"수련시설",tel:e.tel||"",web:"",detail:e.link||"",src:pending?"직접 추가 (반영 전)":"직접 추가",srcUrl:e.link||"#",old:false,pending:!!pending}}
 const isOut=v=>(HIDDEN.has(v.id)&&!UNMARK.has(v.id))||MARK.has(v.id);
 const cntBy=(f)=>{const c={};VENUES.forEach(v=>{if(isOut(v))return;const k=f(v);if(k)c[k]=(c[k]||0)+1});return c};
 let PC=cntBy(v=>v.sido);
@@ -173,9 +179,9 @@ function adminBtn(v){if(!ADMIN)return"";const srv=HIDDEN.has(v.id);
 function card(v){return'<article class="v'+(ADMIN&&isOut(v)?" out":"")+'"><h3>'+esc(v.name)+(ADMIN&&isOut(v)?' <span class="tag o">숨김</span>':'')+'</h3><div class="tags"><span class="tag r">'+esc((v.sido||"지역 미상")+(v.sgg?" "+v.sgg:""))+'</span><span class="tag">'+esc(v.type)+'</span>'+(v.old?'<span class="tag o">오래된 정보</span>':'')+'</div>'+
    '<div class="row"><b>위치</b><span>'+esc(v.addr||"-")+'</span></div><div class="row"><b>인원</b><span class="cap">'+esc(v.cap)+'</span></div>'+
    (v.tel?'<div class="row"><b>전화</b><a href="tel:'+esc(v.tel.replace(/[^0-9]/g,""))+'" style="color:inherit">'+esc(v.tel)+'</a></div>':'')+
-   '<div class="btns"><a class="map" href="'+naver(v)+'" target="_blank" rel="noopener">📍 지도</a>'+(v.detail?'<a href="'+esc(v.detail)+'" target="_blank" rel="noopener">'+(v.src=="카카오맵"?"📷 사진·후기 (카카오맵)":"📷 사진·자세히")+'</a>':'')+(v.web?'<a href="'+esc(v.web)+'" target="_blank" rel="noopener">🏠 홈페이지</a>':'')+'</div>'+
+   '<div class="btns"><a class="map" href="'+naver(v)+'" target="_blank" rel="noopener">📍 지도</a>'+(v.detail?'<a href="'+esc(v.detail)+'" target="_blank" rel="noopener">'+(v.src=="카카오맵"?"📷 사진·후기 (카카오맵)":/naver/.test(v.detail)?"📷 사진·자세히 (네이버 지도)":"📷 사진·자세히")+'</a>':'')+(v.web?'<a href="'+esc(v.web)+'" target="_blank" rel="noopener">🏠 홈페이지</a>':'')+'</div>'+
    '<div class="src">출처: <a href="'+esc(v.srcUrl)+'" target="_blank" rel="noopener">'+esc(v.src)+'</a></div>'+adminBtn(v)+'</article>'}
-const RANK=v=>(v.src=="OpenStreetMap"?2:v.src=="카카오맵"?1:0)*2+(v.old?1:0);
+const RANK=v=>/^직접 추가/.test(v.src)?-2:(v.src=="OpenStreetMap"?2:v.src=="카카오맵"?1:0)*2+(v.old?1:0);
 function render(){const q=$("#q").value.trim().replace(/\s/g,""),tg=TYPEG[tgrp][1];
   const L=VENUES.filter(v=>(ADMIN||!isOut(v))&&(!prov||v.sido==prov)&&(!sgg||v.sgg==sgg)&&(!need||(v.capMax!=null&&v.capMax>=need))&&(!tg||tg.includes(v.type))&&(!q||(v.name+v.addr+v.type+v.sido+v.sgg).replace(/\s/g,"").includes(q)))
    .sort((a,b)=>(isOut(a)-isOut(b))||RANK(a)-RANK(b)||(b.capMax||0)-(a.capMax||0)||ORDER.indexOf(a.sido)-ORDER.indexOf(b.sido)||a.name.localeCompare(b.name,"ko"));
@@ -184,15 +190,38 @@ function render(){const q=$("#q").value.trim().replace(/\s/g,""),tg=TYPEG[tgrp][
   $("#more").hidden=L.length<=shown;$("#more").textContent="더 보기 ▼ ("+(L.length-shown)+"곳 더)";
   document.querySelectorAll(".adm").forEach(b=>b.onclick=()=>{const id=b.dataset.id,S=b.dataset.k=="mk"?MARK:UNMARK;S.has(id)?S.delete(id):S.add(id);lsSet("retreat-mark",[...MARK]);lsSet("retreat-unmark",[...UNMARK]);adminBar();render()});}
 function adminBar(){if(!ADMIN)return;let b=$("#admbar");if(!b){b=document.createElement("div");b.id="admbar";document.body.appendChild(b)}
-  b.innerHTML='<b>🔧 관리자 모드</b><span>삭제 표시 '+MARK.size+'곳 · 다시 보이기 '+UNMARK.size+'곳</span><button id="apply" '+(MARK.size||UNMARK.size?"":"disabled")+'>GitHub에 반영하기</button><button id="undoAll" '+(MARK.size||UNMARK.size?"":"disabled")+'>표시 모두 취소</button><button id="admOff">관리자 모드 끄기</button>';
-  $("#apply").onclick=applyHidden;$("#undoAll").onclick=()=>{if(!confirm("이번에 표시한 삭제·복구를 모두 취소할까요?"))return;MARK.clear();UNMARK.clear();lsSet("retreat-mark",[]);lsSet("retreat-unmark",[]);adminBar();render()};
+  const ch=MARK.size||UNMARK.size||ADDS.length;
+  b.innerHTML='<b>🔧 관리자 모드</b><button id="addV">＋ 장소 추가</button><span>추가 '+ADDS.length+' · 삭제 '+MARK.size+' · 복구 '+UNMARK.size+'</span><button id="apply" '+(ch?"":"disabled")+'>GitHub에 반영하기</button><button id="undoAll" '+(ch?"":"disabled")+'>모두 취소</button><button id="admOff">끄기</button>';
+  $("#addV").onclick=addForm;
+  $("#apply").onclick=applyHidden;$("#undoAll").onclick=()=>{if(!confirm("이번에 표시한 삭제·복구를 모두 취소할까요?"))return;MARK.clear();UNMARK.clear();lsSet("retreat-mark",[]);lsSet("retreat-unmark",[]);if(ADDS.length){ADDS=[];lsSet("retreat-adds",[]);location.reload();return}adminBar();render()};
   $("#admOff").onclick=()=>{try{localStorage.removeItem("retreat-admin")}catch(e){}location.href=location.pathname}}
+function addForm(){const m=document.createElement("div");m.className="pop show";
+  const types=["기도원","수양관","수련원","청소년수련원","유스호스텔","연수원","교회","펜션","리조트","신학교","수련시설"];
+  m.innerHTML='<div class="box"><button class="x" aria-label="닫기">✕</button><h2>＋ 수련회 장소 추가</h2><p class="muted" style="margin-top:0">네이버·카카오 지도에서 장소를 열어 이름, 도로명 주소, 전화를 옮겨 적고 지도 링크(공유 링크)를 붙여 주세요.</p>'+
+   [["name","장소 이름 *","예: 신덕수양관"],["addr","도로명 주소 *","예: 인천 강화군 화도면 마니산로543번길 40"],["capMax","최대 인원 (숫자, 모르면 비워 두기)","예: 120"],["tel","전화","예: 032-937-7690"],["link","네이버·카카오 지도 링크","예: https://naver.me/…"]].map(([k,l,ph])=>'<label style="display:block;margin:8px 0 2px;font-size:14px">'+l+'</label><input class="search" style="font-size:16px;padding:8px 12px" data-k="'+k+'" placeholder="'+ph+'">').join("")+
+   '<label style="display:block;margin:8px 0 2px;font-size:14px">종류</label><select class="search" style="font-size:16px;padding:8px 12px" data-k="type">'+types.map(t=>'<option>'+t+'</option>').join("")+'</select>'+
+   '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px"><button class="more" style="margin:0" id="addOk">추가하기</button></div></div>';
+  document.body.appendChild(m);const close=()=>m.remove();m.querySelector(".x").onclick=close;m.onclick=e=>{if(e.target===m)close()};
+  m.querySelector("#addOk").onclick=()=>{const v={};m.querySelectorAll("[data-k]").forEach(i=>v[i.dataset.k]=i.value.trim());
+    if(!v.name||!v.addr){alert("장소 이름과 도로명 주소는 꼭 적어 주세요");return}
+    const p=parseAddr(v.addr);if(!p.sido){alert("주소를 '경기 가평군 …'처럼 시·도부터 적어 주세요");return}
+    const cap=parseInt(v.capMax,10);const e={name:v.name,addr:v.addr,sido:p.sido,sgg:p.sgg,type:v.type,cap:cap?"최대 "+cap+"명":"인원 미표기",capMax:cap||null,tel:v.tel,link:v.link,added:new Date().toISOString().slice(0,10)};
+    ADDS.push(e);lsSet("retreat-adds",ADDS);VENUES.unshift(toVenue(e,true));PC=cntBy(x=>x.sido);close();drawKorea();chips();render();adminBar()}}
 async function applyHidden(){
   const keep=VENUES.filter(v=>(HIDDEN.has(v.id)&&!UNMARK.has(v.id))||MARK.has(v.id)).map(v=>({id:v.id,name:v.name})).sort((a,b)=>a.name.localeCompare(b.name,"ko"));
-  const txt=JSON.stringify(keep,null,1);let copied=false;try{await navigator.clipboard.writeText(txt);copied=true}catch(e){}
+  const txt=JSON.stringify(keep,null,1);const ext=JSON.stringify([...EXTRA,...ADDS],null,1);
+  if(ADDS.length&&!(MARK.size||UNMARK.size)){return applyExtra(ext)}
+  let copied=false;try{await navigator.clipboard.writeText(txt);copied=true}catch(e){}
   const m=document.createElement("div");m.className="pop show";m.innerHTML='<div class="box"><button class="x" aria-label="닫기">✕</button><h2>GitHub에 반영하기</h2><ol style="line-height:1.8;font-size:16px;padding-left:20px"><li>'+(copied?'숨길 장소 목록('+keep.length+'곳)을 <b>복사해 뒀어요.</b>':'아래 칸의 내용을 <b>전체 선택해서 복사</b>해 주세요.')+'</li><li>아래 버튼으로 GitHub의 <b>hidden.json 고치기 화면</b>을 열어요 (사이트 관리자 계정 로그인).</li><li>편집 칸을 <b>전체 선택(Ctrl+A) → 붙여넣기(Ctrl+V)</b> 해요.</li><li>초록색 <b>Commit changes</b>를 두 번 눌러요.</li><li>1~2분 뒤 새로고침하면 모두에게 반영돼요.</li></ol><p><a class="more" style="display:inline-block;text-decoration:none;color:inherit" href="https://github.com/zidane7-creator/nanum-boardgame/edit/main/retreat/hidden.json" target="_blank" rel="noopener">GitHub에서 hidden.json 열기 ↗</a></p><textarea readonly style="width:100%;height:140px;font-size:12px">'+esc(txt)+'</textarea></div>';
+  if(ADDS.length)m.querySelector(".box").insertAdjacentHTML("beforeend",'<p style="font-size:16px"><b>추가한 장소도 있어요.</b> 위를 마친 뒤 <button class="more" style="display:inline-block;margin:0;font-size:15px" id="toExtra">추가한 장소 반영하기 →</button></p>');
+  document.body.appendChild(m);m.querySelector(".x").onclick=()=>m.remove();m.onclick=e=>{if(e.target===m)m.remove()};
+  const te=m.querySelector("#toExtra");if(te)te.onclick=()=>{m.remove();applyExtra(ext)}}
+async function applyExtra(ext){let copied=false;try{await navigator.clipboard.writeText(ext);copied=true}catch(e){}
+  const m=document.createElement("div");m.className="pop show";m.innerHTML='<div class="box"><button class="x" aria-label="닫기">✕</button><h2>추가한 장소 GitHub에 반영하기</h2><ol style="line-height:1.8;font-size:16px;padding-left:20px"><li>'+(copied?'장소 목록을 <b>복사해 뒀어요.</b>':'아래 칸의 내용을 <b>전체 선택해서 복사</b>해 주세요.')+'</li><li>아래 버튼으로 GitHub의 <b>extra.json 고치기 화면</b>을 열어요.</li><li>편집 칸을 <b>전체 선택(Ctrl+A) → 붙여넣기(Ctrl+V)</b> 해요.</li><li>초록색 <b>Commit changes</b>를 두 번 눌러요.</li><li>1~2분 뒤 새로고침하면 모두에게 보여요.</li></ol><p><a class="more" style="display:inline-block;text-decoration:none;color:inherit" href="https://github.com/zidane7-creator/nanum-boardgame/edit/main/retreat/extra.json" target="_blank" rel="noopener">GitHub에서 extra.json 열기 ↗</a></p><textarea readonly style="width:100%;height:140px;font-size:12px">'+esc(ext)+'</textarea></div>';
   document.body.appendChild(m);m.querySelector(".x").onclick=()=>m.remove();m.onclick=e=>{if(e.target===m)m.remove()}}
-async function loadHidden(){try{const r=await fetch("hidden.json?v="+Date.now(),{cache:"no-store"});if(r.ok){const L=await r.json();HIDDEN=new Set(L.map(x=>typeof x=="string"?x:x.id))}}catch(e){}
+async function loadHidden(){try{const r=await fetch("extra.json?v="+Date.now(),{cache:"no-store"});if(r.ok){EXTRA=await r.json();EXTRA.forEach(e=>VENUES.unshift(toVenue(e)))}}catch(e){}
+  ADDS=ADDS.filter(a=>!EXTRA.some(e=>e.name==a.name&&e.addr==a.addr));lsSet("retreat-adds",ADDS);if(ADMIN)ADDS.forEach(a=>VENUES.unshift(toVenue(a,true)));
+  try{const r=await fetch("hidden.json?v="+Date.now(),{cache:"no-store"});if(r.ok){const L=await r.json();HIDDEN=new Set(L.map(x=>typeof x=="string"?x:x.id))}}catch(e){}
   /* marks that are already applied on the server are done */
   [...MARK].forEach(id=>{if(HIDDEN.has(id))MARK.delete(id)});[...UNMARK].forEach(id=>{if(!HIDDEN.has(id))UNMARK.delete(id)});lsSet("retreat-mark",[...MARK]);lsSet("retreat-unmark",[...UNMARK]);
   PC=cntBy(v=>v.sido);$("#sub").textContent="전국 교회 수련회 장소 "+VENUES.filter(v=>!isOut(v)).length+"곳을 지도에서 골라 찾아보세요.";drawKorea();chips();render();adminBar()}
