@@ -69,7 +69,7 @@ a{color:inherit}
 .sheep:hover svg,.sheep:focus-visible svg{animation:hopS .5s ease-in-out infinite}
 .sheep.jump svg{animation:jumpS .5s ease-out}
 .sheep:focus-visible{outline:3px dashed var(--ink);outline-offset:4px;border-radius:12px}
-.lb{margin-top:4px;background:var(--cream);border:2px solid var(--ink);border-radius:12px;padding:calc(.31em + 1px) .7em calc(.31em - 1px);font-size:clamp(11px,3vw,15px);line-height:1.15;display:inline-flex;align-items:center;justify-content:center;word-break:keep-all;text-align:center;box-shadow:0 2px 0 var(--ink)}
+.lb{margin-top:4px;background:var(--cream);border:2px solid var(--ink);border-radius:12px;padding:calc(.31em + 1px) .7em calc(.31em - 1px);font-size:clamp(11px,3vw,15px);line-height:1.15;display:inline-flex;align-items:center;justify-content:center;word-break:keep-all;white-space:nowrap;text-align:center;box-sizing:border-box;box-shadow:0 2px 0 var(--ink)}
 .open .lb{background:#ffe27a}
 .tag{position:absolute;top:17%;right:5%;background:#e8503a;color:#fff;font-size:10px;line-height:1;border-radius:8px;padding:.27em .6em;border:1.5px solid var(--ink);z-index:2;display:inline-flex;align-items:center}
 .bubble{position:absolute;top:-24px;left:50%;transform:translateX(-50%);background:#fff;border:2px solid var(--ink);border-radius:12px;padding:1px 8px;font-size:13px;white-space:nowrap;animation:pop .5s ease-out forwards;pointer-events:none;z-index:4}
@@ -170,7 +170,7 @@ const ZONES=[
  {name:"예배",items:[["악보제작","score/"],["주보제작","jubo/"],["설교도우미","sermon/"],["자막스튜디오","subtitle/"],["성경 읽기","bible/"],["묵상저장소","meditation/"]]},
  {name:"교제",items:[["셀교제",null,[["나눔보드게임","board/"],["텔레스트레이션","tele/"]]],["레크레이션",null,[["성경골든벨"],["OX퀴즈"],["찬양월드컵","worldcup/"]]]]},
  {name:"잡동사니",items:[["주일에 뭐 먹지?","food/"],["수련회 장소 레이더","retreat/"],["이미지 제작","image/"]]},
- {name:"Mall",items:[["전자책"],["굿즈"]]}
+ {name:"Mall",items:[["전자책","ebook/"],["굿즈"]]}
 ];
 const $=id=>document.getElementById(id);
 // title cells
@@ -255,6 +255,17 @@ ZONES.forEach(z=>{
 });
 const link=([l,h])=>h?'<a href="'+h+'"'+(/^https?:/.test(h)?' target="_blank" rel="noopener"':'')+'>'+l+'</a>':l;
 $("list").innerHTML=ZONES.map(z=>'<li><b>'+z.name+'</b> — '+z.items.map(it=>it[2]?it[0]+"("+it[2].map(link).join(", ")+")":link(it)).join(", ")+'</li>').join("");
+</script>
+<script>
+/* 양 이름표: 늘 한 줄, 긴 이름은 글자만 조금 줄여서 모든 이름표 높이를 같게 */
+(function(){function fit(){const L=[...document.querySelectorAll(".sheep .lb")];if(!L.length)return;
+  L.forEach(l=>{l.style.fontSize="";l.style.minHeight="";l.style.paddingLeft=l.style.paddingRight=""});
+  const H0=Math.max(...L.map(l=>l.offsetHeight));
+  L.forEach(l=>{const max=l.parentElement.getBoundingClientRect().width;let fs=parseFloat(getComputedStyle(l).fontSize);
+    if(l.offsetWidth>max){l.style.paddingLeft=l.style.paddingRight=".4em"}
+    while(l.offsetWidth>max&&fs>8){fs-=.25;l.style.fontSize=fs+"px"}l.style.minHeight=H0+"px"})}
+ let t;const go=()=>{clearTimeout(t);t=setTimeout(fit,60)};
+ go();addEventListener("resize",go);if(document.fonts)document.fonts.ready.then(go);setTimeout(go,1200)})();
 </script>
 <script src="assets/daynight.js?v=20261113n"></script>
 <script>
