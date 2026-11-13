@@ -51,7 +51,8 @@ a{color:inherit}
 .t1{left:2%;width:clamp(60px,12vw,120px)}.t2{left:clamp(48px,10vw,110px);width:clamp(46px,9vw,90px)}
 .t3{right:3%;width:clamp(70px,13vw,130px)}
 /* ranch */
-.ranch{position:relative;z-index:2;max-width:1220px;margin:0 auto;padding:30px 16px 20px;display:grid;grid-template-columns:1fr 1fr minmax(0,.62fr);gap:clamp(30px,5vw,48px) clamp(14px,3vw,36px)}
+.ranch{position:relative;z-index:2;max-width:980px;margin:0 auto;padding:30px 16px 20px;display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,5vw,48px) clamp(14px,3vw,36px)}
+.ranch.has-side{max-width:1220px;grid-template-columns:1fr 1fr minmax(0,.62fr)}
 /* 교회학교·선교·섬김: 오른쪽에 세로로 */
 .side{grid-column:3;grid-row:1 / span 2;display:flex;flex-direction:column;gap:clamp(30px,5vw,48px)}
 .side .pen.small{flex:1;min-height:120px}
@@ -176,10 +177,8 @@ const ZONES=[
  {name:"예배",items:[["악보제작","score/"],["주보제작","jubo/"],["설교도우미","sermon/"],["자막스튜디오","subtitle/"],["성경 읽기","bible/"],["묵상저장소","meditation/"]]},
  {name:"교제",items:[["셀교제",null,[["나눔보드게임","board/"],["텔레스트레이션","tele/"]]],["레크리에이션",null,[["성경골든벨"],["OX퀴즈"],["찬양월드컵","worldcup/"],["윷놀이"],["부루마불"],["추수꾼"],["밸런스게임"],["빙고게임"]]]]},
  {name:"잡동사니",items:[["주일에 뭐 먹지?","food/"],["수련회 장소 레이더","retreat/"],["수련회 강사 레이더"],["MT 장소 레이더"],["이미지 제작","image/"]]},
- {name:"Mall",items:[["전자책","ebook/"],["굿즈"],["백드롭"],["말씀카드"],["말씀배경"]]},
- {name:"교회학교",items:[],side:1},
- {name:"선교",items:[],side:1},
- {name:"섬김",items:[],side:1}
+ {name:"Mall",items:[["전자책","ebook/"],["굿즈"],["백드롭"],["말씀카드"],["말씀배경"]]}
+ /* 오른쪽 세로 울타리는 {name:"…",items:[],side:1} 로 넣으면 됨 (교회학교·선교·섬김 — 디벨롭 때) */
 ];
 const $=id=>document.getElementById(id);
 // title cells
@@ -263,7 +262,7 @@ ZONES.forEach(z=>{
   z.items.forEach(([label,href,kids])=>fl.appendChild(makeSheep(label,href,kids)));
   (z.side?SIDE:$("ranch")).appendChild(pen);
 });
-if(SIDE.children.length)$("ranch").appendChild(SIDE);
+if(SIDE.children.length){$("ranch").appendChild(SIDE);$("ranch").classList.add("has-side")}
 const link=([l,h])=>h?'<a href="'+h+'"'+(/^https?:/.test(h)?' target="_blank" rel="noopener"':'')+'>'+l+'</a>':l;
 $("list").innerHTML=ZONES.map(z=>'<li><b>'+z.name+'</b> — '+(z.items.length?z.items.map(it=>it[2]?it[0]+"("+it[2].map(link).join(", ")+")":link(it)).join(", "):"준비 중")+'</li>').join("");
 </script>
