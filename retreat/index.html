@@ -2,7 +2,7 @@
 <html lang="ko"><head><meta charset="utf-8"><script async src="https://www.googletagmanager.com/gtag/js?id=G-0WTWY3TPES"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-0WTWY3TPES");</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>수련회 장소 레이더 | 치영의 교회 생활 즐기기 · 전국 교회 수련회 장소 모음</title>
-<meta name="description" content="전국 교회 수련회 장소 500여 곳을 한눈에. 지도에서 도와 시·군을 골라 기도원·수양관·수련원·청소년수련원·자연휴양림·유스호스텔·신학교 대관 장소를 찾아보세요.">
+<meta name="description" content="전국 교회 수련회 장소 800여 곳을 한눈에. 지도에서 도와 시·군을 골라 기도원·수양관·수련원·청소년수련원·자연휴양림·유스호스텔·신학교 대관 장소를 찾아보세요.">
 <meta name="keywords" content="수련회 장소, 교회 수련회 장소, 수련회 장소 추천, 기도원, 수양관, 수련원, 청소년수련원, 자연휴양림, 유스호스텔, 청년부 수련회">
 <link rel="canonical" href="https://zidane7-creator.github.io/nanum-boardgame/retreat/">
 <meta property="og:title" content="수련회 장소 레이더 — 치영의 교회 생활 즐기기">
@@ -85,7 +85,7 @@ main{max-width:1060px;margin:0 auto;padding:16px 14px 60px}
   <div class="grid" id="grid"></div>
   <button class="more" id="more" hidden>더 보기 ▼</button>
   <section class="card" style="margin-top:16px">
-    <div class="note">📌 장소 정보는 각 출처(교회수련회장소·갓스쿨·크리스천투데이, 교단 연수시설 목록, 신학교 안내, OpenStreetMap, 기사·커뮤니티 글)에 적힌 내용을 옮겼어요. 수용 인원·운영 여부·요금은 바뀌었을 수 있으니 <b>예약 전에 꼭 전화로 확인</b>해 주세요. 사진은 <b>사진·자세히</b>나 <b>홈페이지</b>, <b>지도</b>에서 볼 수 있어요.<br>지도 경계: 통계청 행정경계(2013, southkorea-maps) · 일부 장소 위치: © OpenStreetMap 기여자</div>
+    <div class="note">📌 장소 정보는 각 출처(성평등가족부 청소년수련시설 공공데이터, 교회수련회장소·갓스쿨·크리스천투데이, 교단 연수시설 목록, 신학교 안내, OpenStreetMap, 기사·커뮤니티 글)에 적힌 내용을 옮겼어요. 수용 인원·운영 여부·요금은 바뀌었을 수 있으니 <b>예약 전에 꼭 전화로 확인</b>해 주세요. 사진은 <b>사진·자세히</b>나 <b>홈페이지</b>, <b>지도</b>에서 볼 수 있어요.<br>지도 경계: 통계청 행정경계(2013, southkorea-maps) · 일부 장소 위치: © OpenStreetMap 기여자</div>
   </section>
 </main>
 <div class="pop" id="pop"><div class="box"><button class="x" id="px" aria-label="닫기">✕</button><h2 id="ptitle"></h2><div class="pmap" id="pmap"></div><div class="chips" id="munChips"></div></div></div>
@@ -97,7 +97,7 @@ const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const ORDER=["서울","경기","인천","강원","충북","충남","대전","세종","경북","경남","대구","부산","울산","전북","전남","광주","제주"];
 const CAPS=[["전체",0],["30명 이상",30],["50명 이상",50],["100명 이상",100],["200명 이상",200],["500명 이상",500]];
-const TYPEG=[["전체",null],["기도원·수양관",["기도원","수양관"]],["수련원",["수련원","수련시설","단체 수련시설","교회수련원","선교센터","연수원","교육센터","치유센터","세미나하우스"]],["청소년수련원",["청소년수련원"]],["자연휴양림",["자연휴양림"]],["유스호스텔",["유스호스텔"]],["교회",["교회"]],["펜션·리조트",["펜션","리조트","글램핑","캠핑장","캠프·글램핑","공간대관"]],["신학교",["신학교"]]];
+const TYPEG=[["전체",null],["기도원·수양관",["기도원","수양관"]],["수련원",["수련원","수련시설","단체 수련시설","교회수련원","선교센터","연수원","교육센터","치유센터","세미나하우스"]],["청소년수련원·야영장",["청소년수련원","청소년야영장"]],["자연휴양림",["자연휴양림"]],["유스호스텔",["유스호스텔"]],["교회",["교회"]],["펜션·리조트",["펜션","리조트","글램핑","캠핑장","캠프·글램핑","공간대관"]],["신학교",["신학교"]]];
 let prov="",sgg="",need=0,tgrp=0,shown=30;
 const cntBy=(f)=>{const c={};VENUES.forEach(v=>{const k=f(v);if(k)c[k]=(c[k]||0)+1});return c};
 const PC=cntBy(v=>v.sido);
@@ -119,7 +119,7 @@ function openProv(p){const L=KMUN.filter(m=>m.p==p);if(!L.length){setSel(p,"");r
   const fs=Math.max(2.2,Math.min(5,(B[2]-B[0])/28));
   L.forEach(m=>{const cx=(m.b[0]+m.b[2])/2,cy=(m.b[1]+m.b[3])/2;h+='<text x="'+cx.toFixed(1)+'" y="'+cy.toFixed(1)+'" style="font-size:'+fs.toFixed(1)+'px;stroke-width:'+(fs/4).toFixed(2)+'px">'+esc(m.n.replace(/(특별자치시|광역시)$/,""))+((MC[m.n]||0)?" "+MC[m.n]:"")+'</text>'});
   $("#pmap").innerHTML=h+'</svg>';$("#ptitle").textContent=p+" — 시·군을 골라 주세요";
-  const names=[...new Set(L.map(m=>m.n))].sort((a,b)=>(MC[b]||0)-(MC[a]||0)||a.localeCompare(b,"ko"));
+  const names=[...new Set([...L.map(m=>m.n),...Object.keys(MC)])].sort((a,b)=>(MC[b]||0)-(MC[a]||0)||a.localeCompare(b,"ko"));
   $("#munChips").innerHTML='<button class="chip on" data-all="1">'+p+' 전체 <small>'+(PC[p]||0)+'</small></button>'+names.map(n=>'<button class="chip" data-m="'+esc(n)+'" '+(MC[n]?"":'style="opacity:.55"')+'>'+esc(n)+' <small>'+(MC[n]||0)+'</small></button>').join("");
   $("#pmap").querySelectorAll("path").forEach(e=>e.onclick=()=>{setSel(p,e.dataset.m);closePop()});
   $("#munChips").querySelectorAll(".chip").forEach(b=>b.onclick=()=>{setSel(p,b.dataset.all?"":b.dataset.m);closePop()});
