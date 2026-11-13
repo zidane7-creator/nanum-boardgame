@@ -759,19 +759,7 @@ $('#exportPop').addEventListener('click',async e=>{const b=e.target.closest('but
   if(k==='pptx')await exportPptx(P);else if(k==='jpgall')await exportJpg(P,'all');else if(k==='jpgcur')await exportJpg(P,'cur');
   else if(k==='json')await saveFile(fileBase(P.title)+'.json',new Blob([JSON.stringify(P)],{type:'application/json'}))});
 $('#bLyrics').onclick=openLyricsModal;
-$('#bUpload').onclick=()=>{if(CAP.assets&&CAP.db){openUploadModal(P);return}handoffUpload()};
-/* 사이트(GitHub)에서는 자료실 저장소에 직접 쓸 수 없어서, 프로젝트 파일을 받아 자료실 페이지에서 올린다 */
-const LIB_URL='https://claude.ai/artifact/CF5TJfK6bQUd568ouDfUXc#library';
-function handoffUpload(){
-  const name=fileBase(P.title)+'.json';
-  modal(`<h2>자료실에 올리기</h2>
-    <p class="note">찬양 자료실은 따로 있는 페이지라서 두 단계로 올려요. (자료실에 올리는 것은 관리자만 할 수 있어요)</p>
-    <ol style="margin:0;padding-left:20px;line-height:1.9">
-      <li><b>${esc(name)}</b> 파일을 받아요. (지금 만든 슬라이드 ${P.slides.length}장 전체)</li>
-      <li>자료실이 새 창으로 열리면 <b>PPT 파일 바로 올리기</b>를 누르고 방금 받은 파일을 고르세요.</li>
-      <li>곡 제목·태그를 확인하고 <b>올리기</b>를 누르면 끝!</li></ol>
-    <div class="acts"><button class="btn" data-close>취소</button><button class="btn pri" id="hoGo">파일 받고 자료실 열기</button></div>`,m=>{
-    $('#hoGo',m).onclick=async()=>{await saveFile(name,new Blob([JSON.stringify(P)],{type:'application/json'}));window.open(LIB_URL,'_blank','noopener');closeModal()}})}
+$('#bUpload').onclick=()=>{if(GH.admin()){openUploadModal(P);return}openAdminLogin(()=>openUploadModal(P))};
 
 /* ================= panel ================= */
 let ptab='tpl';
@@ -1184,6 +1172,50 @@ document.addEventListener('paste',e=>{
 
 /* ================= library ================= */
 let LIB=[],libReady=false;
+/* 찬양 자료실 = 이 사이트 GitHub 저장소의 subtitle/library/ 폴더.
+   누구나 읽기(사이트 파일), 올리기·삭제는 관리자만: 관리자가 자기 브라우저에 GitHub 키(저장소 쓰기 권한)를 한 번 넣어 두면 바로 커밋한다.
+   키는 그 브라우저에만 저장되고 사이트나 저장소에는 들어가지 않는다. */
+const GH={owner:'zidane7-creator',repo:'nanum-boardgame',branch:'main',dir:'subtitle/library/',KEY:'csub:gh-token',
+  token(){try{return localStorage.getItem(this.KEY)||''}catch(_){return''}},
+  admin(){return!!this.token()},
+  async api(path,opt={}){const r=await fetch('https://api.github.com/repos/'+this.owner+'/'+this.repo+path,{...opt,headers:{Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28',Authorization:'Bearer '+this.token(),...(opt.body?{'Content-Type':'application/json'}:{}),...(opt.headers||{})}});
+    if(!r.ok){let m='';try{m=(await r.json()).message}catch(_){}const e=new Error(m||('GitHub '+r.status));e.status=r.status;throw e}return r},
+  async raw(file){const r=await this.api('/contents/'+encodeURI(this.dir+file)+'?ref='+this.branch,{headers:{Accept:'application/vnd.github.raw+json'}});return r},
+  async check(tok){const r=await fetch('https://api.github.com/repos/'+this.owner+'/'+this.repo,{headers:{Accept:'application/vnd.github+json',Authorization:'Bearer '+tok}});if(!r.ok)return false;const j=await r.json();return!!(j.permissions&&j.permissions.push)},
+  /* one commit with many files: files = [{path, b64}] add/replace, del = [path] remove */
+  async commit(message,files,del=[]){
+    const ref=await (await this.api('/git/ref/heads/'+this.branch)).json();const base=ref.object.sha;
+    const bc=await (await this.api('/git/commits/'+base)).json();
+    const tree=[];
+    for(const f of files){const bl=await (await this.api('/git/blobs',{method:'POST',body:JSON.stringify({content:f.b64,encoding:'base64'})})).json();tree.push({path:this.dir+f.path,mode:'100644',type:'blob',sha:bl.sha})}
+    for(const d of del)tree.push({path:this.dir+d,mode:'100644',type:'blob',sha:null});
+    const t=await (await this.api('/git/trees',{method:'POST',body:JSON.stringify({base_tree:bc.tree.sha,tree})})).json();
+    const c=await (await this.api('/git/commits',{method:'POST',body:JSON.stringify({message,tree:t.sha,parents:[base]})})).json();
+    await this.api('/git/refs/heads/'+this.branch,{method:'PATCH',body:JSON.stringify({sha:c.sha})});return c.sha}};
+const b64txt=s=>{const u=new TextEncoder().encode(s);let b='';for(let i=0;i<u.length;i+=0x8000)b+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(b)};
+const b64blob=blob=>new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(String(fr.result).split(',')[1]);fr.readAsDataURL(blob)});
+const freshThumb={};
+const libURL=p=>'library/'+p+'?v='+(LIB.find(x=>x.data===p||x.thumb===p)?.updated||'');
+async function loadIndex(){
+  if(GH.admin()){try{return await (await GH.raw('index.json')).json()}catch(e){if(e.status===404)return[];if(e.status===401){toast('관리자 키가 만료됐거나 틀렸어요. 다시 넣어 주세요',4500);try{localStorage.removeItem(GH.KEY)}catch(_){}}}}
+  const r=await fetch('library/index.json?t='+Date.now());if(r.status===404)return[];if(!r.ok)throw new Error(r.status);return r.json()}
+function openAdminLogin(after){
+  modal(`<h2>🔑 관리자 키 넣기</h2>
+    <p class="note">자료실에 올리고 지우는 것은 관리자만 할 수 있어요. 이 사이트의 GitHub 저장소에 쓸 수 있는 키를 <b>이 브라우저에 한 번만</b> 넣어 두면, 그다음부터는 <b>자료실에 올리기</b>를 누르는 즉시 자료실에 생겨요.</p>
+    <details><summary style="cursor:pointer">키 만드는 법 (처음 한 번)</summary><ol class="note" style="padding-left:18px;margin:8px 0">
+      <li>GitHub에 로그인 → 오른쪽 위 프로필 → <b>Settings</b> → 맨 아래 <b>Developer settings</b> → <b>Personal access tokens</b> → <b>Fine-grained tokens</b> → <b>Generate new token</b></li>
+      <li>Repository access: <b>Only select repositories</b> → <b>nanum-boardgame</b></li>
+      <li>Permissions → Repository permissions → <b>Contents</b>: <b>Read and write</b></li>
+      <li><b>Generate token</b>을 누르고 나온 키(github_pat_…)를 복사해서 아래에 붙여 넣으세요.</li></ol></details>
+    <input type="password" id="ghTok" placeholder="github_pat_… 키 붙여 넣기" autocomplete="off">
+    <p class="note">키는 이 브라우저에만 저장돼요. 다른 사람에게 보내거나 다른 곳에 붙여 넣지 마세요. 공용 컴퓨터라면 다 쓰고 자료실 아래 <b>관리자 로그아웃</b>을 눌러 주세요.</p>
+    <div class="acts"><button class="btn" data-close>취소</button><button class="btn pri" id="ghOk">확인</button></div>`,m=>{
+    $('#ghOk',m).onclick=async()=>{const tok=$('#ghTok',m).value.trim();if(!tok){$('#ghTok',m).focus();return}
+      const done=busy('키를 확인하는 중…');let ok=false;try{ok=await GH.check(tok)}catch(_){}done();
+      if(!ok){toast('이 키로는 저장소에 쓸 수 없어요. Contents 권한(Read and write)과 저장소 선택을 확인해 주세요',5000);return}
+      try{localStorage.setItem(GH.KEY,tok)}catch(_){toast('이 브라우저에 키를 저장할 수 없어요');return}
+      closeModal();toast('관리자로 들어왔어요');initLibrary();after&&after()}})}
+
 const CHO='ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
 const toCho=s=>[...s].map(ch=>{const c=ch.charCodeAt(0)-0xAC00;return c>=0&&c<11172?CHO[Math.floor(c/588)]:ch}).join('');
 const norm=s=>String(s||'').toLowerCase().replace(/\s+/g,'');
@@ -1192,19 +1224,18 @@ function libMatch(it,q){if(!q)return true;const hay=norm([it.title,it.artist,(it
 function libStatus(t){$('#libStatus').textContent=t}
 function renderLib(){
   const g=$('#libGrid'),q=$('#libQ').value.trim();
-  if(!CAP.db){g.innerHTML=`<div class="empty" style="grid-column:1/-1">올려 둔 찬양 자막은 <b>찬양 자료실</b>에 모여 있어요.<br><a class="btn pri" style="margin-top:12px" href="https://claude.ai/artifact/CF5TJfK6bQUd568ouDfUXc#library" target="_blank" rel="noopener">📚 찬양 자료실 열기</a><br><span style="font-size:12px">새 창에서 열려요. 자료실에서 받은 PPT는 여기서 <b>PPT 열기</b>로 불러와 고칠 수 있어요.</span></div>`;libStatus('');return}
   if(!libReady){libStatus('자료실을 불러오는 중…');return}
   let items=LIB.filter(it=>libMatch(it,q));
   if($('#libSort').value==='title')items=[...items].sort((a,b)=>String(a.title).localeCompare(String(b.title),'ko'));
   libStatus(q?`'${q}' 검색 결과 ${items.length}곡`:`모두 ${LIB.length}곡`);
-  if(!LIB.length){g.innerHTML=`<div class="empty" style="grid-column:1/-1">아직 올린 찬양이 없습니다.${CAP.assets?'<br><b>만들기</b>에서 슬라이드를 만든 뒤 <b>자료실에 올리기</b>를 누르거나, 위의 <b>PPT 파일 바로 올리기</b>로 가지고 있는 PPT를 올려 보세요.':''}</div>`;return}
+  if(!LIB.length){g.innerHTML=`<div class="empty" style="grid-column:1/-1">아직 올린 찬양이 없습니다.${GH.admin()?'<br><b>만들기</b>에서 슬라이드를 만든 뒤 <b>자료실에 올리기</b>를 누르거나, 위의 <b>PPT 파일 바로 올리기</b>로 가지고 있는 PPT를 올려 보세요.':''}</div>`;return}
   if(!items.length){g.innerHTML=`<div class="empty" style="grid-column:1/-1">찾는 곡이 없습니다. 제목의 일부나 가사 한 구절, 초성으로도 찾아보세요.</div>`;return}
   g.innerHTML=items.map(it=>{const k=picked.indexOf(it.id);return`<article class="card${k>=0?' picked':''}" data-id="${esc(it.id)}">
-    <img class="th" alt="" loading="lazy" src="${it.thumb?'/_blob/'+esc(it.thumb):''}" onerror="this.style.visibility='hidden'">
+    <img class="th" alt="" loading="lazy" src="${it.thumb?esc(freshThumb[it.thumb]||libURL(it.thumb)):''}" onerror="this.style.visibility='hidden'">
     <label class="pick" title="여러 곡을 골라 한 파일로 묶기"><input type="checkbox" data-pick ${k>=0?'checked':''} aria-label="${esc(it.title)} 선택"><span class="ord">${k>=0?k+1+'번째':'선택'}</span></label>
     <div class="cb"><h3 title="${esc(it.title)}">${esc(it.title)}</h3><div class="meta">${esc(it.artist||'')}${it.artist?' · ':''}${it.slides||0}장 · ${esc(it.ratio||'')}</div>
     <div class="lyr">${esc((it.lyrics||'').replace(/\n/g,' / ').slice(0,120))}</div>${(it.tags||[]).length?`<div class="tags">${it.tags.map(t=>`<span>${esc(t)}</span>`).join('')}</div>`:''}</div>
-    <div class="ca"><button class="btn pri sm" data-la="pptx">PPT 받기</button><button class="btn sm" data-la="jpg">JPG 받기</button><button class="btn sm" data-la="edit">편집기에서 열기</button>${CAP.assets?`<button class="btn sm ghost danger" data-la="del">삭제</button>`:''}</div></article>`}).join('');
+    <div class="ca"><button class="btn pri sm" data-la="pptx">PPT 받기</button><button class="btn sm" data-la="jpg">JPG 받기</button><button class="btn sm" data-la="edit">편집기에서 열기</button>${GH.admin()?`<button class="btn sm ghost danger" data-la="del">삭제</button>`:''}</div></article>`}).join('');
   renderSelbar();
 }
 /* ---- multi-song selection → one file ---- */
@@ -1269,11 +1300,11 @@ async function mergeSongs(list,{ratio,gap,titles,name}){
   return out;
 }
 $('#libQ').addEventListener('input',renderLib);$('#libSort').addEventListener('change',renderLib);
-async function fetchLibProject(it){const r=await fetch('/_blob/'+it.data);if(!r.ok)throw new Error('fetch '+r.status);return normalizeProject(await r.json())}
+async function fetchLibProject(it){let r;if(GH.admin()){try{r=await GH.raw(it.data)}catch(_){r=null}}if(!r)r=await fetch(libURL(it.data));if(!r.ok)throw new Error('fetch '+r.status);return normalizeProject(await r.json())}
 $('#libGrid').addEventListener('click',async e=>{
   const b=e.target.closest('[data-la]');if(!b)return;const id=b.closest('.card').dataset.id;const it=LIB.find(x=>x.id===id);if(!it)return;const a=b.dataset.la;
   if(a==='del'){if(b.dataset.sure!=='1'){b.dataset.sure='1';b.textContent='정말 삭제할까요?';setTimeout(()=>{if(b.isConnected){b.dataset.sure='';b.textContent='삭제'}},4000);return}
-    try{await CAP.db.collection('songs').doc(id).delete();for(const aid of[it.thumb,it.data])if(aid)CAP.assets.delete(aid).catch(()=>{});toast(`'${it.title}'을(를) 자료실에서 지웠습니다`)}catch(err){toast('삭제하지 못했습니다: '+(err?.code||''))}return}
+    const done=busy('자료실에서 지우는 중…');try{const idx=(await loadIndex()).filter(x=>x.id!==id);await GH.commit('자료실: '+it.title+' 삭제',[{path:'index.json',b64:b64txt(JSON.stringify(idx,null,1))}],[it.data,it.thumb].filter(Boolean));LIB=idx;done();renderLib();toast(`'${it.title}'을(를) 자료실에서 지웠습니다`)}catch(err){done();toast('삭제하지 못했습니다: '+(err?.message||''),4500)}return}
   let proj;const done=busy('자료를 불러오는 중…');
   try{proj=await fetchLibProject(it)}catch(err){done();toast('자료 파일을 불러오지 못했습니다');return}
   done();proj.title=it.title;
@@ -1286,9 +1317,9 @@ $('#libUpPptx').onclick=()=>{const inp=document.createElement('input');inp.type=
 $('#libGoEd').onclick=()=>setView('editor');
 function allLyrics(proj){return proj.slides.map(s=>lyricsEl(s)?.text||'').filter(Boolean).join('\n')}
 function openUploadModal(proj){
-  if(!CAP.assets||!CAP.db){toast('자료실에 올릴 권한이 없습니다');return}
+  if(!GH.admin()){openAdminLogin(()=>openUploadModal(proj));return}
   const existing=proj.libId&&LIB.find(x=>x.id===proj.libId);
-  modal(`<h2>자료실에 올리기</h2><p class="note">슬라이드 ${proj.slides.length}장 · ${ratioLabel(proj.ratio)}. 올린 자료는 이 페이지를 여는 사람 누구나 검색해서 받을 수 있습니다.</p>
+  modal(`<h2>자료실에 올리기</h2><p class="note">슬라이드 ${proj.slides.length}장 · ${ratioLabel(proj.ratio)}. 올리면 바로 자료실에 생기고, 사이트에 들어오는 누구나 검색해서 받을 수 있어요. (다른 사람 화면에는 1분쯤 뒤에 보여요)</p>
     <label>곡 제목<input type="text" id="upTitle" value="${esc(existing?.title||proj.title||'')}"></label>
     <label>부른 이 / 작곡 (선택)<input type="text" id="upArtist" value="${esc(existing?.artist||'')}"></label>
     <label>태그 (쉼표로 구분, 선택)<input type="text" id="upTags" placeholder="예: 경배, 성탄, 주일예배" value="${esc((existing?.tags||[]).join(', '))}"></label>
@@ -1305,24 +1336,24 @@ async function uploadToLibrary(proj,meta,existing){
     await prepareProject(proj);const ts=proj.slides.find(s=>(lyricsEl(s)?.text||'').trim())||proj.slides[0];const{W,H}=slideSize(proj.ratio,640);const{canvas,ctx}=mkCanvas(W,H);drawSlide(ctx,ts,W,H,{media:proj.media});
     const thumbBlob=await new Promise(r=>canvas.toBlob(r,'image/jpeg',.85));
     const data={...proj,title:meta.title};delete data.libId;
-    const t=await CAP.assets.upload(thumbBlob,{type:'image/jpeg'});
-    const d=await CAP.assets.upload(new Blob([JSON.stringify(data)],{type:'application/json'}),{type:'application/json'});
-    const doc={...meta,lyrics:allLyrics(proj).slice(0,6000),slides:proj.slides.length,ratio:ratioLabel(proj.ratio),thumb:t.id,data:d.id,created:existing?.created||Date.now(),updated:Date.now()};
-    const ref=existing?CAP.db.collection('songs').doc(existing.id):CAP.db.collection('songs').doc();
-    await ref.set(doc);
-    if(existing)for(const aid of[existing.thumb,existing.data])if(aid)CAP.assets.delete(aid).catch(()=>{});
-    if(proj===P){P.libId=ref.id;P.title=meta.title;persist();syncToolbar()}
+    const id=existing?existing.id:(Date.now().toString(36)+Math.random().toString(36).slice(2,6));
+    const dataPath='songs/'+id+'.json',thumbPath='thumbs/'+id+'.jpg';
+    const idx=(await loadIndex()).filter(x=>x.id!==id);
+    const doc={id,...meta,lyrics:allLyrics(proj).slice(0,6000),slides:proj.slides.length,ratio:ratioLabel(proj.ratio),thumb:thumbPath,data:dataPath,created:existing?.created||Date.now(),updated:Date.now()};
+    idx.unshift(doc);
+    await GH.commit((existing?'자료실 수정: ':'자료실 올리기: ')+meta.title,[{path:dataPath,b64:b64txt(JSON.stringify(data))},{path:thumbPath,b64:await b64blob(thumbBlob)},{path:'index.json',b64:b64txt(JSON.stringify(idx,null,1))}]);
+    freshThumb[thumbPath]=URL.createObjectURL(thumbBlob);LIB=idx;libReady=true;renderLib();
+    if(proj===P){P.libId=id;P.title=meta.title;persist();syncToolbar()}
     done();toast(`'${meta.title}'을(를) 자료실에 올렸습니다`);
   }catch(err){done();console.error(err);toast(err?.code==='too_large'?'파일이 너무 큽니다. 사진 수를 줄여 다시 시도해 주세요':'올리지 못했습니다: '+(err?.message||err?.code||''),4500)}
 }
 function initLibrary(){
-  $('#libAdmin').hidden=!(CAP.assets&&CAP.db);
-  if(!CAP.db){renderLib();return}
-  const timer=setTimeout(()=>{if(!libReady)libStatus('자료실 연결이 늦어지고 있습니다. 잠시 기다려 주세요…')},10000);
-  CAP.db.collection('songs').orderBy('created','desc').limit(1000).onSnapshot(snap=>{
-    LIB=snap.docs.map(d=>({id:d.id,...d.data()}));if(!snap.metadata.fromCache){libReady=true;clearTimeout(timer)}else if(LIB.length)libReady=true;renderLib()},
-    err=>{clearTimeout(timer);libReady=true;libStatus('자료실을 불러오지 못했습니다 ('+(err?.code||'오류')+')')});
-}
+  const adm=GH.admin();$('#libAdmin').hidden=!adm;$('#bUpload').hidden=false;
+  let out=$('#libLogout');if(!out){out=document.createElement('p');out.id='libLogout';out.className='note';out.style.cssText='text-align:center;margin-top:18px';$('#view-library').append(out)}
+  out.innerHTML=adm?'관리자로 들어와 있어요 · <a href="#" id="ghOut">관리자 로그아웃</a>':'<a href="#" id="ghIn" style="opacity:.6">🔑 관리자</a>';
+  const o=$('#ghOut'),i=$('#ghIn');if(o)o.onclick=e=>{e.preventDefault();try{localStorage.removeItem(GH.KEY)}catch(_){}toast('관리자 키를 이 브라우저에서 지웠어요');initLibrary()};if(i)i.onclick=e=>{e.preventDefault();openAdminLogin()};
+  libReady=false;renderLib();
+  loadIndex().then(idx=>{LIB=Array.isArray(idx)?idx:[];libReady=true;renderLib()}).catch(()=>{libReady=true;LIB=[];libStatus('자료실을 불러오지 못했어요. 잠시 뒤 새로고침해 주세요')})}
 
 /* ================= views ================= */
 function setView(v){
@@ -1340,7 +1371,7 @@ window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h===
   P=saved||sampleProject();
   afterChange(true);layoutStage();
   setView(location.hash==='#library'?'library':'editor');
-  initCaps().then(initLibrary);
+  initCaps();initLibrary();
 })();
 </script>
 <script src="../assets/home.js"></script><script src="../assets/editor-guide.js" data-kind="subtitle"></script>
