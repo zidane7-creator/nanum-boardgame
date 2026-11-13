@@ -42,18 +42,45 @@
     root.setAttribute("data-scene", p);
     if (p === "night") markSky();
   }
-  /* 밤에는 하늘 위에 바로 놓인 어두운 글자만 밝게 바꿈 (카드 안 글자는 그대로) */
-  function opaque(el) { var c = getComputedStyle(el); return (c.backgroundImage && c.backgroundImage !== "none") || !/rgba\(0, 0, 0, 0\)|transparent/.test(c.backgroundColor); }
-  function dark(col) { var m = col.match(/\d+(\.\d+)?/g); if (!m) return false; return (0.2126 * m[0] + 0.7152 * m[1] + 0.0722 * m[2]) / 255 < 0.4; }
-  function markSky() {
-    var els = document.querySelectorAll("body h1, body h2, body h3, body p, body .sub, body small, body label, body .muted, body .note, body .credit");
-    for (var i = 0; i < els.length; i++) {
-      var el = els[i]; if (el.closest("#scene")) continue;
-      var ok = true;
-      for (var a = el; a && a !== document.body; a = a.parentElement) { if (opaque(a)) { ok = false; break; } }
-      if (ok && dark(getComputedStyle(el).color)) el.classList.add("sc-sky");
-    }
+  /* 밤에는 어두운 하늘·풀밭 위에 바로 놓인 어두운 글자를 밝게 바꿈.
+     글자마다 위로 올라가며 "제 배경을 가진 상자(카드·버튼·말풍선 등)" 안에 있는지 보고, 아니면 밝은 색으로. */
+  var memo = null;
+  function solid(el) {
+    if (memo.has(el)) return memo.get(el);
+    var c = getComputedStyle(el), v = false;
+    if (c.backgroundImage && c.backgroundImage !== "none") v = true;
+    else { var m = c.backgroundColor.match(/[\d.]+/g); if (m && (m.length < 4 ? true : +m[3] >= 0.35) && !/^rgba\(0, 0, 0, 0\)$/.test(c.backgroundColor) && c.backgroundColor !== "transparent") v = true; }
+    memo.set(el, v); return v;
   }
+  function onSky(el) {
+    for (var a = el; a && a !== document.body && a !== root; a = a.parentElement) {
+      if (a.id === "scene") return false;
+      if (solid(a)) return false;
+    }
+    return true;
+  }
+  function dark(col) { var m = col.match(/[\d.]+/g); if (!m) return false; if (m.length > 3 && +m[3] < 0.2) return false; return (0.2126 * m[0] + 0.7152 * m[1] + 0.0722 * m[2]) / 255 < 0.45; }
+  var SKIP = { SCRIPT: 1, STYLE: 1, NOSCRIPT: 1, TEXTAREA: 1, INPUT: 1, SELECT: 1, OPTION: 1, svg: 1, SVG: 1, CANVAS: 1 };
+  function markSky() {
+    if (!document.body) return;
+    memo = new Map();
+    var seen = new Set(), tw = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null), n;
+    while ((n = tw.nextNode())) {
+      if (!n.nodeValue || !/\S/.test(n.nodeValue)) continue;
+      var el = n.parentElement; if (!el || seen.has(el)) continue; seen.add(el);
+      if (SKIP[el.tagName] || el.closest("svg,#scene")) continue;
+      if (el.classList.contains("sc-sky")) continue;
+      var cs = getComputedStyle(el); if (cs.display === "none" || cs.visibility === "hidden") continue;
+      if (dark(cs.color) && onSky(el)) el.classList.add("sc-sky");
+    }
+    memo = null;
+  }
+  /* 나중에 그려지는 글자(검색 결과, 목록 등)도 밤이면 다시 살핌 */
+  var mt = null;
+  try {
+    new MutationObserver(function () { if (!root.classList.contains("sc-night")) return; clearTimeout(mt); mt = setTimeout(markSky, 300); })
+      .observe(document.documentElement, { childList: true, subtree: true });
+  } catch (e) {}
   apply();
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", apply); else setTimeout(apply, 0);
   setTimeout(apply, 1500);

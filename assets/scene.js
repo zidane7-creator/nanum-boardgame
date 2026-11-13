@@ -59,5 +59,5 @@
   if (document.body) put(); else document.addEventListener("DOMContentLoaded", put);
 
   /* 낮/밤 전환(BMNT·EENT)은 daynight.js가 맡음 */
-  try { var me = document.currentScript && document.currentScript.src; if (me && !window.siteScene) { var dn = document.createElement("script"); dn.src = me.replace(/scene\.js(\?.*)?$/, "daynight.js"); document.head.appendChild(dn); } } catch (e) {}
+  try { var me = document.currentScript && document.currentScript.src; if (me && !window.siteScene) { var dn = document.createElement("script"); dn.src = me.replace(/scene\.js/, "daynight.js"); document.head.appendChild(dn); } } catch (e) {}
 })();

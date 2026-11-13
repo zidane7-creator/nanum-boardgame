@@ -256,7 +256,7 @@ ZONES.forEach(z=>{
 const link=([l,h])=>h?'<a href="'+h+'"'+(/^https?:/.test(h)?' target="_blank" rel="noopener"':'')+'>'+l+'</a>':l;
 $("list").innerHTML=ZONES.map(z=>'<li><b>'+z.name+'</b> — '+z.items.map(it=>it[2]?it[0]+"("+it[2].map(link).join(", ")+")":link(it)).join(", ")+'</li>').join("");
 </script>
-<script src="assets/daynight.js"></script>
+<script src="assets/daynight.js?v=20261113n"></script>
 <script>
 /* 예수님이 언덕 위에서 양 떼를 몰고 다님 (앞 양이 길을 내고, 나머지 양과 예수님이 그 길을 따라감) */
 (function(){
@@ -264,30 +264,31 @@ const hills=document.querySelector(".hills");if(!hills)return;
 const JESUS='<svg viewBox="-10 0 240 340" aria-hidden="true"><g class="ft ftL"><ellipse cx="88" cy="312" rx="17" ry="8" fill="#8a5528"/><ellipse cx="84" cy="306" rx="11" ry="7" fill="#f2c7a5" stroke="#7d6a5e" stroke-width="3"/></g><g class="ft ftR"><ellipse cx="132" cy="312" rx="17" ry="8" fill="#8a5528"/><ellipse cx="136" cy="306" rx="11" ry="7" fill="#f2c7a5" stroke="#7d6a5e" stroke-width="3"/></g><g class="armB"><path d="M150 162Q178 196 176 238L156 242Q156 204 136 178Z" fill="#eef8fb" stroke="#7d6a5e" stroke-width="5" stroke-linejoin="round"/><circle cx="167" cy="244" r="11" fill="#f2c7a5" stroke="#7d6a5e" stroke-width="4"/></g><path d="M64 150Q110 136 156 150L178 300Q110 314 42 300Z" fill="#eef8fb" stroke="#7d6a5e" stroke-width="5" stroke-linejoin="round"/><path d="M134 146L158 154L80 282L58 270Z" fill="#c8102e"/><path d="M42 300Q110 314 178 300" fill="none" stroke="#7d6a5e" stroke-width="5" stroke-linecap="round"/><g class="staff"><path d="M14 318L4 104" stroke="#a0703f" stroke-width="8" stroke-linecap="round"/><path d="M5 106Q-6 66 22 64Q50 64 44 96" fill="none" stroke="#a0703f" stroke-width="8" stroke-linecap="round"/><path d="M72 164Q40 186 22 214L40 228Q58 200 86 184Z" fill="#eef8fb" stroke="#7d6a5e" stroke-width="5" stroke-linejoin="round"/><circle cx="24" cy="222" r="12" fill="#f2c7a5" stroke="#7d6a5e" stroke-width="4"/></g><image href="assets/jesus-head.png" x="1" y="0" width="218" height="170"/></svg>';
 const lane=document.createElement("div");lane.className="parade";hills.appendChild(lane);
 const mk=(html,cls,w)=>{const d=document.createElement("div");d.className="pw "+cls;d.innerHTML=html;d.firstChild.style.width=w+"px";lane.appendChild(d);return d};
-const small=innerWidth<560,SW=small?40:56,JW=small?58:80,GAP=small?34:46,N=small?3:4;
-const flock=[];for(let i=0;i<N;i++){const w=Math.round(SW*(i===N-1?.8:1-.06*i));flock.push({el:mk(SHEEP,"sheep",w),gap:i?GAP:0,x:0,lx:0})}
-const J={el:mk(JESUS,"jesus",JW),gap:small?50:68,x:0,lx:0};
+const small=innerWidth<560,SW=small?40:56,JW=small?58:80,GAP=small?34:46,N=small?3:4,JG=small?50:68;
+const flock=[];for(let i=0;i<N;i++){const w=Math.round(SW*(i===N-1?.8:1-.06*i));flock.push({el:mk(SHEEP,"sheep",w)})}
+const J={el:mk(JESUS,"jesus",JW)};
 flock.forEach((f,i)=>{f.el.style.bottom=((i%2)*5)+"px";f.el.style.zIndex=3+(i%2?0:1)});J.el.style.zIndex=5;
 const rnd=(a,b)=>a+Math.random()*(b-a);
-/* path the lead sheep has walked, one point per pixel; the others stand further back along it */
-const behind=flock.slice(1).reduce((a,f)=>a+f.gap,0)+J.gap,path=[];
-let W=lane.clientWidth,head=Math.min(W*.6,behind+80),dir=1,moving=true,until=performance.now()+rnd(6000,11000);
-for(let x=head-behind-2;x<=head;x++)path.push(x);
-function setMode(m){flock.map(f=>f.el).concat([J.el]).forEach(e=>{e.classList.toggle("walk",m==="walk");e.classList.toggle("graze",m==="graze")})}
-setMode("walk");
-function place(o,x){o.lx=o.x;o.x=x;o.el.style.left=x+"px";if(Math.abs(o.x-o.lx)>.01)o.el.classList.toggle("flip",o.x>o.lx)}
-const at=k=>path[Math.max(0,path.length-1-Math.round(k))];
-function layout(){let back=0;flock.forEach(f=>{back+=f.gap;place(f,at(back))});back+=J.gap;place(J,at(back));flock[0].el.classList.toggle("flip",dir>0)}
-let last=performance.now(),acc=0;
-function frame(t){const dt=Math.min(.05,(t-last)/1000);last=t;W=lane.clientWidth;
-  if(moving){acc+=(small?13:17)*dt;
-    while(acc>=1){head+=dir;acc-=1;path.push(head)}
-    if(path.length>4000)path.splice(0,path.length-4000);
-    if((dir>0&&head>W-30)||(dir<0&&head<30)){dir=-dir;moving=false;until=t+rnd(1500,2600);setMode("graze")}
-    else if(t>until){moving=false;until=t+rnd(2200,4200);setMode("graze")}
-  }else if(t>until){moving=true;until=t+rnd(6000,12000);setMode("walk");if(Math.random()<.25)dir=-dir}
-  layout();requestAnimationFrame(frame)}
-layout();if(matchMedia("(prefers-reduced-motion: reduce)").matches)setMode("");else requestAnimationFrame(frame);
+/* 양 떼는 줄지어 같은 방향을 보고 걷고, 예수님은 늘 그 뒤에서 몬다.
+   오른쪽 끝에 닿으면 양들이 제자리에서 돌아서고 예수님이 반대편(새 뒤쪽)으로 돌아가 다시 몰고 간다. 왼쪽 끝도 마찬가지. */
+const SPAN=(N-1)*GAP,M=JG+JW/2+6;
+let W=lane.clientWidth,dir=1,H=SPAN+M+10,phase="walk",until=performance.now()+rnd(8000,14000),jx=H-SPAN-JG,jT=0;
+const sheepX=i=>H-dir*i*GAP;
+function mode(el,m){el.classList.toggle("walk",m==="walk");el.classList.toggle("graze",m==="graze")}
+function face(el,d){el.classList.toggle("flip",d>0)}
+function draw(){flock.forEach((f,i)=>{f.el.style.left=sheepX(i)+"px";face(f.el,dir)});J.el.style.left=jx+"px"}
+function all(m){flock.forEach(f=>mode(f.el,m));mode(J.el,m)}
+all("walk");face(J.el,dir);draw();
+let last=performance.now();
+function frame(t){const dt=Math.min(.05,(t-last)/1000);last=t;W=lane.clientWidth;const sp=small?13:17;
+  if(phase==="walk"){H+=dir*sp*dt;jx=H-dir*(SPAN+JG);face(J.el,dir);
+    if((dir>0&&H>=W-M)||(dir<0&&H<=M)){H-=dir*SPAN;dir=-dir;jT=H-dir*(SPAN+JG);phase="turn";flock.forEach(f=>mode(f.el,"graze"));mode(J.el,"walk")}
+    else if(t>until){phase="rest";until=t+rnd(2500,4500);all("graze")}}
+  else if(phase==="rest"){if(t>until){phase="walk";until=t+rnd(8000,14000);all("walk")}}
+  else if(phase==="turn"){const d=jT-jx,st=sp*1.8*dt;
+    if(Math.abs(d)<=st){jx=jT;face(J.el,dir);phase="rest";until=t+rnd(1200,2200);mode(J.el,"graze")}else{jx+=Math.sign(d)*st;face(J.el,Math.sign(d))}}
+  draw();requestAnimationFrame(frame)}
+if(matchMedia("(prefers-reduced-motion: reduce)").matches)all("");else requestAnimationFrame(frame);
 const SAYS=["나는 선한 목자라 (요 10:11)","내 양은 내 음성을 듣느니라 (요 10:27)","잃은 양을 찾았노라 (눅 15:6)","여호와는 나의 목자시니 (시 23:1)"];
 J.el.addEventListener("click",()=>{const old=J.el.querySelector(".say");if(old)old.remove();const b=document.createElement("span");b.className="say";b.textContent=SAYS[Math.floor(Math.random()*SAYS.length)];J.el.appendChild(b);setTimeout(()=>b.remove(),2600);
   flock.forEach((f,i)=>setTimeout(()=>{f.el.animate([{marginBottom:"0px"},{marginBottom:"12px"},{marginBottom:"0px"}],{duration:420,easing:"ease-out"})},i*90));
