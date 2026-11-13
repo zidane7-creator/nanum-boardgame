@@ -76,6 +76,13 @@ a{color:inherit}
 .sheep:focus-visible{outline:3px dashed var(--ink);outline-offset:4px;border-radius:12px}
 .lb{margin-top:4px;background:var(--cream);border:2px solid var(--ink);border-radius:12px;padding:calc(.31em + 1px) .7em calc(.31em - 1px);font-size:clamp(11px,3vw,15px);line-height:1.15;display:inline-flex;align-items:center;justify-content:center;word-break:keep-all;white-space:nowrap;text-align:center;box-sizing:border-box;box-shadow:0 2px 0 var(--ink)}
 .open .lb{background:#ffe27a}
+.sheep.sleep svg{animation:snooze 3.2s ease-in-out var(--dl,0s) infinite;transform-origin:50% 100%}
+.sheep.sleep:hover svg{animation:stir .6s ease-in-out}
+.sheep.sleep .lb{opacity:.85}
+.sheep .zz{position:absolute;top:4%;right:12%;font-size:clamp(12px,2.6vw,17px);pointer-events:none;animation:zzz 2.6s ease-in-out var(--dl,0s) infinite}
+@keyframes snooze{50%{transform:scale(1.03,.97)}}
+@keyframes stir{40%{transform:rotate(-3deg) translateY(-2px)}}
+@keyframes zzz{0%{opacity:0;transform:translate(0,6px) scale(.8)}35%{opacity:1}100%{opacity:0;transform:translate(10px,-14px) scale(1.1)}}
 .tag{position:absolute;top:17%;right:5%;background:#e8503a;color:#fff;font-size:10px;line-height:1;border-radius:8px;padding:.27em .6em;border:1.5px solid var(--ink);z-index:2;display:inline-flex;align-items:center}
 .bubble{position:absolute;top:-24px;left:50%;transform:translateX(-50%);background:#fff;border:2px solid var(--ink);border-radius:12px;padding:1px 8px;font-size:13px;white-space:nowrap;animation:pop .5s ease-out forwards;pointer-events:none;z-index:4}
 @keyframes graze{0%,100%{transform:translateY(0) rotate(0)}45%{transform:translateY(-3px) rotate(-1.5deg)}55%{transform:translateY(0) rotate(1deg)}}
@@ -196,6 +203,9 @@ const SHEEP=(()=>{const O="#8a776a",W="#fffaf2",F="#f6c58e",E="#eab07a",LEG="#f4
   '<circle cx="28" cy="62" r="2" fill="#4a3a30"/><circle cx="40" cy="62" r="2" fill="#4a3a30"/>'+
   '<ellipse cx="24" cy="68" rx="3.2" ry="2" fill="#ff9fa6" opacity=".7"/><ellipse cx="44" cy="68" rx="3.2" ry="2" fill="#ff9fa6" opacity=".7"/>'+
   '<path d="M31 68q3 2.5 6 0" fill="none" stroke="#4a3a30" stroke-width="1.6" stroke-linecap="round"/></svg>'})();
+const SHEEP_SLEEP=(()=>{let t=SHEEP.replace(/<g fill="#f4d8c9"[^]*?<\/g>/,"")
+  .replace('<circle cx="28" cy="62" r="2" fill="#4a3a30"/><circle cx="40" cy="62" r="2" fill="#4a3a30"/>','<path d="M25.5 62.5q2.5 2 5 0M37.5 62.5q2.5 2 5 0" fill="none" stroke="#4a3a30" stroke-width="1.8" stroke-linecap="round"/>');
+  const i=t.indexOf(">")+1;return t.slice(0,i)+'<g transform="translate(0 13)">'+t.slice(i,-6)+"</g></svg>"})();
 const SAY=["메에~","음메~","매애!","메~ 🎵"];
 // ---- sheep bleat "메에에~" (synthesized: buzzy voice + fast vibrato + vowel formants) ----
 let AC=null,VOL=.7;try{const v=localStorage.getItem("homeVol");if(v!==null)VOL=+v}catch(e){}
@@ -234,18 +244,19 @@ function makeSheep(label,href,kids){
   const open=!!href||!!(kids&&kids.some(k=>k[1]));
   const b=document.createElement("button");b.className="sheep"+(open?" open":"")+(Math.random()<.35?" flip":"");
   b.style.setProperty("--d",(2.4+Math.random()*1.8).toFixed(2)+"s");b.style.setProperty("--dl",(-Math.random()*3).toFixed(2)+"s");
-  b.innerHTML=(open?'<span class="tag">'+(kids?"모음":"OPEN")+'</span>':'')+SHEEP+'<span class="lb">'+label+'</span>';
+  if(!open)b.classList.add("sleep");
+  b.innerHTML=(open?SHEEP:SHEEP_SLEEP+'<span class="zz" aria-hidden="true">💤</span>')+'<span class="lb">'+label+'</span>';
   b.setAttribute("aria-label",label+(kids?" (모음)":open?"":" (준비 중)"));
   const voice=200+Math.random()*110;let lastB=0;
-  const baa=()=>{const n=Date.now();if(n-lastB<1400)return;lastB=n;bleat(voice)};
+  const baa=()=>{if(!open)return;/* 자는 양은 울지 않음 */const n=Date.now();if(n-lastB<1400)return;lastB=n;bleat(voice)};
   b.addEventListener("pointerenter",e=>{if(e.pointerType=="mouse")baa()});
   b.onclick=()=>{
     ac();setTimeout(baa,0);
     try{gtag("event","menu_click",{menu_name:label,menu_type:kids?"모음":href?"열림":"준비 중"})}catch(e){}
-    b.classList.remove("jump");void b.offsetWidth;b.classList.add("jump");
-    const s=document.createElement("span");s.className="bubble";s.textContent=SAY[Math.floor(Math.random()*SAY.length)];b.appendChild(s);setTimeout(()=>s.remove(),900);
+    if(open){b.classList.remove("jump");void b.offsetWidth;b.classList.add("jump")}
+    const s=document.createElement("span");s.className="bubble";s.textContent=open?SAY[Math.floor(Math.random()*SAY.length)]:"쿨쿨…";b.appendChild(s);setTimeout(()=>s.remove(),900);
     if(kids)setTimeout(()=>openGroup(label,kids),250);
-    else if(href&&/^https?:/.test(href)){window.open(href,"_blank","noopener")}else if(href)setTimeout(()=>location.href=href,450);else toast("🐑 '"+label+"'은(는) 준비 중이에요!");
+    else if(href&&/^https?:/.test(href)){window.open(href,"_blank","noopener")}else if(href)setTimeout(()=>location.href=href,450);else toast("💤 '"+label+"' 양은 아직 자고 있어요. 곧 깨어날 거예요!");
   };
   return b}
 function openGroup(label,kids){const g=$("grp");g.querySelector(".sign b").textContent=label;const fl=g.querySelector(".flock");fl.innerHTML="";
