@@ -109,6 +109,21 @@ html.sc-night{--grass:#577f41;--grass2:#466e3a;--pen:#a9cf7e;--sky2:#26386e}
 html.sc-night .sky .skyN,html.sc-night .sky .stars,html.sc-night .sky .moon{opacity:1}
 html.sc-night .sun{opacity:0}html.sc-night .cloud{opacity:.12}
 html.sc-night .tree,html.sc-night .hills,html.sc-night .front{filter:brightness(.6) saturate(.85)}
+/* shepherd parade on the hills */
+.parade{position:absolute;left:0;right:0;bottom:4px;height:0;z-index:2}
+.parade .pw{position:absolute;bottom:0;transform:translateX(-50%)}
+.parade .pw svg{display:block;overflow:visible;transform-origin:50% 100%}
+.parade .pw.flip svg{transform:scaleX(-1)}
+.parade .walk svg{animation:pwalk .38s ease-in-out infinite}
+.parade .graze svg{animation:pgraze 1.8s ease-in-out infinite}
+.parade .flip.walk svg{animation-name:pwalkF}.parade .flip.graze svg{animation-name:pgrazeF}
+@keyframes pwalk{50%{transform:translateY(-4px) rotate(-2deg)}}@keyframes pwalkF{0%,100%{transform:scaleX(-1)}50%{transform:scaleX(-1) translateY(-4px) rotate(-2deg)}}
+@keyframes pgraze{50%{transform:translateY(2px) rotate(2deg)}}@keyframes pgrazeF{0%,100%{transform:scaleX(-1)}50%{transform:scaleX(-1) translateY(2px) rotate(2deg)}}
+.parade .jesus{cursor:pointer}
+.parade .halo{animation:halo 3s ease-in-out infinite}
+@keyframes halo{50%{opacity:.55}}
+.parade .say{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:4px;background:#fff;border:2px solid var(--ink);border-radius:12px;padding:3px 10px;font-size:13px;white-space:nowrap;pointer-events:none;z-index:9}
+@media (prefers-reduced-motion:reduce){.parade .pw svg,.parade .halo{animation:none!important}}
 </style><meta property="og:image" content="https://zidane7-creator.github.io/nanum-boardgame/assets/og.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:site_name" content="치영의 교회 생활 즐기기"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://zidane7-creator.github.io/nanum-boardgame/assets/og.jpg">
 <script src="assets/jua.js"></script>
 </head><body>
@@ -233,4 +248,57 @@ const link=([l,h])=>h?'<a href="'+h+'"'+(/^https?:/.test(h)?' target="_blank" re
 $("list").innerHTML=ZONES.map(z=>'<li><b>'+z.name+'</b> — '+z.items.map(it=>it[2]?it[0]+"("+it[2].map(link).join(", ")+")":link(it)).join(", ")+'</li>').join("");
 </script>
 <script src="assets/daynight.js"></script>
+<script>
+/* 예수님이 언덕 위에서 양 떼를 몰고 다님 (앞 양이 길을 내고, 나머지 양과 예수님이 그 길을 따라감) */
+(function(){
+const hills=document.querySelector(".hills");if(!hills)return;
+const O="#8a776a",HAIR="#7a5034",SKIN="#f6cdb0",ROBE="#eef8fb",SASH="#d01c2c",WOOD="#a0703f";
+const rays=[-70,-45,-20,0,20,45,70].map(a=>{const r=Math.PI/180*(a-90),x1=50+38*Math.cos(r),y1=40+38*Math.sin(r),x2=50+45*Math.cos(r),y2=40+45*Math.sin(r);return'<line x1="'+x1.toFixed(1)+'" y1="'+y1.toFixed(1)+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+'" stroke="#fbe08a" stroke-width="4" stroke-linecap="round"/>'}).join("");
+const JESUS='<svg viewBox="0 0 100 150" aria-hidden="true">'+
+ '<g class="halo"><circle cx="50" cy="40" r="33" fill="none" stroke="#fbe08a" stroke-width="4"/>'+rays+'</g>'+
+ '<path d="M80 146V44" stroke="'+WOOD+'" stroke-width="4.5" stroke-linecap="round"/><path d="M80 46q-1-18 11-18q11 0 9 13" fill="none" stroke="'+WOOD+'" stroke-width="4.5" stroke-linecap="round"/>'+
+ '<path d="M19 52C17 22 83 22 81 52L85 94Q50 102 15 94Z" fill="'+HAIR+'" stroke="'+O+'" stroke-width="3" stroke-linejoin="round"/>'+
+ '<ellipse cx="41" cy="146" rx="8" ry="3.5" fill="#8a5528"/><ellipse cx="59" cy="146" rx="8" ry="3.5" fill="#8a5528"/>'+
+ '<path d="M31 84L22 141Q50 148 78 141L69 84Q50 78 31 84Z" fill="'+ROBE+'" stroke="'+O+'" stroke-width="3" stroke-linejoin="round"/>'+
+ '<path d="M34 85L45 82L73 130L64 136Z" fill="'+SASH+'"/>'+
+ '<path d="M31 88Q19 104 22 118L31 117Q30 104 37 94Z" fill="'+ROBE+'" stroke="'+O+'" stroke-width="2.5" stroke-linejoin="round"/><circle cx="26" cy="119" r="5" fill="'+SKIN+'" stroke="'+O+'" stroke-width="2.5"/>'+
+ '<path d="M68 88Q80 96 80 108L72 110Q71 101 63 95Z" fill="'+ROBE+'" stroke="'+O+'" stroke-width="2.5" stroke-linejoin="round"/><circle cx="79" cy="108" r="5" fill="'+SKIN+'" stroke="'+O+'" stroke-width="2.5"/>'+
+ '<ellipse cx="50" cy="53" rx="20" ry="22" fill="'+SKIN+'" stroke="'+O+'" stroke-width="3"/>'+
+ '<path d="M29 50Q29 27 50 27Q71 27 71 50Q63 36 50 34L49 38Q41 37 29 50Z" fill="'+HAIR+'" stroke="'+O+'" stroke-width="2.5" stroke-linejoin="round"/>'+
+ '<path d="M32 59Q33 81 50 83Q67 81 68 59Q63 70 50 70Q37 70 32 59Z" fill="'+HAIR+'" stroke="'+O+'" stroke-width="2.5" stroke-linejoin="round"/>'+
+ '<ellipse cx="50" cy="73" rx="6" ry="3.6" fill="'+SKIN+'"/><path d="M46.5 72.5q3.5 3 7 0" fill="none" stroke="#4a3a30" stroke-width="1.6" stroke-linecap="round"/>'+
+ '<circle cx="43" cy="56" r="2.6" fill="#3b2a20"/><circle cx="57" cy="56" r="2.6" fill="#3b2a20"/>'+
+ '<ellipse cx="37.5" cy="63" rx="3.6" ry="2.2" fill="#ff9fa6" opacity=".75"/><ellipse cx="62.5" cy="63" rx="3.6" ry="2.2" fill="#ff9fa6" opacity=".75"/></svg>';
+const lane=document.createElement("div");lane.className="parade";hills.appendChild(lane);
+const mk=(html,cls,w)=>{const d=document.createElement("div");d.className="pw "+cls;d.innerHTML=html;d.firstChild.style.width=w+"px";lane.appendChild(d);return d};
+const small=innerWidth<560,SW=small?40:56,JW=small?56:74,GAP=small?34:46,N=small?3:4;
+const flock=[];for(let i=0;i<N;i++){const w=Math.round(SW*(i===N-1?.8:1-.06*i));flock.push({el:mk(SHEEP,"sheep",w),gap:i?GAP:0,x:0,lx:0})}
+const J={el:mk(JESUS,"jesus",JW),gap:small?44:56,x:0,lx:0};
+flock.forEach((f,i)=>{f.el.style.bottom=((i%2)*5)+"px";f.el.style.zIndex=3+(i%2?0:1)});J.el.style.zIndex=5;
+const rnd=(a,b)=>a+Math.random()*(b-a);
+/* path the lead sheep has walked, one point per pixel; the others stand further back along it */
+const behind=flock.slice(1).reduce((a,f)=>a+f.gap,0)+J.gap,path=[];
+let W=lane.clientWidth,head=Math.min(W*.6,behind+80),dir=1,moving=true,until=performance.now()+rnd(6000,11000);
+for(let x=head-behind-2;x<=head;x++)path.push(x);
+function setMode(m){flock.map(f=>f.el).concat([J.el]).forEach(e=>{e.classList.toggle("walk",m==="walk");e.classList.toggle("graze",m==="graze")})}
+setMode("walk");
+function place(o,x){o.lx=o.x;o.x=x;o.el.style.left=x+"px";if(Math.abs(o.x-o.lx)>.01)o.el.classList.toggle("flip",o.x>o.lx)}
+const at=k=>path[Math.max(0,path.length-1-Math.round(k))];
+function layout(){let back=0;flock.forEach(f=>{back+=f.gap;place(f,at(back))});back+=J.gap;place(J,at(back));flock[0].el.classList.toggle("flip",dir>0)}
+let last=performance.now(),acc=0;
+function frame(t){const dt=Math.min(.05,(t-last)/1000);last=t;W=lane.clientWidth;
+  if(moving){acc+=(small?30:38)*dt;
+    while(acc>=1){head+=dir;acc-=1;path.push(head)}
+    if(path.length>4000)path.splice(0,path.length-4000);
+    if((dir>0&&head>W-30)||(dir<0&&head<30)){dir=-dir;moving=false;until=t+rnd(1500,2600);setMode("graze")}
+    else if(t>until){moving=false;until=t+rnd(2200,4200);setMode("graze")}
+  }else if(t>until){moving=true;until=t+rnd(6000,12000);setMode("walk");if(Math.random()<.25)dir=-dir}
+  layout();requestAnimationFrame(frame)}
+layout();if(matchMedia("(prefers-reduced-motion: reduce)").matches)setMode("");else requestAnimationFrame(frame);
+const SAYS=["나는 선한 목자라 (요 10:11)","내 양은 내 음성을 듣느니라 (요 10:27)","잃은 양을 찾았노라 (눅 15:6)","여호와는 나의 목자시니 (시 23:1)"];
+J.el.addEventListener("click",()=>{const old=J.el.querySelector(".say");if(old)old.remove();const b=document.createElement("span");b.className="say";b.textContent=SAYS[Math.floor(Math.random()*SAYS.length)];J.el.appendChild(b);setTimeout(()=>b.remove(),2600);
+  flock.forEach((f,i)=>setTimeout(()=>{f.el.animate([{marginBottom:"0px"},{marginBottom:"12px"},{marginBottom:"0px"}],{duration:420,easing:"ease-out"})},i*90));
+  try{if(typeof ac==="function")ac();if(typeof bleat==="function")bleat(240)}catch(e){}});
+})();
+</script>
 </body></html>
