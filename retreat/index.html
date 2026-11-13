@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>수련회 장소 레이더 | 치영의 교회 생활 즐기기 · 전국 교회 수련회 장소 모음</title>
+<meta name="description" content="전국 교회 수련회 장소를 한눈에. 기도원·수양관·수련원·펜션의 지역, 주소, 수용 인원, 연락처를 모아 지역과 인원으로 골라 보세요.">
+<meta name="keywords" content="수련회 장소, 교회 수련회 장소, 수련회 장소 추천, 기도원, 수양관, 수련원, 청년부 수련회, 교회 수련회 펜션">
+<link rel="canonical" href="https://zidane7-creator.github.io/nanum-boardgame/retreat/">
+<meta property="og:title" content="수련회 장소 레이더 — 치영의 교회 생활 즐기기">
+<meta property="og:description" content="전국 교회 수련회 장소를 지역·인원으로 찾아보세요">
+<meta property="og:url" content="https://zidane7-creator.github.io/nanum-boardgame/retreat/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⛺</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#3b2a20;--cream:#fffaf0;--accent:#e8503a;--gold:#f5b82e;--green:#5aa957;--blue:#3a7be8}
+*{box-sizing:border-box}
+html,body{margin:0;color:var(--ink);font-family:"Jua","Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+button,input{font:inherit;color:inherit}
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:calc(8px + env(safe-area-inset-top,0px)) 14px 8px;background:rgba(255,255,255,.92);border-bottom:4px solid var(--gold)}
+.top a{color:var(--ink);text-decoration:none;font-size:15px;border:2px solid var(--ink);border-radius:14px;padding:3px 10px;background:var(--cream)}
+.top .ttl{flex:1;font-size:19px}
+main{max-width:980px;margin:0 auto;padding:16px 14px 60px}
+.hero{text-align:center;padding:4px 0 10px}.hero .em{font-size:58px;line-height:1}.hero h1{font-weight:normal;font-size:clamp(30px,7vw,44px);margin:4px 0}
+.muted{opacity:.7;font-size:15px;line-height:1.55}
+.card{background:var(--cream);border:3px solid var(--ink);border-radius:22px;padding:16px;margin-bottom:16px;box-shadow:0 5px 0 rgba(0,0,0,.12)}
+.search{width:100%;font-size:18px;padding:10px 14px;border:2px solid var(--ink);border-radius:14px;background:#fff}
+.lbl{font-size:14px;opacity:.7;margin:12px 0 4px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1.5px solid var(--ink);background:#fff;border-radius:999px;padding:3px 12px;font-size:15px;cursor:pointer}
+.chip.on{background:var(--gold)}
+.chip small{opacity:.6;font-size:12px}
+.count{margin:12px 2px 4px;font-size:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.v{background:#fff;border:2px solid #e3d6c3;border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:7px}
+.v h3{margin:0;font-weight:normal;font-size:20px;word-break:keep-all}
+.v .tags{display:flex;gap:5px;flex-wrap:wrap}
+.v .tag{font-size:12px;border:1.5px solid var(--ink);border-radius:8px;padding:0 7px;background:#eef7e6}
+.v .tag.r{background:#fff3c4}.v .tag.o{background:#ffe1dc;border-color:#c0503a;color:#a03a26}
+.v .row{display:flex;gap:6px;font-size:15px;line-height:1.45;align-items:flex-start}
+.v .row b{font-weight:normal;opacity:.6;min-width:40px}
+.v .cap{font-size:17px;color:#b0442f}
+.v .btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto;padding-top:4px}
+.v .btns a{text-decoration:none;color:var(--ink);background:var(--cream);border:2px solid var(--ink);border-radius:12px;padding:4px 10px;font-size:14px;box-shadow:0 2px 0 var(--ink)}
+.v .btns a.map{background:#03c75a;color:#fff}
+.v .src{font-size:12px;opacity:.6}.v .src a{color:inherit}
+.empty{text-align:center;padding:30px;opacity:.7}
+.note{background:#fff3c4;border:2px dashed #c9a227;border-radius:14px;padding:10px 14px;font-size:14px;line-height:1.55}
+</style></head><body>
+<div class="top"><a href="../">← 목장</a><div class="ttl">⛺ 수련회 장소 레이더</div></div>
+<main>
+  <div class="hero"><div class="em">⛺</div><h1>수련회 장소 레이더</h1><p class="muted">전국 교회 수련회 장소를 지역과 인원으로 찾아보세요.</p></div>
+  <section class="card">
+    <input class="search" id="q" placeholder="🔍 장소 이름이나 지역으로 찾기 (예: 가평, 기도원)" aria-label="장소 검색">
+    <div class="lbl">지역</div><div class="chips" id="sido"></div>
+    <div class="lbl">우리 인원</div><div class="chips" id="cap"></div>
+    <div class="count" id="cnt"></div>
+  </section>
+  <div class="grid" id="grid"></div>
+  <section class="card" style="margin-top:16px">
+    <div class="note">📌 장소 정보는 각 출처(교회수련회장소 사이트, 교단 연수시설 목록, 기사·커뮤니티 글)에 적힌 내용을 그대로 옮겼어요. 수용 인원·운영 여부·요금은 바뀌었을 수 있으니 <b>예약 전에 꼭 전화로 확인</b>해 주세요. <b>오래된 정보</b> 표시가 있는 곳은 몇 년 전 글이 출처예요.<br>사진은 각 장소의 <b>사진·자세히</b> 또는 <b>홈페이지</b>에서 볼 수 있어요.</div>
+  </section>
+</main>
+<script src="venues.js"></script>
+<script>
+"use strict";
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const ORDER=["서울","경기","인천","강원","충북","충남","대전","세종","경북","경남","대구","부산","울산","전북","전남","광주","제주"];
+const CAPS=[["전체",0],["30명 이상",30],["50명 이상",50],["100명 이상",100],["200명 이상",200],["500명 이상",500]];
+let sido="전체",need=0;
+function chips(){const cnt={};VENUES.forEach(v=>cnt[v.sido]=(cnt[v.sido]||0)+1);
+  const L=["전체",...ORDER.filter(s=>cnt[s])];
+  $("#sido").innerHTML=L.map(s=>'<button class="chip'+(s==sido?" on":"")+'" data-s="'+s+'">'+s+' <small>'+(s=="전체"?VENUES.length:cnt[s])+'</small></button>').join("");
+  $("#cap").innerHTML=CAPS.map(([t,n])=>'<button class="chip'+(n==need?" on":"")+'" data-n="'+n+'">'+t+'</button>').join("");
+  document.querySelectorAll("#sido .chip").forEach(b=>b.onclick=()=>{sido=b.dataset.s;chips();render()});
+  document.querySelectorAll("#cap .chip").forEach(b=>b.onclick=()=>{need=+b.dataset.n;chips();render()})}
+const naver=a=>"https://map.naver.com/p/search/"+encodeURIComponent(a);
+function card(v){
+  return '<article class="v"><h3>'+esc(v.name)+'</h3><div class="tags"><span class="tag r">'+esc(v.sido)+'</span><span class="tag">'+esc(v.type)+'</span>'+(v.old?'<span class="tag o">오래된 정보</span>':'')+'</div>'+
+   '<div class="row"><b>위치</b><span>'+esc(v.addr)+'</span></div>'+
+   '<div class="row"><b>인원</b><span class="cap">'+esc(v.cap)+'</span></div>'+
+   (v.tel?'<div class="row"><b>전화</b><a href="tel:'+esc(v.tel.replace(/[^0-9]/g,""))+'" style="color:inherit">'+esc(v.tel)+'</a></div>':'')+
+   '<div class="btns"><a class="map" href="'+naver(v.addr.length>12?v.addr:v.name)+'" target="_blank" rel="noopener">📍 지도</a>'+
+   (v.detail?'<a href="'+esc(v.detail)+'" target="_blank" rel="noopener">📷 사진·자세히</a>':'')+
+   (v.web?'<a href="'+esc(v.web)+'" target="_blank" rel="noopener">🏠 홈페이지</a>':'')+'</div>'+
+   '<div class="src">출처: <a href="'+esc(v.srcUrl)+'" target="_blank" rel="noopener">'+esc(v.src)+'</a></div></article>'}
+function render(){const q=$("#q").value.trim().replace(/\s/g,"");
+  const L=VENUES.filter(v=>(sido=="전체"||v.sido==sido)&&(!need||(v.capMax!=null&&v.capMax>=need))&&(!q||(v.name+v.addr+v.type).replace(/\s/g,"").includes(q)))
+    .sort((a,b)=>ORDER.indexOf(a.sido)-ORDER.indexOf(b.sido)||(a.old-b.old)||(b.capMax||0)-(a.capMax||0));
+  $("#cnt").textContent="📍 "+L.length+"곳"+(need?" (인원이 적혀 있는 곳만)":"");
+  $("#grid").innerHTML=L.length?L.map(card).join(""):'<div class="card empty" style="grid-column:1/-1">조건에 맞는 장소가 없어요 😢<br>인원이나 지역 조건을 바꿔 보세요.</div>'}
+$("#q").oninput=render;chips();render();
+</script>
+<script src="../assets/scene.js"></script>
+</body></html>
