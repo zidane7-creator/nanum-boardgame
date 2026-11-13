@@ -524,7 +524,7 @@ function mapColors(it,fn){const p=x=>{if(!x)return;if(x.t==='solid')x.c=fn(x.c);
 const snapshot=()=>JSON.stringify(S.doc);
 function commit(label){S.hist.length=S.hi+1;S.hist.push({label,snap:snapshot(),sel:[...S.sel]});if(S.hist.length>80)S.hist.shift();S.hi=S.hist.length-1;renderAll();panels();autosave()}
 function restore(i){if(i<0||i>=S.hist.length)return;S.hi=i;const h0=S.hist[i];S.doc=JSON.parse(h0.snap);renderAll();S.sel=new Set(h0.sel.filter(id=>IDX.has(id)));S.nodes.clear();panels();drawOverlay();autosave()}
-let _asT;function autosave(){clearTimeout(_asT);_asT=setTimeout(()=>{try{localStorage.setItem('penchok.draft',JSON.stringify({doc:S.doc,assets:ASSETS}))}catch{}},900)}
+let _asT;function autosave(){clearTimeout(_asT);_asT=setTimeout(()=>{try{localStorage.setItem('image.draft',JSON.stringify({doc:S.doc,assets:ASSETS}))}catch{}},900)}
 function setSel(ids){S.sel=new Set(ids);S.nodes.clear();syncDefaults();panels();drawOverlay()}
 function syncDefaults(){const it=selLeaves()[0];if(!it||!it.app)return;const f=fillOf(it),s=strokeOf(it);S.fill=f?clone(f.paint):null;S.stroke=s?clone(s.paint):null;if(s)S.strokeW=s.w}
 function eachLeaf(fn,label,live){const ls=selLeaves();ls.forEach(fn);if(live){selTops().forEach(touch);drawOverlay()}else if(label)commit(label)}
@@ -1185,8 +1185,8 @@ const imgSel=()=>selLeaves().find(i=>i.type==='image');
 C('img.autobg','배경 자동 제거',null,()=>autoCutItem(imgSel()),()=>!!imgSel());
 C('img.cutout','누끼 작업창…','Alt+Shift+Ctrl+K',()=>{const it=imgSel();openCutout(ASSETS[it.asset],(r,st)=>applyCutToItem(it,r,st),{trim:!it.crop})},()=>!!imgSel());
 /* 올릴 때 묻기 */
-function getPlaceMode(){try{return localStorage.getItem('penchok.placeMode')||'ask'}catch{return'ask'}}
-function setPlaceMode(v){try{localStorage.setItem('penchok.placeMode',v)}catch{}}
+function getPlaceMode(){try{return (localStorage.getItem('image.placeMode')||localStorage.getItem('penchok.placeMode'))||'ask'}catch{return'ask'}}
+function setPlaceMode(v){try{localStorage.setItem('image.placeMode',v)}catch{}}
 async function placeChosen(mode,url,name){if(mode==='auto'){toast('배경을 지우는 중입니다…');await new Promise(r=>setTimeout(r,30));try{placeImage(await autoCutURL(url),name)}catch{toast('배경을 지우지 못해 원본으로 넣었습니다');placeImage(url,name)}}else if(mode==='edit')openCutout(url,r=>placeImage(r.url,name),{title:'누끼 따고 넣기',ok:'넣기'});else placeImage(url,name)}
 function placeImageAsk(url,name){const mode=getPlaceMode();if(mode!=='ask')return placeChosen(mode,url,name);let remember=false;const m=h('div',{class:'modal',role:'dialog','aria-label':'이미지 넣기'});const go=k=>{closeModal();if(remember)setPlaceMode(k);placeChosen(k,url,name)};
  m.append(h('h2',{},'이미지 넣기'),h('div',{class:'placeprev'},h('img',{src:url,alt:name||'올린 이미지'})),h('div',{class:'hint'},name||''),h('div',{class:'placeopts'},h('button',{class:'btn',onclick:()=>go('plain')},h('b',{},'그대로 넣기'),h('span',{},'원본 그대로')),h('button',{class:'btn pri',onclick:()=>go('auto')},h('b',{},'배경 자동 제거'),h('span',{},'단색·단순한 배경에 잘 맞습니다')),h('button',{class:'btn',onclick:()=>go('edit')},h('b',{},'누끼 따고 넣기'),h('span',{},'마술봉·브러시로 직접 다듬기'))),chk(false,'다음부터 묻지 않고 이 방식으로 넣기 (환경 설정에서 바꿀 수 있음)',v=>remember=v),h('div',{class:'act'},h('button',{class:'btn',onclick:closeModal},'취소')));m.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Escape')closeModal()});$('#modalRoot').append(m)}
@@ -1299,7 +1299,7 @@ function sampleDoc(){const d=newDoc('예시 포스터 — 야간 산행',800,100
  const st=[];for(let k=0;k<1;k++){const a=mkPath(ellipseSubs(1040,180,140,140),'스티커 원',[fillE(G('#ffb35c','#e8467c',0,0,1,1)),strokeE(solid('#ffffff'),8)]);a.effects=[{...FX_DEF('shadow'),dy:8,blur:10,opacity:.3}];st.push(a);const s2=mkPath([polySub(starPts(1040,175,86,38,5))],'별',[fillE(solid('#fff6e6'))]);st.push(s2)}d.layers[0].items.push(...st);fg.items.push(mkText(1040,300,'완주!',{font:'Jua',size:38,align:'center',app:[fillE(solid('#ffffff'))]}))}
 /* ---------- 부팅 ---------- */
 function boot(){if(window.paper){paper.setup(new paper.Size(64,64))}
- let restored=false;try{const raw=localStorage.getItem('penchok.draft');if(raw){const o=JSON.parse(raw);if(o.doc?.layers){S.doc=o.doc;Object.assign(ASSETS,o.assets||{});S.layer=S.doc.layers[0].id;restored=true}}}catch{}
+ let restored=false;try{const raw=localStorage.getItem('image.draft')||(()=>{const r=localStorage.getItem('penchok.draft');if(!r)return null;try{const o=JSON.parse(r);return !(o&&o.doc&&o.doc.jubo)?r:null}catch{return null}})();if(raw){const o=JSON.parse(raw);if(o.doc?.layers){S.doc=o.doc;Object.assign(ASSETS,o.assets||{});S.layer=S.doc.layers[0].id;restored=true}}}catch{}
  if(!restored){S.doc=newDoc('제목 없음',595,842);S.layer=S.doc.layers[0].id}reindex();S.fill=solid('#7a5cff');buildMenus();renderTools();buildDock();docTitle();commit('시작');_fitted=stage.clientWidth>200&&stage.clientHeight>200;fitAll();statusBar();renderControl();
  $('#dockToggle').addEventListener('click',()=>$('#dock').classList.toggle('open'));$('#btnTpl').addEventListener('click',()=>run('file.templates'));$('#btnPaper').addEventListener('click',()=>run('file.paper'));
  document.fonts?.ready.then(()=>{renderAll();panels()});
