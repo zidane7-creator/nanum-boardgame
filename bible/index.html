@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><script async src="https://www.googletagmanager.com/gtag/js?id=G-0WTWY3TPES"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-0WTWY3TPES");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>성경 읽기 | 치영의 교회 생활 즐기기 · 성경읽기표와 아기 양 키우기</title>
+<meta name="description" content="개신교 성경 66권 1,189장 성경읽기표. 한 장 읽고 체크할 때마다 먹이가 생기고, 3kg 아기 양이 성경 일독을 마치면 120kg 어른 양으로 자라요. 2독, 3독 하면 양 떼가 늘어나요.">
+<meta name="keywords" content="성경읽기표, 성경 일독, 성경통독, 성경 읽기 체크, 성경 1189장, 성경통독표, 성경읽기 진도표, 교회 성경읽기">
+<link rel="canonical" href="https://zidane7-creator.github.io/nanum-boardgame/bible/">
+<meta property="og:title" content="성경 읽기 — 치영의 교회 생활 즐기기">
+<meta property="og:description" content="성경읽기표를 체크하면 아기 양이 먹이를 먹고 자라요">
+<meta property="og:url" content="https://zidane7-creator.github.io/nanum-boardgame/bible/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📖</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#3b2a20;--cream:#fffaf0;--accent:#e8503a;--gold:#f5b82e;--green:#5aa957;--grass:#c3e78f}
+*{box-sizing:border-box}
+html,body{margin:0;color:var(--ink);font-family:"Jua","Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+body{min-height:100vh;background:linear-gradient(#ffe8b8,#fff3d6 220px,#c3e78f 221px)}
+button{font:inherit;color:inherit;border:2px solid var(--ink);background:var(--cream);border-radius:16px;padding:8px 16px;cursor:pointer;box-shadow:0 3px 0 var(--ink)}
+button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+button.pri{background:var(--accent);color:#fff}button.go{background:var(--green);color:#fff}
+button.sm{padding:4px 10px;font-size:14px;border-radius:12px;box-shadow:0 2px 0 var(--ink)}
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:calc(8px + env(safe-area-inset-top,0px)) 14px 8px;background:rgba(255,255,255,.92);border-bottom:4px solid var(--gold)}
+.top a{color:var(--ink);text-decoration:none;font-size:15px;border:2px solid var(--ink);border-radius:14px;padding:3px 10px;background:var(--cream)}
+.top .ttl{flex:1;font-size:19px}
+main{max-width:860px;margin:0 auto;padding:16px 14px 70px}
+.card{background:var(--cream);border:3px solid var(--ink);border-radius:22px;padding:18px;margin-bottom:16px;box-shadow:0 5px 0 rgba(0,0,0,.12)}
+h1{font-weight:normal;text-align:center;font-size:clamp(30px,7vw,42px);margin:6px 0 2px}
+.sub{text-align:center;margin:0 0 14px;opacity:.75}
+/* pen */
+.pen{position:relative;height:clamp(250px,42vw,330px);border-radius:18px;overflow:hidden;border:3px solid var(--ink);
+  background:linear-gradient(#bfe6ff 0 34%,#c3e78f 34%);}
+.pen::before{content:"";position:absolute;left:0;right:0;top:34%;height:26px;margin-top:-26px;
+  background:repeating-linear-gradient(90deg,#c98d5a 0 6px,transparent 6px 34px),linear-gradient(transparent 6px,#c98d5a 6px 10px,transparent 10px 17px,#c98d5a 17px 21px,transparent 21px)}
+.pen::after{content:"";position:absolute;inset:34% 0 0;background-image:radial-gradient(#b2dc78 18%,transparent 20%);background-size:28px 28px;opacity:.7}
+.lamb{position:absolute;bottom:14%;left:40%;z-index:3;transition:left 1s ease-in-out;transform-origin:50% 100%}
+.lamb svg{display:block;overflow:visible}
+.lamb .flipper{transition:transform .3s}
+.lamb.left .flipper{transform:scaleX(-1)}
+.lamb.walk svg{animation:walk .35s ease-in-out infinite}
+.lamb.eat .head{animation:munch .3s ease-in-out 4}
+.lamb.happy svg{animation:hop .5s ease-out}
+@keyframes walk{50%{transform:translateY(-4px)}}
+@keyframes munch{50%{transform:translate(4px,9px) rotate(14deg)}}
+@keyframes hop{40%{transform:translateY(-22px)}}
+.feed{position:absolute;z-index:2;font-size:26px;line-height:1;transform:translate(-50%,-100%);animation:drop .5s ease-out;transition:transform .5s,opacity .5s}
+.feed.gone{transform:translate(-50%,-100%) scale(0);opacity:0}
+@keyframes drop{0%{transform:translate(-50%,-260%) rotate(-30deg);opacity:0}70%{transform:translate(-50%,-90%)}100%{transform:translate(-50%,-100%)}}
+.adult{position:absolute;z-index:1;text-align:center;font-size:12px;line-height:1.1}
+.adult span{display:inline-block;background:rgba(255,255,255,.85);border:1.5px solid var(--ink);border-radius:8px;padding:1px 6px;margin-top:-4px}
+.bubble{position:absolute;z-index:5;background:#fff;border:2px solid var(--ink);border-radius:12px;padding:2px 9px;font-size:15px;white-space:nowrap;transform:translate(-50%,-100%);animation:pop 1.4s ease-out forwards;pointer-events:none}
+@keyframes pop{0%{opacity:0;transform:translate(-50%,-60%) scale(.6)}15%{opacity:1;transform:translate(-50%,-100%) scale(1.05)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-160%)}}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px;text-align:center}
+.stat{background:#fff;border:2px solid var(--ink);border-radius:14px;padding:8px 4px}
+.stat b{display:block;font-size:clamp(22px,5vw,30px);font-weight:normal;color:var(--accent)}
+.stat small{opacity:.7}
+.bar{height:18px;border:2px solid var(--ink);border-radius:999px;background:#fff;overflow:hidden;margin-top:12px}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#f5b82e,#5aa957);transition:width .6s}
+.stage{text-align:center;margin-top:8px;font-size:17px}
+.lambname{display:flex;gap:8px;justify-content:center;align-items:center;margin-top:10px;flex-wrap:wrap}
+.lambname input{font:inherit;border:2px solid var(--ink);border-radius:12px;padding:5px 10px;width:150px;text-align:center;background:#fff}
+.done{display:none;text-align:center;background:#fff3cf;border:3px dashed var(--gold);border-radius:18px;padding:14px;margin-top:14px}
+.done.show{display:block}
+.done h3{margin:0 0 6px;font-weight:normal;font-size:22px}
+/* reading table */
+.tabs{display:flex;gap:8px;justify-content:center;margin-bottom:12px;flex-wrap:wrap}
+.tabs button.on{background:var(--gold)}
+.book{border:2px solid var(--ink);border-radius:14px;background:#fff;margin-bottom:8px;overflow:hidden}
+.book summary{list-style:none;display:flex;align-items:center;gap:8px;padding:9px 12px;cursor:pointer}
+.book summary::-webkit-details-marker{display:none}
+.book summary .nm{flex:1;font-size:17px}
+.book summary .cnt{font-size:14px;opacity:.75;white-space:nowrap}
+.book summary .mini{width:70px;height:9px;border:1.5px solid var(--ink);border-radius:9px;overflow:hidden;background:#f3efe6;flex:none}
+.book summary .mini i{display:block;height:100%;background:var(--green)}
+.book.full summary{background:#e9f7dc}
+.book summary::after{content:"▾";transition:transform .2s}.book[open] summary::after{transform:rotate(180deg)}
+.chs{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px;padding:4px 12px 12px}
+.ch{padding:7px 0;border-radius:10px;font-size:15px;box-shadow:0 2px 0 var(--ink);background:#fff}
+.ch.on{background:var(--green);color:#fff}
+.bookbar{display:flex;gap:6px;justify-content:flex-end;padding:0 12px 6px}
+.tools{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+.note{font-size:13px;opacity:.7;text-align:center;margin-top:10px;line-height:1.5}
+.confetti{position:fixed;top:-12px;width:10px;height:14px;z-index:50;animation:fall linear forwards;border-radius:2px}
+@keyframes fall{to{transform:translateY(105vh) rotate(720deg)}}
+@media (max-width:520px){.stats{gap:6px}.book summary .mini{width:46px}}
+</style>
+</head><body>
+<div class="top"><a href="../">← 목장</a><span class="ttl">📖 성경 읽기</span></div>
+<main>
+  <h1>성경 읽기</h1>
+  <p class="sub">한 장 읽고 체크하면 먹이가 하나 생겨요. 성경 일독을 마치면 아기 양이 어른 양이 돼요!</p>
+
+  <section class="card">
+    <div class="pen" id="pen" aria-label="양 우리"></div>
+    <div class="stage" id="stage"></div>
+    <div class="bar"><i id="bar"></i></div>
+    <div class="stats">
+      <div class="stat"><b id="kg">3.0kg</b><small>지금 몸무게</small></div>
+      <div class="stat"><b id="read">0</b><small>읽은 장 / 1,189장</small></div>
+      <div class="stat"><b id="flockN">0</b><small>어른 양 (일독 횟수)</small></div>
+    </div>
+    <div class="lambname"><label for="lname">아기 양 이름</label><input id="lname" maxlength="12" placeholder="이름 지어 주기"></div>
+    <div class="done" id="done">
+      <h3>🎉 성경 일독 완료! 120kg 어른 양이 되었어요</h3>
+      <p style="margin:0 0 10px">이 양을 양 떼로 보내고, 새 아기 양을 키우며 다음 일독을 시작해 보세요.</p>
+      <button class="go" id="newLamb">🐑 양 떼로 보내고 새 아기 양 키우기</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="tabs" id="tabs"><button data-t="ot" class="on">구약 39권</button><button data-t="nt">신약 27권</button></div>
+    <div id="books"></div>
+    <div class="tools">
+      <button class="sm" id="openAll">모두 펼치기</button>
+      <button class="sm" id="closeAll">모두 접기</button>
+      <button class="sm" id="backup">💾 기록 저장하기</button>
+      <button class="sm" id="restore">📂 기록 불러오기</button>
+      <input type="file" id="file" accept=".json,application/json" hidden>
+    </div>
+    <p class="note">체크한 기록은 이 기기의 브라우저에 저장돼요. 다른 폰·컴퓨터로 옮기려면 <b>기록 저장하기</b>로 파일을 받아 그곳에서 <b>불러오기</b> 하세요.<br>책 이름 옆 <b>전체 체크</b>로 한 권을 한 번에 표시할 수도 있어요.</p>
+  </section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+/* 개신교 성경 66권 (책 이름, 장 수) */
+const OT=[["창세기",50],["출애굽기",40],["레위기",27],["민수기",36],["신명기",34],["여호수아",24],["사사기",21],["룻기",4],["사무엘상",31],["사무엘하",24],["열왕기상",22],["열왕기하",25],["역대상",29],["역대하",36],["에스라",10],["느헤미야",13],["에스더",10],["욥기",42],["시편",150],["잠언",31],["전도서",12],["아가",8],["이사야",66],["예레미야",52],["예레미야애가",5],["에스겔",48],["다니엘",12],["호세아",14],["요엘",3],["아모스",9],["오바댜",1],["요나",4],["미가",7],["나훔",3],["하박국",3],["스바냐",3],["학개",2],["스가랴",14],["말라기",4]];
+const NT=[["마태복음",28],["마가복음",16],["누가복음",24],["요한복음",21],["사도행전",28],["로마서",16],["고린도전서",16],["고린도후서",13],["갈라디아서",6],["에베소서",6],["빌립보서",4],["골로새서",4],["데살로니가전서",5],["데살로니가후서",3],["디모데전서",6],["디모데후서",4],["디도서",3],["빌레몬서",1],["히브리서",13],["야고보서",5],["베드로전서",5],["베드로후서",3],["요한일서",5],["요한이서",1],["요한삼서",1],["유다서",1],["요한계시록",22]];
+const BOOKS=[...OT.map(b=>[...b,"ot"]),...NT.map(b=>[...b,"nt"])];
+let off=0;BOOKS.forEach(b=>{b[3]=off;off+=b[1]});
+const TOTAL=off; /* 1189 */
+const MIN=3,MAX=120,KEY="bible-sheep";
+let S={ch:"",flock:[],name:"",start:Date.now()};
+try{const o=JSON.parse(localStorage.getItem(KEY)||"null");if(o&&typeof o.ch==="string")S=Object.assign(S,o)}catch(e){}
+let CH=new Uint8Array(TOTAL);for(let i=0;i<TOTAL;i++)CH[i]=S.ch[i]==="1"?1:0;
+const save=()=>{S.ch=Array.from(CH).join("");try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const count=()=>CH.reduce((a,b)=>a+b,0);
+const weight=n=>MIN+(MAX-MIN)*n/TOTAL;
+const STAGES=[[0,"🍼 갓 태어난 아기 양"],[.1,"🐑 아장아장 아기 양"],[.3,"🌱 쑥쑥 크는 어린 양"],[.55,"🌿 씩씩한 청소년 양"],[.8,"💪 듬직한 젊은 양"],[1,"👑 건강한 어른 양"]];
+const stageOf=t=>STAGES.filter(s=>t>=s[0]).pop()[1];
+
+/* ---------- sheep drawing: t = 0 (newborn lamb) … 1 (adult) ---------- */
+function sheepSVG(t,w){
+  const L=(a,b)=>a+(b-a)*t;
+  const rx=L(26,52),ry=L(19,34),cx=100,legLen=L(30,24),cy=150-legLen-ry*.75;
+  const n=Math.round(L(8,13)),br=L(8,13);
+  let wool="";for(let i=0;i<n;i++){const a=Math.PI*2*i/n;wool+=`<circle cx="${(cx+Math.cos(a)*rx*.9).toFixed(1)}" cy="${(cy+Math.sin(a)*ry*.85).toFixed(1)}" r="${br.toFixed(1)}"/>`}
+  const curls=t>.25?[0,1,2,3].map(i=>`<path d="M${(cx-rx*.5+i*rx*.32).toFixed(1)} ${(cy-ry*.15+(i%2)*ry*.3).toFixed(1)}q4 -5 8 0" />`).join(""):"";
+  const legs=[-.55,-.2,.25,.6].map((k,i)=>`<rect x="${(cx+k*rx-L(4,6)).toFixed(1)}" y="${(cy+ry*.45).toFixed(1)}" width="${L(8,12).toFixed(1)}" height="${(legLen+ry*.3).toFixed(1)}" rx="${L(4,5).toFixed(1)}" fill="${i%2?'#e9d9cf':'#f3e6dd'}" stroke="#7a5f52" stroke-width="3"/>`).join("");
+  const hr=L(20,22),hx=cx+rx*.92,hy=cy-ry*L(.55,.45);
+  const head=`<g class="head" style="transform-origin:${(hx-hr*.6).toFixed(1)}px ${(hy+hr*.4).toFixed(1)}px">
+    <ellipse cx="${(hx-hr*.95).toFixed(1)}" cy="${(hy-hr*.05).toFixed(1)}" rx="${(hr*.55).toFixed(1)}" ry="${(hr*.28).toFixed(1)}" transform="rotate(-25 ${(hx-hr*.95).toFixed(1)} ${hy.toFixed(1)})" fill="#e7b88f" stroke="#7a5f52" stroke-width="3"/>
+    <ellipse cx="${(hx+hr*.95).toFixed(1)}" cy="${(hy-hr*.05).toFixed(1)}" rx="${(hr*.55).toFixed(1)}" ry="${(hr*.28).toFixed(1)}" transform="rotate(25 ${(hx+hr*.95).toFixed(1)} ${hy.toFixed(1)})" fill="#e7b88f" stroke="#7a5f52" stroke-width="3"/>
+    <ellipse cx="${hx.toFixed(1)}" cy="${(hy+hr*.1).toFixed(1)}" rx="${(hr*.82).toFixed(1)}" ry="${hr.toFixed(1)}" fill="#f2c9a0" stroke="#7a5f52" stroke-width="3"/>
+    <g fill="#fffaf2" stroke="#7a5f52" stroke-width="3">${[-.45,0,.45].map(k=>`<circle cx="${(hx+k*hr).toFixed(1)}" cy="${(hy-hr*.72).toFixed(1)}" r="${(hr*L(.32,.42)).toFixed(1)}"/>`).join("")}</g>
+    <circle cx="${(hx-hr*.33).toFixed(1)}" cy="${(hy+hr*.12).toFixed(1)}" r="${L(3.6,3).toFixed(1)}" fill="#3b2a20"/><circle cx="${(hx+hr*.33).toFixed(1)}" cy="${(hy+hr*.12).toFixed(1)}" r="${L(3.6,3).toFixed(1)}" fill="#3b2a20"/>
+    <circle cx="${(hx-hr*.24).toFixed(1)}" cy="${(hy+hr*.02).toFixed(1)}" r="1.2" fill="#fff"/><circle cx="${(hx+hr*.42).toFixed(1)}" cy="${(hy+hr*.02).toFixed(1)}" r="1.2" fill="#fff"/>
+    <ellipse cx="${(hx-hr*.5).toFixed(1)}" cy="${(hy+hr*.45).toFixed(1)}" rx="4" ry="2.6" fill="#f29a9a" opacity=".7"/><ellipse cx="${(hx+hr*.5).toFixed(1)}" cy="${(hy+hr*.45).toFixed(1)}" rx="4" ry="2.6" fill="#f29a9a" opacity=".7"/>
+    <path d="M${(hx-5).toFixed(1)} ${(hy+hr*.5).toFixed(1)}q5 5 10 0" fill="none" stroke="#3b2a20" stroke-width="2.4" stroke-linecap="round"/></g>`;
+  const tail=`<circle cx="${(cx-rx*1.02).toFixed(1)}" cy="${(cy-ry*.25).toFixed(1)}" r="${L(6,9).toFixed(1)}" fill="#fffaf2" stroke="#7a5f52" stroke-width="3"/>`;
+  return `<svg width="${w}" viewBox="0 0 200 160" aria-hidden="true"><g class="flipper" style="transform-origin:100px 80px">
+    <ellipse cx="${cx}" cy="152" rx="${(rx*1.05).toFixed(1)}" ry="6" fill="rgba(0,0,0,.13)"/>
+    ${legs}${tail}
+    <g fill="#fffaf2" stroke="#7a5f52" stroke-width="3">${wool}<ellipse cx="${cx}" cy="${cy.toFixed(1)}" rx="${(rx*.92).toFixed(1)}" ry="${(ry*.86).toFixed(1)}"/></g>
+    <ellipse cx="${cx}" cy="${cy.toFixed(1)}" rx="${(rx*.9).toFixed(1)}" ry="${(ry*.84).toFixed(1)}" fill="#fffaf2"/>
+    <g fill="none" stroke="#d8cabb" stroke-width="2.4" stroke-linecap="round">${curls}</g>
+    ${head}</g></svg>`}
+
+/* ---------- pen ---------- */
+const pen=$("pen");
+const lamb=document.createElement("div");lamb.className="lamb";pen.appendChild(lamb);
+let lambX=40,lastT=-1;
+function drawLamb(){const t=count()/TOTAL;if(Math.abs(t-lastT)<.002&&lamb.innerHTML)return;lastT=t;
+  const w=Math.round(pen.clientWidth*(.2+.22*t));lamb.innerHTML=sheepSVG(t,Math.max(70,w))}
+function drawFlock(){pen.querySelectorAll(".adult").forEach(e=>e.remove());const F=S.flock,show=F.slice(-8);
+  show.forEach((f,i)=>{const d=document.createElement("div");d.className="adult";const k=show.length;
+    d.style.left=(3+(i%4)*13+(i>=4?6:0))+"%";d.style.top=(i>=4?"46%":"30%");
+    d.innerHTML=sheepSVG(1,Math.max(60,Math.round(pen.clientWidth*.13)))+'<span>'+esc(f.name||((F.length-show.length+i+1)+"독 양"))+'</span>';
+    d.title=(F.length-show.length+i+1)+"독 · "+new Date(f.done).toLocaleDateString("ko-KR");pen.appendChild(d)});
+  if(F.length>8){const m=document.createElement("div");m.className="adult";m.style.left="56%";m.style.top="36%";m.innerHTML='<span>+'+(F.length-8)+'마리 더</span>';pen.appendChild(m)}}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function bubble(txt,x,y){const b=document.createElement("div");b.className="bubble";b.textContent=txt;b.style.left=x+"%";b.style.top=y+"%";pen.appendChild(b);setTimeout(()=>b.remove(),1500)}
+
+/* feeding queue: each checked chapter drops one feed; the lamb walks over and eats it */
+const FOODS=["🌿","🍀","🌾","🥬","🌱"];let queue=0,busy=false;
+function addFeed(n){queue+=n;if(!busy)feedLoop()}
+async function feedLoop(){busy=true;
+  while(queue>0){const many=queue>6;const take=many?queue:1;queue-=take;
+    const x=12+Math.random()*70,y=72+Math.random()*16;
+    const f=document.createElement("div");f.className="feed";f.textContent=FOODS[Math.floor(Math.random()*FOODS.length)];f.style.left=x+"%";f.style.top=y+"%";pen.appendChild(f);
+    if(take>1)bubble("먹이 +"+take,x,y-12);
+    await wait(350);
+    const goLeft=x<lambX;lamb.classList.toggle("left",goLeft);lamb.classList.add("walk");
+    lambX=Math.max(0,Math.min(78,goLeft?x+2:x-18));lamb.style.left=lambX+"%";
+    await wait(1000);lamb.classList.remove("walk");lamb.classList.add("eat");
+    await wait(900);f.classList.add("gone");lamb.classList.remove("eat");
+    drawLamb();bubble("냠냠 +"+(take*(MAX-MIN)/TOTAL).toFixed(2)+"kg",lambX+12,30);
+    await wait(400);f.remove()}
+  busy=false}
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+
+/* ---------- stats ---------- */
+function stats(){const n=count(),t=n/TOTAL;
+  $("kg").textContent=weight(n).toFixed(1)+"kg";$("read").textContent=n.toLocaleString();$("flockN").textContent=S.flock.length;
+  $("bar").style.width=(t*100).toFixed(2)+"%";
+  $("stage").textContent=(S.name?S.name+" · ":"")+stageOf(t)+" — "+(t*100).toFixed(1)+"% 자랐어요";
+  $("done").classList.toggle("show",n===TOTAL)}
+
+/* ---------- reading table ---------- */
+let tab="ot";
+function bookHTML(b,i){const[nm,len,,o]=b;let c=0;for(let k=0;k<len;k++)c+=CH[o+k];
+  return '<details class="book'+(c===len?" full":"")+'" data-b="'+i+'"><summary><span class="nm">'+nm+'</span><span class="mini"><i style="width:'+(c/len*100)+'%"></i></span><span class="cnt">'+c+' / '+len+'장</span></summary>'+
+    '<div class="bookbar"><button class="sm" data-all="1">전체 체크</button><button class="sm" data-all="0">전체 해제</button></div><div class="chs">'+
+    Array.from({length:len},(_,k)=>'<button class="ch'+(CH[o+k]?" on":"")+'" data-c="'+(o+k)+'" aria-pressed="'+(CH[o+k]?"true":"false")+'" aria-label="'+nm+" "+(k+1)+'장">'+(k+1)+'</button>').join("")+'</div></details>'}
+function drawBooks(){const open=new Set([...document.querySelectorAll(".book[open]")].map(d=>d.dataset.b));
+  $("books").innerHTML=BOOKS.map((b,i)=>b[2]===tab?bookHTML(b,i):"").join("");
+  open.forEach(i=>{const d=document.querySelector('.book[data-b="'+i+'"]');if(d)d.open=true})}
+function refreshBook(i){const d=document.querySelector('.book[data-b="'+i+'"]');if(!d)return;const[,len,,o]=BOOKS[i];let c=0;for(let k=0;k<len;k++)c+=CH[o+k];
+  d.classList.toggle("full",c===len);d.querySelector(".mini i").style.width=(c/len*100)+"%";d.querySelector(".cnt").textContent=c+" / "+len+"장"}
+function setCh(idx,v){if(CH[idx]===v)return 0;CH[idx]=v;return v?1:-1}
+$("books").addEventListener("click",e=>{const btn=e.target.closest("button");if(!btn)return;const d=btn.closest(".book"),bi=+d.dataset.b;let delta=0;
+  if(btn.dataset.c!==undefined){const i=+btn.dataset.c;delta=setCh(i,CH[i]?0:1);btn.classList.toggle("on",!!CH[i]);btn.setAttribute("aria-pressed",CH[i]?"true":"false")}
+  else if(btn.dataset.all!==undefined){const v=+btn.dataset.all,[,len,,o]=BOOKS[bi];for(let k=0;k<len;k++)delta+=setCh(o+k,v);d.querySelectorAll(".ch").forEach(b=>{b.classList.toggle("on",!!v);b.setAttribute("aria-pressed",v?"true":"false")})}
+  if(!delta)return;save();refreshBook(bi);stats();
+  if(delta>0){addFeed(delta);if(count()===TOTAL)setTimeout(celebrate,2500)}else{drawLamb();bubble("몸무게 "+(delta*(MAX-MIN)/TOTAL).toFixed(2)+"kg",lambX+12,30)}
+  try{gtag("event","bible_check",{chapters:delta})}catch(e){}});
+$("tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;tab=b.dataset.t;document.querySelectorAll("#tabs button").forEach(x=>x.classList.toggle("on",x===b));drawBooks()});
+$("openAll").onclick=()=>document.querySelectorAll(".book").forEach(d=>d.open=true);
+$("closeAll").onclick=()=>document.querySelectorAll(".book").forEach(d=>d.open=false);
+
+/* ---------- name, completion, new lamb ---------- */
+$("lname").value=S.name||"";$("lname").addEventListener("input",()=>{S.name=$("lname").value.trim();save();stats()});
+function celebrate(){lamb.classList.remove("happy");void lamb.offsetWidth;lamb.classList.add("happy");bubble("🎉 120kg 어른 양!",lambX+12,22);
+  const C=["#e8503a","#f5b82e","#5aa957","#3a7be8","#ec6fa8"];for(let i=0;i<70;i++){const c=document.createElement("i");c.className="confetti";c.style.left=Math.random()*100+"vw";c.style.background=C[i%5];c.style.animationDuration=(2+Math.random()*2.5)+"s";c.style.animationDelay=Math.random()*.6+"s";document.body.appendChild(c);setTimeout(()=>c.remove(),5200)}}
+$("newLamb").onclick=()=>{if(count()!==TOTAL)return;
+  S.flock.push({name:S.name||((S.flock.length+1)+"독 양"),done:Date.now(),start:S.start});
+  CH=new Uint8Array(TOTAL);S.name="";S.start=Date.now();$("lname").value="";save();lastT=-1;drawLamb();drawFlock();drawBooks();stats();
+  bubble("새 아기 양이 태어났어요! 🍼",50,40);window.scrollTo({top:0,behavior:"smooth"});try{gtag("event","bible_complete",{count:S.flock.length})}catch(e){}};
+
+/* ---------- backup / restore ---------- */
+$("backup").onclick=()=>{save();const blob=new Blob([JSON.stringify({app:"bible-sheep",v:1,...S},null,1)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="성경읽기-기록-"+new Date().toISOString().slice(0,10)+".json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)};
+$("restore").onclick=()=>$("file").click();
+$("file").onchange=async()=>{const f=$("file").files[0];if(!f)return;try{const o=JSON.parse(await f.text());if(typeof o.ch!=="string"||!Array.isArray(o.flock))throw 0;
+  if(!confirm("지금 기록을 이 파일 내용으로 바꿀까요?"))return;S={ch:o.ch,flock:o.flock,name:o.name||"",start:o.start||Date.now()};for(let i=0;i<TOTAL;i++)CH[i]=S.ch[i]==="1"?1:0;save();
+  $("lname").value=S.name;lastT=-1;drawLamb();drawFlock();drawBooks();stats();bubble("기록을 불러왔어요",50,40)}catch(e){alert("성경 읽기 기록 파일이 아니에요.")}$("file").value=""};
+
+addEventListener("resize",()=>{lastT=-1;drawLamb();drawFlock()});
+drawLamb();drawFlock();drawBooks();stats();
+</script>
+<script src="../assets/scene.js"></script><script src="../assets/home.js"></script>
+</body></html>
