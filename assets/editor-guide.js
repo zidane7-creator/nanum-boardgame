@@ -1,7 +1,7 @@
 /* 사용 가이드: 이미지 제작기·주보 제작기 공용 (data-kind="image" | "jubo") */
 (function () {
   const me = document.currentScript, KIND = (me && me.dataset.kind) || "image";
-  const NAME = KIND === "jubo" ? "주보 제작기" : "이미지 제작기";
+  const NAME = KIND === "jubo" ? "주보 제작기" : KIND === "subtitle" ? "자막스튜디오" : "이미지 제작기";
   const K = s => s.split(" ").map(k => "<kbd>" + k + "</kbd>").join(" ");
 
   const START = KIND === "jubo" ? `
@@ -21,7 +21,54 @@
     <li><b>파일 › 새 문서</b>: 원하는 가로·세로 크기를 직접 넣어 빈 화면부터 시작</li>
     <li>한 문서에 <b>대지</b>(작업 판)를 여러 개 두면 명찰 여러 장, 썸네일 여러 버전을 한꺼번에 만들 수 있어요. (대지 도구 ${K("Shift+O")}, 창 › 대지 패널)</li></ul>`;
 
-  const S = [
+  const SUB = [
+    ["start", "🚀 시작하기", `
+      <ol><li>위쪽 <b>가사 붙여넣기</b>를 누르고 찬양 가사 전체를 붙여 넣으세요. (가사를 복사한 채로 화면에서 ${K("Ctrl+V")} 해도 열려요)</li>
+      <li><b>한 장에 몇 줄</b>씩 넣을지 고르고, 빈 줄에서 새 슬라이드로 나눌지 정하세요. '1절', '후렴' 같은 표시 줄은 자동으로 빠져요.</li>
+      <li>맨 앞에 <b>제목 슬라이드</b>를 넣을 수도 있어요.</li>
+      <li><b>슬라이드 만들기</b>를 누르면 지금 보고 있는 디자인 그대로 슬라이드가 한 번에 만들어져요.</li></ol>
+      <p>위쪽 제목 칸에 곡 제목을 적으면 내보낼 때 파일 이름이 돼요. 작업은 이 브라우저에 자동 저장돼요.</p>`],
+    ["screen", "🧭 화면 구성", `
+      <table><tr><th>왼쪽</th><td>슬라이드 목록. 눌러서 이동하고, 끌어서 순서를 바꿔요. 마우스를 올리면 복사(⧉)·위아래 이동·삭제(✕) 버튼이 나와요.</td></tr>
+      <tr><th>가운데</th><td>슬라이드 화면. 글자나 도형을 눌러 고르고, 끌어서 옮기고, 모서리 점으로 크기를 바꿔요. 가운데에 오면 분홍 안내선이 나와요.</td></tr>
+      <tr><th>오른쪽</th><td>템플릿 · 배경 · 요소 · 선택 · 일괄 변경 탭</td></tr>
+      <tr><th>위쪽</th><td>새로 만들기, PPT 열기, 가사 붙여넣기, 화면 비율, 되돌리기, 내보내기</td></tr></table>`],
+    ["tpl", "🎨 템플릿 · 배경", `
+      <ul><li><b>템플릿 탭</b>: 1,000가지 디자인 중에서 고르면 배경과 가사 글꼴·색·위치가 한 번에 바뀌어요. 가사 내용은 그대로예요.</li>
+      <li>단색 · 그라데이션 · 빛 · 자연 · 패턴 · 미니멀 · 예배 · 하단자막으로 나눠 보고, 어두운/밝은 배경만 볼 수도 있어요.</li>
+      <li><b>적용 범위</b>를 '모든 슬라이드'로 하면 전체가 한 번에 바뀌어요.</li>
+      <li><b>배경 탭</b>: 패턴 · 단색 · 그라데이션 · 사진 중에서 고르고 색을 바꿔요. 사진 위 가사가 잘 안 보이면 <b>어둡게 덮기</b>를 올리세요.</li>
+      <li>사진 파일을 슬라이드 화면에 끌어다 놓으면 바로 배경이 돼요.</li></ul>`],
+    ["text", "✏️ 글자 꾸미기", `
+      <ul><li>글자를 <b>두 번 누르면</b> 슬라이드 위에서 바로 고칠 수 있어요. (고른 상태에서 ${K("Enter")}도 돼요)</li>
+      <li><b>선택 탭</b>: 글꼴(무료 한글 글꼴 37종 + 영문 13종), 크기, 굵게, 색, 정렬, 줄 간격, 자간</li>
+      <li>효과: 그림자, 외곽선, 글자 배경(반투명 띠), 불투명도</li>
+      <li>위치 버튼: 상단 · 중앙 · 하단 · <b>하단 자막</b> · 전체</li>
+      <li>고친 가사 서식을 <b>모든 슬라이드에 적용</b>할 수 있어요. 글꼴·크기·색·정렬·위치·효과 중 고른 것만 바꿀 수 있어요.</li>
+      <li>컴퓨터에 설치된 글꼴은 글꼴 목록 위 입력칸에 이름을 적어 쓰고, 글꼴 파일(.ttf .otf .woff)은 요소 탭에서 올릴 수 있어요.</li></ul>`],
+    ["add", "➕ 요소 · 일괄 변경", `
+      <ul><li><b>요소 탭</b>: 가사 텍스트, 텍스트 상자, 곡 제목, 작은 글씨(출처), 이미지·로고, 하단 띠, 사각형, 원, 구분선을 넣어요.</li>
+      <li>교회 로고나 하단 띠처럼 매 장 필요한 것은 고른 뒤 <b>모든 슬라이드에 넣기</b>를 누르세요. 한 곳에서 고치면 전부 같이 바뀌어요.</li>
+      <li><b>일괄 변경 탭</b>: 모든 슬라이드의 가사 서식을 한 번에 바꾸고, <b>가사 줄 다시 나누기</b>로 한 장에 들어가는 줄 수를 바꿀 수 있어요.</li>
+      <li>화면 비율: 16:9, 4:3, 21:9, 32:9(LED 띠), 세로 9:16 등. 직접 입력도 돼요.</li></ul>`],
+    ["export", "💾 내보내기 · PPT 열기", `
+      <ul><li><b>내보내기 ▾</b> 버튼에서 고르세요.
+        <ul><li><b>PowerPoint (.pptx)</b>: 글자를 PPT에서 바로 고칠 수 있어요. 예배실 컴퓨터에도 같은 글꼴이 있어야 모양이 같아요.</li>
+        <li><b>JPG 전체 (ZIP)</b> / <b>JPG 현재 슬라이드</b>: 1920px 이미지라 글꼴 걱정이 없어요.</li>
+        <li><b>프로젝트 파일 (.json)</b>: 나중에 여기서 다시 열어 고칠 수 있어요.</li></ul></li>
+      <li><b>PPT 열기</b>: 가지고 있던 .pptx나 .json 파일을 불러와서 고쳐 쓸 수 있어요. 파일을 화면에 끌어다 놓아도 돼요.</li>
+      <li><b>자료실</b> 탭의 <b>찬양 자료실 열기</b>를 누르면 올려 둔 찬양 자막을 찾아 PPT·JPG로 받을 수 있어요. (초성 검색도 돼요)</li></ul>`],
+    ["keys", "⌨️ 단축키", `
+      <table class="kt"><tr><td>되돌리기 / 다시 실행</td><td>${K("Ctrl+Z")} / ${K("Ctrl+Y")}</td></tr>
+      <tr><td>슬라이드 복사</td><td>${K("Ctrl+D")}</td></tr>
+      <tr><td>요소 복사 / 붙이기</td><td>${K("Ctrl+C")} / ${K("Ctrl+V")}</td></tr>
+      <tr><td>고른 요소 지우기</td><td>${K("Delete")}</td></tr>
+      <tr><td>글자 바로 고치기</td><td>${K("Enter")} 또는 두 번 누르기</td></tr>
+      <tr><td>고른 요소 옮기기</td><td>방향키 (${K("Shift")}+방향키는 크게)</td></tr>
+      <tr><td>슬라이드 넘기기</td><td>아무것도 안 고른 상태에서 방향키 · PageUp/PageDown</td></tr></table>
+      <p class="muted">Mac에서는 Ctrl 대신 ⌘(Command)를 쓰세요.</p>`]
+  ];
+  const S = KIND === "subtitle" ? SUB : [
     ["start", "🚀 시작하기", START],
     ["screen", "🧭 화면 구성", `
       <table><tr><th>맨 위 메뉴</th><td>파일 · 편집 · 오브젝트 · 문자 · 선택 · 효과 · 보기 · 창 · 도움말 — 모든 기능이 여기 있어요.</td></tr>
@@ -140,6 +187,7 @@
   btn.innerHTML = '📖<span class="gl"> 사용 가이드 보기</span>';
   btn.onclick = open;
   const tpl = document.getElementById("btnTpl");
-  if (tpl) tpl.parentNode.insertBefore(btn, tpl); else document.body.appendChild(btn);
+  const hb = document.querySelector("[data-home-bar] .spacer");
+  if (tpl) tpl.parentNode.insertBefore(btn, tpl); else if (hb) hb.parentNode.insertBefore(btn, hb.nextSibling); else document.body.appendChild(btn);
   window.openUserGuide = open;
 })();

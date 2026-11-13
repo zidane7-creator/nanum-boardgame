@@ -20,7 +20,7 @@
   a.setAttribute("aria-label", "홈으로");
   a.innerHTML = '<span class="hi">🏠</span><span class="ht">홈</span>';
   /* full-screen editors: sit at the start of their menu bar instead of floating over the canvas */
-  const bar = document.getElementById("menubar");
+  const bar = document.getElementById("menubar") || document.querySelector("[data-home-bar]");
   if (bar) { a.classList.add("inbar"); bar.insertBefore(a, bar.firstChild); }
   else document.body.appendChild(a);
 })();

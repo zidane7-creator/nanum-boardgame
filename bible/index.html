@@ -200,9 +200,10 @@ const rnd=(a,b)=>a+Math.random()*(b-a);
 const night=()=>{const h=new Date().getHours();return h>=22||h<6};
 class Sheep{
   constructor(o){this.lamb=!!o.lamb;this.size=o.size;this.x=o.x;this.y=o.y;this.dir=1;this.pose="";this.mode="";this.gen=0;
-    const e=this.el=document.createElement("div");e.className="sh";e.innerHTML='<div class="fl"><img alt="" draggable="false"></div><span class="zz">💤</span>'+(o.label?'<span class="nm"></span>':"");
-    if(o.label)e.querySelector(".nm").textContent=o.label;if(o.title)e.title=o.title;this.img=e.querySelector("img");pen.appendChild(e);
+    const e=this.el=document.createElement("div");e.className="sh";e.innerHTML='<div class="fl"><img alt="" draggable="false"></div><span class="zz">💤</span><span class="nm" hidden></span>';
+    this.setLabel(o.label);if(o.title)e.title=o.title;this.img=e.querySelector("img");pen.appendChild(e);
     e.addEventListener("click",()=>this.poke());this.place(0);this.setPose("eat");this.setMode("grazing");this.next(rnd(600,2500))}
+  setLabel(t){const n=this.el.querySelector(".nm");n.textContent=t||"";n.hidden=!t}
   scale(){const ref=SPR.eat?SPR.eat.w:200;return this.size/ref}
   setPose(p){this.pose=p;const sp=SPR[p];if(sp){this.img.src=sp.url;this.img.style.width=(sp.w*this.scale()).toFixed(1)+"px"}else{this.img.src=svgURL(this.lamb?count()/TOTAL:1);this.img.style.width=this.size+"px"}}
   setSize(px){this.size=px;this.setPose(this.pose)}
@@ -281,12 +282,12 @@ $("openAll").onclick=()=>document.querySelectorAll(".book").forEach(d=>d.open=tr
 $("closeAll").onclick=()=>document.querySelectorAll(".book").forEach(d=>d.open=false);
 
 /* ---------- name, completion, new lamb ---------- */
-$("lname").value=S.name||"";$("lname").addEventListener("input",()=>{S.name=$("lname").value.trim();save();stats()});
+$("lname").value=S.name||"";$("lname").addEventListener("input",()=>{S.name=$("lname").value.trim();save();stats();if(lamb)lamb.setLabel(S.name)});
 function celebrate(){if(lamb){lamb.stop();lamb.setPose("eat");lamb.setMode("grazing");lamb.hop();say(lamb,"🎉 120kg 어른 양!");lamb.next(3000)}
   const C=["#e8503a","#f5b82e","#5aa957","#3a7be8","#ec6fa8"];for(let i=0;i<70;i++){const c=document.createElement("i");c.className="confetti";c.style.left=Math.random()*100+"vw";c.style.background=C[i%5];c.style.animationDuration=(2+Math.random()*2.5)+"s";c.style.animationDelay=Math.random()*.6+"s";document.body.appendChild(c);setTimeout(()=>c.remove(),5200)}}
 $("newLamb").onclick=()=>{if(count()!==TOTAL)return;
   S.flock.push({name:S.name||((S.flock.length+1)+"독 양"),done:Date.now(),start:S.start});
-  CH=new Uint8Array(TOTAL);S.name="";S.start=Date.now();$("lname").value="";save();lambResize();drawFlock();drawBooks();stats();
+  CH=new Uint8Array(TOTAL);S.name="";S.start=Date.now();$("lname").value="";save();lambResize();if(lamb)lamb.setLabel("");drawFlock();drawBooks();stats();
   bubble("새 아기 양이 태어났어요! 🍼",50,40);window.scrollTo({top:0,behavior:"smooth"});try{gtag("event","bible_complete",{count:S.flock.length})}catch(e){}};
 
 /* ---------- backup / restore ---------- */
@@ -294,10 +295,10 @@ $("backup").onclick=()=>{save();const blob=new Blob([JSON.stringify({app:"bible-
 $("restore").onclick=()=>$("file").click();
 $("file").onchange=async()=>{const f=$("file").files[0];if(!f)return;try{const o=JSON.parse(await f.text());if(typeof o.ch!=="string"||!Array.isArray(o.flock))throw 0;
   if(!confirm("지금 기록을 이 파일 내용으로 바꿀까요?"))return;S={ch:o.ch,flock:o.flock,name:o.name||"",start:o.start||Date.now()};for(let i=0;i<TOTAL;i++)CH[i]=S.ch[i]==="1"?1:0;save();
-  $("lname").value=S.name;lambResize();drawFlock();drawBooks();stats();bubble("기록을 불러왔어요",50,40)}catch(e){alert("성경 읽기 기록 파일이 아니에요.")}$("file").value=""};
+  $("lname").value=S.name;lambResize();if(lamb)lamb.setLabel(S.name);drawFlock();drawBooks();stats();bubble("기록을 불러왔어요",50,40)}catch(e){alert("성경 읽기 기록 파일이 아니에요.")}$("file").value=""};
 
 drawBooks();stats();
-ready.then(()=>{lastW=pen.clientWidth;lamb=new Sheep({lamb:true,size:lambPx(),x:45,y:80});drawFlock()});
+ready.then(()=>{lastW=pen.clientWidth;lamb=new Sheep({lamb:true,size:lambPx(),x:45,y:80,label:S.name});drawFlock()});
 </script>
 <script src="../assets/scene.js"></script><script src="../assets/home.js"></script>
 </body></html>
