@@ -104,7 +104,6 @@ html.sc-night .pen::before{filter:brightness(.6)}html.sc-night .pen::after{opaci
 
   <section class="card">
     <div class="pen" id="pen" aria-label="양 우리"></div>
-    <div class="credit">양 그림: <a href="https://www.freepik.com" target="_blank" rel="noopener">Freepik</a></div>
     <div class="stage" id="stage"></div>
     <div class="bar"><i id="bar"></i></div>
     <div class="stats">
@@ -180,24 +179,28 @@ function sheepSVG(t,w){
 
 /* ---------- pen: sheep sprites cut from one picture (4 poses) ---------- */
 const pen=$("pen");
-const POSES={eat:[55,55,260,310],walk:[400,60,260,285],lie:[45,405,350,240],sleep:[395,455,305,225]};
-const SPR={};
-function cutOne(img,x,y,w,h){const c=document.createElement("canvas");c.width=w;c.height=h;const g=c.getContext("2d",{willReadFrequently:true});g.drawImage(img,-x,-y);
-  const id=g.getImageData(0,0,w,h),d=id.data,N=w*h,bg=[d[0],d[1],d[2]],dist=i=>Math.hypot(d[i*4]-bg[0],d[i*4+1]-bg[1],d[i*4+2]-bg[2]);
-  /* background = paper colour connected to the crop edge */
-  const isBg=new Uint8Array(N),q=new Int32Array(N);let qn=0;const pushBg=i=>{if(!isBg[i]&&dist(i)<30){isBg[i]=1;q[qn++]=i}};
-  for(let i=0;i<w;i++){pushBg(i);pushBg(N-w+i)}for(let j=0;j<h;j++){pushBg(j*w);pushBg(j*w+w-1)}
-  while(qn){const i=q[--qn],px=i%w;if(px>0)pushBg(i-1);if(px<w-1)pushBg(i+1);if(i>=w)pushBg(i-w);if(i<N-w)pushBg(i+w)}
-  /* keep only the biggest blob (the sheep sticker); clouds, clovers and letters fall away */
-  const lab=new Int32Array(N).fill(-1);let best=-1,bestN=0;
-  for(let s0=0;s0<N;s0++){if(isBg[s0]||lab[s0]>=0)continue;let n=0;qn=0;lab[s0]=s0;q[qn++]=s0;
-    while(qn){const i=q[--qn];n++;const px=i%w;for(const j of[px>0?i-1:-1,px<w-1?i+1:-1,i>=w?i-w:-1,i<N-w?i+w:-1])if(j>=0&&!isBg[j]&&lab[j]<0){lab[j]=s0;q[qn++]=j}}
-    if(n>bestN){bestN=n;best=s0}}
-  let x0=w,y0=h,x1=0,y1=0;
-  for(let i=0;i<N;i++){if(lab[i]!==best){d[i*4+3]=0;continue}const px=i%w,py=(i/w)|0;if(px<x0)x0=px;if(px>x1)x1=px;if(py<y0)y0=py;if(py>y1)y1=py;
-    const edge=(px>0&&isBg[i-1])||(px<w-1&&isBg[i+1])||(i>=w&&isBg[i-w])||(i<N-w&&isBg[i+w]);if(edge){const dd=dist(i);if(dd<70)d[i*4+3]=Math.round(255*Math.max(.15,(dd-30)/40))}}
-  g.putImageData(id,0,0);const o=document.createElement("canvas");o.width=x1-x0+1;o.height=y1-y0+1;o.getContext("2d").drawImage(c,-x0,-y0);return{url:o.toDataURL("image/png"),w:o.width,h:o.height}}
-const ready=new Promise(res=>{const img=new Image();img.onload=()=>{try{for(const k in POSES)SPR[k]=cutOne(img,...POSES[k])}catch(e){}res()};img.onerror=()=>res();img.src="sheep.avif"});
+/* landing-page sheep, drawn in 4 poses: eat (standing), walk (trotting legs), lie (legs tucked), sleep (lying, eyes shut) */
+function landingSheep(pose){const O="#8a776a",W="#fffaf2",F="#f6c58e",E="#eab07a",LEG="#f4d8c9";
+  const puff=(cx,cy,rx,ry,n,bump)=>{let d="";for(let i=0;i<=n;i++){const a=i/n*Math.PI*2,x=cx+rx*Math.cos(a),y=cy+ry*Math.sin(a);d+=(i?"A"+bump+" "+bump+" 0 0 1 ":"M")+x.toFixed(1)+" "+y.toFixed(1)+" "}return d+"Z"};
+  const fluff=[[58,40],[74,52],[48,60],[66,66],[82,40]].map(([x,y])=>'<path d="M'+x+' '+y+'q3 -3 6 0" fill="none" stroke="#e4d8cc" stroke-width="2" stroke-linecap="round"/>').join("");
+  const down=pose==="lie"||pose==="sleep";
+  const legs=down?"":(pose==="walk"
+    ?'<g fill="'+LEG+'" stroke="'+O+'" stroke-width="2.5"><g class="lg a"><rect x="36" y="70" width="9" height="17" rx="4.5"/><rect x="70" y="70" width="9" height="16" rx="4.5"/></g><g class="lg b"><rect x="50" y="72" width="9" height="16" rx="4.5"/><rect x="83" y="68" width="9" height="16" rx="4.5"/></g></g>'
+    :'<g fill="'+LEG+'" stroke="'+O+'" stroke-width="2.5"><rect x="36" y="70" width="9" height="17" rx="4.5"/><rect x="50" y="72" width="9" height="16" rx="4.5"/><rect x="70" y="70" width="9" height="16" rx="4.5"/><rect x="83" y="68" width="9" height="16" rx="4.5"/></g>');
+  const eyes=pose==="sleep"
+    ?'<path d="M25.5 62.5q2.5 2 5 0M37.5 62.5q2.5 2 5 0" fill="none" stroke="#4a3a30" stroke-width="1.8" stroke-linecap="round"/>'
+    :'<circle cx="28" cy="62" r="2" fill="#4a3a30"/><circle cx="40" cy="62" r="2" fill="#4a3a30"/>';
+  const mouth=pose==="eat"?'<path d="M31 68q3 2.5 6 0" fill="none" stroke="#4a3a30" stroke-width="1.6" stroke-linecap="round"/><path d="M33 70l-2 6M35 70l1 6" stroke="#6fbf5a" stroke-width="2" stroke-linecap="round"/>'
+    :pose==="sleep"?'<ellipse cx="34" cy="69" rx="1.8" ry="1.3" fill="#4a3a30"/>':'<path d="M31 68q3 2.5 6 0" fill="none" stroke="#4a3a30" stroke-width="1.6" stroke-linecap="round"/>';
+  const body='<path d="'+puff(64,50,36,26,16,8)+'" fill="'+W+'" stroke="'+O+'" stroke-width="3" stroke-linejoin="round"/>'+fluff+
+    '<g stroke="'+O+'" stroke-width="2.5"><ellipse cx="17" cy="55" rx="8" ry="5" fill="'+E+'" transform="rotate('+(down?40:25)+' 17 55)"/><ellipse cx="51" cy="55" rx="8" ry="5" fill="'+E+'" transform="rotate('+(down?-40:-25)+' 51 55)"/></g>'+
+    '<ellipse cx="34" cy="62" rx="16" ry="15" fill="'+F+'" stroke="'+O+'" stroke-width="3"/>'+
+    '<path d="'+puff(34,47,14,7,9,4.5)+'" fill="'+W+'" stroke="'+O+'" stroke-width="2.5" stroke-linejoin="round"/>'+eyes+
+    '<ellipse cx="24" cy="68" rx="3.2" ry="2" fill="#ff9fa6" opacity=".7"/><ellipse cx="44" cy="68" rx="3.2" ry="2" fill="#ff9fa6" opacity=".7"/>'+mouth;
+  const anim=pose==="walk"?'<style>.lg{animation:st .34s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 0}.lg.b{animation-delay:-.17s}@keyframes st{50%{transform:rotate(14deg)}}</style>':"";
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 96">'+anim+legs+(down?'<g transform="translate(0 14)">'+body+'</g>':body)+'</svg>'}
+const SPR={};["eat","walk","lie","sleep"].forEach(k=>SPR[k]={url:"data:image/svg+xml;charset=utf-8,"+encodeURIComponent(landingSheep(k)),w:110,h:96});
+const ready=Promise.resolve();
 /* fallback when the picture can't be read: the drawn lamb */
 const svgURL=t=>"data:image/svg+xml;charset=utf-8,"+encodeURIComponent(sheepSVG(t,200).replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" '));
 const rnd=(a,b)=>a+Math.random()*(b-a);
@@ -213,7 +216,7 @@ class Sheep{
   setSize(px){this.size=px;this.setPose(this.pose)}
   setMode(m){this.mode=m;["walking","grazing","eating","resting","sleeping"].forEach(c=>this.el.classList.toggle(c,c===m))}
   place(ms){const e=this.el;e.style.transitionDuration=ms+"ms";e.style.left=this.x+"%";e.style.top=this.y+"%";e.style.zIndex=10+Math.round(this.y)}
-  face(d){this.dir=d;this.el.classList.toggle("flip",d<0)}
+  face(d){this.dir=d;this.el.classList.toggle("flip",d>0)}
   next(ms){clearTimeout(this.t);const g=this.gen;this.t=setTimeout(()=>{if(g===this.gen)this.decide()},ms)}
   stop(){this.gen++;clearTimeout(this.t)}
   walkTo(tx,ty){const g=this.gen;const W=pen.clientWidth,H=pen.clientHeight,dx=(tx-this.x)*W/100,dy=(ty-this.y)*H/100,L=Math.hypot(dx,dy);
