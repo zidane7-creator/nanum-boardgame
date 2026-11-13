@@ -28,7 +28,7 @@ button.sm{padding:4px 10px;font-size:14px;border-radius:11px;box-shadow:0 2px 0 
 main{max-width:1040px;margin:0 auto;padding:16px 14px 90px}
 h1{font-weight:normal;text-align:center;font-size:clamp(30px,7vw,44px);margin:6px 0 2px}
 .sub{text-align:center;margin:0 0 16px;opacity:.75}
-.adminbar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:0 0 14px}
+.adminbar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:0 0 14px}.adminbar[hidden]{display:none}
 /* bookshelf */
 .shelfwrap{background:linear-gradient(#7a4a24,#5e3618);border:4px solid #3b2410;border-radius:18px;padding:14px 14px 4px;box-shadow:0 8px 0 rgba(0,0,0,.18),inset 0 0 0 4px #8d5a2f}
 .shelf{position:relative;display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:22px 16px;align-items:end;padding:16px 10px 0;min-height:200px}
@@ -38,13 +38,29 @@ h1{font-weight:normal;text-align:center;font-size:clamp(30px,7vw,44px);margin:6p
 .book:active{transform:none;box-shadow:none}
 .cover{width:100%;aspect-ratio:3/4;border-radius:4px 8px 8px 4px;overflow:hidden;background:#f3e6cf;box-shadow:-4px 0 0 rgba(0,0,0,.25) inset,0 8px 14px rgba(0,0,0,.45);transition:transform .2s;display:flex;align-items:center;justify-content:center}
 .cover img{width:100%;height:100%;object-fit:cover;display:block}
-.book:hover .cover{transform:translateY(-6px) rotate(-1.5deg)}
+
 .btitle{font-size:14px;text-align:center;line-height:1.25;max-width:100%;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .price{position:absolute;top:-8px;right:-8px;background:var(--accent);color:#fff;border:2px solid var(--ink);border-radius:999px;padding:2px 9px;font-size:13px;box-shadow:0 2px 0 var(--ink)}
 .price.free{background:var(--green)}
 .mine{position:absolute;top:-8px;left:-8px;background:var(--gold);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:2px 8px;font-size:12px}
 .empty{grid-column:1/-1;text-align:center;color:#fff3dc;padding:40px 10px 50px;line-height:1.8}
 .note{font-size:13px;opacity:.75;text-align:center;line-height:1.6}
+/* hardcover mockup: white cover with the PDF cover page on it, page block at the bottom, ribbon, long shadow */
+.bk{position:relative;width:100%;aspect-ratio:70/100;isolation:isolate}
+.bk .ls{position:absolute;left:0;top:0;width:157%;height:140%;z-index:-1;pointer-events:none}
+.bk .bkc{position:absolute;left:0;right:0;top:0;bottom:7.5%;background:#f1f1f1;border-radius:3.5% 1% 0 0/2.5% 1% 0 0;overflow:hidden;box-shadow:inset -1px 0 0 rgba(0,0,0,.06)}
+.bk .bkc img{width:100%;height:100%;object-fit:cover;display:block}
+.bk .bkc .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:40px;opacity:.5}
+.bk .bkc::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.10),rgba(255,255,255,.12) 4%,transparent 9%)}
+.bk .bkp{position:absolute;left:0;right:0;bottom:0;height:7.5%;background:#1f1f1f;border-radius:0 0 1% 3%/0 0 8% 20%}
+.bk .bkp::before{content:"";position:absolute;left:2%;right:1.2%;top:22%;bottom:22%;background:repeating-linear-gradient(#fff 0 1.2px,#d9d9d9 1.2px 2.4px,#fff 2.4px 3.6px);border-radius:1px}
+.bk .rib{position:absolute;left:5%;bottom:-4.5%;width:4%;height:11%;background:#f1f1f1;border:1px solid rgba(0,0,0,.25);border-top:0;clip-path:polygon(0 0,100% 0,100% 100%,50% 88%,0 100%)}
+.book .bkwrap{width:100%;overflow:hidden;padding:0 0 4px}
+.book .bkwrap .bk{width:78%}
+.book:hover .bk{transform:translateY(-6px) rotate(-1.5deg)}.book .bk{transition:transform .2s}
+.stage{background:#ffb400;border-radius:16px;padding:22px 26% 30px 18%;overflow:hidden}
+.stage .ls{opacity:.9}
+
 /* modal */
 .back{position:fixed;inset:0;background:rgba(30,20,10,.5);z-index:100;display:none;align-items:center;justify-content:center;padding:14px}
 .back.show{display:flex}
@@ -52,7 +68,10 @@ h1{font-weight:normal;text-align:center;font-size:clamp(30px,7vw,44px);margin:6p
 .modal h2{font-weight:normal;margin:0 0 10px;font-size:22px;display:flex;align-items:center;gap:8px}
 .modal h2 .x{margin-left:auto}
 .detail{display:grid;grid-template-columns:200px 1fr;gap:18px}
-@media (max-width:600px){.detail{grid-template-columns:1fr}.detail .cover{max-width:220px;margin:0 auto}}
+.detail{grid-template-columns:230px 1fr}
+@media (max-width:600px){.detail{grid-template-columns:1fr}.detail .stage{max-width:300px;margin:0 auto}}
+.sect{margin-top:12px}.sect h4{margin:0 0 4px;font-weight:normal;font-size:16px;opacity:.75}
+.subt{font-size:16px;opacity:.75;margin:-4px 0 6px;font-family:'Gowun Dodum',sans-serif}
 .desc{font-family:"Gowun Dodum",sans-serif;white-space:pre-wrap;line-height:1.7;font-size:15px}
 .meta{opacity:.7;font-size:14px;margin:2px 0 10px}
 .bigprice{font-size:26px;color:var(--accent);margin:8px 0}
@@ -79,8 +98,7 @@ h1{font-weight:normal;text-align:center;font-size:clamp(30px,7vw,44px);margin:6p
 .busy{position:fixed;inset:0;z-index:200;background:rgba(30,20,10,.45);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px}
 .footadmin{text-align:center;margin-top:18px;font-size:13px}
 .footadmin a{color:inherit;opacity:.6}
-.coverprev{width:120px;aspect-ratio:3/4;border:2px solid var(--ink);border-radius:6px;overflow:hidden;background:#f3e6cf}
-.coverprev img{width:100%;height:100%;object-fit:cover}
+.coverprev{width:170px;flex:none}.coverprev .stage{padding:12px 26% 18px 14%;border-radius:12px}
 </style>
 </head><body>
 <div class="top"><a href="../">← 목장</a><span class="ttl">📚 전자책 매대</span></div>
@@ -144,6 +162,10 @@ async function lock(bytes,code){const salt=crypto.getRandomValues(new Uint8Array
 async function unlock(buf,code){const u=new Uint8Array(buf);if(u[0]!==69||u[1]!==66||u[2]!==75||u[3]!==49)throw new Error("format");
   return crypto.subtle.decrypt({name:"AES-GCM",iv:u.slice(20,32)},await keyFrom(code,u.slice(4,20)),u.slice(32))}
 
+/* ---------- 책 모양 ---------- */
+const SHADOW='<svg class="ls" viewBox="0 0 110 140" preserveAspectRatio="none" aria-hidden="true"><polygon points="70,0 110,40 110,140 40,140 0,100 70,100" fill="rgba(0,0,0,.22)"/></svg>';
+function bookHTML(src,stage){const b='<div class="bk">'+SHADOW+'<div class="bkc">'+(src?'<img src="'+esc(src)+'" alt="">':'<span class="ph">📕</span>')+'</div><div class="bkp"></div><i class="rib"></i></div>';return stage?'<div class="stage">'+b+'</div>':b}
+const coverURL=b=>b.cover?(/^(data|blob):/.test(b.cover)?b.cover:b.cover+"?v="+(b.updated||0)):"";
 /* ---------- 상태 ---------- */
 let BOOKS=[],SET={};
 const mine=()=>{try{return JSON.parse(localStorage.getItem("ebook:mine")||"{}")}catch(_){return{}}};
@@ -160,7 +182,7 @@ function render(){
   const m=mine(),list=[...BOOKS].sort((a,b)=>(b.created||0)-(a.created||0));
   const per=Math.max(2,Math.floor(($("shelves").clientWidth-28)/148)||4);
   if(!list.length){$("shelves").innerHTML='<div class="shelf"><div class="empty">아직 진열된 책이 없어요.'+(adm?'<br>위의 <b>📤 책 올리기</b>로 첫 책을 올려 보세요.':'<br>곧 좋은 책으로 채워질 거예요 🙏')+'</div></div>';return}
-  let h="";for(let i=0;i<list.length;i+=per){h+='<div class="shelf">'+list.slice(i,i+per).map(b=>'<button class="book" data-id="'+esc(b.id)+'"><div class="cover">'+(b.cover?'<img src="'+esc(b.cover)+'?v='+(b.updated||0)+'" alt="" loading="lazy">':'📕')+'</div>'+
+  let h="";for(let i=0;i<list.length;i+=per){h+='<div class="shelf">'+list.slice(i,i+per).map(b=>'<button class="book" data-id="'+esc(b.id)+'"><div class="bkwrap">'+bookHTML(coverURL(b))+'</div>'+
     '<span class="price'+(b.price>0?"":" free")+'">'+(b.price>0?won(b.price):"무료")+'</span>'+(m[b.id]?'<span class="mine">내 책</span>':"")+'<span class="btitle">'+esc(b.title)+'</span></button>').join("")+'</div>'}
   $("shelves").innerHTML=h;
   $("shelves").querySelectorAll(".book").forEach(el=>el.onclick=()=>openBook(el.dataset.id))}
@@ -174,11 +196,13 @@ $("back").onclick=e=>{if(e.target.id==="back")closeModal()};addEventListener("ke
 /* ---------- 책 보기 / 구매 ---------- */
 function openBook(id){const b=BOOKS.find(x=>x.id===id);if(!b)return;const has=mine()[id],adm=GH.admin(),code=adminCodes()[id];
   modal(`<h2>📖 ${esc(b.title)}<button class="sm x" data-close>✕</button></h2>
-   <div class="detail"><div class="cover">${b.cover?'<img src="'+esc(b.cover)+'?v='+(b.updated||0)+'" alt="">':"📕"}</div>
-   <div><div class="meta">${esc(b.author||"")}${b.author?" · ":""}${b.pages?b.pages+"쪽 · ":""}${b.size?(b.size/1048576).toFixed(1)+"MB · ":""}PDF</div>
+   <div class="detail"><div>${bookHTML(coverURL(b),true)}</div>
+   <div>${b.subtitle?'<div class="subt">'+esc(b.subtitle)+'</div>':""}<div class="meta">${esc(b.author||"")}${b.author?" · ":""}${b.pubDate?esc(b.pubDate)+" · ":""}${b.pages?b.pages+"쪽 · ":""}${b.size?(b.size/1048576).toFixed(1)+"MB · ":""}PDF</div>
     <div class="bigprice">${b.price>0?won(b.price):"무료"}</div>
     <div class="desc">${esc(b.desc||"")}</div>
     <div class="acts">${b.price>0?(has?'<button class="go" id="bOpenMine">📖 내 책 열기</button>':'<button class="pri" id="bBuy">🛒 구매하기</button><button id="bCode">🔑 열람 코드 넣기</button>'):'<button class="go" id="bFree">📥 무료로 받기</button>'}</div>
+    ${b.toc?'<div class="sect"><h4>📑 목차</h4><div class="desc">'+esc(b.toc)+'</div></div>':""}
+    ${b.bio?'<div class="sect"><h4>✍️ 지은이 소개</h4><div class="desc">'+esc(b.bio)+'</div></div>':""}
     ${adm?`<div class="step"><h3>🔧 관리자</h3>${b.price>0?`<div class="hint">이 책의 열람 코드 (입금 확인 후 구매자에게 문자로 보내 주세요)</div><div class="codebox">${code?esc(code):"이 브라우저에 저장된 코드가 없어요"}</div>`:""}
       <div class="acts"><button class="sm" id="bEdit">✏️ 정보 고치기</button><button class="sm" id="bDel">🗑️ 매대에서 내리기</button>${code?'<button class="sm" id="bCopyCode">코드 복사</button>':""}</div></div>`:""}
    </div></div>`,m=>{
@@ -273,10 +297,14 @@ $("bAdd").onclick=()=>{const code=newCode();let pdfBytes=null,coverBlob=null,pag
   modal(`<h2>📤 책 올리기<button class="sm x" data-close>✕</button></h2>
    <div class="f">
     <label>PDF 파일 <input type="file" id="uPdf" accept="application/pdf,.pdf"></label>
-    <div style="display:flex;gap:12px;align-items:center"><div class="coverprev" id="uPrev"></div><div class="hint">표지는 PDF 첫 쪽으로 자동으로 만들어져요.<br><label style="display:inline">다른 표지 그림 쓰기 <input type="file" id="uCover" accept="image/*"></label></div></div>
+    <div style="display:flex;gap:14px;align-items:center"><div class="coverprev" id="uPrev">${bookHTML("",true)}</div><div class="hint">PDF <b>첫 쪽(표지)</b>이 책 모양 앞면에 들어가요.<br><label style="display:inline">다른 표지 그림 쓰기 <input type="file" id="uCover" accept="image/*"></label></div></div>
     <label>책 제목 <input id="uTitle" maxlength="80"></label>
+    <label>부제 (선택) <input id="uSub" maxlength="100" placeholder="예) 셀모임에서 함께 읽는 12주 묵상"></label>
     <div class="row2"><label>지은이 <input id="uAuthor" maxlength="40"></label><label>가격 (원, 0이면 무료) <input id="uPrice" type="number" min="0" step="100" value="5000"></label></div>
+    <label>펴낸 날 (선택) <input id="uDate" type="date"></label>
     <label>책 소개 <textarea id="uDesc" placeholder="어떤 책인지, 누구에게 도움이 되는지 적어 주세요"></textarea></label>
+    <label>목차 (선택) <textarea id="uToc" placeholder="1장 …&#10;2장 …"></textarea></label>
+    <label>지은이 소개 (선택) <textarea id="uBio" style="min-height:70px"></textarea></label>
     <label>열람 코드 (유료 책) <input id="uCode" value="${code}" style="font-family:ui-monospace,Consolas,monospace;letter-spacing:1px"></label>
     <div class="hint">PDF는 이 코드로 잠가서 올려요. 입금을 확인하면 구매자에게 이 코드를 보내 주세요. 코드는 이 브라우저에 저장되고, 책을 누르면 다시 볼 수 있어요. <b>잊어버리지 않게 따로 적어 두세요.</b></div>
    </div>
@@ -284,14 +312,14 @@ $("bAdd").onclick=()=>{const code=newCode();let pdfBytes=null,coverBlob=null,pag
    const q=s=>m.querySelector(s);
    q("#uPdf").onchange=async()=>{const f=q("#uPdf").files[0];if(!f)return;if(f.size>60*1048576){toast("60MB 이하 PDF만 올릴 수 있어요",4000);return}
      const done=busy("PDF를 읽는 중…");try{pdfBytes=new Uint8Array(await f.arrayBuffer());const r=await pdfCover(pdfBytes);if(!coverBlob)coverBlob=r.blob;pages=r.pages;
-       q("#uPrev").innerHTML='<img src="'+URL.createObjectURL(coverBlob)+'" alt="">';if(!q("#uTitle").value)q("#uTitle").value=f.name.replace(/\.pdf$/i,"");q("#uGo").disabled=false;done()}
+       q("#uPrev").innerHTML=bookHTML(URL.createObjectURL(coverBlob),true);if(!q("#uTitle").value)q("#uTitle").value=f.name.replace(/\.pdf$/i,"");q("#uGo").disabled=false;done()}
      catch(e){done();pdfBytes=null;toast("PDF를 읽지 못했어요. 암호가 걸린 PDF는 풀고 올려 주세요",4500)}};
-   q("#uCover").onchange=async()=>{const f=q("#uCover").files[0];if(!f)return;coverBlob=await imgToJpeg(f);q("#uPrev").innerHTML='<img src="'+URL.createObjectURL(coverBlob)+'" alt="">'};
+   q("#uCover").onchange=async()=>{const f=q("#uCover").files[0];if(!f)return;coverBlob=await imgToJpeg(f);q("#uPrev").innerHTML=bookHTML(URL.createObjectURL(coverBlob))};
    q("#uGo").onclick=async()=>{const title=q("#uTitle").value.trim(),price=Math.max(0,Math.round(+q("#uPrice").value||0)),code=q("#uCode").value.trim();
      if(!pdfBytes){toast("PDF 파일을 골라 주세요");return}if(!title){toast("책 제목을 적어 주세요");return}if(price>0&&normCode(code).length<6){toast("열람 코드는 6자 이상으로 해 주세요");return}
      const id=Date.now().toString(36)+Math.random().toString(36).slice(2,6),done=busy(price>0?"책을 잠가서 올리는 중…":"책을 올리는 중…");
      try{const fileBytes=price>0?await lock(pdfBytes,code):pdfBytes,filePath="files/"+id+(price>0?".ebk":".pdf"),coverPath="covers/"+id+".jpg";
-       const list=await readJSON("index.json",[]),book={id,title,author:q("#uAuthor").value.trim(),price,desc:q("#uDesc").value.trim(),pages,size:pdfBytes.length,cover:coverPath,file:filePath,created:Date.now(),updated:Date.now()};
+       const list=await readJSON("index.json",[]),book={id,title,subtitle:q("#uSub").value.trim(),author:q("#uAuthor").value.trim(),price,pubDate:q("#uDate").value,desc:q("#uDesc").value.trim(),toc:q("#uToc").value.trim(),bio:q("#uBio").value.trim(),pages,size:pdfBytes.length,cover:coverPath,file:filePath,created:Date.now(),updated:Date.now()};
        const next=[book,...(Array.isArray(list)?list:[])];
        await GH.commit("전자책 매대: "+title+" 올리기",[{path:filePath,b64:b64bytes(fileBytes)},{path:coverPath,b64:b64bytes(new Uint8Array(await coverBlob.arrayBuffer()))},{path:"index.json",b64:b64txt(JSON.stringify(next,null,1))}]);
        if(price>0)setAdminCode(id,normCode(code).replace(/^(.{5})/,"$1-"));BOOKS=next;done();closeModal();render();
@@ -299,12 +327,16 @@ $("bAdd").onclick=()=>{const code=newCode();let pdfBytes=null,coverBlob=null,pag
      catch(e){done();ghErr("책 올리기",e)}}})};
 function editBook(b){modal(`<h2>✏️ 책 정보 고치기<button class="sm x" data-close>✕</button></h2><div class="f">
    <label>책 제목 <input id="eTitle" value="${esc(b.title)}" maxlength="80"></label>
+   <label>부제 <input id="eSub" value="${esc(b.subtitle||"")}" maxlength="100"></label>
+   <label>펴낸 날 <input id="eDate" type="date" value="${esc(b.pubDate||"")}"></label>
    <div class="row2"><label>지은이 <input id="eAuthor" value="${esc(b.author||"")}" maxlength="40"></label><label>가격 (원) <input id="ePrice" type="number" min="${b.price>0?100:0}" step="100" value="${b.price}" ${b.price>0?"":"disabled"}></label></div>
    <label>책 소개 <textarea id="eDesc">${esc(b.desc||"")}</textarea></label>
+   <label>목차 <textarea id="eToc">${esc(b.toc||"")}</textarea></label>
+   <label>지은이 소개 <textarea id="eBio" style="min-height:70px">${esc(b.bio||"")}</textarea></label>
    <div class="hint">${b.price>0?"유료 책은 가격만 바꿀 수 있어요. 무료로 바꾸려면 내리고 다시 올려 주세요.":"무료 책을 유료로 바꾸려면 내리고 다시 올려 주세요."}</div></div>
    <div class="acts"><button data-close>취소</button><button class="pri" id="eSave">저장</button></div>`,m=>{const q=s=>m.querySelector(s);
    q("#eSave").onclick=async()=>{const done=busy("저장하는 중…");try{const list=await readJSON("index.json",[]);const i=list.findIndex(x=>x.id===b.id);if(i<0)throw new Error("책을 찾지 못했어요");
-     const nb={...list[i],title:q("#eTitle").value.trim()||b.title,author:q("#eAuthor").value.trim(),desc:q("#eDesc").value.trim(),updated:Date.now()};if(b.price>0)nb.price=Math.max(100,Math.round(+q("#ePrice").value||b.price));list[i]=nb;
+     const nb={...list[i],title:q("#eTitle").value.trim()||b.title,subtitle:q("#eSub").value.trim(),pubDate:q("#eDate").value,author:q("#eAuthor").value.trim(),desc:q("#eDesc").value.trim(),toc:q("#eToc").value.trim(),bio:q("#eBio").value.trim(),updated:Date.now()};if(b.price>0)nb.price=Math.max(100,Math.round(+q("#ePrice").value||b.price));list[i]=nb;
      await GH.commit("전자책 매대: "+nb.title+" 정보 수정",[{path:"index.json",b64:b64txt(JSON.stringify(list,null,1))}]);BOOKS=list;done();closeModal();render();toast("고쳤어요")}catch(e){done();ghErr("저장",e)}}})}
 async function delBook(b){if(!confirm("'"+b.title+"'을(를) 매대에서 내릴까요? 책 파일도 사이트에서 지워져요."))return;const done=busy("내리는 중…");
   try{const list=(await readJSON("index.json",[])).filter(x=>x.id!==b.id);await GH.commit("전자책 매대: "+b.title+" 내리기",[{path:"index.json",b64:b64txt(JSON.stringify(list,null,1))}],[b.file,b.cover].filter(Boolean));setAdminCode(b.id,null);BOOKS=list;done();closeModal();render();toast("매대에서 내렸어요")}catch(e){done();ghErr("내리기",e)}}
