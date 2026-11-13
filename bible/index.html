@@ -31,6 +31,9 @@ h1{font-weight:normal;text-align:center;font-size:clamp(30px,7vw,42px);margin:6p
   background:linear-gradient(#bfe6ff 0 34%,#c3e78f 34%);}
 .pen::before{content:"";position:absolute;left:0;right:0;top:34%;height:26px;margin-top:-26px;
   background:repeating-linear-gradient(90deg,#c98d5a 0 6px,transparent 6px 34px),linear-gradient(transparent 6px,#c98d5a 6px 10px,transparent 10px 17px,#c98d5a 17px 21px,transparent 21px)}
+html.sc-dusk .pen{background:linear-gradient(#5d5a9a 0,#f3a07a 26%,#ffd49a 34%,#b8dc86 34%)}
+html.sc-night .pen{background:linear-gradient(#0b1638 0,#26386e 34%,#6f9a55 34%)}
+html.sc-night .pen::before{filter:brightness(.6)}html.sc-night .pen::after{opacity:.35}
 .pen::after{content:"";position:absolute;inset:34% 0 0;background-image:radial-gradient(#b2dc78 18%,transparent 20%);background-size:28px 28px;opacity:.7}
 .sh{position:absolute;transform:translate(-50%,-100%);transition-property:left,top;transition-timing-function:linear;cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none}
 .sh .fl{transition:transform .25s}.sh.flip .fl{transform:scaleX(-1)}
@@ -198,7 +201,7 @@ const ready=new Promise(res=>{const img=new Image();img.onload=()=>{try{for(cons
 /* fallback when the picture can't be read: the drawn lamb */
 const svgURL=t=>"data:image/svg+xml;charset=utf-8,"+encodeURIComponent(sheepSVG(t,200).replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" '));
 const rnd=(a,b)=>a+Math.random()*(b-a);
-const night=()=>{const h=new Date().getHours();return h>=22||h<6};
+const night=()=>{if(window.siteScene)return siteScene.phase()==="night";const h=new Date().getHours();return h>=22||h<6};
 class Sheep{
   constructor(o){this.lamb=!!o.lamb;this.size=o.size;this.x=o.x;this.y=o.y;this.dir=1;this.pose="";this.mode="";this.gen=0;
     const e=this.el=document.createElement("div");e.className="sh";e.innerHTML='<div class="fl"><img alt="" draggable="false"></div><span class="zz">💤</span><span class="nm" hidden></span>';
