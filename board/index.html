@@ -287,4 +287,4 @@ $("sfxr").onchange=()=>sfx.hop();
 initRange("bgmr","bgmv",bgmVol,v=>{bgmVol=v;bgm.volume=v;try{localStorage.setItem("bgmVol",v)}catch(e){}if(v<=0)bgm.pause();else playBgm()});
 $("go").onclick=()=>{ac();playBgm();order=hord.slice();start(hn);$("home").classList.add("hide");scrollTo(0,0)};
 $("homeb").onclick=()=>{if(busy)return;hn=np;hord=order.slice();renderHome();$("home").classList.remove("hide")};
-</script><style>#home{background:transparent}body:has(#home:not(.hide)) .wrap{visibility:hidden}</style><script src="../assets/scene.js?v=20261113n"></script><script src="../assets/home.js"></script></body></html>
+</script><style>#home{background:transparent}body:has(#home:not(.hide)) .wrap{visibility:hidden}</style><script src="../assets/scene.js?v=20261114w"></script><script src="../assets/home.js"></script></body></html>

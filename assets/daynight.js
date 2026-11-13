@@ -87,8 +87,92 @@
   setInterval(apply, 60000);
   try {
     if (!forced && navigator.permissions && navigator.geolocation) navigator.permissions.query({ name: "geolocation" }).then(function (r) {
-      if (r.state === "granted") navigator.geolocation.getCurrentPosition(function (pos) { LOC = { lat: pos.coords.latitude, lon: pos.coords.longitude }; apply(); }, function () {}, { maximumAge: 3600000 });
+      if (r.state === "granted") navigator.geolocation.getCurrentPosition(function (pos) { LOC = { lat: pos.coords.latitude, lon: pos.coords.longitude, mine: true }; apply(); weather(true); }, function () {}, { maximumAge: 3600000 });
     }).catch(function () {});
   } catch (e) {}
-  window.siteScene = { sunAltitude: function () { return sunAlt(new Date(), LOC.lat, LOC.lon); }, twilight: function () { return twilight(new Date()); }, phase: phase };
+
+  /* ================= 실제 날씨 =================
+     맑음·구름·흐림·안개·비·많은 비·눈·뇌우 를 html 클래스(wx-…)로 붙이고, 비·눈은 하늘 위에 그린다.
+     날씨 정보: Open-Meteo → (안 되면) met.no → (안 되면) wttr.in. 30분마다 새로. 주소에 ?rain ?snow ?storm ?fog ?cloudy ?overcast ?clear 로 미리 보기 */
+  var WX_LABEL = { clear: "맑음", cloudy: "구름 조금", overcast: "흐림", fog: "안개", rain: "비", heavy: "많은 비", snow: "눈", storm: "뇌우" };
+  var WX_ICON = { clear: "☀️", cloudy: "⛅", overcast: "☁️", fog: "🌫️", rain: "🌧️", heavy: "🌧️", snow: "❄️", storm: "⛈️" };
+  var wxForced = /[?&](clear|cloudy|overcast|fog|rain|heavy|snow|storm)\b/.exec(location.search);
+  function wmo(c) { c = +c; if (c >= 95) return "storm"; if ((c >= 71 && c <= 77) || c === 85 || c === 86) return "snow"; if (c === 65 || c === 67 || c === 82) return "heavy"; if ((c >= 51 && c <= 67) || (c >= 80 && c <= 82)) return "rain"; if (c === 45 || c === 48) return "fog"; if (c === 3) return "overcast"; if (c === 1 || c === 2) return "cloudy"; return "clear"; }
+  function byWords(s) { s = String(s || "").toLowerCase(); if (/thunder/.test(s)) return "storm"; if (/snow|sleet|blizzard|ice pellet/.test(s)) return "snow"; if (/heavy ?rain|torrential/.test(s)) return "heavy"; if (/rain|drizzle|shower/.test(s)) return "rain"; if (/fog|mist|haze/.test(s)) return "fog"; if (/partly|fair|few/.test(s)) return "cloudy"; if (/overcast|cloudy/.test(s)) return "overcast"; return "clear"; }
+  function tfetch(u, ms) { var c = new AbortController(); var t = setTimeout(function () { c.abort(); }, ms || 7000); return fetch(u, { signal: c.signal }).then(function (r) { clearTimeout(t); if (!r.ok) throw new Error(r.status); return r.json(); }); }
+  function getWeather() {
+    var la = LOC.lat.toFixed(2), lo = LOC.lon.toFixed(2);   /* 위치는 약 1km 정도로만 */
+    return tfetch("https://api.open-meteo.com/v1/forecast?latitude=" + la + "&longitude=" + lo + "&current=weather_code,temperature_2m&timezone=auto")
+      .then(function (d) { return { kind: wmo(d.current.weather_code), temp: d.current.temperature_2m }; })
+      .catch(function () { return tfetch("https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=" + la + "&lon=" + lo).then(function (d) { var t = d.properties.timeseries[0].data; var sym = (t.next_1_hours || t.next_6_hours || { summary: {} }).summary.symbol_code || ""; return { kind: byWords(sym.replace(/_/g, " ").replace(/clearsky/, "clear").replace(/heavyrain/, "heavy rain")), temp: t.instant.details.air_temperature }; }); })
+      .catch(function () { return tfetch("https://wttr.in/" + la + "," + lo + "?format=j1").then(function (d) { var c = d.current_condition[0]; return { kind: byWords(c.weatherDesc && c.weatherDesc[0] && c.weatherDesc[0].value), temp: +c.temp_C }; }); });
+  }
+  var WX = null, wxHost = null, wxCv = null, wxRaf = 0, drops = [];
+  function setWx(w) {
+    WX = w; ["clear", "cloudy", "overcast", "fog", "rain", "heavy", "snow", "storm"].forEach(function (k) { root.classList.toggle("wx-" + k, w && w.kind === k); });
+    root.classList.toggle("wx-wet", !!w && /rain|heavy|storm/.test(w.kind));
+    mountWx(); startParticles();
+    var b = document.getElementById("wxBadge"); if (b && w) { b.textContent = WX_ICON[w.kind] + " " + (LOC.mine ? "우리 동네" : "서울") + " · " + WX_LABEL[w.kind] + (w.temp != null && !isNaN(w.temp) ? " " + Math.round(w.temp) + "℃" : ""); b.hidden = false; }
+  }
+  function weather(force) {
+    if (wxForced) { setWx({ kind: wxForced[1], temp: null }); return; }
+    var key = "wx:" + LOC.lat.toFixed(1) + "," + LOC.lon.toFixed(1);
+    try { var c = JSON.parse(sessionStorage.getItem(key) || "null"); if (!force && c && Date.now() - c.at < 30 * 60000) { setWx(c.w); return; } } catch (e) {}
+    getWeather().then(function (w) { try { sessionStorage.setItem(key, JSON.stringify({ at: Date.now(), w: w })); } catch (e) {} setWx(w); }).catch(function () { setWx(null); });
+  }
+  /* 비·눈을 그릴 자리: 다른 페이지는 고정 배경(#scene), 홈은 하늘(.sky) */
+  var wst = document.createElement("style");
+  wst.textContent =
+    ".wx{position:absolute;inset:0;pointer-events:none;overflow:hidden}" +
+    ".wx canvas{position:absolute;inset:0;width:100%;height:100%}" +
+    ".wx .tint{position:absolute;inset:0;background:#7f8ea3;opacity:0;transition:opacity 2s}" +
+    ".wx .fog{position:absolute;inset:0;background:linear-gradient(rgba(235,238,242,.15),rgba(235,238,242,.85) 70%);opacity:0;transition:opacity 2s}" +
+    ".wx .flash{position:absolute;inset:0;background:#fff;opacity:0}" +
+    "html.wx-cloudy .wx .tint{opacity:.12}html.wx-overcast .wx .tint{opacity:.35}html.wx-fog .wx .tint{opacity:.2}" +
+    "html.wx-rain .wx .tint{opacity:.38}html.wx-heavy .wx .tint,html.wx-storm .wx .tint{opacity:.5}html.wx-snow .wx .tint{opacity:.22;background:#b9c3d0}" +
+    "html.wx-fog .wx .fog{opacity:1}" +
+    "html.wx-storm .wx .flash{animation:wxflash 9s infinite}" +
+    "@keyframes wxflash{0%,93%,100%{opacity:0}94%{opacity:.55}95%{opacity:.1}96%{opacity:.45}97%{opacity:0}}" +
+    "html.wx-overcast .sun,html.wx-overcast #scene .sun,html.wx-wet .sun,html.wx-wet #scene .sun,html.wx-snow .sun,html.wx-fog .sun{opacity:.08!important}" +
+    "html.wx-cloudy .sun{opacity:.75}" +
+    "html.wx-overcast .cloud,html.wx-wet .cloud,html.wx-overcast #scene .cl,html.wx-wet #scene .cl{opacity:1;filter:grayscale(.3) brightness(.85)}" +
+    "html.sc-night.wx-wet .cloud,html.sc-night.wx-overcast .cloud{opacity:.35}" +
+    "#wxBadge{position:absolute;left:12px;top:calc(52px + env(safe-area-inset-top,0px));z-index:6;background:rgba(255,255,255,.85);border:2px solid #3b2a20;border-radius:999px;padding:2px 10px;font-size:13px;color:#3b2a20;white-space:nowrap}" +
+    "@media (max-width:560px){#wxBadge{top:auto;bottom:100px;left:10px;font-size:12px}}" +
+    "@media (prefers-reduced-motion:reduce){html.wx-storm .wx .flash{animation:none}}";
+  document.head.appendChild(wst);
+  function mountWx() {
+    if (wxHost && wxHost.isConnected) return;
+    var host = document.getElementById("scene") || document.querySelector(".sky"); if (!host) return;
+    wxHost = document.createElement("div"); wxHost.className = "wx"; wxHost.setAttribute("aria-hidden", "true");
+    wxHost.innerHTML = '<div class="tint"></div><div class="fog"></div><canvas></canvas><div class="flash"></div>';
+    var title = host.querySelector(".title");
+    if (title) host.insertBefore(wxHost, title); else host.appendChild(wxHost);
+    if (host.classList.contains("sky") && !document.getElementById("wxBadge")) { var b = document.createElement("div"); b.id = "wxBadge"; b.hidden = true; host.appendChild(b); }
+    wxCv = wxHost.querySelector("canvas");
+  }
+  function startParticles() {
+    cancelAnimationFrame(wxRaf); if (!wxCv) return;
+    var k = WX && WX.kind, ctx = wxCv.getContext("2d");
+    var snow = k === "snow", n = k === "heavy" || k === "storm" ? 220 : k === "rain" ? 120 : snow ? 110 : 0;
+    function size() { var r = wxCv.getBoundingClientRect(); wxCv.width = Math.max(1, Math.round(r.width)); wxCv.height = Math.max(1, Math.round(r.height)); }
+    size(); ctx.clearRect(0, 0, wxCv.width, wxCv.height); if (!n) return;
+    drops = []; for (var i = 0; i < n; i++) drops.push({ x: Math.random() * wxCv.width, y: Math.random() * wxCv.height, s: snow ? 0.4 + Math.random() * 0.9 : 7 + Math.random() * 6, r: snow ? 1.5 + Math.random() * 2.5 : 0, w: Math.random() * Math.PI * 2 });
+    var still = matchMedia("(prefers-reduced-motion: reduce)").matches, last = performance.now();
+    function draw(t) {
+      var dt = Math.min(50, t - last) / 16; last = t; var W = wxCv.width, H = wxCv.height;
+      if (W !== Math.round(wxCv.getBoundingClientRect().width)) { size(); W = wxCv.width; H = wxCv.height; }
+      ctx.clearRect(0, 0, W, H);
+      if (snow) { ctx.fillStyle = "rgba(255,255,255,.9)"; drops.forEach(function (d) { if (!still) { d.y += d.s * dt; d.w += 0.02 * dt; d.x += Math.sin(d.w) * 0.4 * dt; if (d.y > H + 4) { d.y = -4; d.x = Math.random() * W; } } ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, 6.3); ctx.fill(); }); }
+      else { ctx.strokeStyle = root.classList.contains("sc-night") ? "rgba(190,205,235,.55)" : "rgba(90,120,170,.45)"; ctx.lineWidth = k === "rain" ? 1.2 : 1.5; ctx.beginPath();
+        drops.forEach(function (d) { if (!still) { d.y += d.s * dt; d.x -= d.s * 0.18 * dt; if (d.y > H + 10) { d.y = -12; d.x = Math.random() * (W + 60); } } ctx.moveTo(d.x, d.y); ctx.lineTo(d.x + d.s * 0.18 * 1.4, d.y - d.s * 1.4); }); ctx.stroke(); }
+      if (!still) wxRaf = requestAnimationFrame(draw);
+    }
+    wxRaf = requestAnimationFrame(draw);
+  }
+  addEventListener("resize", function () { if (WX) startParticles(); });
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function () { weather(); }); else setTimeout(weather, 0);
+  setInterval(function () { weather(); }, 30 * 60000);
+
+  window.siteScene = { sunAltitude: function () { return sunAlt(new Date(), LOC.lat, LOC.lon); }, twilight: function () { return twilight(new Date()); }, phase: phase, weather: function () { return WX; } };
 })();
