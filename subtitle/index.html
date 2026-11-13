@@ -1181,7 +1181,7 @@ const GH={owner:'zidane7-creator',repo:'nanum-boardgame',branch:'main',dir:'subt
   async api(path,opt={}){const r=await fetch('https://api.github.com/repos/'+this.owner+'/'+this.repo+path,{...opt,headers:{Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28',Authorization:'Bearer '+this.token(),...(opt.body?{'Content-Type':'application/json'}:{}),...(opt.headers||{})}});
     if(!r.ok){let m='';try{m=(await r.json()).message}catch(_){}const e=new Error(m||('GitHub '+r.status));e.status=r.status;throw e}return r},
   async raw(file){const r=await this.api('/contents/'+encodeURI(this.dir+file)+'?ref='+this.branch,{headers:{Accept:'application/vnd.github.raw+json'}});return r},
-  async check(tok){const r=await fetch('https://api.github.com/repos/'+this.owner+'/'+this.repo,{headers:{Accept:'application/vnd.github+json',Authorization:'Bearer '+tok}});if(!r.ok)return{ok:false,status:r.status};let j={};try{j=await r.json()}catch(_){}return{ok:!(j.permissions&&j.permissions.push===false),status:r.status}},
+  async check(tok){const r=await fetch('https://api.github.com/repos/'+this.owner+'/'+this.repo,{headers:{Accept:'application/vnd.github+json',Authorization:'Bearer '+tok}});if(!r.ok)return{ok:false,status:r.status};const sc=r.headers.get('x-oauth-scopes');if(sc!==null&&!/(^|[ ,])(public_repo|repo)([ ,]|$)/.test(sc))return{ok:false,status:403,message:'classic key without public_repo'};let j={};try{j=await r.json()}catch(_){}return{ok:!(j.permissions&&j.permissions.push===false),status:r.status}},
   /* one commit with many files: files = [{path, b64}] add/replace, del = [path] remove */
   async commit(message,files,del=[]){
     const ref=await (await this.api('/git/ref/heads/'+this.branch)).json();const base=ref.object.sha;
@@ -1201,7 +1201,7 @@ async function loadIndex(){
   const r=await fetch('library/index.json?t='+Date.now());if(r.status===404)return[];if(!r.ok)throw new Error(r.status);return r.json()}
 function ghHint(e){const st=e&&e.status;
   if(st===401)return'키가 틀렸거나 만료됐어요. GitHub에서 키를 새로 만들어 다시 넣어 주세요.';
-  if(st===403)return'키에 쓰기 권한이 없어요. 키 설정에서 Repository access에 <b>nanum-boardgame</b>을 고르고, Permissions → <b>Contents: Read and write</b>로 했는지 확인해 주세요.';
+  if(st===403)return'이 키에는 저장소에 <b>쓰는 권한</b>이 없어요. 아래 <b>키 다시 넣기</b>를 누르고, 안내에 있는 <b>classic 키(public_repo 체크)</b>를 새로 만들어 넣어 주세요. (Fine-grained 키는 Repository access가 「Public repositories」면 읽기만 돼요)';
   if(st===404)return'키가 이 저장소(nanum-boardgame)를 볼 수 없어요. 키를 만들 때 <b>Only select repositories</b>에서 nanum-boardgame을 골랐는지 확인해 주세요.';
   if(st===409||st===422)return'방금 다른 곳에서 저장소가 바뀌었어요. 잠시 뒤 다시 보내 주세요.';
   if(!st)return'인터넷 연결을 확인하고 다시 시도해 주세요.';return'잠시 뒤 다시 시도해 주세요.'}
@@ -1211,17 +1211,18 @@ function showGhError(what,e){try{localStorage.setItem('csub:lastErr',JSON.string
 function openAdminLogin(after){
   modal(`<h2>🔑 관리자 키 넣기</h2>
     <p class="note">자료실에 올리고 지우는 것은 관리자만 할 수 있어요. 이 사이트의 GitHub 저장소에 쓸 수 있는 키를 <b>이 브라우저에 한 번만</b> 넣어 두면, 그다음부터는 <b>자료실로 보내기</b>를 누르는 즉시 자료실에 생겨요.</p>
-    <details><summary style="cursor:pointer">키 만드는 법 (처음 한 번)</summary><ol class="note" style="padding-left:18px;margin:8px 0">
-      <li>GitHub에 로그인 → 오른쪽 위 프로필 → <b>Settings</b> → 맨 아래 <b>Developer settings</b> → <b>Personal access tokens</b> → <b>Fine-grained tokens</b> → <b>Generate new token</b></li>
-      <li>Repository access: <b>Only select repositories</b> → <b>nanum-boardgame</b></li>
-      <li>Permissions → Repository permissions → <b>Contents</b>: <b>Read and write</b></li>
-      <li><b>Generate token</b>을 누르고 나온 키(github_pat_…)를 복사해서 아래에 붙여 넣으세요.</li></ol></details>
-    <input type="password" id="ghTok" placeholder="github_pat_… 키 붙여 넣기" autocomplete="off">
+    <details open><summary style="cursor:pointer"><b>키 만드는 법 (처음 한 번, 1분)</b></summary><ol class="note" style="padding-left:18px;margin:8px 0;line-height:1.7">
+      <li>GitHub에 로그인한 채로 <a href="https://github.com/settings/tokens/new?scopes=public_repo&description=%EC%B0%AC%EC%96%91%20%EC%9E%90%EB%A3%8C%EC%8B%A4" target="_blank" rel="noopener"><b>여기를 눌러 키 만들기 화면</b></a>을 여세요. (Tokens (classic) 화면이에요)</li>
+      <li><b>public_repo</b>에 체크가 되어 있는지 확인하세요. (자동으로 체크돼 있어요)</li>
+      <li>Expiration(만료)은 원하는 기간으로 고르세요. 예) 90 days 또는 No expiration</li>
+      <li>맨 아래 초록 버튼 <b>Generate token</b>을 누르고, 나온 키(<b>ghp_</b>로 시작)를 복사해 아래에 붙여 넣으세요.</li></ol>
+      <p class="note" style="margin:0">※ 예전에 만든 Fine-grained 키(github_pat_…)는 Repository access를 <b>Only select repositories → nanum-boardgame</b>, Contents를 <b>Read and write</b>로 해야 해요. 헷갈리면 위의 classic 키를 쓰세요.</p></details>
+    <input type="password" id="ghTok" placeholder="ghp_… 키 붙여 넣기" autocomplete="off">
     <p class="note">키는 이 브라우저에만 저장돼요. 다른 사람에게 보내거나 다른 곳에 붙여 넣지 마세요. 공용 컴퓨터라면 다 쓰고 자료실 아래 <b>관리자 로그아웃</b>을 눌러 주세요.</p>
     <div class="acts"><button class="btn" data-close>취소</button><button class="btn pri" id="ghOk">확인</button></div>`,m=>{
     $('#ghOk',m).onclick=async()=>{const tok=$('#ghTok',m).value.trim();if(!tok){$('#ghTok',m).focus();return}
       const done=busy('키를 확인하는 중…');let res={ok:false,status:0};try{res=await GH.check(tok)}catch(_){}done();
-      if(!res.ok){showGhError('키 확인',{status:res.status||403,message:''});return}
+      if(!res.ok){showGhError('키 확인',{status:res.status||403,message:res.message||''});return}
       try{localStorage.setItem(GH.KEY,tok)}catch(_){toast('이 브라우저에 키를 저장할 수 없어요');return}
       closeModal();toast('관리자로 들어왔어요');initLibrary();after&&after()}})}
 
