@@ -237,7 +237,7 @@ class Sheep{
   remove(){this.stop();this.el.remove()}}
 function say(sh,txt){const b=document.createElement("div");b.className="bubble";b.textContent=txt;b.style.left=sh.x+"%";b.style.top=Math.max(4,sh.el.offsetTop-sh.el.offsetHeight-4)+"px";pen.appendChild(b);setTimeout(()=>b.remove(),1500)}
 function bubble(txt,x,y){const b=document.createElement("div");b.className="bubble";b.textContent=txt;b.style.left=x+"%";b.style.top=y+"%";pen.appendChild(b);setTimeout(()=>b.remove(),1500)}
-const lambPx=()=>Math.max(38,Math.round(pen.clientWidth*(.07+.13*count()/TOTAL)));
+const lambPx=()=>Math.round(adultPx()*(.4+.6*count()/TOTAL)); /* 3kg = 40% of an adult's size, 120kg = adult size; grows evenly on every screen */
 const adultPx=()=>Math.max(64,Math.round(pen.clientWidth*.2));
 let lamb=null,flock=[];
 function lambResize(){if(lamb)lamb.setSize(lambPx())}
