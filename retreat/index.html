@@ -2,7 +2,7 @@
 <html lang="ko"><head><meta charset="utf-8"><script async src="https://www.googletagmanager.com/gtag/js?id=G-0WTWY3TPES"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-0WTWY3TPES");</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>수련회 장소 레이더 | 치영의 교회 생활 즐기기 · 전국 교회 수련회 장소 모음</title>
-<meta name="description" content="전국 교회 수련회 장소 3,000여 곳을 한눈에. 지도에서 도와 시·군을 골라 기도원·수양관·수련원·청소년수련원·자연휴양림·유스호스텔·신학교 대관 장소를 찾아보세요.">
+<meta name="description" content="전국 교회 수련회 장소 3,000여 곳을 한눈에. 지도에서 도와 시·군을 골라 기도원·수양관·수련원·청소년수련원·유스호스텔·신학교 대관 장소를 찾아보세요.">
 <meta name="keywords" content="수련회 장소, 교회 수련회 장소, 수련회 장소 추천, 기도원, 수양관, 수련원, 청소년수련원, 자연휴양림, 유스호스텔, 청년부 수련회">
 <link rel="canonical" href="https://zidane7-creator.github.io/nanum-boardgame/retreat/">
 <meta property="og:title" content="수련회 장소 레이더 — 치영의 교회 생활 즐기기">
@@ -55,6 +55,10 @@ main{max-width:1060px;margin:0 auto;padding:16px 14px 60px}
 .v .src{font-size:12px;opacity:.6}.v .src a{color:inherit}
 .more{display:block;margin:16px auto 0;border:2px solid var(--ink);background:var(--gold);border-radius:14px;padding:8px 24px;font-size:17px;cursor:pointer;box-shadow:0 3px 0 var(--ink)}
 .empty{text-align:center;padding:30px;opacity:.7}
+.v.out{opacity:.45}.v .adm{margin-top:4px;border:2px dashed #c0503a;background:#fff4f1;color:#a03a26;border-radius:12px;padding:5px 10px;font:inherit;font-size:14px;cursor:pointer}
+#admbar{position:fixed;left:50%;bottom:calc(12px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:35;display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;background:#fff;border:3px solid #a03a26;border-radius:18px;padding:8px 12px;box-shadow:0 6px 18px rgba(0,0,0,.25);max-width:calc(100vw - 20px);font-size:15px}
+#admbar button{border:2px solid var(--ink);background:var(--cream);border-radius:12px;padding:4px 10px;font:inherit;font-size:14px;cursor:pointer}#admbar button:disabled{opacity:.4}
+#admbar #apply{background:#03c75a;color:#fff}
 .note{background:#fff3c4;border:2px dashed #c9a227;border-radius:14px;padding:10px 14px;font-size:14px;line-height:1.6}
 /* province popup */
 .pop{position:fixed;inset:0;z-index:40;background:rgba(40,30,20,.45);display:none;align-items:center;justify-content:center;padding:16px}
@@ -72,7 +76,7 @@ main{max-width:1060px;margin:0 auto;padding:16px 14px 60px}
 <main>
   <div class="hero"><div class="em">⛺</div><h1>수련회 장소 레이더</h1><p class="muted" id="sub">전국 교회 수련회 장소를 지도에서 골라 찾아보세요.</p></div>
   <section class="card">
-    <input class="search" id="q" placeholder="🔍 장소 이름이나 지역으로 찾기 (예: 가평, 기도원, 휴양림)" aria-label="장소 검색">
+    <input class="search" id="q" placeholder="🔍 장소 이름이나 지역으로 찾기 (예: 가평, 기도원, 수양관)" aria-label="장소 검색">
     <div class="finder" style="margin-top:12px">
       <div><div class="kmap" id="kmap"></div><p class="muted" style="font-size:13px;margin:6px 4px 0">도를 누르면 시·군을 고를 수 있어요. 마우스 휠·두 손가락·＋－ 버튼으로 확대하고, 끌어서 옮겨요.</p></div>
       <div>
@@ -88,6 +92,7 @@ main{max-width:1060px;margin:0 auto;padding:16px 14px 60px}
   <button class="more" id="more" hidden>더 보기 ▼</button>
   <section class="card" style="margin-top:16px">
     <div class="note">📌 장소 정보는 각 출처(성평등가족부 청소년수련시설 공공데이터, 카카오맵 장소 검색, 교회수련회장소·갓스쿨·크리스천투데이, 교단 연수시설 목록, 신학교 안내, OpenStreetMap, 기사·커뮤니티 글)에 적힌 내용을 옮겼어요. 수용 인원·운영 여부·요금은 바뀌었을 수 있으니 <b>예약 전에 꼭 전화로 확인</b>해 주세요. 사진은 <b>사진·자세히</b>나 <b>홈페이지</b>, <b>지도</b>에서 볼 수 있어요.<br>지도 경계: 통계청 행정경계(2013, southkorea-maps) · 일부 장소 위치: © OpenStreetMap 기여자</div>
+    <p style="text-align:right;margin:8px 0 0"><a href="?admin" id="admLink" style="font-size:13px;color:inherit;opacity:.55">🔧 관리자 모드</a></p>
   </section>
 </main>
 <div class="pop" id="pop"><div class="box"><button class="x" id="px" aria-label="닫기">✕</button><h2 id="ptitle"></h2><div class="pmap" id="pmap"></div><div class="chips" id="munChips"></div></div></div>
@@ -99,10 +104,16 @@ const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const ORDER=["서울","경기","인천","강원","충북","충남","대전","세종","경북","경남","대구","부산","울산","전북","전남","광주","제주"];
 const CAPS=[["전체",0],["30명 이상",30],["50명 이상",50],["100명 이상",100],["200명 이상",200],["500명 이상",500]];
-const TYPEG=[["전체",null],["기도원·수양관",["기도원","수양관"]],["수련원",["수련원","수련시설","단체 수련시설","교회수련원","선교센터","연수원","교육센터","치유센터","세미나하우스"]],["청소년수련원·야영장",["청소년수련원","청소년야영장"]],["자연휴양림",["자연휴양림"]],["유스호스텔",["유스호스텔"]],["교회",["교회"]],["펜션·리조트",["펜션","리조트","글램핑","캠핑장","캠프·글램핑","공간대관"]],["신학교",["신학교"]]];
+const TYPEG=[["전체",null],["기도원·수양관",["기도원","수양관"]],["수련원",["수련원","수련시설","단체 수련시설","교회수련원","선교센터","연수원","교육센터","치유센터","세미나하우스"]],["청소년수련원",["청소년수련원"]],["유스호스텔",["유스호스텔"]],["교회",["교회"]],["펜션·리조트",["펜션","리조트","글램핑","캠핑장","캠프·글램핑","공간대관"]],["신학교",["신학교"]]];
 let prov="",sgg="",need=0,tgrp=0,shown=30;
-const cntBy=(f)=>{const c={};VENUES.forEach(v=>{const k=f(v);if(k)c[k]=(c[k]||0)+1});return c};
-const PC=cntBy(v=>v.sido);
+/* ---- hidden venues (removed by the site admin) + admin mode ---- */
+let HIDDEN=new Set();
+const ADMIN=/[?&]admin\b/.test(location.search)||(()=>{try{return localStorage.getItem("retreat-admin")=="1"}catch(e){return false}})();
+const ls=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}},lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+let MARK=new Set(ls("retreat-mark",[])),UNMARK=new Set(ls("retreat-unmark",[]));
+const isOut=v=>(HIDDEN.has(v.id)&&!UNMARK.has(v.id))||MARK.has(v.id);
+const cntBy=(f)=>{const c={};VENUES.forEach(v=>{if(isOut(v))return;const k=f(v);if(k)c[k]=(c[k]||0)+1});return c};
+let PC=cntBy(v=>v.sido);
 $("#sub").textContent="전국 교회 수련회 장소 "+VENUES.length+"곳을 지도에서 골라 찾아보세요.";
 /* color scale by count */
 const shade=(n,max)=>{if(!n)return"#e9efe4";const t=Math.min(1,Math.sqrt(n/max));const r=Math.round(214-t*120),g=Math.round(236-t*70),b=Math.round(190-t*120);return"rgb("+r+","+g+","+b+")"};
@@ -156,21 +167,39 @@ function chips(){
   $("#types").innerHTML=TYPEG.map(([t],i)=>'<button class="chip'+(i==tgrp?" on":"")+'" data-i="'+i+'">'+t+'</button>').join("");
   $("#types").querySelectorAll(".chip").forEach(b=>b.onclick=()=>{tgrp=+b.dataset.i;shown=30;chips();render()})}
 const naver=v=>"https://map.naver.com/p/search/"+encodeURIComponent(v.addr&&v.addr.split(" ").length>=3&&!/참고/.test(v.addr)?v.addr:((v.sgg||v.sido||"")+" "+v.name).trim());
-function card(v){return'<article class="v"><h3>'+esc(v.name)+'</h3><div class="tags"><span class="tag r">'+esc((v.sido||"지역 미상")+(v.sgg?" "+v.sgg:""))+'</span><span class="tag">'+esc(v.type)+'</span>'+(v.old?'<span class="tag o">오래된 정보</span>':'')+'</div>'+
+function adminBtn(v){if(!ADMIN)return"";const srv=HIDDEN.has(v.id);
+  if(srv)return'<button class="adm" data-id="'+v.id+'" data-k="un">'+(UNMARK.has(v.id)?"↩ 복구 취소":"♻ 다시 보이기")+'</button>';
+  return'<button class="adm" data-id="'+v.id+'" data-k="mk">'+(MARK.has(v.id)?"↩ 삭제 취소":"🗑 수련회 장소 아님")+'</button>'}
+function card(v){return'<article class="v'+(ADMIN&&isOut(v)?" out":"")+'"><h3>'+esc(v.name)+(ADMIN&&isOut(v)?' <span class="tag o">숨김</span>':'')+'</h3><div class="tags"><span class="tag r">'+esc((v.sido||"지역 미상")+(v.sgg?" "+v.sgg:""))+'</span><span class="tag">'+esc(v.type)+'</span>'+(v.old?'<span class="tag o">오래된 정보</span>':'')+'</div>'+
    '<div class="row"><b>위치</b><span>'+esc(v.addr||"-")+'</span></div><div class="row"><b>인원</b><span class="cap">'+esc(v.cap)+'</span></div>'+
    (v.tel?'<div class="row"><b>전화</b><a href="tel:'+esc(v.tel.replace(/[^0-9]/g,""))+'" style="color:inherit">'+esc(v.tel)+'</a></div>':'')+
    '<div class="btns"><a class="map" href="'+naver(v)+'" target="_blank" rel="noopener">📍 지도</a>'+(v.detail?'<a href="'+esc(v.detail)+'" target="_blank" rel="noopener">'+(v.src=="카카오맵"?"📷 사진·후기 (카카오맵)":"📷 사진·자세히")+'</a>':'')+(v.web?'<a href="'+esc(v.web)+'" target="_blank" rel="noopener">🏠 홈페이지</a>':'')+'</div>'+
-   '<div class="src">출처: <a href="'+esc(v.srcUrl)+'" target="_blank" rel="noopener">'+esc(v.src)+'</a></div></article>'}
+   '<div class="src">출처: <a href="'+esc(v.srcUrl)+'" target="_blank" rel="noopener">'+esc(v.src)+'</a></div>'+adminBtn(v)+'</article>'}
 const RANK=v=>(v.src=="OpenStreetMap"?2:v.src=="카카오맵"?1:0)*2+(v.old?1:0);
 function render(){const q=$("#q").value.trim().replace(/\s/g,""),tg=TYPEG[tgrp][1];
-  const L=VENUES.filter(v=>(!prov||v.sido==prov)&&(!sgg||v.sgg==sgg)&&(!need||(v.capMax!=null&&v.capMax>=need))&&(!tg||tg.includes(v.type))&&(!q||(v.name+v.addr+v.type+v.sido+v.sgg).replace(/\s/g,"").includes(q)))
-   .sort((a,b)=>RANK(a)-RANK(b)||(b.capMax||0)-(a.capMax||0)||ORDER.indexOf(a.sido)-ORDER.indexOf(b.sido)||a.name.localeCompare(b.name,"ko"));
+  const L=VENUES.filter(v=>(ADMIN||!isOut(v))&&(!prov||v.sido==prov)&&(!sgg||v.sgg==sgg)&&(!need||(v.capMax!=null&&v.capMax>=need))&&(!tg||tg.includes(v.type))&&(!q||(v.name+v.addr+v.type+v.sido+v.sgg).replace(/\s/g,"").includes(q)))
+   .sort((a,b)=>(isOut(a)-isOut(b))||RANK(a)-RANK(b)||(b.capMax||0)-(a.capMax||0)||ORDER.indexOf(a.sido)-ORDER.indexOf(b.sido)||a.name.localeCompare(b.name,"ko"));
   $("#cnt").textContent="📍 "+L.length+"곳"+(need?" (인원이 적혀 있는 곳만)":"");
   $("#grid").innerHTML=L.length?L.slice(0,shown).map(card).join(""):'<div class="card empty" style="grid-column:1/-1">조건에 맞는 장소가 없어요 😢<br>지역·인원·종류 조건을 바꿔 보세요.</div>';
-  $("#more").hidden=L.length<=shown;$("#more").textContent="더 보기 ▼ ("+(L.length-shown)+"곳 더)"}
+  $("#more").hidden=L.length<=shown;$("#more").textContent="더 보기 ▼ ("+(L.length-shown)+"곳 더)";
+  document.querySelectorAll(".adm").forEach(b=>b.onclick=()=>{const id=b.dataset.id,S=b.dataset.k=="mk"?MARK:UNMARK;S.has(id)?S.delete(id):S.add(id);lsSet("retreat-mark",[...MARK]);lsSet("retreat-unmark",[...UNMARK]);adminBar();render()});}
+function adminBar(){if(!ADMIN)return;let b=$("#admbar");if(!b){b=document.createElement("div");b.id="admbar";document.body.appendChild(b)}
+  b.innerHTML='<b>🔧 관리자 모드</b><span>삭제 표시 '+MARK.size+'곳 · 다시 보이기 '+UNMARK.size+'곳</span><button id="apply" '+(MARK.size||UNMARK.size?"":"disabled")+'>GitHub에 반영하기</button><button id="undoAll" '+(MARK.size||UNMARK.size?"":"disabled")+'>표시 모두 취소</button><button id="admOff">관리자 모드 끄기</button>';
+  $("#apply").onclick=applyHidden;$("#undoAll").onclick=()=>{if(!confirm("이번에 표시한 삭제·복구를 모두 취소할까요?"))return;MARK.clear();UNMARK.clear();lsSet("retreat-mark",[]);lsSet("retreat-unmark",[]);adminBar();render()};
+  $("#admOff").onclick=()=>{try{localStorage.removeItem("retreat-admin")}catch(e){}location.href=location.pathname}}
+async function applyHidden(){
+  const keep=VENUES.filter(v=>(HIDDEN.has(v.id)&&!UNMARK.has(v.id))||MARK.has(v.id)).map(v=>({id:v.id,name:v.name})).sort((a,b)=>a.name.localeCompare(b.name,"ko"));
+  const txt=JSON.stringify(keep,null,1);let copied=false;try{await navigator.clipboard.writeText(txt);copied=true}catch(e){}
+  const m=document.createElement("div");m.className="pop show";m.innerHTML='<div class="box"><button class="x" aria-label="닫기">✕</button><h2>GitHub에 반영하기</h2><ol style="line-height:1.8;font-size:16px;padding-left:20px"><li>'+(copied?'숨길 장소 목록('+keep.length+'곳)을 <b>복사해 뒀어요.</b>':'아래 칸의 내용을 <b>전체 선택해서 복사</b>해 주세요.')+'</li><li>아래 버튼으로 GitHub의 <b>hidden.json 고치기 화면</b>을 열어요 (사이트 관리자 계정 로그인).</li><li>편집 칸을 <b>전체 선택(Ctrl+A) → 붙여넣기(Ctrl+V)</b> 해요.</li><li>초록색 <b>Commit changes</b>를 두 번 눌러요.</li><li>1~2분 뒤 새로고침하면 모두에게 반영돼요.</li></ol><p><a class="more" style="display:inline-block;text-decoration:none;color:inherit" href="https://github.com/zidane7-creator/nanum-boardgame/edit/main/retreat/hidden.json" target="_blank" rel="noopener">GitHub에서 hidden.json 열기 ↗</a></p><textarea readonly style="width:100%;height:140px;font-size:12px">'+esc(txt)+'</textarea></div>';
+  document.body.appendChild(m);m.querySelector(".x").onclick=()=>m.remove();m.onclick=e=>{if(e.target===m)m.remove()}}
+async function loadHidden(){try{const r=await fetch("hidden.json?v="+Date.now(),{cache:"no-store"});if(r.ok){const L=await r.json();HIDDEN=new Set(L.map(x=>typeof x=="string"?x:x.id))}}catch(e){}
+  /* marks that are already applied on the server are done */
+  [...MARK].forEach(id=>{if(HIDDEN.has(id))MARK.delete(id)});[...UNMARK].forEach(id=>{if(!HIDDEN.has(id))UNMARK.delete(id)});lsSet("retreat-mark",[...MARK]);lsSet("retreat-unmark",[...UNMARK]);
+  PC=cntBy(v=>v.sido);$("#sub").textContent="전국 교회 수련회 장소 "+VENUES.filter(v=>!isOut(v)).length+"곳을 지도에서 골라 찾아보세요.";drawKorea();chips();render();adminBar()}
 $("#more").onclick=()=>{shown+=30;render()};
 $("#q").oninput=()=>{shown=30;render()};
-drawKorea();chips();render();
+$("#admLink").onclick=()=>{try{localStorage.setItem("retreat-admin","1")}catch(e){}};
+drawKorea();chips();render();loadHidden();
 </script>
 <script src="../assets/scene.js"></script>
 </body></html>
