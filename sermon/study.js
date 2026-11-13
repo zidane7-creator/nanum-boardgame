@@ -64,7 +64,10 @@
   .st-r .def{margin:4px 0;line-height:1.6}.st-r .kjv,.st-r .der{font-size:13px;color:var(--soft);line-height:1.5}
   .st-r .acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
   .st-r .acts a,.st-r .acts button{font-size:13px;border:1.5px solid var(--ink);border-radius:9px;padding:3px 10px;background:var(--paper);color:var(--ink);text-decoration:none;cursor:pointer}
-  .st-src{font-size:11px;color:var(--soft);margin-top:10px}`;
+  .st-src{font-size:11px;color:var(--soft);margin-top:10px}
+  .st-r .ko{font-size:16px}.st-r .ko b{font-family:Jua,sans-serif;font-weight:normal;color:var(--accent);margin-right:4px}
+  .st-r .mt{color:var(--soft)}.st-r .mtag{font-size:11px;border:1px solid var(--line);border-radius:6px;padding:0 5px;color:var(--soft);white-space:nowrap}
+  .st-r details{margin-top:4px}.st-r details summary{cursor:pointer}.st-r details div{margin-top:2px}`;
   document.head.appendChild(st);
 
   function modal(id, html) {
@@ -116,6 +119,31 @@
   const KO = { "사랑":"love","믿음":"faith","믿다":"believe","은혜":"grace","소망":"hope","평강":"peace","평화":"peace","평안":"peace","기쁨":"joy","구원":"salvation save","죄":"sin","회개":"repent","의":"righteous","의로움":"righteousness","거룩":"holy","영":"spirit","성령":"spirit","영혼":"soul","마음":"heart","생명":"life","죽음":"death","부활":"resurrection","십자가":"cross","피":"blood","말씀":"word","진리":"truth","빛":"light","어둠":"darkness","하나님":"god","주":"lord","왕":"king","나라":"kingdom","하늘":"heaven","땅":"earth","교회":"church","제자":"disciple","사도":"apostle","선지자":"prophet","제사장":"priest","성전":"temple","제사":"sacrifice","기도":"pray prayer","찬양":"praise","예배":"worship","경배":"worship","영광":"glory","복":"bless","축복":"bless","저주":"curse","율법":"law","계명":"commandment","언약":"covenant","약속":"promise","자비":"mercy","긍휼":"mercy compassion","인자":"kindness","오래참음":"longsuffering","인내":"patience","겸손":"humble","순종":"obey","지혜":"wisdom","지식":"knowledge","두려움":"fear","경외":"fear","용서":"forgive","화목":"reconcile","속죄":"atonement","구속":"redeem","대속":"ransom","의롭다":"justify","성화":"sanctify","형제":"brother","이웃":"neighbour","아버지":"father","아들":"son","어린양":"lamb","목자":"shepherd","양":"sheep","포도나무":"vine","열매":"fruit","씨":"seed","물":"water","떡":"bread","포도주":"wine","성막":"tabernacle","장막":"tent","광야":"wilderness","시험":"tempt","고난":"suffer","환난":"tribulation","위로":"comfort","능력":"power","권세":"authority","이름":"name","심판":"judge judgment","공의":"justice","정의":"justice","진노":"wrath","소금":"salt","눈물":"tear","표적":"sign","기적":"miracle","천사":"angel","마귀":"devil","사탄":"satan","귀신":"demon","영원":"eternal","세상":"world","육체":"flesh","몸":"body","섬김":"serve","종":"servant","은사":"gift","복음":"gospel","전파":"preach","가르침":"teach","증인":"witness","증거":"testimony","신실":"faithful","선":"good","악":"evil","소리":"voice","길":"way","문":"door","집":"house","성":"city","백성":"people","이방인":"gentile","할례":"circumcise","세례":"baptize","금식":"fast","안식일":"sabbath","절기":"feast","유월절":"passover","기름":"anoint","그리스도":"christ","메시아":"messiah","생각":"think mind","뜻":"will","계시":"reveal","비밀":"mystery","감사":"thank","노래":"sing song","회복":"restore","치유":"heal","병":"sickness","손":"hand","눈":"eye","귀":"ear","입":"mouth","얼굴":"face","발":"foot","머리":"head","목숨":"life","새":"new","옛":"old","아버지":"father","어머니":"mother","자녀":"child","교제":"fellowship","연합":"one","소명":"call","부르심":"call","택하심":"elect","예정":"predestinate","선택":"choose","상":"reward","면류관":"crown","보좌":"throne","통치":"reign","종말":"end","재림":"coming","성도":"saint","장로":"elder","집사":"deacon","목사":"pastor shepherd","감독":"bishop overseer" };
   /* 자주 쓰는 신앙 낱말이 가리키는 대표 원어 (Strong 번호) — 검색 결과 맨 위에 둔다 */
   const PREF = { "사랑":"G26 G25 G5368 G5373 H157 H160","믿음":"G4102 G4100 H530 H539","믿다":"G4100 H539","은혜":"G5485 H2580 H2603","소망":"G1680 G1679 H8615 H3176","평강":"G1515 H7965","평화":"G1515 H7965","평안":"G1515 H7965","기쁨":"G5479 G5463 H8057","구원":"G4991 G4982 H3444 H3467","죄":"G266 G264 H2403 H2398 H5771","회개":"G3341 G3340 H7725 H5162","의":"G1343 G1342 H6666 H6664","의로움":"G1343 H6666","거룩":"G40 G37 H6944 H6918","영":"G4151 H7307","성령":"G4151 H7307","영혼":"G5590 H5315","마음":"G2588 H3820 H3824","생명":"G2222 G5590 H2416","말씀":"G3056 G4487 H1697 H565","진리":"G225 H571","빛":"G5457 H216","영광":"G1391 H3519","복음":"G2098","십자가":"G4716","교회":"G1577","기도":"G4335 G4336 H8605 H6419","찬양":"G136 G134 H8416 H1984","예배":"G4352 H7812","경배":"G4352 H7812","자비":"G1656 H2617 H7356","긍휼":"G1656 G3628 H7356 H2617","인자":"H2617 G5544","목자":"G4166 H7462","언약":"G1242 H1285","율법":"G3551 H8451","지혜":"G4678 H2451","복":"G2127 G3107 H1288 H835","축복":"G2127 H1288","부활":"G386","용서":"G863 H5545 H5375","구속":"G629 H1350","주":"G2962 H136 H3068","하나님":"G2316 H430 H410","왕":"G935 H4428","나라":"G932 H4467","성전":"G2411 G3485 H1964","제자":"G3101","사도":"G652","선지자":"G4396 H5030","제사장":"G2409 H3548","어린양":"G286 G721 H3532","세례":"G907 G908","겸손":"G5012 H6035","순종":"G5218 H8085","인내":"G5281","소금":"G217 H4417","길":"G3598 H1870","심판":"G2920 H4941","공의":"H6666 H4941 G1343","정의":"H4941 H6666","진노":"G3709 H639","능력":"G1411 H3581","이름":"G3686 H8034","세상":"G2889 H8398","형제":"G80 H251","아버지":"G3962 H1","아들":"G5207 H1121","종":"G1401 H5650","섬김":"G1247 H5647","천사":"G32 H4397","마귀":"G1228","사탄":"G4567 H7854","영원":"G166 H5769","감사":"G2169 H8426","위로":"G3874 H5162","고난":"G3804 G3958","시험":"G3986 H5254","화목":"G2643 G2644","성도":"G40 H6918","장로":"G4245 H2205","그리스도":"G5547","메시아":"G3323 H4899" };
+  /* 한국어 뜻: 핵심 원어는 직접 정리한 뜻(ko.json), 나머지는 자동 번역(크롬 내장 번역 → 무료 번역 서비스), 한 번 번역한 건 이 브라우저에 저장 */
+  const AUTO_N = 12;
+  let KOJ_P = null;
+  const koGloss = () => KOJ_P || (KOJ_P = fetch("lex/ko.json").then(r => r.json()).catch(() => ({})));
+  const CK = "lex-ko-cache";
+  let cache = null;
+  const getCache = () => { if (cache) return cache; try { cache = JSON.parse(localStorage.getItem(CK) || "{}") } catch (_) { cache = {} } return cache };
+  const putCache = (k, v) => { const c = getCache(); c[k] = v; const keys = Object.keys(c); if (keys.length > 3000) keys.slice(0, 500).forEach(x => delete c[x]); try { localStorage.setItem(CK, JSON.stringify(c)) } catch (_) {} };
+  let chromeTr = null, chromeTried = false;
+  async function viaChrome(t) {
+    if (!chromeTried) { chromeTried = true; try { if ("Translator" in self) { const a = await self.Translator.availability({ sourceLanguage: "en", targetLanguage: "ko" }); if (a === "available") chromeTr = await self.Translator.create({ sourceLanguage: "en", targetLanguage: "ko" }) } } catch (_) { chromeTr = null } }
+    return chromeTr ? chromeTr.translate(t) : null;
+  }
+  let mmBlocked = false;
+  async function viaMyMemory(t) {
+    if (mmBlocked) return null;
+    const r = await fetch("https://api.mymemory.translated.net/get?langpair=en%7Cko&q=" + encodeURIComponent(t.slice(0, 450)));
+    const d = await r.json(); if (d.quotaFinished || +d.responseStatus !== 200) { mmBlocked = true; return null }
+    const s = (d.responseData && d.responseData.translatedText) || ""; return /MYMEMORY WARNING|QUERY LENGTH/i.test(s) ? null : s;
+  }
+  async function toKo(t) {
+    t = String(t || "").trim(); if (!t) return ""; const c = getCache(); if (c[t]) return c[t];
+    let k = null; try { k = await viaChrome(t) } catch (_) {} if (!k) { try { k = await viaMyMemory(t) } catch (_) {} }
+    if (k) putCache(t, k); return k;
+  }
   const LEX = {};
   async function lex(lang) {
     if (LEX[lang]) return LEX[lang];
@@ -151,7 +179,7 @@
       <div class="st-tabs"><button data-l="G">헬라어 (신약)</button><button data-l="H">히브리어 (구약)</button><button data-l="A">둘 다</button></div>
       <input class="st-q" id="stQ" placeholder="원어(ἀγάπη, אהב) · 발음(agape) · 번호(G26, H157) · 영어(love) · 한국어(사랑, 믿음, 은혜…)" autocomplete="off">
       <div class="hint" id="stInfo" style="margin-top:6px"></div><div class="st-res" id="stRes"></div>
-      <div class="st-src">뜻풀이: Strong's Exhaustive Concordance (James Strong, 1890) · 데이터: Open Scriptures (CC-BY-SA). 한국어 뜻은 각 단어의 <b>네이버 사전</b> 버튼으로 볼 수 있어요.</div>`);
+      <div class="st-src">한국어 뜻: 핵심 단어 약 160개는 직접 정리한 뜻, 나머지는 영어 뜻풀이를 <b>자동 번역</b>한 것이에요 (참고용). 영어 원문: Strong's Exhaustive Concordance (James Strong, 1890) · 데이터: Open Scriptures (CC-BY-SA).</div>`);
     const Q = m.querySelector("#stQ"), tabs = m.querySelectorAll("[data-l]");
     const setTab = l => { lang = l; tabs.forEach(b => b.classList.toggle("on", b.dataset.l === l)); run() };
     tabs.forEach(b => b.onclick = () => setTab(b.dataset.l));
@@ -169,11 +197,18 @@
       const pref = prefKey ? PREF[prefKey].split(" ") : [];
       const hits = all.map(e => { const pi = pref.indexOf(e.lang + e.n); return { e, s: pi >= 0 ? 5000 - pi : Math.max(...qs.map(x => score(e, x))) } }).filter(x => x.s > 0).sort((a, b) => b.s - a.s || a.e.n - b.e.n).slice(0, 40);
       info.innerHTML = hits.length ? `${hits.length}개 찾았어요${terms ? ` (‘${esc(q)}’ → ${esc(terms.join(", "))})` : ""}${hits.length === 40 ? " · 위에서 40개까지 보여요" : ""}` : "찾는 단어가 없어요. 다른 철자나 영어 뜻으로 찾아 보세요.";
-      out.innerHTML = hits.map(({ e }) => `<div class="st-r"><div class="top"><span class="lem" dir="${e.lang === "H" ? "rtl" : "ltr"}">${esc(e.lemma)}</span><span class="tr">${esc(e.tr)}</span><span class="no">${e.lang}${e.n} · ${e.lang === "H" ? "히브리어" : "헬라어"}</span>${e.pron ? `<span class="kjv">발음 ${esc(e.pron)}</span>` : ""}</div>
-        <div class="def">${esc(e.def)}</div>${e.kjv ? `<div class="kjv">KJV 번역 용례: ${esc(e.kjv)}</div>` : ""}${e.der ? `<div class="der">어원: ${esc(e.der)}</div>` : ""}
-        <div class="acts"><a href="${naverURL(e)}" target="_blank" rel="noopener">네이버 사전에서 한국어 뜻</a><button data-add="${e.lang}${e.n}">원어 연구 메모에 넣기</button></div></div>`).join("");
+      const KOJ = await koGloss();
+      out.innerHTML = hits.map(({ e }, i) => { const id = e.lang + e.n, g = KOJ[id];
+        return `<div class="st-r" data-id="${id}"><div class="top"><span class="lem" dir="${e.lang === "H" ? "rtl" : "ltr"}">${esc(e.lemma)}</span><span class="tr">${esc(g ? g[0] : e.tr)}${g ? ` · ${esc(e.tr)}` : ""}</span><span class="no">${id} · ${e.lang === "H" ? "히브리어" : "헬라어"}</span></div>
+        <div class="def ko">${g ? `<b>뜻</b> ${esc(g[1])}` : (i < AUTO_N ? `<b>뜻</b> <span class="mt">번역하는 중…</span>` : `<button class="sm" data-tr>🇰🇷 한국어 뜻 보기</button>`)}</div>
+        <details class="kjv"><summary>영어 원문 (Strong's)${e.pron ? " · 발음 " + esc(e.pron) : ""}</summary><div>${esc(e.def)}</div>${e.kjv ? `<div>KJV 번역 용례: ${esc(e.kjv)}</div>` : ""}${e.der ? `<div>어원: ${esc(e.der)}</div>` : ""}</details>
+        <div class="acts"><a href="${naverURL(e)}" target="_blank" rel="noopener">네이버 사전</a><button data-add="${id}">원어 연구 메모에 넣기</button></div></div>` }).join("");
+      const fill = async (box, e) => { const d = box.querySelector(".def"); d.innerHTML = `<b>뜻</b> <span class="mt">번역하는 중…</span>`; const k = await toKo(e.def); if (!box.isConnected) return;
+        d.innerHTML = k ? `<b>뜻</b> ${esc(k)} <span class="mtag">자동 번역</span>` : `<span class="mt">자동 번역을 쓸 수 없어요. 아래 영어 원문이나 네이버 사전을 봐 주세요.</span>`; if (k) e.ko = k };
+      out.querySelectorAll(".st-r").forEach((box, i) => { const e = hits[i].e; if (KOJ[e.lang + e.n]) { e.ko = KOJ[e.lang + e.n][1]; return }
+        const b = box.querySelector("[data-tr]"); if (b) b.onclick = () => fill(box, e); else fill(box, e) });
       out.querySelectorAll("[data-add]").forEach(b => b.onclick = () => { const id = b.dataset.add, e = all.find(x => x.lang + x.n === id); const ta = document.getElementById("nOrig"); if (!ta || !e) return;
-        ta.value = (ta.value ? ta.value.replace(/\s*$/, "") + "\n" : "") + `${e.lang}${e.n} ${e.lemma} (${e.tr}) — ${e.def}`; ta.dispatchEvent(new Event("input", { bubbles: true })); say("원어·단어 연구 메모에 넣었어요") });
+        ta.value = (ta.value ? ta.value.replace(/\s*$/, "") + "\n" : "") + `${id} ${e.lemma} (${e.tr}) — ${e.ko || e.def}`; ta.dispatchEvent(new Event("input", { bubbles: true })); say("원어·단어 연구 메모에 넣었어요") });
     }
     if (preset) Q.value = preset; setTab(lang); Q.focus();
   }
