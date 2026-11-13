@@ -51,7 +51,11 @@ a{color:inherit}
 .t1{left:2%;width:clamp(60px,12vw,120px)}.t2{left:clamp(48px,10vw,110px);width:clamp(46px,9vw,90px)}
 .t3{right:3%;width:clamp(70px,13vw,130px)}
 /* ranch */
-.ranch{position:relative;z-index:2;max-width:980px;margin:0 auto;padding:30px 16px 20px;display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,5vw,48px) clamp(14px,3vw,36px)}
+.ranch{position:relative;z-index:2;max-width:1220px;margin:0 auto;padding:30px 16px 20px;display:grid;grid-template-columns:1fr 1fr minmax(0,.62fr);gap:clamp(30px,5vw,48px) clamp(14px,3vw,36px)}
+/* 교회학교·선교·섬김: 오른쪽에 세로로 */
+.side{grid-column:3;grid-row:1 / span 2;display:flex;flex-direction:column;gap:clamp(30px,5vw,48px)}
+.side .pen.small{flex:1;min-height:120px}
+@media (max-width:900px){.ranch{grid-template-columns:1fr 1fr}.side{grid-column:1 / -1;grid-row:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(14px,3vw,36px)}.side .pen.small{min-height:90px}}
 .pen{position:relative;min-height:220px;padding:46px 10px 24px;background:var(--pen);background-image:radial-gradient(#b2dc78 18%,transparent 20%),radial-gradient(#b2dc78 18%,transparent 20%);background-size:26px 26px;background-position:0 0,13px 13px;border-radius:4px;box-shadow:inset 0 0 0 6px var(--fence),inset 0 0 0 8px var(--fence2),0 6px 0 rgba(0,0,0,.08)}
 .pen::before,.pen::after{content:"";position:absolute;left:-6px;right:-6px;height:22px;background:repeating-linear-gradient(90deg,var(--fence2) 0 2px,var(--fence) 2px 11px,var(--fence2) 11px 13px,transparent 13px 19px);border-radius:3px}
 .pen::before{top:-12px}.pen::after{bottom:-12px}
@@ -171,9 +175,9 @@ const ZONES=[
  {name:"교제",items:[["셀교제",null,[["나눔보드게임","board/"],["텔레스트레이션","tele/"]]],["레크리에이션",null,[["성경골든벨"],["OX퀴즈"],["찬양월드컵","worldcup/"],["윷놀이"],["부루마불"],["추수꾼"],["밸런스게임"],["빙고게임"]]]]},
  {name:"잡동사니",items:[["주일에 뭐 먹지?","food/"],["수련회 장소 레이더","retreat/"],["수련회 강사 레이더"],["MT 장소 레이더"],["이미지 제작","image/"]]},
  {name:"Mall",items:[["전자책","ebook/"],["굿즈"],["백드롭"],["말씀카드"],["말씀배경"]]},
- {name:"교회학교",items:[]},
- {name:"선교",items:[]},
- {name:"섬김",items:[]}
+ {name:"교회학교",items:[],side:1},
+ {name:"선교",items:[],side:1},
+ {name:"섬김",items:[],side:1}
 ];
 const $=id=>document.getElementById(id);
 // title cells
@@ -249,13 +253,15 @@ function closeGroup(){$("grp").classList.remove("show")}
 $("grp").addEventListener("click",e=>{if(e.target.id=="grp")closeGroup()});
 $("grp").querySelector(".gx").onclick=closeGroup;
 addEventListener("keydown",e=>{if(e.key=="Escape")closeGroup()});
+const SIDE=document.createElement("div");SIDE.className="side";
 ZONES.forEach(z=>{
-  const pen=document.createElement("section");pen.className="pen";pen.setAttribute("aria-label",z.name);
+  const pen=document.createElement("section");pen.className="pen"+(z.side?" small":"");pen.setAttribute("aria-label",z.name);
   pen.innerHTML='<div class="sign"><b>'+z.name+'</b><i></i></div><span class="post a"></span><span class="post b"></span><span class="post c"></span><span class="post d"></span><div class="flock"></div>';
   const fl=pen.querySelector(".flock");
   z.items.forEach(([label,href,kids])=>fl.appendChild(makeSheep(label,href,kids)));
-  $("ranch").appendChild(pen);
+  (z.side?SIDE:$("ranch")).appendChild(pen);
 });
+if(SIDE.children.length)$("ranch").appendChild(SIDE);
 const link=([l,h])=>h?'<a href="'+h+'"'+(/^https?:/.test(h)?' target="_blank" rel="noopener"':'')+'>'+l+'</a>':l;
 $("list").innerHTML=ZONES.map(z=>'<li><b>'+z.name+'</b> — '+(z.items.length?z.items.map(it=>it[2]?it[0]+"("+it[2].map(link).join(", ")+")":link(it)).join(", "):"준비 중")+'</li>').join("");
 </script>
