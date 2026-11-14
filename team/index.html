@@ -11,7 +11,8 @@
 <style>body{margin:0}img{max-width:100%}</style>
 </head><body>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Jua&display=swap">
+<script src="../assets/jua.js"></script>
 <style>
 /* Layout: harbor-navy header band with tabs; one working column below. Tables scroll inside their own frame. */
 :root{
@@ -349,12 +350,84 @@ table.tbl tfoot td{border-top:2px solid var(--line);padding:9px 12px;font-weight
 .ev2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:6px;font-size:.88rem;z-index:20;max-width:calc(100% - 32px)}
 @media (prefers-reduced-motion:no-preference){.toast{animation:up .18s ease-out}@keyframes up{from{opacity:0;transform:translate(-50%,6px)}}}
+
+/* ===== 목장(홈) 디자인: 하늘·언덕 배경 + 크림색 카드, 굵은 갈색 테두리, 주아체 ===== */
+html:root:root{color-scheme:light;
+  --bg:transparent;--surface:#fffaf0;--sunk:#fff1d2;--line:#e2cfb2;--ink:#3b2a20;--muted:#7a6656;
+  --accent:#e8503a;--accent-ink:#fff;--band:rgba(255,255,255,.93);--band-ink:#3b2a20;--band-muted:#7a6656;
+  --ok:#3f9a45;--ok-soft:#dff2d6;--no:#d2452f;--no-soft:#fde3dc;--warn:#b07a12;
+  --t1:#c2457a;--t2:#b56d12;--t3:#1d8580;--c-bday:#d0457f;--c-meet:#2f7fb0;--c-ev:#8a5cc0;
+  --gold:#f5b82e;--green:#5aa957;--cream:#fffaf0;
+  --f-display:"Jua","Apple SD Gothic Neo","Noto Sans KR",sans-serif;--f-body:"Jua","Apple SD Gothic Neo","Noto Sans KR",sans-serif;--r:18px}
+body{background:transparent;font-size:16px;letter-spacing:.01em}
+body::before{background:#fff}
+header.band{background:var(--band);color:var(--ink);border-bottom:4px solid var(--gold);box-shadow:0 2px 0 rgba(0,0,0,.05)}
+.brand{padding-block:12px 8px}
+.brand h1{font-weight:normal;font-size:1.55rem;display:flex;align-items:center;gap:6px}
+.brand h1 .yr{color:#fff;background:var(--accent);border:2px solid var(--ink);border-radius:999px;padding:0 9px;font-size:.78rem;letter-spacing:.04em;margin-left:6px}
+.brand h1 .back{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:2px solid var(--ink);border-radius:12px;background:var(--cream);color:var(--ink);box-shadow:0 2px 0 var(--ink);margin-right:2px;font-size:1.1rem}
+.sync{color:var(--muted)}
+nav.tabs{gap:6px;padding-bottom:10px;flex-wrap:nowrap}
+nav.tabs a{color:var(--ink);border:2px solid var(--ink);border-radius:14px;background:var(--cream);padding:5px 14px;box-shadow:0 2px 0 var(--ink);font-weight:normal}
+nav.tabs a:hover{color:var(--ink);background:#fff}
+nav.tabs a[aria-current="page"]{background:var(--gold);border-bottom-color:var(--ink)}
+main{padding-block:22px 80px}
+.head h2,.sech{font-weight:normal}
+.head h2{font-size:1.7rem;background:var(--cream);border:3px solid var(--ink);border-radius:16px;padding:2px 14px;box-shadow:0 3px 0 rgba(0,0,0,.12);display:inline-block}
+.head .sub{margin-top:6px;background:rgba(255,255,255,.82);border-radius:10px;padding:2px 10px;display:inline-flex;color:var(--ink)}
+.sech{display:inline-flex;background:var(--cream);border:2px solid var(--ink);border-radius:12px;padding:3px 12px}
+.panel,.card,.cb{background:var(--surface);border:3px solid var(--ink);border-radius:22px;box-shadow:0 5px 0 rgba(0,0,0,.12)}
+.panel.tbl-wrap,.grid-wrap{overflow:auto}
+.grid-wrap{border:3px solid var(--ink);border-radius:18px;box-shadow:0 5px 0 rgba(0,0,0,.12)}
+.notice{background:rgba(255,255,255,.88);border:2px dashed var(--ink);border-radius:16px;color:var(--ink)}
+.errnote{border-style:solid}
+.btn{border:2px solid var(--ink);background:var(--cream);border-radius:14px;box-shadow:0 2px 0 var(--ink);padding:6px 13px}
+.btn:hover{border-color:var(--ink);background:#fff}
+.btn:active{transform:translateY(2px);box-shadow:0 0 0 var(--ink)}
+.btn.primary{background:var(--accent);border-color:var(--ink);color:#fff}
+.btn.primary:hover{background:#f0614c}
+.btn.ghost{background:transparent;border-color:transparent;box-shadow:none;color:var(--ink)}
+.btn.ghost:hover{background:var(--sunk)}
+.btn.danger{color:#fff;background:var(--no);border-color:var(--ink)}
+.btn.ghost.danger{color:var(--no);background:transparent}
+.btn.icon{width:36px}
+input.f,select.f,textarea.f{border:2px solid var(--ink);border-radius:12px;background:#fff;font-family:var(--f-body)}
+input.f:focus,select.f:focus,textarea.f:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(232,80,58,.18)}
+label.lb{color:var(--ink);font-weight:normal}
+.chipbtn{border:2px solid var(--ink);background:var(--cream);color:var(--ink);box-shadow:0 2px 0 var(--ink)}
+.chipbtn[aria-pressed="true"]{background:var(--gold);border-color:var(--ink);color:var(--ink)}
+.seg{border:2px solid var(--ink);border-radius:12px}
+.seg button{background:#fff;color:var(--ink)}.seg button+button{border-left:2px solid var(--ink)}
+.team{border:1.5px solid currentColor}
+.att-row.head-row,table.tbl th,table.sg thead th,.cal-h div{background:var(--sunk);color:var(--ink);font-weight:normal}
+.att-row.head-row{border-radius:19px 19px 0 0}
+.tally{background:#fffdf6;border-radius:19px 19px 0 0}
+.mono,.datebar select,.calttl,.dn,table.sg .d,.card .v{font-family:var(--f-mono)}
+.card .k{color:var(--ink)}
+.card .v{font-weight:600}
+.cell{background:#fff}.cell:hover{background:#fff7e3}
+.cell.today .dn{background:var(--accent)}
+.cal{border-radius:22px}
+.mitem[aria-current="true"]{background:var(--gold)}
+.pick{border:2px solid var(--line);background:#fff}
+.pick.on,.pick[aria-pressed="true"]{border-color:var(--ink);background:#ffe9a8;color:var(--ink)}
+.toolbar{background:var(--sunk);border-radius:12px}
+.title-in{font-weight:normal}
+.dk{border:2px solid var(--line);border-radius:8px}.dk.on{border-color:var(--ok)}
+.tcard .tn{font-weight:normal;font-size:1.4rem}
+.tcard{position:relative;padding-top:20px}
+.tcard::before{content:"🐑";position:absolute;right:16px;top:-16px;font-size:30px;filter:drop-shadow(0 2px 0 rgba(0,0,0,.12))}
+.tadd{background:var(--surface)}
+.toast{background:var(--ink);color:#fff;border-radius:14px;font-family:var(--f-body)}
+.pvb{background:var(--sunk);border:2px solid var(--line);border-radius:14px}
+.empty strong{font-weight:normal;font-size:1.2rem}
+#homeFab.inbar{margin-right:4px}
 </style>
 
 <header class="band gutter">
   <div class="inner">
     <div class="brand">
-      <h1><a class="back" id="backHome" href="./" hidden title="사역팀 목록으로">‹</a><span id="teamName">사역팀 관리부</span></h1>
+      <h1 data-home-bar><a class="back" id="backHome" href="./" hidden title="사역팀 목록으로">‹</a><span id="teamName">사역팀 관리부</span></h1>
       <div class="sync" id="sync"><span class="dot"></span><span id="syncText">연결 중…</span></div>
     </div>
     <nav class="tabs" id="tabs">
@@ -1337,5 +1410,6 @@ function teamHome(){
 boot();
 })();
 </script>
+<script src="../assets/scene.js?v=20261114x"></script>
 <script src="../assets/home.js"></script>
 </body></html>
