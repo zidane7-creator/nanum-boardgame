@@ -138,6 +138,10 @@ html.sc-night .tree,html.sc-night .hills,html.sc-night .front{filter:brightness(
 @keyframes pwalk{50%{transform:translateY(-3px) rotate(-1.5deg)}}@keyframes pwalkF{0%,100%{transform:scaleX(-1)}50%{transform:scaleX(-1) translateY(-3px) rotate(-1.5deg)}}
 @keyframes pgraze{50%{transform:translateY(2px) rotate(2deg)}}@keyframes pgrazeF{0%,100%{transform:scaleX(-1)}50%{transform:scaleX(-1) translateY(2px) rotate(2deg)}}
 .parade .jesus{cursor:pointer}
+/* 우리 안에서 쉬기: 예수님은 앉고, 양은 잠듦 */
+.parade .jesus.sit svg{transform:translateY(9px)}.parade .jesus.sit.flip svg{transform:translateY(9px) scaleX(-1)}.parade .jesus.sit .ft{display:none}
+.parade .pz{position:absolute;top:-4px;right:2px;font-size:13px;pointer-events:none;animation:pzz 2.6s ease-in-out infinite}
+@keyframes pzz{0%{opacity:0;transform:translate(0,4px) scale(.7)}40%{opacity:1}100%{opacity:0;transform:translate(8px,-14px) scale(1.1)}}
 .parade .say{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:4px;background:#fff;border:2px solid var(--ink);border-radius:12px;padding:3px 10px;font-size:13px;white-space:nowrap;pointer-events:none;z-index:9}
 @media (prefers-reduced-motion:reduce){.parade .pw svg,.parade .pw img{animation:none!important}}
 .parade .jesus .ft,.parade .jesus .armB,.parade .jesus .staff{transform-box:fill-box}
@@ -193,15 +197,8 @@ html.sc-night .tree,html.sc-night .hills,html.sc-night .front{filter:brightness(
     <path d="M6 4V186M14 4V186M266 4V186M274 4V186M40 2V16M80 2V16M120 2V16M160 2V16M200 2V16M240 2V16" stroke="#bf9a6a" stroke-width="1.4" fill="none"/>
   </svg></div>
   <div class="barnF" id="barnF"><svg viewBox="0 0 280 190" aria-hidden="true">
-    <g fill="none" stroke-linecap="round">
-      <path d="M10 160Q60 152 120 158M160 158Q220 152 272 160" stroke="#6e5236" stroke-width="6"/>
-      <path d="M10 160Q60 152 120 158M160 158Q220 152 272 160" stroke="#a37b52" stroke-width="3"/>
-      <path d="M12 176Q62 170 120 175M160 175Q220 170 270 176" stroke="#6e5236" stroke-width="6"/>
-      <path d="M12 176Q62 170 120 175M160 175Q220 170 270 176" stroke="#a37b52" stroke-width="3"/>
-      <path d="M14 150V190M40 147V190M66 146V190M92 147V190M118 149V190M162 149V190M188 147V190M214 146V190M240 147V190M266 150V190" stroke="#6e5236" stroke-width="5"/>
-      <path d="M14 150V190M40 147V190M66 146V190M92 147V190M118 149V190M162 149V190M188 147V190M214 146V190M240 147V190M266 150V190" stroke="#b88a5a" stroke-width="2.4"/>
-    </g>
-    <g stroke="#6b7c86" stroke-width="2.5" stroke-linejoin="round"><path d="M126 176H160L156 190H130Z" fill="#cfd8dc"/><path d="M129 178H157" stroke="#7fb3d5" stroke-width="3"/></g>
+    <g stroke="#9a7430" stroke-width="2.5" stroke-linejoin="round"><path d="M80 190Q78 168 94 162Q108 154 122 162Q136 166 134 190Z" fill="#efc964"/><path d="M90 176l8-5M104 170l9 3M118 176l7-4M96 186l10-3" fill="none" stroke="#c99a3a" stroke-width="1.6"/></g>
+<g stroke="#6b7c86" stroke-width="2.5" stroke-linejoin="round"><path d="M126 176H160L156 190H130Z" fill="#cfd8dc"/><path d="M129 178H157" stroke="#7fb3d5" stroke-width="3"/></g>
   </svg></div>
 </div>
 
@@ -338,7 +335,7 @@ const JESUS='<svg viewBox="-10 -8 240 348" aria-hidden="true"><g transform="tran
 const lane=document.createElement("div");lane.className="parade";hills.appendChild(lane);
 const mk=(html,cls,w)=>{const d=document.createElement("div");d.className="pw "+cls;d.innerHTML=html;d.firstChild.style.width=w+"px";lane.appendChild(d);return d};
 const small=innerWidth<560,SW=small?40:56,JW=small?58:80,GAP=small?34:46,N=small?3:4,JG=small?50:68;
-const flock=[];for(let i=0;i<N;i++){const w=Math.round(SW*(i===N-1?.8:1-.06*i));flock.push({el:mk(SHEEP,"flk",w)})}
+const flock=[];for(let i=0;i<N;i++){const w=Math.round(SW*(i===N-1?.8:1-.06*i));flock.push({el:mk(SHEEP,"flk",w),w,zz:false})}
 const J={el:mk(JESUS,"jesus",JW)};
 flock.forEach((f,i)=>{f.el.style.bottom=((i%2)*5)+"px";f.el.style.zIndex=3+(i%2?0:1)});J.el.style.zIndex=5;
 const rnd=(a,b)=>a+Math.random()*(b-a);
@@ -361,16 +358,21 @@ const SPOTS=N===3?[.2,.6,.8]:[.18,.58,.72,.86];
 function barnTargets(){const L=barn.offsetLeft,w=barn.offsetWidth;TJ=L+w*.38;TX=flock.map((_,i)=>L+w*SPOTS[i])}
 function moveTo(st){let done=true;flock.forEach((f,i)=>{const d=TX[i]-SX[i];if(Math.abs(d)>st){SX[i]+=Math.sign(d)*st;face(f.el,Math.sign(d));done=false}else{SX[i]=TX[i]}});
   const d=TJ-jx;if(Math.abs(d)>st){jx+=Math.sign(d)*st;face(J.el,Math.sign(d));done=false}else jx=TJ;return done}
-function settle(){const night=R.classList.contains("sc-night");flock.forEach((f,i)=>{face(f.el,SX[i]<jx?1:-1);mode(f.el,night?"":"graze")});face(J.el,1);mode(J.el,night?"":"graze")}
+function nap(f,on){if(f.zz===on)return;f.zz=on;f.el.innerHTML=on?SHEEP_SLEEP+'<span class="pz">💤</span>':SHEEP;f.el.firstChild.style.width=f.w+"px"}
+/* 밤엔 모두 자고, 비·눈 오는 낮엔 몇 마리는 자고 몇 마리는 풀을 뜯음. 예수님은 앉아서 쉬심 */
+function settle(){const night=R.classList.contains("sc-night");
+  flock.forEach((f,i)=>{const z=night||Math.random()<.5;nap(f,z);face(f.el,SX[i]<jx?1:-1);mode(f.el,z?"":"graze")});
+  face(J.el,1);mode(J.el,"");J.el.classList.add("sit")}
+function wake(){flock.forEach(f=>nap(f,false));J.el.classList.remove("sit")}
 function frame(t){const dt=Math.min(.05,(t-last)/1000);last=t;W=lane.clientWidth;const sp=small?13:17;
   const want=shelterNow();
   if(want&&phase!=="toBarn"&&phase!=="in"){barnTargets();
     if(first){flock.forEach((f,i)=>SX[i]=TX[i]);jx=TJ;phase="in";settle();barnF.classList.add("on")}
     else{if(phase==="walk"||phase==="rest"||phase==="turn")flock.forEach((f,i)=>SX[i]=sheepX(i));phase="toBarn";all("walk")}}
-  else if(!want&&(phase==="toBarn"||phase==="in")){dir=1;H=barn.offsetLeft+barn.offsetWidth+SPAN+20;TX=flock.map((_,i)=>sheepX(i));TJ=H-(SPAN+JG);phase="leave";all("walk");barnF.classList.remove("on")}
+  else if(!want&&(phase==="toBarn"||phase==="in")){wake();dir=1;H=barn.offsetLeft+barn.offsetWidth+SPAN+20;TX=flock.map((_,i)=>sheepX(i));TJ=H-(SPAN+JG);phase="leave";all("walk");barnF.classList.remove("on")}
   first=false;
   if(phase==="toBarn"){barnTargets();if(moveTo(sp*1.6*dt)){phase="in";settle()}else if(Math.abs(SX[0]-TX[0])<90)barnF.classList.add("on")}
-  else if(phase==="in"){if(Math.random()<dt*.15)settle()}
+  else if(phase==="in"){if(Math.random()<dt*.04)settle()}
   else if(phase==="leave"){if(moveTo(sp*1.4*dt)){phase="walk";until=t+rnd(8000,14000);flock.forEach(f=>face(f.el,dir));face(J.el,dir)}}
   else if(phase==="walk"){H+=dir*sp*dt;jx=H-dir*(SPAN+JG);face(J.el,dir);
     if((dir>0&&H>=W-M)||(dir<0&&H<=M)){H-=dir*SPAN;dir=-dir;jT=H-dir*(SPAN+JG);phase="turn";flock.forEach(f=>mode(f.el,"graze"));mode(J.el,"walk")}

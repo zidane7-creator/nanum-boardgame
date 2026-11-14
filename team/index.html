@@ -48,6 +48,15 @@ button,input,select,textarea{font:inherit;color:inherit}
 header.band{background:var(--band);color:var(--band-ink);position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
 .brand{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-block:18px 10px}
 .brand h1{margin:0;font-family:var(--f-display);font-size:1.6rem;line-height:1.2;letter-spacing:-.01em;text-wrap:balance}
+.brand h1 .back{color:var(--band-muted);text-decoration:none;margin-right:10px;font-family:var(--f-body);font-weight:400}
+.brand h1 .back:hover{color:var(--band-ink)}
+.thome{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));margin-bottom:22px}
+.tcard{padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.tcard .tn{font-family:var(--f-display);font-size:1.25rem;font-weight:700;overflow-wrap:anywhere}
+.tcard .tm{font-size:.85rem;color:var(--muted)}
+.tcard .row{justify-content:space-between}
+.tadd{padding:16px 18px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tadd input{flex:1;min-width:180px}
 .brand h1 .yr{font-family:var(--f-mono);font-size:.8rem;font-weight:500;color:var(--band-muted);letter-spacing:.12em;margin-left:8px;vertical-align:middle}
 .sync{font-size:.8rem;color:var(--band-muted);display:flex;align-items:center;gap:6px}
 .sync .dot{width:7px;height:7px;border-radius:50%;background:var(--band-muted)}
@@ -338,7 +347,7 @@ table.tbl tfoot td{border-top:2px solid var(--line);padding:9px 12px;font-weight
 <header class="band gutter">
   <div class="inner">
     <div class="brand">
-      <h1>사역팀 관리부<span class="yr">2027</span></h1>
+      <h1><a class="back" id="backHome" href="./" hidden title="사역팀 목록으로">‹</a><span id="teamName">사역팀 관리부</span></h1>
       <div class="sync" id="sync"><span class="dot"></span><span id="syncText">연결 중…</span></div>
     </div>
     <nav class="tabs" id="tabs">
@@ -368,7 +377,7 @@ table.tbl tfoot td{border-top:2px solid var(--line);padding:9px 12px;font-weight
 const TEAMS=['싱어팀','세션팀','방송팀'];
 const ROLES=['팀장','회계','서기','싱어팀장','세션팀장','방송팀장'];
 const TCLS={'싱어팀':'t1','세션팀':'t2','방송팀':'t3'};
-const LS_KEY='team-admin-v1';
+
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pad=n=>String(n).padStart(2,'0');
@@ -378,13 +387,27 @@ const fromT=t=>new Date(t).toISOString().slice(0,10);
 const WEDS=[];
 const todayStr=()=>{const n=new Date();return n.getFullYear()+'-'+pad(n.getMonth()+1)+'-'+pad(n.getDate())};
 const DOW='일월화수목금토';
+/* ---------- 여러 사역팀: 목록(홈) → 팀마다 따로 저장 ---------- */
+const TL_KEY='team-admin-list';
+function loadTeams(){let L=[];try{L=JSON.parse(localStorage.getItem(TL_KEY)||'[]')||[]}catch(e){}
+  // 예전(팀 목록 이전)에 쓰던 기록이 있으면 첫 팀으로 이어 줌
+  try{if(!L.length&&localStorage.getItem('team-admin-v1')){L=[{id:'t0',name:'우리 사역팀',year:2027,start:'2026-11-09',key:'team-admin-v1',created:Date.now()}];localStorage.setItem(TL_KEY,JSON.stringify(L))}}catch(e){}
+  return L}
+function saveTeams(L){try{localStorage.setItem(TL_KEY,JSON.stringify(L))}catch(e){}}
+const TID=new URLSearchParams(location.search).get('t');
+const TEAM=TID?loadTeams().find(x=>x.id===TID):null;
+if(TID&&!TEAM){location.replace('./');return}
+if(!TEAM){teamHome();return}
+const TNAME=TEAM.name,TYEAR=+TEAM.year||2027,TSTART=TEAM.start||(TYEAR+'-01-01'),TEND=TYEAR+'-12-31';
+document.title=TNAME+' '+TYEAR+' | 사역팀 관리부';$('#teamName').innerHTML=esc(TNAME)+'<span class="yr">'+TYEAR+'</span>';$('#backHome').hidden=false;
+const LS_KEY=TEAM.key;
 const fmtLong=s=>{const[y,m,d]=s.split('-');return `${y}. ${+m}. ${+d}. (${DOW[new Date(toT(s)).getUTCDay()]})`};
 const fmtShort=s=>{const[,m,d]=s.split('-');return `${+m}/${+d}`};
 const uid=()=>(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2));
 const clone=o=>JSON.parse(JSON.stringify(o));
 /* 출석일 = 고른 요일(매주) + 실제로 출석 기록이 있는 날 + 지금 보고 있는 날 */
 function buildDates(){const day=+((S.cfg&&S.cfg.day)??3),set=new Set();
-  let t=toT('2026-11-09');while(new Date(t).getUTCDay()!==day)t+=DAY;for(;t<=toT('2027-12-31');t+=7*DAY)set.add(fromT(t));
+  let t=toT(TSTART);while(new Date(t).getUTCDay()!==day)t+=DAY;for(;t<=toT(TEND);t+=7*DAY)set.add(fromT(t));
   Object.keys(S.att||{}).forEach(d=>{const r=S.att[d]&&S.att[d].records;if(r&&Object.keys(r).length)set.add(d)});
   try{if(UI.attDate)set.add(UI.attDate)}catch(e){}
   const ds=[...set].sort();WEDS.length=0;WEDS.push(...ds);
@@ -610,7 +633,7 @@ function vStats(){
   let h=`<div class="head"><div><h2>출석 통계</h2><div class="sub">출석률 = 출석 ÷ (출석 + 결석). 체크하지 않은 날은 빼고 계산해요.</div></div>
   <div class="row"><div class="filters">${[['month','월별'],['year','연도별'],['all','전체']].map(([k,l])=>`<button class="chipbtn" data-act="smode" data-v="${k}" aria-pressed="${UI.statMode===k}">${l}</button>`).join('')}</div>
   ${UI.statMode==='month'?`<select class="f" id="s-month" aria-label="월">${MONTHS.map(m=>`<option value="${m}" ${m===UI.statMonth?'selected':''}>${m.slice(0,4)}년 ${+m.slice(5)}월</option>`).join('')}</select>`:''}
-  ${UI.statMode==='year'?`<select class="f" id="s-year" aria-label="연도">${['2026','2027'].map(y=>`<option ${y===UI.statYear?'selected':''}>${y}</option>`).join('')}</select>`:''}</div></div>`;
+  ${UI.statMode==='year'?`<select class="f" id="s-year" aria-label="연도">${YEARS.map(y=>`<option ${y===UI.statYear?'selected':''}>${y}</option>`).join('')}</select>`:''}</div></div>`;
   if(!S.members.length)return h+`<div class="panel empty"><strong>통계를 낼 팀원이 없어요</strong>팀원을 등록하고 출석을 체크하면 여기에 표가 채워져요.</div>`;
   const period=UI.statMode==='month'?`${mY}년 ${+mM}월`:UI.statMode==='year'?`${UI.statYear}년`:'전체 기간';
   const avg=ms=>{let p=0,a=0;ms.forEach(m=>{const x=rateOf(m.id,dates);p+=x.p;a+=x.a});return{r:p+a?p/(p+a):null,n:p+a}};
@@ -893,7 +916,7 @@ async function drawMinute(m,pageH){
   const rows=[];const add=(h,draw,gap)=>rows.push({h,draw,gap:gap||0});
   const textRows=(txt,font,color,x,maxW,lh,gap,lead)=>{wrap(txt,font,maxW).forEach((ln,i)=>add(lh,(c,y)=>{c.font=font;c.fillStyle=color;if(i===0&&lead)lead(c,y);c.fillText(ln,x,y+lh*.78)},i===0?gap:0))};
   const {names,n}=minuteInfo(m);
-  textRows('사역팀 관리부 · 회의록',`500 22px ${SANS}`,C.accent,M,CW,34,0);
+  textRows(TNAME+' · 회의록',`500 22px ${SANS}`,C.accent,M,CW,34,0);
   textRows(m.title||'제목 없음',`700 50px ${SER}`,C.ink,M,CW,68,10);
   const metaF=`400 24px ${SANS}`,labF=`600 24px ${SANS}`;
   [['회의일',m.date?dotDate(m.date):'—'],['참석자',names.length?names.join(', '):'—']].forEach(([k,v],i)=>
@@ -966,7 +989,7 @@ async function drawReport(mo){
   const wrap=(txt,font,maxW)=>{mc.font=font;const out=[];let cur='';for(const ch of String(txt)){if(mc.measureText(cur+ch).width>maxW&&cur){out.push(cur);cur=ch}else cur+=ch}out.push(cur);return out};
   const ops=[];let yy=M;const op=(h,fn)=>{const y0=yy;ops.push(c=>fn(c,y0));yy+=h};
   const txt=(c,s,x,y,font,color,align)=>{c.font=font;c.fillStyle=color;c.textAlign=align||'left';c.fillText(s,x,y);c.textAlign='left'};
-  op(36,(c,y)=>txt(c,'사역팀 관리부 · 회계보고',M,y+26,`500 22px ${SANS}`,C.accent));
+  op(36,(c,y)=>txt(c,TNAME+' · 회계보고',M,y+26,`500 22px ${SANS}`,C.accent));
   op(72,(c,y0)=>txt(c,`${y}년 ${+m}월 회계보고`,M,y0+56,`700 50px ${SER}`,C.ink));
   op(44,(c,y0)=>txt(c,`작성일 ${todayStr().replace(/-/g,'.')} · 대상 기간 ${y}.${m}.01 ~ ${y}.${m}.${new Date(Date.UTC(+y,+m,0)).getUTCDate()}`,M,y0+28,`400 22px ${SANS}`,C.muted));
   // summary box
@@ -1003,7 +1026,7 @@ async function drawReport(mo){
 async function exportReport(mo){
   if(exporting)return;exporting=true;
   try{toast('회계보고 이미지를 만드는 중…');const cv=await drawReport(mo);
-    await saveFile(`사역팀관리부_회계보고_${mo}.jpg`,new Blob([await jpegBytes(cv)],{type:'image/jpeg'}))}
+    await saveFile(`${TNAME}_회계보고_${mo}.jpg`,new Blob([await jpegBytes(cv)],{type:'image/jpeg'}))}
   catch(e){toast('회계보고를 만들지 못했어요')}finally{exporting=false}
 }
 async function saveFile(name,data){
@@ -1088,8 +1111,8 @@ view.addEventListener('click',e=>{
     case 'mexp':exportMinute(v);break;
     case 'rpt':exportReport(($('#rp-month')||{}).value||todayStr().slice(0,7));break;
     case 'msave':saveMinuteNow();break;
-    case 'bkout':{const data={app:'team-admin',v:1,at:new Date().toISOString(),cfg:S.cfg,members:S.members,att:S.att,minutes:S.minutes,events:S.events,worship:S.worship,dues:S.dues,ledger:S.ledger,acct:S.acct};
-      saveFile('사역팀관리부_백업_'+todayStr()+'.json',new Blob([JSON.stringify(data)],{type:'application/json'}));break}
+    case 'bkout':{const data={app:'team-admin',v:1,team:TNAME,at:new Date().toISOString(),cfg:S.cfg,members:S.members,att:S.att,minutes:S.minutes,events:S.events,worship:S.worship,dues:S.dues,ledger:S.ledger,acct:S.acct};
+      saveFile(TNAME+'_백업_'+todayStr()+'.json',new Blob([JSON.stringify(data)],{type:'application/json'}));break}
     case 'bkin':{const inp=document.createElement('input');inp.type='file';inp.accept='.json,application/json';
       inp.onchange=()=>{const f=inp.files[0];if(!f)return;f.text().then(t=>{const d=JSON.parse(t);if(!d||d.app!=='team-admin')throw 0;
         if(!confirm('백업 파일('+String(d.at||'').slice(0,10)+')로 지금 기록을 모두 바꿀까요?'))return;
@@ -1253,6 +1276,33 @@ async function boot(){
   try{const u=await window.claude.use('user');if(u){const own=await u.isOwner(),cw=await u.can('data.write');S.who=own?'owner':cw===false?'readonly':cw?'writer':'unknown';if(own!==true&&cw===false)S.readOnly=true}}catch(e){}
   startDb(db);
 }
+function teamHome(){
+  let ht;const toast=m=>{const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(ht);ht=setTimeout(()=>t.hidden=true,2600)};
+  $('#tabs').hidden=true;$('#sync').hidden=true;
+  const esc2=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const info=t=>{try{const d=JSON.parse(localStorage.getItem(t.key)||'null');if(!d)return'아직 기록이 없어요';const n=(d.members||[]).filter(m=>!m.former).length,a=Object.keys(d.att||{}).length,mi=(d.minutes||[]).length;return `팀원 ${n}명 · 출석 ${a}회 · 회의록 ${mi}건`}catch(e){return''}};
+  let edit=null,del=null;
+  function draw(){const L=loadTeams();
+    $('#view').innerHTML=`<div class="head"><div><h2>내 사역팀</h2><div class="sub">팀마다(관리 연도별로) 출석부·회의록·팀원 명부·캘린더·회계·통계를 따로 관리해요. 새해에는 같은 이름으로 새 연도 팀을 만들면 돼요. 기록은 이 기기의 이 브라우저에 저장돼요.</div></div></div>
+    ${L.length?`<div class="thome">${L.map(t=>`<div class="panel tcard">${edit===t.id?`<div class="row"><input class="f" id="ren" value="${esc2(t.name)}" maxlength="30" aria-label="팀 이름" style="flex:1"><input class="f mono" id="reny" type="number" min="2020" max="2100" value="${esc2(t.year||new Date().getFullYear())}" aria-label="관리 연도" style="width:90px">년</div><div class="row"><button class="btn" data-h="cancel">취소</button><button class="btn primary" data-h="rensave" data-id="${t.id}">저장</button></div>`
+      :`<div class="tn">${esc2(t.name)} <span class="mono sub" style="font-size:.9rem">${esc2(t.year||'')}</span></div><div class="tm">${esc2(info(t))}</div>
+      ${del===t.id?`<div class="row"><span class="sub" style="color:var(--no)">이 팀의 기록이 모두 지워져요.</span><span class="row"><button class="btn" data-h="cancel">취소</button><button class="btn danger" data-h="delok" data-id="${t.id}">삭제</button></span></div>`
+      :`<div class="row"><span class="row"><button class="btn ghost" data-h="ren" data-id="${t.id}">수정</button><button class="btn ghost" data-h="del" data-id="${t.id}">삭제</button></span><a class="btn primary" href="?t=${encodeURIComponent(t.id)}#attendance">들어가기</a></div>`}`}</div>`).join('')}</div>`
+      :`<div class="panel empty" style="margin-bottom:16px"><strong>아직 사역팀이 없어요</strong>아래에 관리할 사역팀 이름을 입력하고 시작하세요.</div>`}
+    <form class="panel tadd" id="tadd" autocomplete="off"><b>${L.length?'다른 사역팀 추가':'사역팀 만들기'}</b><input class="f" id="tname" maxlength="30" placeholder="사역팀 이름 (예: 수요 찬양팀, 청년부 방송팀)" aria-label="사역팀 이름" required><label class="row" style="gap:4px"><input class="f mono" id="tyear" type="number" min="2020" max="2100" value="${new Date().getMonth()>=9?new Date().getFullYear()+1:new Date().getFullYear()}" aria-label="관리 연도" style="width:90px" required>년</label><button class="btn primary" type="submit">${L.length?'추가하기':'시작하기'}</button></form>`;
+    if(!L.length)$('#tname').focus()}
+  $('#view').addEventListener('submit',e=>{if(e.target.id!=='tadd')return;e.preventDefault();const name=$('#tname').value.trim(),year=+$('#tyear').value;if(!name)return;if(!(year>=2020&&year<=2100)){toast('관리 연도를 확인해 주세요');return}
+    const L=loadTeams();if(L.some(t=>t.name===name&&+t.year===year)){toast('같은 이름·연도의 사역팀이 이미 있어요');return}
+    const id='t'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);L.push({id,name,year,key:'team-admin-v1:'+id,created:Date.now()});saveTeams(L);
+    location.href='?t='+encodeURIComponent(id)+'#members'});
+  $('#view').addEventListener('click',e=>{const b=e.target.closest('[data-h]');if(!b)return;const k=b.dataset.h,id=b.dataset.id;let L=loadTeams();
+    if(k==='ren'){edit=id;del=null;draw();const r=$('#ren');r.focus();r.select()}
+    else if(k==='cancel'){edit=del=null;draw()}
+    else if(k==='rensave'){const n=$('#ren').value.trim(),y=+$('#reny').value;if(!n||!(y>=2020&&y<=2100))return;if(L.some(t=>t.name===n&&+t.year===y&&t.id!==id)){toast('같은 이름·연도의 사역팀이 이미 있어요');return}L.forEach(t=>{if(t.id===id){if(+t.year!==y)delete t.start;t.name=n;t.year=y}});saveTeams(L);edit=null;draw();toast('저장했어요')}
+    else if(k==='del'){del=id;edit=null;draw()}
+    else if(k==='delok'){const t=L.find(x=>x.id===id);if(t)try{localStorage.removeItem(t.key)}catch(_){}saveTeams(L.filter(x=>x.id!==id));del=null;draw();toast('사역팀을 삭제했어요')}});
+  $('#view').addEventListener('keydown',e=>{if(e.target.id==='ren'&&e.key==='Enter'&&!e.isComposing){e.preventDefault();const b=document.querySelector('[data-h=rensave]');if(b)b.click()}});
+  draw()}
 boot();
 })();
 </script>
