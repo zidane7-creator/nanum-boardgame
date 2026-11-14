@@ -221,6 +221,13 @@ td.rate{text-align:left;min-width:130px;border-left:1px solid var(--line)}
 .cbwrap{position:fixed;inset:0;z-index:30;background:color-mix(in srgb,var(--ink) 45%,transparent);display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
 .cb{width:min(560px,100%);padding:16px 18px;display:flex;flex-direction:column;gap:10px;max-height:100%;overflow:auto}
 .cb-h{display:flex;justify-content:space-between;align-items:center}
+.pvbox{width:min(860px,100%)}
+.pvb{overflow:auto;max-height:68vh;background:var(--sunk);border:1px solid var(--line);border-radius:6px;padding:12px}
+.pvb img{display:block;width:100%;height:auto;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.18);margin:0 auto 12px}
+.pvb img:last-child{margin-bottom:0}
+.pvb .pg{font-size:.75rem;color:var(--muted);text-align:center;margin:-6px 0 12px}
+.pvb pre{margin:0;background:#fff;color:#13222d;padding:16px 18px;border-radius:4px;white-space:pre-wrap;word-break:break-word;font-family:var(--f-body);font-size:.92rem;line-height:1.65}
+.pvb table{width:100%;border-collapse:collapse;background:var(--surface);font-size:.92rem}.pvb td{padding:7px 10px;border-bottom:1px solid var(--line)}.pvb td:last-child{text-align:right;font-family:var(--f-mono)}
 .cb-t{width:100%;min-height:160px;resize:vertical;font-family:var(--f-body);font-size:.9rem;line-height:1.6;white-space:pre;overflow:auto}
 /* accounting */
 .pos{color:var(--ok)} .neg{color:var(--no)}
@@ -362,6 +369,14 @@ table.tbl tfoot td{border-top:2px solid var(--line);padding:9px 12px;font-weight
 </header>
 <main class="gutter"><div class="inner" id="view"></div></main>
 <div class="toast" id="toast" hidden></div>
+<div class="cbwrap" id="pv" hidden role="dialog" aria-modal="true" aria-labelledby="pv-title">
+  <div class="cb panel pvbox">
+    <div class="cb-h"><b id="pv-title">미리보기</b><button class="btn ghost icon" id="pv-x" aria-label="닫기">×</button></div>
+    <p class="sub" id="pv-sub"></p>
+    <div class="pvb" id="pv-body"></div>
+    <div class="row" style="justify-content:flex-end"><button class="btn" id="pv-cancel">닫기</button><button class="btn primary" id="pv-save">저장하기</button></div>
+  </div>
+</div>
 <div class="cbwrap" id="copybox" hidden role="dialog" aria-modal="true" aria-labelledby="cb-title">
   <div class="cb panel">
     <div class="cb-h"><b id="cb-title">카톡에 붙여 넣을 회의록</b><button class="btn ghost icon" id="cb-close" aria-label="닫기">×</button></div>
@@ -1023,10 +1038,21 @@ async function drawReport(mo){
   const H=yy+M-40;const cv=document.createElement('canvas');cv.width=W;cv.height=H;const c=cv.getContext('2d');
   c.fillStyle='#ffffff';c.fillRect(0,0,W,H);c.textBaseline='alphabetic';ops.forEach(f=>f(c));return cv;
 }
+/* 내보내기 전 미리보기: 내용을 먼저 보여 주고 '저장하기'를 눌러야 파일로 저장 */
+let pvSave=null;
+function showPreview(title,sub,nodes,onSave){$('#pv-title').textContent=title;$('#pv-sub').textContent=sub||'';const b=$('#pv-body');b.innerHTML='';b.scrollTop=0;
+  nodes.forEach(n=>b.appendChild(n));pvSave=onSave;$('#pv').hidden=false;$('#pv-save').disabled=false;$('#pv-save').focus()}
+function closePreview(){$('#pv').hidden=true;$('#pv-body').innerHTML='';pvSave=null}
+const cvImg=(cv,alt)=>{const i=document.createElement('img');i.src=cv.toDataURL('image/jpeg',.9);i.alt=alt||'';return i};
+const preNode=t=>{const p=document.createElement('pre');p.textContent=t;return p};
+$('#pv-x').addEventListener('click',closePreview);$('#pv-cancel').addEventListener('click',closePreview);
+$('#pv').addEventListener('click',e=>{if(e.target.id==='pv')closePreview()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#pv').hidden)closePreview()});
+$('#pv-save').addEventListener('click',async()=>{if(!pvSave)return;const f=pvSave;$('#pv-save').disabled=true;try{await f();closePreview()}catch(e){toast('저장하지 못했어요');$('#pv-save').disabled=false}});
 async function exportReport(mo){
   if(exporting)return;exporting=true;
-  try{toast('회계보고 이미지를 만드는 중…');const cv=await drawReport(mo);
-    await saveFile(`${TNAME}_회계보고_${mo}.jpg`,new Blob([await jpegBytes(cv)],{type:'image/jpeg'}))}
+  try{toast('회계보고 이미지를 만드는 중…');const cv=await drawReport(mo),name=`${TNAME}_회계보고_${mo}.jpg`;
+    showPreview('월말 회계보고 미리보기 (JPG)',name,[cvImg(cv,'회계보고')],async()=>saveFile(name,new Blob([await jpegBytes(cv)],{type:'image/jpeg'})))}
   catch(e){toast('회계보고를 만들지 못했어요')}finally{exporting=false}
 }
 async function saveFile(name,data){
@@ -1040,9 +1066,12 @@ let exporting=false;
 async function exportMinute(kind){
   if(!ED||exporting)return;exporting=true;const m=clone(ED),base=fileBase(m);
   try{
-    if(kind==='txt')await saveFile(base+'.txt','﻿'+minuteText(m).replace(/\n/g,'\r\n'));
-    else if(kind==='jpg'){toast('이미지를 만드는 중…');const [cv]=await drawMinute(m,null);await saveFile(base+'.jpg',new Blob([await jpegBytes(cv)],{type:'image/jpeg'}))}
-    else{toast('PDF를 만드는 중…');const cvs=await drawMinute(m,1754);const imgs=[];for(const cv of cvs)imgs.push({w:cv.width,h:cv.height,bytes:await jpegBytes(cv)});await saveFile(base+'.pdf',buildPdf(imgs))}
+    if(kind==='txt'){const t=minuteText(m);showPreview('텍스트 파일 미리보기',base+'.txt',[preNode(t)],()=>saveFile(base+'.txt','\ufeff'+t.replace(/\n/g,'\r\n')))}
+    else if(kind==='jpg'){toast('이미지를 만드는 중…');const [cv]=await drawMinute(m,null);
+      showPreview('JPG 미리보기',base+'.jpg',[cvImg(cv,'회의록')],async()=>saveFile(base+'.jpg',new Blob([await jpegBytes(cv)],{type:'image/jpeg'})))}
+    else{toast('PDF를 만드는 중…');const cvs=await drawMinute(m,1754),nodes=[];
+      cvs.forEach((cv,i)=>{nodes.push(cvImg(cv,(i+1)+'쪽'));if(cvs.length>1){const d=document.createElement('div');d.className='pg';d.textContent=(i+1)+' / '+cvs.length+'쪽';nodes.push(d)}});
+      showPreview('PDF 미리보기',base+'.pdf · A4 '+cvs.length+'쪽',nodes,async()=>{const imgs=[];for(const cv of cvs)imgs.push({w:cv.width,h:cv.height,bytes:await jpegBytes(cv)});await saveFile(base+'.pdf',buildPdf(imgs))})}
   }catch(e){toast('내보내기에 실패했어요')}finally{exporting=false}
 }
 
@@ -1112,7 +1141,9 @@ view.addEventListener('click',e=>{
     case 'rpt':exportReport(($('#rp-month')||{}).value||todayStr().slice(0,7));break;
     case 'msave':saveMinuteNow();break;
     case 'bkout':{const data={app:'team-admin',v:1,team:TNAME,at:new Date().toISOString(),cfg:S.cfg,members:S.members,att:S.att,minutes:S.minutes,events:S.events,worship:S.worship,dues:S.dues,ledger:S.ledger,acct:S.acct};
-      saveFile(TNAME+'_백업_'+todayStr()+'.json',new Blob([JSON.stringify(data)],{type:'application/json'}));break}
+      const name=TNAME+'_백업_'+todayStr()+'.json',tb=document.createElement('table');
+      tb.innerHTML=[['팀원 (현재 / (구)팀원)',S.members.filter(x=>!x.former).length+' / '+S.members.filter(x=>x.former).length+'명'],['출석 체크한 날',Object.keys(S.att).filter(k=>S.att[k]&&S.att[k].records&&Object.keys(S.att[k].records).length).length+'일'],['회의록',S.minutes.length+'건'],['캘린더 일정',S.events.length+'개'],['회계 수입·지출 내역',S.ledger.length+'건'],['출석 요일','매주 '+dayName()]].map(([k,v])=>`<tr><td>${esc(k)}</td><td>${esc(v)}</td></tr>`).join('');
+      showPreview('백업 파일 미리보기',name+' · 아래 기록이 한 파일에 담겨요',[tb],()=>saveFile(name,new Blob([JSON.stringify(data)],{type:'application/json'})));break}
     case 'bkin':{const inp=document.createElement('input');inp.type='file';inp.accept='.json,application/json';
       inp.onchange=()=>{const f=inp.files[0];if(!f)return;f.text().then(t=>{const d=JSON.parse(t);if(!d||d.app!=='team-admin')throw 0;
         if(!confirm('백업 파일('+String(d.at||'').slice(0,10)+')로 지금 기록을 모두 바꿀까요?'))return;
