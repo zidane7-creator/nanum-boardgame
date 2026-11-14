@@ -22,22 +22,33 @@ button.sm{padding:4px 10px;font-size:14px;border-radius:12px;box-shadow:0 2px 0 
 .top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:calc(8px + env(safe-area-inset-top,0px)) 14px 8px;background:rgba(255,255,255,.92);border-bottom:4px solid var(--gold)}
 .top a{color:var(--ink);text-decoration:none;font-size:15px;border:2px solid var(--ink);border-radius:14px;padding:3px 10px;background:var(--cream)}
 .top .ttl{flex:1;font-size:19px}
-main{max-width:1320px;margin:0 auto;padding:16px 14px 70px}
-.lay{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:18px;align-items:start}
+main{max-width:1500px;margin:0 auto;padding:16px 10px 70px}
+.lay{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:14px;align-items:start}
 .rcol{min-width:0}
-.reader{position:sticky;top:64px;display:flex;flex-direction:column;gap:10px;height:calc(100vh - 84px);padding:14px}
-.rhead{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.reader{position:sticky;top:64px;display:flex;flex-direction:column;gap:6px;height:calc(100vh - 76px);padding:8px;border-radius:18px;margin-bottom:10px}
+.rhead,.rtools{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.rv{display:inline-flex;align-items:center;gap:3px}.rv input{width:58px;font:inherit;border:2px solid var(--ink);border-radius:12px;padding:5px 6px;background:#fff}
+.rtools button[aria-pressed=true]{background:var(--gold)}
+.rpanel{position:relative;flex:0 0 46%;min-height:0;display:flex;flex-direction:column;gap:6px;border:2px dashed var(--ink);border-radius:14px;padding:8px;background:#fffdf6}
+.rpanel[hidden]{display:none}
+.rsf{display:flex;gap:6px;padding-right:34px}.rsf input{flex:1;min-width:0;font:inherit;border:2px solid var(--ink);border-radius:12px;padding:5px 10px;background:#fff}
+.rpanel.par .rsf{display:none}
+.rptitle{font-size:14px;padding-right:34px}.rptitle:empty{display:none}
+.rpclose{position:absolute;top:6px;right:6px;padding:2px 8px}
+.rpwrap{flex:1;min-height:0;position:relative;overflow:hidden;border-radius:10px;background:#fff;border:1px solid #d9cbb3}
+.rpwrap iframe{position:absolute;left:0;top:0;width:1024px;height:100%;border:0;transform-origin:0 0}
 .rhead select{font:inherit;border:2px solid var(--ink);border-radius:12px;padding:5px 8px;background:#fff}
 .vers{display:inline-flex;border:2px solid var(--ink);border-radius:12px;overflow:hidden}
 .vers button{border:0;border-radius:0;box-shadow:none;padding:5px 12px;background:#fff}
 .vers button.on{background:var(--gold)}
-.rframe{flex:1;min-height:0;border:2px solid var(--ink);border-radius:14px;overflow:hidden;background:#fff}
-.rframe iframe{width:100%;height:100%;border:0;display:block}
+.rframe{flex:1;min-height:0;border:2px solid var(--ink);border-radius:14px;overflow-x:hidden;overflow-y:auto;background:#fff;position:relative;overscroll-behavior:contain}
+.rframe iframe{position:absolute;left:0;top:0;width:1024px;border:0;display:block;transform-origin:0 0}
+.rframe .rsz{width:1px}
 .rfoot{display:flex;gap:8px;justify-content:space-between;align-items:center;flex-wrap:wrap}
 .rfoot .go{flex:1;min-width:150px}
 .rfoot .go.did{background:#9bbf8f}
 .rnote{margin:0;font-size:12px;opacity:.7;text-align:center}.rnote a{color:inherit}
-@media (max-width:900px){.lay{grid-template-columns:1fr}.reader{position:static;height:72vh}}
+@media (max-width:900px){.lay{grid-template-columns:1fr}.reader{position:static;height:80vh}}
 .card{background:var(--cream);border:3px solid var(--ink);border-radius:22px;padding:18px;margin-bottom:16px;box-shadow:0 5px 0 rgba(0,0,0,.12)}
 h1{font-weight:normal;text-align:center;font-size:clamp(30px,7vw,42px);margin:6px 0 2px}
 .sub{text-align:center;margin:0 0 14px;opacity:.75}
@@ -122,8 +133,21 @@ html.sc-night .pen::before{filter:brightness(.6)}html.sc-night .pen::after{opaci
     <div class="rhead">
       <div class="vers" role="group" aria-label="번역본"><button type="button" data-v="GAE" class="on">개역개정</button><button type="button" data-v="SAENEW">새번역</button></div>
       <select id="rBook" aria-label="책"></select><select id="rChap" aria-label="장"></select>
+      <label class="rv"><input id="rVerse" type="number" min="1" inputmode="numeric" aria-label="절" placeholder="절">절</label>
+      <button type="button" class="sm pri" id="rGoBtn">이동</button>
     </div>
-    <div class="rframe"><iframe id="rFrame" title="성경 본문" referrerpolicy="no-referrer"></iframe></div>
+    <div class="rtools">
+      <button type="button" class="sm" id="rMenu" aria-pressed="false" title="대한성서공회 페이지의 위쪽 메뉴(번역본 선택·검색창)를 펼치거나 접어요">▼ 메뉴 펼치기</button>
+      <button type="button" class="sm" id="rSearchBtn" aria-pressed="false">🔍 단어 검색</button>
+      <button type="button" class="sm" id="rParBtn" aria-pressed="false">📚 평행본문</button>
+    </div>
+    <div class="rpanel" id="rPanel" hidden>
+      <form class="rsf" id="rSearchForm"><input id="rKw" type="search" placeholder="찾을 단어 (예: 사랑, 목자)" aria-label="찾을 단어"><button type="submit" class="sm go">검색</button></form>
+      <div class="rptitle" id="rPTitle"></div>
+      <div class="rpwrap" id="rPWrap"><iframe id="rPFrame" title="검색·평행본문 결과" referrerpolicy="no-referrer"></iframe></div>
+      <button type="button" class="sm rpclose" id="rPClose" aria-label="닫기">✕</button>
+    </div>
+    <div class="rframe" id="rWrap"><iframe id="rFrame" title="성경 본문" referrerpolicy="no-referrer" scrolling="no"></iframe></div>
     <div class="rfoot">
       <button type="button" class="sm" id="rPrev">◀ 이전 장</button>
       <button type="button" class="go" id="rDone">✅ 이 장 다 읽었어요</button>
@@ -278,21 +302,53 @@ function drawFlock(){flock.forEach(f=>f.remove());flock=[];pen.querySelectorAll(
 let lastW=0;/* ---------- 왼쪽 성경 본문 (대한성서공회 성경 읽기: 개역개정·새번역) ---------- */
 const BSK="gen exo lev num deu jos jdg rut 1sa 2sa 1ki 2ki 1ch 2ch ezr neh est job psa pro ecc sng isa jer lam ezk dan hos jol amo oba jnh mic nam hab zep hag zec mal mat mrk luk jhn act rom 1co 2co gal eph php col 1th 2th 1ti 2ti tit phm heb jas 1pe 2pe 1jn 2jn 3jn jud rev".split(" ");
 let R={v:"GAE",b:0,c:1};try{const o=JSON.parse(localStorage.getItem("bible-reader")||"null");if(o&&BOOKS[o.b])R=Object.assign(R,o)}catch(e){}
-function rURL(){return "https://www.bskorea.or.kr/bible/korbibReadpage.php?version="+R.v+"&book="+BSK[R.b]+"&chap="+R.c+"#bible_content"}
+const VERSES=[[31,25,24,26,32,22,24,22,29,32,32,20,18,24,21,16,27,33,38,18,34,24,20,67,34,35,46,22,35,43,55,32,20,31,29,43,36,30,23,23,57,38,34,34,28,34,31,22,33,26],[22,25,22,31,23,30,25,32,35,29,10,51,22,31,27,36,16,27,25,26,36,31,33,18,40,37,21,43,46,38,18,35,23,35,35,38,29,31,43,38],[17,16,17,35,19,30,38,36,24,20,47,8,59,57,33,34,16,30,37,27,24,33,44,23,55,46,34],[54,34,51,49,31,27,89,26,23,36,35,16,33,45,41,50,13,32,22,29,35,41,30,25,18,65,23,31,40,16,54,42,56,29,34,13],[46,37,29,49,33,25,26,20,29,22,32,32,18,29,23,22,20,22,21,20,23,30,25,22,19,19,26,68,29,20,30,52,29,12],[18,24,17,24,15,27,26,35,27,43,23,24,33,15,63,10,18,28,51,9,45,34,16,33],[36,23,31,24,31,40,25,35,57,18,40,15,25,20,20,31,13,31,30,48,25],[22,23,18,22],[28,36,21,22,12,21,17,22,27,27,15,25,23,52,35,23,58,30,24,42,15,23,29,22,44,25,12,25,11,31,13],[27,32,39,12,25,23,29,18,13,19,27,31,39,33,37,23,29,33,43,26,22,51,39,25],[53,46,28,34,18,38,51,66,28,29,43,33,34,31,34,34,24,46,21,43,29,53],[18,25,27,44,27,33,20,29,37,36,21,21,25,29,38,20,41,37,37,21,26,20,37,20,30],[54,55,24,43,26,81,40,40,44,14,47,40,14,17,29,43,27,17,19,8,30,19,32,31,31,32,34,21,30],[17,18,17,22,14,42,22,18,31,19,23,16,22,15,19,14,19,34,11,37,20,12,21,27,28,23,9,27,36,27,21,33,25,33,27,23],[11,70,13,24,17,22,28,36,15,44],[11,20,32,23,19,19,73,18,38,39,36,47,31],[22,23,15,17,14,14,10,17,32,3],[22,13,26,21,27,30,21,22,35,22,20,25,28,22,35,22,16,21,29,29,34,30,17,25,6,14,23,28,25,31,40,22,33,37,16,33,24,41,30,24,34,17],[6,12,8,8,12,10,17,9,20,18,7,8,6,7,5,11,15,50,14,9,13,31,6,10,22,12,14,9,11,12,24,11,22,22,28,12,40,22,13,17,13,11,5,26,17,11,9,14,20,23,19,9,6,7,23,13,11,11,17,12,8,12,11,10,13,20,7,35,36,5,24,20,28,23,10,12,20,72,13,19,16,8,18,12,13,17,7,18,52,17,16,15,5,23,11,13,12,9,9,5,8,28,22,35,45,48,43,13,31,7,10,10,9,8,18,19,2,29,176,7,8,9,4,8,5,6,5,6,8,8,3,18,3,3,21,26,9,8,24,13,10,7,12,15,21,10,20,14,9,6],[33,22,35,27,23,35,27,36,18,32,31,28,25,35,33,33,28,24,29,30,31,29,35,34,28,28,27,28,27,33,31],[18,26,22,16,20,12,29,17,18,20,10,14],[17,17,11,16,16,13,13,14],[31,22,26,6,30,13,25,22,21,34,16,6,22,32,9,14,14,7,25,6,17,25,18,23,12,21,13,29,24,33,9,20,24,17,10,22,38,22,8,31,29,25,28,28,25,13,15,22,26,11,23,15,12,17,13,12,21,14,21,22,11,12,19,12,25,24],[19,37,25,31,31,30,34,22,26,25,23,17,27,22,21,21,27,23,15,18,14,30,40,10,38,24,22,17,32,24,40,44,26,22,19,32,21,28,18,16,18,22,13,30,5,28,7,47,39,46,64,34],[22,22,66,22,22],[28,10,27,17,17,14,27,18,11,22,25,28,23,23,8,63,24,32,14,49,32,31,49,27,17,21,36,26,21,26,18,32,33,31,15,38,28,23,29,49,26,20,27,31,25,24,23,35],[21,49,30,37,31,28,28,27,27,21,45,13],[11,23,5,19,15,11,16,14,17,15,12,14,16,9],[20,32,21],[15,16,15,13,27,14,17,14,15],[21],[17,10,10,11],[16,13,12,13,15,16,20],[15,13,19],[17,20,19],[18,15,20],[15,23],[21,13,10,14,11,15,14,23,17,12,17,14,9,21],[14,17,18,6],[25,23,17,25,48,34,29,34,38,42,30,50,58,36,39,28,27,35,30,34,46,46,39,51,46,75,66,20],[45,28,35,41,43,56,37,38,50,52,33,44,37,72,47,20],[80,52,38,44,39,49,50,56,62,42,54,59,35,35,32,31,37,43,48,47,38,71,56,53],[51,25,36,54,47,71,53,59,41,42,57,50,38,31,27,33,26,40,42,31,25],[26,47,26,37,42,15,60,40,43,48,30,25,52,28,41,40,34,28,41,38,40,30,35,27,27,32,44,31],[32,29,31,25,21,23,25,39,33,21,36,21,14,23,33,27],[31,16,23,21,13,20,40,13,27,33,34,31,13,40,58,24],[24,17,18,18,21,18,16,24,15,18,33,21,14],[24,21,29,31,26,18],[23,22,21,32,33,24],[30,30,21,23],[29,23,25,18],[10,20,13,18,28],[12,17,18],[20,15,16,16,25,21],[18,26,17,22],[16,15,15],[25],[14,18,19,16,14,20,28,13,28,39,40,29,25],[27,26,18,17,20],[25,25,22,19,14],[21,22,18],[10,29,24,21,21],[13],[14],[25],[20,29,22,11,14,17,17,13,21,11,19,17,18,20,8,21,18,24,21,15,27,21]];
+/* 대한성서공회 페이지(1024px 기준)에서 본문 칸만 잘라 보여 줘요: 본문은 x 30~677, 위 메뉴는 y 0~337 */
+const BX=30,BW=647,BTOP=337,BFULL=1024;let rMenuOpen=false;
+function rURL(){return "https://www.bskorea.or.kr/bible/korbibReadpage.php?version="+R.v+"&book="+BSK[R.b]+"&chap="+R.c}
+function rVerses(){return (VERSES[R.b]&&VERSES[R.b][R.c-1])||40}
 function rFill(){$("rBook").innerHTML=BOOKS.map((b,i)=>'<option value="'+i+'">'+b[0]+'</option>').join("");$("rBook").value=R.b;rChaps()}
 function rChaps(){const n=BOOKS[R.b][1];$("rChap").innerHTML=Array.from({length:n},(_,i)=>'<option value="'+(i+1)+'">'+(i+1)+'장</option>').join("");$("rChap").value=R.c}
-function rShow(){if(R.c>BOOKS[R.b][1])R.c=BOOKS[R.b][1];$("rBook").value=R.b;$("rChap").value=R.c;const u=rURL();if($("rFrame").dataset.u!==u){$("rFrame").src=u;$("rFrame").dataset.u=u}$("rOpen").href=u;
+/* 바깥 칸이 스크롤되고 iframe은 본문 길이만큼 길게 (속 스크롤 없음) */
+function rFit(){const w=$("rWrap").clientWidth||600,f=$("rFrame"),H=BTOP+rVerses()*110+900;
+  const sc=rMenuOpen?w/BFULL:w/BW,ox=rMenuOpen?0:BX,oy=rMenuOpen?0:BTOP;
+  f.style.height=H+"px";f.style.transform="translate("+(-ox*sc)+"px,"+(-oy*sc)+"px) scale("+sc+")";
+  let z=$("rWrap").querySelector(".rsz");if(!z){z=document.createElement("div");z.className="rsz";$("rWrap").appendChild(z)}
+  z.style.height=Math.max(0,(H-oy)*sc)+"px";return sc}
+function rShow(){if(R.c>BOOKS[R.b][1])R.c=BOOKS[R.b][1];$("rBook").value=R.b;$("rChap").value=R.c;$("rVerse").max=rVerses();const u=rURL();
+  if($("rFrame").dataset.u!==u){$("rFrame").src=u;$("rFrame").dataset.u=u;$("rWrap").scrollTop=0}rFit();$("rOpen").href=u+"#bible_content";
   document.querySelectorAll(".vers [data-v]").forEach(x=>x.classList.toggle("on",x.dataset.v===R.v));
   const idx=BOOKS[R.b][3]+R.c-1,done=!!CH[idx];$("rDone").classList.toggle("did",done);$("rDone").textContent=done?"✔ 읽음 표시됨 (다시 누르면 취소)":"✅ 이 장 다 읽었어요";
+  if(!$("rPanel").hidden&&$("rPanel").classList.contains("par"))rPar();
   try{localStorage.setItem("bible-reader",JSON.stringify(R))}catch(e){}}
-function rGo(d){let b=R.b,c=R.c+d;if(c<1){if(b===0)return;b--;c=BOOKS[b][1]}else if(c>BOOKS[b][1]){if(b===BOOKS.length-1)return;b++;c=1}const nb=b!==R.b;R.b=b;R.c=c;if(nb)rChaps();rShow()}
-$("rBook").onchange=()=>{R.b=+$("rBook").value;R.c=1;rChaps();rShow()};$("rChap").onchange=()=>{R.c=+$("rChap").value;rShow()};
+function rGo(d){let b=R.b,c=R.c+d;if(c<1){if(b===0)return;b--;c=BOOKS[b][1]}else if(c>BOOKS[b][1]){if(b===BOOKS.length-1)return;b++;c=1}const nb=b!==R.b;R.b=b;R.c=c;if(nb)rChaps();$("rVerse").value="";rShow()}
+$("rBook").onchange=()=>{R.b=+$("rBook").value;R.c=1;rChaps();$("rVerse").value="";rShow()};$("rChap").onchange=()=>{R.c=+$("rChap").value;$("rVerse").value="";rShow()};
 $("rPrev").onclick=()=>rGo(-1);$("rNext").onclick=()=>rGo(1);
 document.querySelectorAll(".vers [data-v]").forEach(x=>x.onclick=()=>{R.v=x.dataset.v;rShow()});
-/* 다 읽었어요 → 읽기표에 체크 + 먹이 (읽기표의 장 버튼을 누른 것과 똑같이) */
-$("rDone").onclick=()=>{const idx=BOOKS[R.b][3]+R.c-1;let btn=document.querySelector('.ch[data-c="'+idx+'"]');
-  if(!btn){tab=BOOKS[R.b][2];document.querySelectorAll("#tabs button").forEach(x=>x.classList.toggle("on",x.dataset.t===tab));drawBooks();btn=document.querySelector('.ch[data-c="'+idx+'"]')}
-  if(btn)btn.click();rShow()};
+/* 이동: 고른 책·장으로 가고, 절을 적었으면 그 절 근처로 스크롤 (공식 페이지에 절 위치 표시가 없어 대략적인 위치) */
+function rScrollVerse(){const v=+$("rVerse").value;if(!v||rMenuOpen)return;const n=rVerses(),sc=rFit();
+  const y=Math.max(0,(110+(Math.min(v,n)-1)*54)*sc-50);$("rWrap").scrollTo({top:y,behavior:"smooth"})}
+$("rGoBtn").onclick=()=>{const b=+$("rBook").value,c=+$("rChap").value,same=b===R.b&&c===R.c;R.b=b;R.c=c;rShow();
+  if(same)rScrollVerse();else $("rFrame").addEventListener("load",()=>setTimeout(rScrollVerse,150),{once:true});
+  if(!$("rPanel").hidden&&$("rPanel").classList.contains("par"))rPar()};
+$("rVerse").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("rGoBtn").click()}});
+/* 위 메뉴 접기/펼치기 */
+$("rMenu").onclick=()=>{rMenuOpen=!rMenuOpen;$("rMenu").setAttribute("aria-pressed",rMenuOpen);$("rMenu").textContent=rMenuOpen?"▲ 메뉴 접기":"▼ 메뉴 펼치기";$("rWrap").scrollTop=0;rFit()};
+/* 단어 검색 · 평행본문 — 버튼을 누를 때만 위 칸에 열려요 */
+/* 결과 칸도 본문 칸만: 위 메뉴(337px)는 iframe 화면 위쪽에 숨기고, 안쪽 스크롤로 읽어요 */
+function rPanelFit(){const w=$("rPWrap").clientWidth||400,h=$("rPWrap").clientHeight||200,sc=w/BW;
+  $("rPFrame").style.transform="translate("+(-BX*sc)+"px,"+(-BTOP*sc)+"px) scale("+sc+")";$("rPFrame").style.height=(h/sc+BTOP)+"px"}
+function rOpenPanel(kind){const P=$("rPanel");P.hidden=false;P.classList.toggle("par",kind==="par");
+  $("rSearchBtn").setAttribute("aria-pressed",kind==="search");$("rParBtn").setAttribute("aria-pressed",kind==="par");rPanelFit()}
+function rClosePanel(){$("rPanel").hidden=true;$("rSearchBtn").setAttribute("aria-pressed",false);$("rParBtn").setAttribute("aria-pressed",false);rFit()}
+function rPar(){const v=+$("rVerse").value||1;$("rPTitle").textContent="📚 "+BOOKS[R.b][0]+" "+R.c+"장 "+v+"절 평행본문 (절을 바꾸고 이동을 누르면 바뀌어요)";
+  const u="https://www.bskorea.or.kr/bible/korbibParall.php?version="+R.v+"&book="+BSK[R.b]+"&chap="+R.c+"&sec="+v;if($("rPFrame").dataset.u!==u){$("rPFrame").src=u;$("rPFrame").dataset.u=u}}
+$("rSearchBtn").onclick=()=>{if(!$("rPanel").hidden&&!$("rPanel").classList.contains("par"))return rClosePanel();rOpenPanel("search");$("rPTitle").textContent="";$("rKw").focus();rFit()};
+$("rParBtn").onclick=()=>{if(!$("rPanel").hidden&&$("rPanel").classList.contains("par"))return rClosePanel();rOpenPanel("par");rPar();rFit()};
+$("rPClose").onclick=rClosePanel;
+$("rSearchForm").onsubmit=e=>{e.preventDefault();const k=$("rKw").value.trim();if(!k)return;$("rPTitle").textContent="🔍 ‘"+k+"’ 검색 결과 ("+(R.v==="GAE"?"개역개정":"새번역")+", 성경 전체)";
+  const u="https://www.bskorea.or.kr/bible/korbibSearchlist.php?version="+R.v+"&range=all&keyword1="+encodeURIComponent(k);$("rPFrame").src=u;$("rPFrame").dataset.u=u};
+if(window.ResizeObserver){new ResizeObserver(()=>{rFit();if(!$("rPanel").hidden)rPanelFit()}).observe($("reader"))}
 rFill();rShow();
 addEventListener("resize",()=>{if(Math.abs(pen.clientWidth-lastW)<4)return;lastW=pen.clientWidth;lambResize();flock.forEach(f=>f.setSize(adultPx()))});
 
