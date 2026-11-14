@@ -50,6 +50,11 @@ a{color:inherit}
 .tree{position:absolute;bottom:20px;z-index:1}
 .t1{left:2%;width:clamp(60px,12vw,120px)}.t2{left:clamp(48px,10vw,110px);width:clamp(46px,9vw,90px)}
 .t3{right:3%;width:clamp(70px,13vw,130px)}
+/* 양 우리 (비·눈·밤에는 예수님과 양 떼가 이 안에 머묾) */
+.barn,.barnF{position:absolute;bottom:0;left:clamp(92px,18vw,215px);width:clamp(190px,24vw,280px);pointer-events:none}
+.barn{z-index:1}.barn svg,.barnF svg{display:block;width:100%;height:auto;overflow:visible}
+.barnF{z-index:3;opacity:0;transition:opacity .9s}.barnF.on{opacity:1}
+.barn .glow{opacity:0;transition:opacity 2.5s}html.sc-night .barn .glow,html.sc-dusk .barn .glow{opacity:1}
 /* ranch */
 .ranch{position:relative;z-index:2;max-width:980px;margin:0 auto;padding:30px 16px 20px;display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,5vw,48px) clamp(14px,3vw,36px)}
 .ranch.has-side{max-width:1220px;grid-template-columns:1fr 1fr minmax(0,.62fr)}
@@ -162,6 +167,42 @@ html.sc-night .tree,html.sc-night .hills,html.sc-night .front{filter:brightness(
   <svg class="tree t1" viewBox="0 0 60 100"><rect x="26" y="70" width="8" height="30" fill="#8a5528"/><path d="M30 2L6 40h12L2 66h14L0 84h60L44 66h14L42 40h12Z" fill="#3f8f4a" stroke="#2d6b36" stroke-width="2" stroke-linejoin="round"/></svg>
   <svg class="tree t2" viewBox="0 0 60 100"><rect x="26" y="70" width="8" height="30" fill="#8a5528"/><path d="M30 6L8 42h12L4 66h14L2 84h56L42 66h14L40 42h12Z" fill="#5aa957" stroke="#3b7d3c" stroke-width="2" stroke-linejoin="round"/></svg>
   <svg class="tree t3" viewBox="0 0 100 100"><path d="M46 100V60l-12-10M50 70l14-12" stroke="#8a5528" stroke-width="7" fill="none" stroke-linecap="round"/><circle cx="40" cy="38" r="24" fill="#6fbf5a"/><circle cx="64" cy="34" r="22" fill="#86cf6a"/><circle cx="52" cy="18" r="18" fill="#7ac862"/><circle cx="72" cy="54" r="14" fill="#6fbf5a"/></svg>
+  <div class="barn" id="barn"><svg viewBox="0 0 280 190" aria-hidden="true">
+    <defs><radialGradient id="bglow"><stop offset="0" stop-color="#ffe7a0" stop-opacity=".95"/><stop offset=".35" stop-color="#ffd36b" stop-opacity=".45"/><stop offset="1" stop-color="#ffd36b" stop-opacity="0"/></radialGradient></defs>
+    <g stroke="#7a5a3c" stroke-width="2.5" stroke-linejoin="round">
+      <path d="M22 18H258L232 42H48Z" fill="#b98d5d"/>
+      <path d="M48 42H232V164H48Z" fill="#dcb886"/>
+      <path d="M22 18L48 42V164L22 190Z" fill="#c69b69"/><path d="M258 18L232 42V164L258 190Z" fill="#c69b69"/>
+      <path d="M48 164H232L258 190H22Z" fill="#e9c46a"/>
+    </g>
+    <g stroke="#b48d5f" stroke-width="1.6" fill="none">
+      <path d="M78 44V162M108 44V162M138 44V162M168 44V162M198 44V162"/>
+      <path d="M30 34V174M39 40V182M249 34V174M240 40V182"/><path d="M60 22L56 40M100 22L98 40M140 22V40M180 22L182 40M220 22L224 40"/>
+    </g>
+    <g stroke="#7a5a3c" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M48 92H232" fill="none" stroke-width="5"/><path d="M48 92H232" fill="none" stroke="#c39a66" stroke-width="2.5"/>
+      <path d="M50 60L72 44M230 60L208 44" fill="none" stroke-width="4"/>
+      <path d="M174 164Q172 136 196 130Q214 120 230 132V164Z" fill="#f0cf6e"/>
+      <path d="M182 150l8-6M196 144l9 4M212 138l6 8M188 160l10-4" fill="none" stroke="#c99a3a" stroke-width="1.6"/>
+      <path d="M56 164V128l14 0V164" fill="#c79a5e"/>
+    </g>
+    <g class="glow"><circle cx="66" cy="74" r="44" fill="url(#bglow)"/><path d="M66 58v6" stroke="#5b4636" stroke-width="2"/><rect x="60" y="64" width="12" height="16" rx="3" fill="#ffd36b" stroke="#5b4636" stroke-width="2"/></g>
+    <g fill="#d9b98a" stroke="#7a5a3c" stroke-width="3" stroke-linejoin="round">
+      <path d="M0 0H280V18H0Z"/><path d="M0 0H22V190H0Z"/><path d="M258 0H280V190H258Z"/>
+    </g>
+    <path d="M6 4V186M14 4V186M266 4V186M274 4V186M40 2V16M80 2V16M120 2V16M160 2V16M200 2V16M240 2V16" stroke="#bf9a6a" stroke-width="1.4" fill="none"/>
+  </svg></div>
+  <div class="barnF" id="barnF"><svg viewBox="0 0 280 190" aria-hidden="true">
+    <g fill="none" stroke-linecap="round">
+      <path d="M10 160Q60 152 120 158M160 158Q220 152 272 160" stroke="#6e5236" stroke-width="6"/>
+      <path d="M10 160Q60 152 120 158M160 158Q220 152 272 160" stroke="#a37b52" stroke-width="3"/>
+      <path d="M12 176Q62 170 120 175M160 175Q220 170 270 176" stroke="#6e5236" stroke-width="6"/>
+      <path d="M12 176Q62 170 120 175M160 175Q220 170 270 176" stroke="#a37b52" stroke-width="3"/>
+      <path d="M14 150V190M40 147V190M66 146V190M92 147V190M118 149V190M162 149V190M188 147V190M214 146V190M240 147V190M266 150V190" stroke="#6e5236" stroke-width="5"/>
+      <path d="M14 150V190M40 147V190M66 146V190M92 147V190M118 149V190M162 149V190M188 147V190M214 146V190M240 147V190M266 150V190" stroke="#b88a5a" stroke-width="2.4"/>
+    </g>
+    <g stroke="#6b7c86" stroke-width="2.5" stroke-linejoin="round"><path d="M126 176H160L156 190H130Z" fill="#cfd8dc"/><path d="M129 178H157" stroke="#7fb3d5" stroke-width="3"/></g>
+  </svg></div>
 </div>
 
 <main class="ranch" id="ranch"></main>
@@ -312,14 +353,34 @@ function draw(){flock.forEach((f,i)=>{f.el.style.left=sheepX(i)+"px";face(f.el,d
 function all(m){flock.forEach(f=>mode(f.el,m));mode(J.el,m)}
 all("walk");face(J.el,dir);draw();
 let last=performance.now();
+/* 비·눈이 오거나 밤이 되면 우리(왼쪽 집)로 들어가 머물고, 그치면 다시 나와서 몰고 다님 */
+const barn=document.getElementById("barn"),barnF=document.getElementById("barnF"),R=document.documentElement;
+const shelterNow=()=>!!barn&&(R.classList.contains("wx-wet")||R.classList.contains("wx-snow")||R.classList.contains("sc-night"));
+const SX=flock.map((_,i)=>sheepX(i));let TX=[],TJ=0,first=true;
+const SPOTS=N===3?[.2,.6,.8]:[.18,.58,.72,.86];
+function barnTargets(){const L=barn.offsetLeft,w=barn.offsetWidth;TJ=L+w*.38;TX=flock.map((_,i)=>L+w*SPOTS[i])}
+function moveTo(st){let done=true;flock.forEach((f,i)=>{const d=TX[i]-SX[i];if(Math.abs(d)>st){SX[i]+=Math.sign(d)*st;face(f.el,Math.sign(d));done=false}else{SX[i]=TX[i]}});
+  const d=TJ-jx;if(Math.abs(d)>st){jx+=Math.sign(d)*st;face(J.el,Math.sign(d));done=false}else jx=TJ;return done}
+function settle(){const night=R.classList.contains("sc-night");flock.forEach((f,i)=>{face(f.el,SX[i]<jx?1:-1);mode(f.el,night?"":"graze")});face(J.el,1);mode(J.el,night?"":"graze")}
 function frame(t){const dt=Math.min(.05,(t-last)/1000);last=t;W=lane.clientWidth;const sp=small?13:17;
-  if(phase==="walk"){H+=dir*sp*dt;jx=H-dir*(SPAN+JG);face(J.el,dir);
+  const want=shelterNow();
+  if(want&&phase!=="toBarn"&&phase!=="in"){barnTargets();
+    if(first){flock.forEach((f,i)=>SX[i]=TX[i]);jx=TJ;phase="in";settle();barnF.classList.add("on")}
+    else{if(phase==="walk"||phase==="rest"||phase==="turn")flock.forEach((f,i)=>SX[i]=sheepX(i));phase="toBarn";all("walk")}}
+  else if(!want&&(phase==="toBarn"||phase==="in")){dir=1;H=barn.offsetLeft+barn.offsetWidth+SPAN+20;TX=flock.map((_,i)=>sheepX(i));TJ=H-(SPAN+JG);phase="leave";all("walk");barnF.classList.remove("on")}
+  first=false;
+  if(phase==="toBarn"){barnTargets();if(moveTo(sp*1.6*dt)){phase="in";settle()}else if(Math.abs(SX[0]-TX[0])<90)barnF.classList.add("on")}
+  else if(phase==="in"){if(Math.random()<dt*.15)settle()}
+  else if(phase==="leave"){if(moveTo(sp*1.4*dt)){phase="walk";until=t+rnd(8000,14000);flock.forEach(f=>face(f.el,dir));face(J.el,dir)}}
+  else if(phase==="walk"){H+=dir*sp*dt;jx=H-dir*(SPAN+JG);face(J.el,dir);
     if((dir>0&&H>=W-M)||(dir<0&&H<=M)){H-=dir*SPAN;dir=-dir;jT=H-dir*(SPAN+JG);phase="turn";flock.forEach(f=>mode(f.el,"graze"));mode(J.el,"walk")}
     else if(t>until){phase="rest";until=t+rnd(2500,4500);all("graze")}}
   else if(phase==="rest"){if(t>until){phase="walk";until=t+rnd(8000,14000);all("walk")}}
   else if(phase==="turn"){const d=jT-jx,st=sp*1.8*dt;
     if(Math.abs(d)<=st){jx=jT;face(J.el,dir);phase="rest";until=t+rnd(1200,2200);mode(J.el,"graze")}else{jx+=Math.sign(d)*st;face(J.el,Math.sign(d))}}
-  draw();requestAnimationFrame(frame)}
+  if(phase==="walk"||phase==="rest"||phase==="turn"){flock.forEach((f,i)=>{SX[i]=sheepX(i);f.el.style.left=SX[i]+"px";face(f.el,dir)});J.el.style.left=jx+"px"}
+  else{flock.forEach((f,i)=>f.el.style.left=SX[i]+"px");J.el.style.left=jx+"px"}
+  requestAnimationFrame(frame)}
 if(matchMedia("(prefers-reduced-motion: reduce)").matches)all("");else requestAnimationFrame(frame);
 const SAYS=["나는 선한 목자라 (요 10:11)","내 양은 내 음성을 듣느니라 (요 10:27)","잃은 양을 찾았노라 (눅 15:6)","여호와는 나의 목자시니 (시 23:1)"];
 J.el.addEventListener("click",()=>{const old=J.el.querySelector(".say");if(old)old.remove();const b=document.createElement("span");b.className="say";b.textContent=SAYS[Math.floor(Math.random()*SAYS.length)];J.el.appendChild(b);setTimeout(()=>b.remove(),2600);
