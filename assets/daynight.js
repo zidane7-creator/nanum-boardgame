@@ -157,7 +157,7 @@
     var snow = k === "snow", n = k === "heavy" || k === "storm" ? 220 : k === "rain" ? 120 : snow ? 110 : 0;
     function size() { var r = wxCv.getBoundingClientRect(); wxCv.width = Math.max(1, Math.round(r.width)); wxCv.height = Math.max(1, Math.round(r.height)); }
     size(); ctx.clearRect(0, 0, wxCv.width, wxCv.height); if (!n) return;
-    drops = []; for (var i = 0; i < n; i++) drops.push({ x: Math.random() * wxCv.width, y: Math.random() * wxCv.height, s: snow ? 0.4 + Math.random() * 0.9 : 7 + Math.random() * 6, r: snow ? 1.5 + Math.random() * 2.5 : 0, w: Math.random() * Math.PI * 2 });
+    drops = []; for (var i = 0; i < n; i++) drops.push({ x: Math.random() * wxCv.width, y: Math.random() * wxCv.height, s: snow ? 0.4 + Math.random() * 0.9 : 3 + Math.random() * 2.5, l: 10 + Math.random() * 8, r: snow ? 1.5 + Math.random() * 2.5 : 0, w: Math.random() * Math.PI * 2 });
     var still = matchMedia("(prefers-reduced-motion: reduce)").matches, last = performance.now();
     function draw(t) {
       var dt = Math.min(50, t - last) / 16; last = t; var W = wxCv.width, H = wxCv.height;
@@ -165,7 +165,7 @@
       ctx.clearRect(0, 0, W, H);
       if (snow) { ctx.fillStyle = "rgba(255,255,255,.9)"; drops.forEach(function (d) { if (!still) { d.y += d.s * dt; d.w += 0.02 * dt; d.x += Math.sin(d.w) * 0.4 * dt; if (d.y > H + 4) { d.y = -4; d.x = Math.random() * W; } } ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, 6.3); ctx.fill(); }); }
       else { ctx.strokeStyle = root.classList.contains("sc-night") ? "rgba(190,205,235,.55)" : "rgba(90,120,170,.45)"; ctx.lineWidth = k === "rain" ? 1.2 : 1.5; ctx.beginPath();
-        drops.forEach(function (d) { if (!still) { d.y += d.s * dt; d.x -= d.s * 0.18 * dt; if (d.y > H + 10) { d.y = -12; d.x = Math.random() * (W + 60); } } ctx.moveTo(d.x, d.y); ctx.lineTo(d.x + d.s * 0.18 * 1.4, d.y - d.s * 1.4); }); ctx.stroke(); }
+        drops.forEach(function (d) { if (!still) { d.y += d.s * dt; d.x -= d.s * 0.18 * dt; if (d.y > H + 10) { d.y = -12; d.x = Math.random() * (W + 60); } } ctx.moveTo(d.x, d.y); ctx.lineTo(d.x + d.l * 0.18, d.y - d.l); }); ctx.stroke(); }
       if (!still) wxRaf = requestAnimationFrame(draw);
     }
     wxRaf = requestAnimationFrame(draw);

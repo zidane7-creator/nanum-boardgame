@@ -183,7 +183,7 @@ const SITE="치영의 교회 생활 즐기기";
 const ZONES=[
  {name:"예배",items:[["악보제작","score/"],["주보제작","jubo/"],["설교도우미","sermon/"],["자막스튜디오","subtitle/"],["성경 읽기","bible/"],["묵상저장소","meditation/"]]},
  {name:"교제",items:[["셀교제",null,[["나눔보드게임","board/"],["텔레스트레이션","tele/"]]],["레크리에이션",null,[["성경골든벨"],["OX퀴즈"],["찬양월드컵","worldcup/"],["윷놀이"],["부루마불"],["추수꾼"],["밸런스게임"],["빙고게임"]]]]},
- {name:"잡동사니",items:[["주일에 뭐 먹지?","food/"],["수련회 장소 레이더","retreat/"],["수련회 강사 레이더"],["MT 장소 레이더"],["이미지 제작","image/"]]},
+ {name:"잡동사니",items:[["주일에 뭐 먹지?","food/"],["수련회 장소 레이더","retreat/"],["수련회 강사 레이더"],["MT 장소 레이더"],["이미지 제작","image/"],["사역팀 관리부","team/"]]},
  {name:"Mall",items:[["전자책","ebook/"],["굿즈"],["백드롭"],["말씀카드"],["말씀배경"]]}
  /* 오른쪽 세로 울타리는 {name:"…",items:[],side:1} 로 넣으면 됨 (교회학교·선교·섬김 — 디벨롭 때) */
 ];
@@ -288,7 +288,7 @@ $("list").innerHTML=ZONES.map(z=>'<li><b>'+z.name+'</b> — '+(z.items.length?z.
  let t;const go=()=>{clearTimeout(t);t=setTimeout(fit,60)};
  go();addEventListener("resize",go);if(document.fonts)document.fonts.ready.then(go);setTimeout(go,1200)})();
 </script>
-<script src="assets/daynight.js?v=20261114w"></script>
+<script src="assets/daynight.js?v=20261114x"></script>
 <script>
 /* 예수님이 언덕 위에서 양 떼를 몰고 다님 (앞 양이 길을 내고, 나머지 양과 예수님이 그 길을 따라감) */
 (function(){
