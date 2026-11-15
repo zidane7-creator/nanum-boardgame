@@ -183,9 +183,11 @@
   var SEASON = season();
   ["spring", "summer", "autumn", "winter"].forEach(function (k) { root.classList.toggle("ss-" + k, k === SEASON); });
   var sst = document.createElement("style");
+var P2 = function (ss, a, b) { return "html.ss-" + ss + " .tree.t1 path:not([fill=none]){fill:" + a + "}html.ss-" + ss + " .tree.t2 path:not([fill=none]),html.ss-" + ss + " #scene .tr path:not([fill=none]){fill:" + b + "}"; };
   var R3 = function (sel, a, b, c) { return sel + " circle:nth-of-type(3n+1){fill:" + a + "}" + sel + " circle:nth-of-type(3n+2){fill:" + b + "}" + sel + " circle:nth-of-type(3n){fill:" + c + "}"; };
   sst.textContent =
     /* 봄: 연두 풀밭, 동그란 나무에 벚꽃 */
+    P2("spring", "#5fb84e", "#86cf68") + P2("summer", "#2c7a37", "#3d9443") + P2("autumn", "#b98a32", "#d4a246") +
     "html.ss-spring:not(.sc-night){--sky1:#8ad6f6;--grass:#b4e07a;--grass2:#9ccf63;--pen:#cdeb9b;--scene-grass:#b4e07a}" +
     R3("html.ss-spring .tree.t3", "#f7b6cb", "#f9cadb", "#f29dba") + R3("html.ss-spring #scene .tr", "#f7b6cb", "#f9cadb", "#f29dba") +
     /* 여름: 진한 초록, 쨍한 하늘 */
@@ -198,12 +200,18 @@
     R3("html.ss-autumn .tree.t3", "#f0a03a", "#e8703a", "#f4c24a") + R3("html.ss-autumn #scene .tr", "#f0a03a", "#e8703a", "#f4c24a") +
     "html.ss-autumn .ranch .pen{background-image:radial-gradient(#cfc77a 18%,transparent 20%),radial-gradient(#cfc77a 18%,transparent 20%)!important}" +
     /* 겨울: 눈 덮인 들판, 하얀 나무 */
-    "html.ss-winter:not(.sc-night){--sky1:#a9d4ec;--sky2:#eef6fb;--grass:#e9f0f4;--grass2:#d6e1e8;--pen:#f2f6f9;--scene-grass:#e9f0f4}" +
-    "html.ss-winter.sc-night{--grass:#7c8a98;--grass2:#6a7886;--pen:#9eacb9;--scene-grass:#7c8a98}" +
-    R3("html.ss-winter .tree.t3", "#dbe7ee", "#c9d9e3", "#e8f0f5") + R3("html.ss-winter #scene .tr", "#dbe7ee", "#c9d9e3", "#e8f0f5") +
-    "html.ss-winter .tree.t3 circle,html.ss-winter #scene .tr circle{stroke:#8fa6b6;stroke-width:1.6}" +
-    "html.ss-winter .tree path:not([fill=none]),html.ss-winter #scene .tr path:not([fill=none]){fill:#5d8c74}" +
-    "html.ss-winter .ranch .pen{background-image:radial-gradient(#dde7ee 18%,transparent 20%),radial-gradient(#dde7ee 18%,transparent 20%)!important}" +
+    "html.ss-winter:not(.sc-night){--sky1:#a3cfe8;--sky2:#eaf3f8;--grass:#cdc69a;--grass2:#b8b081;--pen:#e0dbb7;--scene-grass:#cdc69a}" +
+    "html.ss-winter.sc-night{--grass:#66644c;--grass2:#57553f;--pen:#a09c80;--scene-grass:#66644c}" +
+    "html.ss-winter .ranch .pen{background-image:radial-gradient(#cbc493 18%,transparent 20%),radial-gradient(#cbc493 18%,transparent 20%)!important}" +
+    /* 잎이 다 떨어진 나무: 잎(동그라미·뾰족한 잎)을 숨기고 가지를 보여 줌 */
+    ".tree .bare,#scene .tr .bare{display:none}" +
+    "html.ss-winter:not(.wx-snow) .tree .bare,html.ss-winter:not(.wx-snow) #scene .tr .bare{display:inline}" +
+    "html.ss-winter:not(.wx-snow) .tree circle,html.ss-winter:not(.wx-snow) #scene .tr circle,html.ss-winter:not(.wx-snow) .tree path:not([fill=none]),html.ss-winter:not(.wx-snow) #scene .tr path:not([fill=none]){opacity:0}" +
+    /* 눈 오는 날에만: 하얀 들판 + 눈 덮인 나무 (계절과 상관없이) */
+    "html.wx-snow:not(.sc-night){--grass:#eef3f6;--grass2:#dbe5eb;--pen:#f4f7f9;--scene-grass:#eef3f6}" +
+    "html.wx-snow.sc-night{--grass:#8593a0;--grass2:#73818e;--pen:#a7b4bf;--scene-grass:#8593a0}" +
+    "html.wx-snow .ranch .pen{background-image:radial-gradient(#dde6ec 18%,transparent 20%),radial-gradient(#dde6ec 18%,transparent 20%)!important}" +
+    "html.wx-snow .tree circle,html.wx-snow #scene .tr circle,html.wx-snow .tree path:not([fill=none]),html.wx-snow #scene .tr path:not([fill=none]){fill:#f3f7fa!important;stroke:#9cb0bf;stroke-width:1.6}" +
     /* 떨어지는 꽃잎·낙엽·눈송이, 여름밤 반딧불 */
     ".ssfx{position:absolute;inset:0;pointer-events:none;overflow:hidden}" +
     ".ssfx i{position:absolute;top:-24px;display:block;font-style:normal;animation:ssfall linear infinite;will-change:transform}" +
@@ -216,13 +224,16 @@
     "html.wx-wet .ssfx,html.wx-snow .ssfx i.sn{display:none}" +
     "@media (prefers-reduced-motion:reduce){.ssfx{display:none}}";
   document.head.appendChild(sst);
+  var BARE_PINE = '<g class="bare" fill="none" stroke="#7a4a22" stroke-linecap="round"><path fill="none" d="M30 74V12" stroke-width="5"/><path fill="none" d="M30 22l-8 6M30 22l8 6M30 34l-13 8M30 34l13 8M30 47l-17 10M30 47l17 10M30 60l-20 11M30 60l20 11" stroke-width="2.6"/></g>';
+  var BARE_ROUND = '<g class="bare" fill="none" stroke="#8a5528" stroke-linecap="round"><path fill="none" d="M47 64L41 30M48 62l13-30M41 30l-14-11M41 30l3-18M61 32l14-10M61 32l-2-18M37 48l-17-6M58 48l18-7M27 19l-6-6M75 22l6-7" stroke-width="3.6"/></g>';
+  function bareTrees() { var L = document.querySelectorAll(".tree, #scene .tr"); for (var i = 0; i < L.length; i++) { var t = L[i]; if (t.querySelector(".bare")) continue; var vb = t.getAttribute("viewBox") || ""; t.insertAdjacentHTML("beforeend", /^0 0 60 /.test(vb) ? BARE_PINE : BARE_ROUND); } }
   function mountSeason() {
+    bareTrees();
     var host = document.getElementById("scene") || document.querySelector(".sky"); if (!host || host.querySelector(".ssfx")) return;
     var fx = document.createElement("div"); fx.className = "ssfx"; fx.setAttribute("aria-hidden", "true");
     var night = root.classList.contains("sc-night"), n = 0, h = "", r = function (a, b) { return a + Math.random() * (b - a); };
     if (SEASON === "spring") { n = 16; for (var i = 0; i < n; i++) h += '<i class="pt" style="left:' + r(0, 100).toFixed(1) + '%;animation-duration:' + r(11, 19).toFixed(1) + 's;animation-delay:-' + r(0, 19).toFixed(1) + 's;opacity:' + r(.6, .95).toFixed(2) + '"></i>'; }
     else if (SEASON === "autumn") { var L = ["🍂", "🍁", "🍂"]; n = 12; for (var j = 0; j < n; j++) h += '<i class="lf" style="left:' + r(0, 100).toFixed(1) + '%;font-size:' + r(12, 20).toFixed(0) + 'px;animation-duration:' + r(12, 20).toFixed(1) + 's;animation-delay:-' + r(0, 20).toFixed(1) + 's">' + L[j % 3] + '</i>'; }
-    else if (SEASON === "winter") { n = 22; for (var k = 0; k < n; k++) h += '<i class="sn" style="left:' + r(0, 100).toFixed(1) + '%;width:' + r(3, 7).toFixed(1) + 'px;height:auto;aspect-ratio:1;animation-duration:' + r(14, 24).toFixed(1) + 's;animation-delay:-' + r(0, 24).toFixed(1) + 's;opacity:' + r(.6, 1).toFixed(2) + '"></i>'; }
     else if (SEASON === "summer" && night) { n = 10; for (var q = 0; q < n; q++) h += '<i class="ff" style="left:' + r(5, 95).toFixed(1) + '%;bottom:' + r(4, 40).toFixed(1) + '%;animation-duration:' + r(4, 8).toFixed(1) + 's;animation-delay:-' + r(0, 8).toFixed(1) + 's"></i>'; }
     if (!h) return; fx.innerHTML = h;
     var wx = host.querySelector(".wx"); if (wx) host.insertBefore(fx, wx); else host.appendChild(fx);
