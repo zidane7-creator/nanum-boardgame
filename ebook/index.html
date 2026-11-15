@@ -91,6 +91,9 @@ h1{font-weight:normal;text-align:center;font-size:clamp(30px,7vw,44px);margin:6p
 .f textarea{min-height:110px;resize:vertical}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 @media (max-width:520px){.row2{grid-template-columns:1fr}}
+.blist{display:flex;flex-direction:column;gap:6px;max-height:300px;overflow:auto}
+.brow{display:flex;justify-content:space-between;align-items:center;gap:8px;border:1.5px solid #e6d6b8;border-radius:12px;padding:6px 10px;background:#fffdf7}
+.brow.off{opacity:.55}.brow .bcode{font-family:ui-monospace,Consolas,monospace;letter-spacing:1px;font-size:14px}
 .codebox{font-size:22px;letter-spacing:2px;background:#fff3cf;border:2px dashed var(--gold);border-radius:12px;padding:8px 12px;text-align:center;font-family:ui-monospace,Consolas,monospace}
 .hint{font-size:13px;opacity:.7;line-height:1.55}
 .warn{font-size:13px;background:#fff0ec;border:2px solid #f3b7aa;border-radius:12px;padding:8px 10px;line-height:1.55}
@@ -163,6 +166,24 @@ async function lock(bytes,code){const salt=crypto.getRandomValues(new Uint8Array
 async function unlock(buf,code){const u=new Uint8Array(buf);if(u[0]!==69||u[1]!==66||u[2]!==75||u[3]!==49)throw new Error("format");
   return crypto.subtle.decrypt({name:"AES-GCM",iv:u.slice(20,32)},await keyFrom(code,u.slice(4,20)),u.slice(32))}
 
+/* ---------- 구매자마다 다른 열람 코드 ----------
+   책 파일은 '책 코드'(관리자만 아는 코드)로 잠겨 있어요.
+   구매자 코드마다 '열쇠 쪽지'를 만들어 keys/<책id>.json 에 둬요: 쪽지 = 구매자 코드로 잠근 책 코드.
+   구매자는 자기 코드로 쪽지를 열어 책 코드를 얻고, 그걸로 책을 열어요.
+   쪽지를 지우면(사용 중지) 그 코드로는 더 이상 열리지 않아요. 구매자 이름·코드 메모는 책 코드로 잠가서 관리자만 볼 수 있어요. */
+const hex=u=>[...new Uint8Array(u)].map(x=>x.toString(16).padStart(2,"0")).join("");
+const unb64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function slipId(bookId,code){return hex(await crypto.subtle.digest("SHA-256",new TextEncoder().encode("ebk:"+bookId+":"+normCode(code)))).slice(0,24)}
+const keysFile=id=>"keys/"+id+".json";
+async function readKeys(id){const k=await readJSON(keysFile(id),null);return k&&Array.isArray(k.list)?k:null}
+async function memoKey(master,salt){return keyFrom(master,salt)}
+async function sealMemo(key,obj){const iv=crypto.getRandomValues(new Uint8Array(12));const ct=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv},key,new TextEncoder().encode(JSON.stringify(obj))));const o=new Uint8Array(12+ct.length);o.set(iv);o.set(ct,12);return b64bytes(o)}
+async function openMemo(key,b){try{const u=unb64(b);return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:"AES-GCM",iv:u.slice(0,12)},key,u.slice(12))))}catch(_){return null}}
+/* 구매자가 넣은 코드 → 책 코드. 구매자 코드가 아니면(예전 공용 코드) 그대로 돌려줌 */
+async function resolveCode(b,code){const K=await readKeys(b.id);if(!K)return{master:code};const id=await slipId(b.id,code),e=K.list.find(x=>x.id===id);
+  if(!e)return{master:code};if(e.off||!e.s)return{off:true};
+  try{return{master:new TextDecoder().decode(await unlock(unb64(e.s).buffer,code)),buyer:true}}catch(_){return{master:code}}}
+
 /* ---------- 책 모양 ---------- */
 const SHADOW='<svg class="ls" viewBox="0 0 110 140" preserveAspectRatio="none" aria-hidden="true"><polygon points="70,0 110,40 110,140 40,140 0,100 70,100" fill="rgba(0,0,0,.22)"/></svg>';
 function bookHTML(src,stage){const b='<div class="bk">'+SHADOW+'<div class="bkc">'+(src?'<img src="'+esc(src)+'" alt="">':'<span class="ph">📕</span>')+'</div><div class="bkp"></div><i class="rib"></i></div>';return stage?'<div class="stage">'+b+'</div>':b}
@@ -204,7 +225,8 @@ function openBook(id){const b=BOOKS.find(x=>x.id===id);if(!b)return;const has=mi
     <div class="acts">${b.price>0?(has?'<button class="go" id="bOpenMine">📖 내 책 열기</button>':'<button class="pri" id="bBuy">🛒 구매하기</button><button id="bCode">🔑 열람 코드 넣기</button>'):'<button class="go" id="bFree">📥 무료로 받기</button>'}</div>
     ${b.toc?'<div class="sect"><h4>📑 목차</h4><div class="desc">'+esc(b.toc)+'</div></div>':""}
     ${b.bio?'<div class="sect"><h4>✍️ 지은이 소개</h4><div class="desc">'+esc(b.bio)+'</div></div>':""}
-    ${adm?`<div class="step"><h3>🔧 관리자</h3>${b.price>0?`<div class="hint">이 책의 열람 코드 (입금 확인 후 구매자에게 문자로 보내 주세요)</div><div class="codebox">${code?esc(code):"이 브라우저에 저장된 코드가 없어요"}</div>`:""}
+    ${adm?`<div class="step"><h3>🔧 관리자</h3>${b.price>0?`<div class="acts" style="margin-top:0"><button class="pri" id="bBuyers">👥 구매자 코드 만들기·관리</button></div><div class="hint">입금을 확인하면 여기서 <b>그 사람만의 코드</b>를 만들어 보내 주세요. 코드가 퍼지면 누구 코드인지 알 수 있고, 그 코드만 중지할 수 있어요.</div>
+      <details style="margin-top:8px"><summary class="hint" style="cursor:pointer">책 코드 (공용 · 구매자에게 보내지 마세요)</summary><div class="codebox">${code?esc(code):"이 브라우저에 저장된 코드가 없어요"}</div><div class="hint">책 파일을 잠근 원래 코드예요. 예전에 이 코드를 받은 분들은 계속 열 수 있어요.</div></details>`:""}
       <div class="acts"><button class="sm" id="bEdit">✏️ 정보 고치기</button><button class="sm" id="bDel">🗑️ 매대에서 내리기</button>${code?'<button class="sm" id="bCopyCode">코드 복사</button>':""}</div></div>`:""}
    </div></div>`,m=>{
     const q=s=>m.querySelector(s);
@@ -214,7 +236,37 @@ function openBook(id){const b=BOOKS.find(x=>x.id===id);if(!b)return;const has=mi
     if(q("#bFree"))q("#bFree").onclick=()=>getBook(b,null);
     if(q("#bEdit"))q("#bEdit").onclick=()=>editBook(b);
     if(q("#bDel"))q("#bDel").onclick=()=>delBook(b);
-    if(q("#bCopyCode"))q("#bCopyCode").onclick=()=>copy(code)})}
+    if(q("#bCopyCode"))q("#bCopyCode").onclick=()=>copy(code);
+    if(q("#bBuyers"))q("#bBuyers").onclick=()=>buyers(b)})}
+/* 관리자: 구매자 코드 만들기 / 목록 / 사용 중지 */
+async function masterFor(b){let c=adminCodes()[b.id];if(c)return normCode(c);
+  c=prompt("이 책을 올릴 때 정한 '책 코드'를 넣어 주세요 (이 브라우저에 한 번만 저장해요)");if(!c)return null;
+  const done=busy("책 코드를 확인하는 중…");try{await unlock(await readFile(b.file),c);done();setAdminCode(b.id,normCode(c).replace(/^(.{5})/,"$1-"));return normCode(c)}catch(_){done();toast("책 코드가 맞지 않아요",4000);return null}}
+async function buyers(b,fresh){const master=await masterFor(b);if(!master)return;const done=busy("구매자 코드를 불러오는 중…");
+  let K;try{K=(await readKeys(b.id))||{v:1,ms:b64bytes(crypto.getRandomValues(new Uint8Array(16))),list:[]}}catch(e){done();ghErr("불러오기",e);return}
+  const mk=await memoKey(master,unb64(K.ms));const rows=[];for(const e of K.list)rows.push({e,m:(e.m&&await openMemo(mk,e.m))||{}});done();
+  const site=location.origin+location.pathname;
+  const smsOf=c=>"[전자책] "+b.title+"\n열람 코드: "+c+"\n"+site+" 에서 책을 누르고 '열람 코드 넣기'에 넣어 주세요. (나만 쓰는 코드예요)";
+  const live=rows.filter(r=>!r.e.off).length;
+  modal(`<h2>👥 구매자 코드<button class="sm x" data-close>✕</button></h2><p><b>${esc(b.title)}</b> · 사용 중 ${live}개</p>
+    <div class="step"><h3>새 구매자 코드 만들기</h3><div class="f"><label>구매자 이름 (입금자명) <input id="bnName" maxlength="30" placeholder="예) 홍길동"></label></div>
+      <div class="acts"><button class="go" id="bnMake">🔑 코드 만들기</button></div><p class="hint">이름은 책 코드로 잠가서 저장돼서 관리자만 볼 수 있어요.</p>
+      ${fresh?`<div class="codebox" style="margin-top:8px">${esc(fresh.code)}</div><div class="hint" style="white-space:pre-wrap;background:#fffaf0;border-radius:10px;padding:6px 10px;margin-top:6px">${esc(smsOf(fresh.code))}</div>
+      <div class="acts"><button class="sm" id="bnCopy">코드 복사</button><button class="sm" id="bnCopyMsg">보낼 문자 복사</button></div><p class="hint">사이트에 반영되는 데 1~2분 걸려요. 그 뒤부터 이 코드로 열려요.</p>`:""}</div>
+    <div class="step"><h3>만든 코드 (${rows.length})</h3>${rows.length?`<div class="blist">${[...rows].reverse().map(r=>`<div class="brow${r.e.off?" off":""}"><div><b>${esc(r.m.name||"(이름 없음)")}</b> <span class="hint">${new Date(r.e.c||0).toLocaleDateString("ko-KR")}${r.e.off?" · 중지됨":""}</span><div class="bcode">${esc(r.m.code||"")}</div></div>
+      ${r.e.off?"":`<span class="acts" style="margin:0"><button class="sm" data-cp="${esc(r.m.code||"")}">복사</button><button class="sm" data-off="${esc(r.e.id)}">사용 중지</button></span>`}</div>`).join("")}</div>`:'<p class="hint">아직 만든 구매자 코드가 없어요.</p>'}</div>`,m=>{
+    const q=s=>m.querySelector(s);q("#bnName").focus();
+    if(fresh){q("#bnCopy").onclick=()=>copy(fresh.code);q("#bnCopyMsg").onclick=()=>copy(smsOf(fresh.code))}
+    m.querySelectorAll("[data-cp]").forEach(x=>x.onclick=()=>copy(x.dataset.cp));
+    q("#bnName").onkeydown=e=>{if(e.key==="Enter")q("#bnMake").click()};
+    q("#bnMake").onclick=async()=>{const name=q("#bnName").value.trim();if(!name){toast("구매자 이름을 적어 주세요");return}
+      const d=busy("코드를 만드는 중…");try{const c=newCode(),cur=(await readKeys(b.id))||K;
+        cur.ms=cur.ms||K.ms;cur.list=cur.list||[];
+        cur.list.push({id:await slipId(b.id,c),s:b64bytes(await lock(new TextEncoder().encode(master),c)),m:await sealMemo(mk,{name,code:c}),c:Date.now()});
+        await GH.commit("전자책 구매자 코드 추가: "+b.title,[{path:keysFile(b.id),b64:b64txt(JSON.stringify(cur))}]);d();buyers(b,{code:c})}catch(e){d();ghErr("코드 만들기",e)}};
+    m.querySelectorAll("[data-off]").forEach(x=>x.onclick=async()=>{if(!confirm("이 코드를 사용 중지할까요? 이 코드로는 더 이상 책이 열리지 않아요. (이미 내려받은 PDF는 되돌릴 수 없어요)"))return;
+      const d=busy("중지하는 중…");try{const cur=(await readKeys(b.id))||K;const e=cur.list.find(z=>z.id===x.dataset.off);if(e){e.off=Date.now();delete e.s}
+        await GH.commit("전자책 구매자 코드 중지: "+b.title,[{path:keysFile(b.id),b64:b64txt(JSON.stringify(cur))}]);d();toast("사용 중지했어요. 1~2분 뒤부터 막혀요",4000);buyers(b)}catch(e){d();ghErr("중지",e)}})})}
 async function copy(t){try{await navigator.clipboard.writeText(t);toast("복사했어요")}catch(_){toast("복사하지 못했어요")}}
 function qr(el,text){el.innerHTML="";try{new QRCode(el,{text,width:340,height:340,correctLevel:QRCode.CorrectLevel.M})}catch(_){el.textContent="QR을 만들지 못했어요"}}
 function buy(b){
@@ -249,7 +301,9 @@ function enterCode(b){modal(`<h2>🔑 열람 코드 넣기<button class="sm x" d
 async function tryCode(b,code){if(normCode(code).length<6){toast("열람 코드를 확인해 주세요");return}const ok=await getBook(b,code,true);if(ok){setMine(b.id,normCode(code));render()}}
 async function getBook(b,code,quietFail){const done=busy("책을 준비하는 중…");
   try{const buf=await readFile(b.file);let pdf;
-    if(b.price>0){try{pdf=await unlock(buf,code)}catch(_){done();toast("열람 코드가 맞지 않아요. 받은 코드를 다시 확인해 주세요",4000);return false}}else pdf=buf;
+    if(b.price>0){const r=await resolveCode(b,code);
+      if(r.off){done();toast("사용이 중지된 열람 코드예요. 판매자에게 문의해 주세요",4500);return false}
+      try{pdf=await unlock(buf,r.master)}catch(_){done();toast("열람 코드가 맞지 않아요. 받은 코드를 다시 확인해 주세요 (방금 받은 코드라면 1~2분 뒤 다시 해 보세요)",5000);return false}}else pdf=buf;
     const blob=new Blob([pdf],{type:"application/pdf"}),url=URL.createObjectURL(blob),name=(b.title||"전자책").replace(/[\\/:*?"<>|]+/g," ").trim()+".pdf";
     done();
     modal(`<h2>🎉 책을 받았어요<button class="sm x" data-close>✕</button></h2><p><b>${esc(b.title)}</b></p>
@@ -340,7 +394,7 @@ function editBook(b){modal(`<h2>✏️ 책 정보 고치기<button class="sm x" 
      const nb={...list[i],title:q("#eTitle").value.trim()||b.title,subtitle:q("#eSub").value.trim(),pubDate:q("#eDate").value,author:q("#eAuthor").value.trim(),desc:q("#eDesc").value.trim(),toc:q("#eToc").value.trim(),bio:q("#eBio").value.trim(),updated:Date.now()};if(b.price>0)nb.price=Math.max(100,Math.round(+q("#ePrice").value||b.price));list[i]=nb;
      await GH.commit("전자책 매대: "+nb.title+" 정보 수정",[{path:"index.json",b64:b64txt(JSON.stringify(list,null,1))}]);BOOKS=list;done();closeModal();render();toast("고쳤어요")}catch(e){done();ghErr("저장",e)}}})}
 async function delBook(b){if(!confirm("'"+b.title+"'을(를) 매대에서 내릴까요? 책 파일도 사이트에서 지워져요."))return;const done=busy("내리는 중…");
-  try{const list=(await readJSON("index.json",[])).filter(x=>x.id!==b.id);await GH.commit("전자책 매대: "+b.title+" 내리기",[{path:"index.json",b64:b64txt(JSON.stringify(list,null,1))}],[b.file,b.cover].filter(Boolean));setAdminCode(b.id,null);BOOKS=list;done();closeModal();render();toast("매대에서 내렸어요")}catch(e){done();ghErr("내리기",e)}}
+  try{const list=(await readJSON("index.json",[])).filter(x=>x.id!==b.id);await GH.commit("전자책 매대: "+b.title+" 내리기",[{path:"index.json",b64:b64txt(JSON.stringify(list,null,1))}],[b.file,b.cover,(await readKeys(b.id))?keysFile(b.id):""].filter(Boolean));setAdminCode(b.id,null);BOOKS=list;done();closeModal();render();toast("매대에서 내렸어요")}catch(e){done();ghErr("내리기",e)}}
 
 load();
 </script>
