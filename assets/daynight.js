@@ -137,6 +137,7 @@
     "@keyframes wxflash{0%,93%,100%{opacity:0}94%{opacity:.55}95%{opacity:.1}96%{opacity:.45}97%{opacity:0}}" +
     "html.wx-overcast .sun,html.wx-overcast #scene .sun,html.wx-wet .sun,html.wx-wet #scene .sun,html.wx-snow .sun,html.wx-fog .sun{opacity:.08!important}" +
     "html.wx-cloudy .sun{opacity:.75}" +
+    "html.sc-night .sun,html.sc-night #scene .sun{opacity:0!important}" +
     "html.wx-overcast .cloud,html.wx-wet .cloud,html.wx-overcast #scene .cl,html.wx-wet #scene .cl{opacity:1;filter:grayscale(.3) brightness(.85)}" +
     "html.sc-night.wx-wet .cloud,html.sc-night.wx-overcast .cloud{opacity:.35}" +
     "#wxBadge{position:absolute;left:12px;top:calc(52px + env(safe-area-inset-top,0px));z-index:6;background:rgba(255,255,255,.85);border:2px solid #3b2a20;border-radius:999px;padding:2px 10px;font-size:13px;color:#3b2a20;white-space:nowrap}" +
@@ -176,5 +177,57 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function () { weather(); }); else setTimeout(weather, 0);
   setInterval(function () { weather(); }, 30 * 60000);
 
-  window.siteScene = { sunAltitude: function () { return sunAlt(new Date(), LOC.lat, LOC.lon); }, twilight: function () { return twilight(new Date()); }, phase: phase, weather: function () { return WX; } };
+  /* ---------- 계절: 3~5월 봄, 6~8월 여름, 9~11월 가을, 12~2월 겨울 (미리보기: ?spring ?summer ?autumn ?winter) ---------- */
+  var ssForced = /[?&](spring|summer|autumn|winter)\b/.exec(location.search);
+  function season() { if (ssForced) return ssForced[1]; var m = new Date().getMonth() + 1; return m >= 3 && m <= 5 ? "spring" : m >= 6 && m <= 8 ? "summer" : m >= 9 && m <= 11 ? "autumn" : "winter"; }
+  var SEASON = season();
+  ["spring", "summer", "autumn", "winter"].forEach(function (k) { root.classList.toggle("ss-" + k, k === SEASON); });
+  var sst = document.createElement("style");
+  var R3 = function (sel, a, b, c) { return sel + " circle:nth-of-type(3n+1){fill:" + a + "}" + sel + " circle:nth-of-type(3n+2){fill:" + b + "}" + sel + " circle:nth-of-type(3n){fill:" + c + "}"; };
+  sst.textContent =
+    /* 봄: 연두 풀밭, 동그란 나무에 벚꽃 */
+    "html.ss-spring:not(.sc-night){--sky1:#8ad6f6;--grass:#b4e07a;--grass2:#9ccf63;--pen:#cdeb9b;--scene-grass:#b4e07a}" +
+    R3("html.ss-spring .tree.t3", "#f7b6cb", "#f9cadb", "#f29dba") + R3("html.ss-spring #scene .tr", "#f7b6cb", "#f9cadb", "#f29dba") +
+    /* 여름: 진한 초록, 쨍한 하늘 */
+    "html.ss-summer:not(.sc-night){--sky1:#45bdf2;--sky2:#c9eefc;--grass:#79c64c;--grass2:#62b33d;--pen:#a4da72;--scene-grass:#79c64c}" +
+    R3("html.ss-summer .tree.t3", "#4fae45", "#62c254", "#45a03c") + R3("html.ss-summer #scene .tr", "#4fae45", "#62c254", "#45a03c") +
+    "html.ss-summer:not(.sc-night) .sun,html.ss-summer:not(.sc-night) #scene .sun{filter:saturate(1.3)}" +
+    /* 가을: 누런 풀밭, 단풍 */
+    "html.ss-autumn:not(.sc-night){--sky1:#86c6e8;--sky2:#e6f1f2;--grass:#cfcf6c;--grass2:#b9b553;--pen:#e2dfa0;--scene-grass:#cfcf6c}" +
+    "html.ss-autumn.sc-night{--grass:#6d6a3a;--grass2:#5c5830;--pen:#a8a46c;--scene-grass:#6d6a3a}" +
+    R3("html.ss-autumn .tree.t3", "#f0a03a", "#e8703a", "#f4c24a") + R3("html.ss-autumn #scene .tr", "#f0a03a", "#e8703a", "#f4c24a") +
+    "html.ss-autumn .ranch .pen{background-image:radial-gradient(#cfc77a 18%,transparent 20%),radial-gradient(#cfc77a 18%,transparent 20%)!important}" +
+    /* 겨울: 눈 덮인 들판, 하얀 나무 */
+    "html.ss-winter:not(.sc-night){--sky1:#a9d4ec;--sky2:#eef6fb;--grass:#e9f0f4;--grass2:#d6e1e8;--pen:#f2f6f9;--scene-grass:#e9f0f4}" +
+    "html.ss-winter.sc-night{--grass:#7c8a98;--grass2:#6a7886;--pen:#9eacb9;--scene-grass:#7c8a98}" +
+    R3("html.ss-winter .tree.t3", "#dbe7ee", "#c9d9e3", "#e8f0f5") + R3("html.ss-winter #scene .tr", "#dbe7ee", "#c9d9e3", "#e8f0f5") +
+    "html.ss-winter .tree.t3 circle,html.ss-winter #scene .tr circle{stroke:#8fa6b6;stroke-width:1.6}" +
+    "html.ss-winter .tree path:not([fill=none]),html.ss-winter #scene .tr path:not([fill=none]){fill:#5d8c74}" +
+    "html.ss-winter .ranch .pen{background-image:radial-gradient(#dde7ee 18%,transparent 20%),radial-gradient(#dde7ee 18%,transparent 20%)!important}" +
+    /* 떨어지는 꽃잎·낙엽·눈송이, 여름밤 반딧불 */
+    ".ssfx{position:absolute;inset:0;pointer-events:none;overflow:hidden}" +
+    ".ssfx i{position:absolute;top:-24px;display:block;font-style:normal;animation:ssfall linear infinite;will-change:transform}" +
+    ".ssfx i.pt{width:10px;height:7px;border-radius:70% 0 70% 0;background:#f8bfd2;box-shadow:inset -1px -1px 0 #f09ab8}" +
+    ".ssfx i.sn{width:6px;height:6px;border-radius:50%;background:#fff;box-shadow:0 0 3px rgba(255,255,255,.9)}" +
+    ".ssfx i.lf{font-size:16px;line-height:1}" +
+    ".ssfx i.ff{top:auto;width:5px;height:5px;border-radius:50%;background:#fff6a0;box-shadow:0 0 8px 3px rgba(255,240,120,.7);animation:ssfly ease-in-out infinite}" +
+    "@keyframes ssfall{0%{transform:translate(0,0) rotate(0)}25%{transform:translate(18px,25vh) rotate(90deg)}50%{transform:translate(-10px,50vh) rotate(180deg)}75%{transform:translate(14px,75vh) rotate(270deg)}100%{transform:translate(0,105vh) rotate(360deg)}}" +
+    "@keyframes ssfly{0%,100%{transform:translate(0,0);opacity:0}20%{opacity:1}50%{transform:translate(30px,-26px);opacity:.3}70%{opacity:1}}" +
+    "html.wx-wet .ssfx,html.wx-snow .ssfx i.sn{display:none}" +
+    "@media (prefers-reduced-motion:reduce){.ssfx{display:none}}";
+  document.head.appendChild(sst);
+  function mountSeason() {
+    var host = document.getElementById("scene") || document.querySelector(".sky"); if (!host || host.querySelector(".ssfx")) return;
+    var fx = document.createElement("div"); fx.className = "ssfx"; fx.setAttribute("aria-hidden", "true");
+    var night = root.classList.contains("sc-night"), n = 0, h = "", r = function (a, b) { return a + Math.random() * (b - a); };
+    if (SEASON === "spring") { n = 16; for (var i = 0; i < n; i++) h += '<i class="pt" style="left:' + r(0, 100).toFixed(1) + '%;animation-duration:' + r(11, 19).toFixed(1) + 's;animation-delay:-' + r(0, 19).toFixed(1) + 's;opacity:' + r(.6, .95).toFixed(2) + '"></i>'; }
+    else if (SEASON === "autumn") { var L = ["🍂", "🍁", "🍂"]; n = 12; for (var j = 0; j < n; j++) h += '<i class="lf" style="left:' + r(0, 100).toFixed(1) + '%;font-size:' + r(12, 20).toFixed(0) + 'px;animation-duration:' + r(12, 20).toFixed(1) + 's;animation-delay:-' + r(0, 20).toFixed(1) + 's">' + L[j % 3] + '</i>'; }
+    else if (SEASON === "winter") { n = 22; for (var k = 0; k < n; k++) h += '<i class="sn" style="left:' + r(0, 100).toFixed(1) + '%;width:' + r(3, 7).toFixed(1) + 'px;height:auto;aspect-ratio:1;animation-duration:' + r(14, 24).toFixed(1) + 's;animation-delay:-' + r(0, 24).toFixed(1) + 's;opacity:' + r(.6, 1).toFixed(2) + '"></i>'; }
+    else if (SEASON === "summer" && night) { n = 10; for (var q = 0; q < n; q++) h += '<i class="ff" style="left:' + r(5, 95).toFixed(1) + '%;bottom:' + r(4, 40).toFixed(1) + '%;animation-duration:' + r(4, 8).toFixed(1) + 's;animation-delay:-' + r(0, 8).toFixed(1) + 's"></i>'; }
+    if (!h) return; fx.innerHTML = h;
+    var wx = host.querySelector(".wx"); if (wx) host.insertBefore(fx, wx); else host.appendChild(fx);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mountSeason); else setTimeout(mountSeason, 0);
+
+  window.siteScene = { sunAltitude: function () { return sunAlt(new Date(), LOC.lat, LOC.lon); }, twilight: function () { return twilight(new Date()); }, phase: phase, weather: function () { return WX; }, season: function () { return SEASON; } };
 })();
