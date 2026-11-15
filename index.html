@@ -56,6 +56,10 @@ a{color:inherit}
 .barn{z-index:1}.barn svg,.barnF svg{display:block;width:100%;height:auto;overflow:visible}
 .barnF{z-index:3;opacity:0;transition:opacity .9s}.barnF.on{opacity:1}
 .barn .glow{opacity:0;transition:opacity 2.5s}html.sc-night .barn .glow,html.sc-dusk .barn .glow{opacity:1}
+/* 밤: 언덕은 어둡게, 우리 안은 등불로 조금 밝게 (언덕 전체 어둡게 하는 필터를 상쇄) */
+html.sc-night .barn,html.sc-night .barnF{filter:brightness(1.45) saturate(1.05)}
+html.sc-night .parade{filter:brightness(1.35)}
+.barn .warm{opacity:0;transition:opacity 2.5s}html.sc-night .barn .warm{opacity:1}
 /* ranch */
 .ranch{position:relative;z-index:2;max-width:980px;margin:0 auto;padding:30px 16px 20px;display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,5vw,48px) clamp(14px,3vw,36px)}
 .ranch.has-side{max-width:1220px;grid-template-columns:1fr 1fr minmax(0,.62fr)}
@@ -191,7 +195,7 @@ html.sc-night .tree,html.sc-night .hills,html.sc-night .front{filter:brightness(
       <path d="M182 150l8-6M196 144l9 4M212 138l6 8M188 160l10-4" fill="none" stroke="#c99a3a" stroke-width="1.6"/>
       <path d="M56 164V128l14 0V164" fill="#c79a5e"/>
     </g>
-    <g class="glow"><circle cx="66" cy="74" r="44" fill="url(#bglow)"/><path d="M66 58v6" stroke="#5b4636" stroke-width="2"/><rect x="60" y="64" width="12" height="16" rx="3" fill="#ffd36b" stroke="#5b4636" stroke-width="2"/></g>
+    <rect class="warm" x="48" y="42" width="184" height="122" fill="#ffd27a" opacity="0" style="mix-blend-mode:soft-light"/><g class="glow"><circle cx="66" cy="74" r="44" fill="url(#bglow)"/><path d="M66 58v6" stroke="#5b4636" stroke-width="2"/><rect x="60" y="64" width="12" height="16" rx="3" fill="#ffd36b" stroke="#5b4636" stroke-width="2"/></g>
     <g fill="#d9b98a" stroke="#7a5a3c" stroke-width="3" stroke-linejoin="round">
       <path d="M0 0H280V18H0Z"/><path d="M0 0H22V190H0Z"/><path d="M258 0H280V190H258Z"/>
     </g>
