@@ -183,7 +183,7 @@
   var SEASON = season();
   ["spring", "summer", "autumn", "winter"].forEach(function (k) { root.classList.toggle("ss-" + k, k === SEASON); });
   var sst = document.createElement("style");
-var P2 = function (ss, a, b) { return "html.ss-" + ss + " .tree.t1 path:not([fill=none]){fill:" + a + "}html.ss-" + ss + " .tree.t2 path:not([fill=none]),html.ss-" + ss + " #scene .tr path:not([fill=none]){fill:" + b + "}"; };
+var P2 = function (ss, a, b) { return "html.ss-" + ss + " .tree.t1 path:not([fill=none]){fill:" + a + ";stroke:" + a + "}html.ss-" + ss + " .tree.t2 path:not([fill=none]),html.ss-" + ss + " #scene .tr path:not([fill=none]){fill:" + b + ";stroke:" + b + "}"; };
   var R3 = function (sel, a, b, c) { return sel + " circle:nth-of-type(3n+1){fill:" + a + "}" + sel + " circle:nth-of-type(3n+2){fill:" + b + "}" + sel + " circle:nth-of-type(3n){fill:" + c + "}"; };
   sst.textContent =
     /* 봄: 연두 풀밭, 동그란 나무에 벚꽃 */
