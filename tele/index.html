@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="ko"><head><meta charset="utf-8"><script async src="https://www.googletagmanager.com/gtag/js?id=G-0WTWY3TPES"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-0WTWY3TPES");</script>
+<html lang="ko"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://js.tosspayments.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' data: blob: https://api.github.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://api.open-meteo.com https://api.met.no https://wttr.in https://api.mymemory.translated.net https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.doubleclick.net https://www.google.com https://*.tosspayments.com https://0.peerjs.com wss://0.peerjs.com wss://broker.emqx.io:8084 wss://broker.hivemq.com:8884 https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self' blob:; frame-src 'self' https://www.bskorea.or.kr https://*.tosspayments.com; object-src 'none'; base-uri 'self'; form-action 'self' https://*.tosspayments.com">
+<meta name="referrer" content="strict-origin-when-cross-origin"><script async src="https://www.googletagmanager.com/gtag/js?id=G-0WTWY3TPES"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-0WTWY3TPES");</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>텔레스트레이션 | 치영의 교회 생활 즐기기 · 그림 전달 게임</title>
 <meta name="description" content="교회 소모임·셀모임·청년부에서 아이패드로 함께하는 그림 전달 게임 텔레스트레이션. QR로 방에 초대해 최대 10명이 제시어를 그리고 맞히며 돌려요.">
@@ -104,9 +105,9 @@ canvas.pad{display:block;width:100%;height:auto;border:2px solid var(--line);bor
 <main id="app"></main>
 <div class="wait" id="wait"><div class="card center" style="max-width:420px"><div style="font-size:44px">✋</div><h2>준비 완료!</h2><p class="muted" id="waitTxt">다른 사람을 기다리고 있어요</p><button id="unready">다시 고치기</button></div></div>
 <div id="toast" role="status" aria-live="polite"></div>
-<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js" integrity="sha384-nlUQ8ZqCbvStErob+biJNzSgltf6urV3VGqhfIfzhmg9RXmpeRm76ELw0pYnKlTR" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js" integrity="sha384-8FWZA6BGMXhsfO+BLtrJK0We6gg5o1JyO8xQm6peWDEUs17ACA5ziE/NIAkl9z2k" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js" integrity="sha384-u4uqeACkFcoKl57rBQJHVGDd1pqhW4w8X3WjTu1ZksPdxoLqdt34jpoNkJisE25W" crossorigin="anonymous"></script>
 <script src="words.js"></script>
 <script>
 "use strict";
@@ -455,4 +456,4 @@ addEventListener("beforeunload",e=>{if(isHost&&H.phase!="lobby"||C.phase=="task"
 if(params.get("host")){history.replaceState(null,"",location.pathname);toast("새로고침해서 방이 닫혔어요. 다시 만들어 주세요.",4000)}
 if(typeof Peer=="undefined")renderMsg("게임 연결 도구를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침해 주세요.",true);else renderHome();
 </script>
-<script src="../assets/scene.js?v=20261114x"></script><script src="../assets/home.js"></script></body></html>
+<script src="../assets/scene.js?v=20261115a"></script><script src="../assets/home.js"></script></body></html>

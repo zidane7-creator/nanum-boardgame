@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="ko"><head><meta charset="utf-8"><script async src="https://www.googletagmanager.com/gtag/js?id=G-0WTWY3TPES"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-0WTWY3TPES");</script>
+<html lang="ko"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://js.tosspayments.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' data: blob: https://api.github.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://api.open-meteo.com https://api.met.no https://wttr.in https://api.mymemory.translated.net https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.doubleclick.net https://www.google.com https://*.tosspayments.com https://0.peerjs.com wss://0.peerjs.com wss://broker.emqx.io:8084 wss://broker.hivemq.com:8884 https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self' blob:; frame-src 'self' https://www.bskorea.or.kr https://*.tosspayments.com; object-src 'none'; base-uri 'self'; form-action 'self' https://*.tosspayments.com">
+<meta name="referrer" content="strict-origin-when-cross-origin"><script async src="https://www.googletagmanager.com/gtag/js?id=G-0WTWY3TPES"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-0WTWY3TPES");</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>전자책 매대 | 치영의 교회 생활 즐기기 · 신앙 전자책 PDF</title>
 <meta name="description" content="치영의 교회 생활 즐기기 전자책 매대. 신앙·교회 생활에 도움이 되는 전자책(PDF)을 둘러보고 구매할 수 있어요.">
@@ -116,7 +117,7 @@ h1{font-weight:normal;text-align:center;font-size:clamp(30px,7vw,44px);margin:6p
 <div class="back" id="back"><div class="modal" id="modal" role="dialog" aria-modal="true"></div></div>
 <div class="toast" id="toast"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha384-3zSEDfvllQohrq0PHL1fOXJuC/jSOO34H46t6UQfobFOmxE5BpjjaIJY5F2/bMnU" crossorigin="anonymous"></script>
 <script>
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -217,7 +218,7 @@ function openBook(id){const b=BOOKS.find(x=>x.id===id);if(!b)return;const has=mi
 async function copy(t){try{await navigator.clipboard.writeText(t);toast("복사했어요")}catch(_){toast("복사하지 못했어요")}}
 function qr(el,text){el.innerHTML="";try{new QRCode(el,{text,width:340,height:340,correctLevel:QRCode.CorrectLevel.M})}catch(_){el.textContent="QR을 만들지 못했어요"}}
 function buy(b){
-  const toss=SET.toss?"https://toss.me/"+encodeURIComponent(SET.toss)+"/"+(+b.price||0):"",kakao=SET.kakao||"",phone=String(SET.phone||"").replace(/[^0-9+]/g,"");
+  const toss=SET.toss?"https://toss.me/"+encodeURIComponent(SET.toss)+"/"+(+b.price||0):"",kakao=/^https:\/\//i.test(String(SET.kakao||"").trim())?String(SET.kakao).trim():"",phone=String(SET.phone||"").replace(/[^0-9+]/g,"");
   modal(`<h2>🛒 구매하기<button class="sm x" data-close>✕</button></h2>
    <div><b>${esc(b.title)}</b> · <span style="color:var(--accent)">${won(b.price)}</span></div>
    <div class="step"><h3>① ${won(b.price)} 송금하기</h3>
@@ -284,9 +285,9 @@ $("bSettings").onclick=()=>{modal(`<h2>⚙️ 결제 설정<button class="sm x" 
     try{await GH.commit("전자책 매대: 결제 설정",[{path:"settings.json",b64:b64txt(JSON.stringify(next,null,1))}]);SET=next;done();closeModal();toast("저장했어요. 다른 사람 화면에는 1분쯤 뒤에 반영돼요",4000)}catch(e){done();ghErr("저장",e)}}})};
 
 let PDFJS=null;
-async function pdfjs(){if(PDFJS)return PDFJS;await new Promise((res,rej)=>{const s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";s.onload=res;s.onerror=rej;document.head.appendChild(s)});
+async function pdfjs(){if(PDFJS)return PDFJS;await new Promise((res,rej)=>{const s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";s.integrity="sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e";s.crossOrigin="anonymous";s.onload=res;s.onerror=rej;document.head.appendChild(s)});
   /* 다른 사이트의 worker 파일은 브라우저가 막을 수 있어서, 내용을 받아 이 페이지에서 실행 */
-  try{const t=await (await fetch("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js")).text();window.pdfjsLib.GlobalWorkerOptions.workerSrc=URL.createObjectURL(new Blob([t],{type:"text/javascript"}))}
+  try{const t=await (await fetch("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js",{integrity:"sha384-SnzOobpRMLXZ52iJvZm/C0fYw0OQemTXzTjIsdsfMcrCtCEe9qgzxTd3RSklO5x2"})).text();window.pdfjsLib.GlobalWorkerOptions.workerSrc=URL.createObjectURL(new Blob([t],{type:"text/javascript"}))}
   catch(_){window.pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"}
   return PDFJS=window.pdfjsLib}
 async function pdfCover(bytes){const lib=await pdfjs();const doc=await lib.getDocument({data:bytes.slice(0)}).promise;const pg=await doc.getPage(1);const v=pg.getViewport({scale:1});const sc=600/v.width;const vp=pg.getViewport({scale:sc});
@@ -316,7 +317,7 @@ $("bAdd").onclick=()=>{const code=newCode();let pdfBytes=null,coverBlob=null,pag
      catch(e){done();pdfBytes=null;toast("PDF를 읽지 못했어요. 암호가 걸린 PDF는 풀고 올려 주세요",4500)}};
    q("#uCover").onchange=async()=>{const f=q("#uCover").files[0];if(!f)return;coverBlob=await imgToJpeg(f);q("#uPrev").innerHTML=bookHTML(URL.createObjectURL(coverBlob))};
    q("#uGo").onclick=async()=>{const title=q("#uTitle").value.trim(),price=Math.max(0,Math.round(+q("#uPrice").value||0)),code=q("#uCode").value.trim();
-     if(!pdfBytes){toast("PDF 파일을 골라 주세요");return}if(!title){toast("책 제목을 적어 주세요");return}if(price>0&&normCode(code).length<6){toast("열람 코드는 6자 이상으로 해 주세요");return}
+     if(!pdfBytes){toast("PDF 파일을 골라 주세요");return}if(!title){toast("책 제목을 적어 주세요");return}if(price>0&&normCode(code).length<10){toast("열람 코드는 10자 이상으로 해 주세요 (자동으로 만든 코드를 그대로 쓰면 가장 안전해요)");return}
      const id=Date.now().toString(36)+Math.random().toString(36).slice(2,6),done=busy(price>0?"책을 잠가서 올리는 중…":"책을 올리는 중…");
      try{const fileBytes=price>0?await lock(pdfBytes,code):pdfBytes,filePath="files/"+id+(price>0?".ebk":".pdf"),coverPath="covers/"+id+".jpg";
        const list=await readJSON("index.json",[]),book={id,title,subtitle:q("#uSub").value.trim(),author:q("#uAuthor").value.trim(),price,pubDate:q("#uDate").value,desc:q("#uDesc").value.trim(),toc:q("#uToc").value.trim(),bio:q("#uBio").value.trim(),pages,size:pdfBytes.length,cover:coverPath,file:filePath,created:Date.now(),updated:Date.now()};
@@ -343,6 +344,6 @@ async function delBook(b){if(!confirm("'"+b.title+"'을(를) 매대에서 내릴
 
 load();
 </script>
-<script src="../assets/scene.js?v=20261114x"></script><script src="../assets/home.js"></script>
+<script src="../assets/scene.js?v=20261115a"></script><script src="../assets/home.js"></script>
 <meta property="og:image" content="https://zidane7-creator.github.io/nanum-boardgame/assets/og.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:type" content="website"><meta property="og:site_name" content="치영의 교회 생활 즐기기"><meta property="og:locale" content="ko_KR"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://zidane7-creator.github.io/nanum-boardgame/assets/og.jpg">
 </body></html>

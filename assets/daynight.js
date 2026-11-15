@@ -1,3 +1,5 @@
+/* clickjacking guard: if another site puts this page inside a frame, break out (or hide the page) */
+(function () { try { if (window.top !== window.self) { var same = false; try { same = !!window.top.location.href; } catch (e) {} if (!same) { try { window.top.location = window.location.href; } catch (e) { document.documentElement.style.display = "none"; } } } } catch (e) {} })();
 /* 치영의 교회 생활 즐기기 — 낮/밤 전환 (사이트 공용)
    html 에 sc-day / sc-dusk / sc-night 클래스를 붙인다. 그림은 각 페이지(scene.js, 홈)의 CSS가 맡음.
    주소 끝에 ?night ?dusk ?day 를 붙이면 강제로 볼 수 있음. */
