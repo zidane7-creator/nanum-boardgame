@@ -46,6 +46,8 @@ h2{font-weight:normal;margin:0 0 10px;font-size:21px}
 .tok.fc.me{transform:scale(1.25)}
 .qr svg{width:190px;height:190px;background:#fff;border-radius:12px}.code{font-size:36px;letter-spacing:8px}
 .lob{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:14px;align-items:start}@media (max-width:760px){.lob{grid-template-columns:1fr}}
+.clist{display:flex;flex-direction:column;gap:4px}.ci{background:#fff;border:1.5px solid #e6d6b8;border-radius:10px;padding:4px 10px;display:flex;flex-direction:column}.ci span{font-size:13px;opacity:.8}
+.keeps{display:flex;gap:4px;flex-wrap:wrap;width:100%}.kc{background:#fff3c4;border:1.5px solid #c99a2e;border-radius:8px;padding:0 7px;font-size:12px}
 .rules h3{font-weight:normal;margin:12px 0 4px;color:var(--accent)}.rules{text-align:left;max-height:70vh;overflow:auto;font-size:15px;line-height:1.65}
 .rules .cl{display:flex;flex-wrap:wrap;gap:4px}.rules .cl span{border-radius:8px;padding:0 8px;font-size:13px}
 .wait{text-align:center;font-size:17px;padding:6px}
@@ -123,7 +125,7 @@ main:has(#play:not([hidden])){padding-top:10px;padding-bottom:10px}
 .toast.show{opacity:1;transform:translateX(-50%) scale(1)}
 </style>
 </head><body>
-<div class="top"><a href="../">← 목장</a><span class="ttl">⛵ 바울의 전도여행</span><button class="sm" id="rulesB">📖<span class="lbl"> 규칙</span></button><button class="sm" id="fsB">⛶<span class="lbl"> 전체화면</span></button><button class="sm" id="snd">🔊</button><button class="sm" id="toSetup" hidden>⚙️ 새 게임</button></div>
+<div class="top"><a href="../">← 목장</a><span class="ttl">⛵ 바울의 전도여행</span><button class="sm" id="rulesB">📖<span class="lbl"> 규칙</span></button><button class="sm" id="cardsB">✉️<span class="lbl"> 은혜카드</span></button><button class="sm" id="fsB">⛶<span class="lbl"> 전체화면</span></button><button class="sm" id="snd">🔊</button><button class="sm" id="toSetup" hidden>⚙️ 새 게임</button></div>
 <main>
   <section id="setup">
     <h1 class="sc-sky">바울의 전도여행</h1>
@@ -137,7 +139,7 @@ main:has(#play:not([hidden])){padding-top:10px;padding-bottom:10px}
     </div>
     <div id="lobby"></div>
     <div class="card hint">
-      <b>규칙</b> <button class="sm" onclick="localModal(rulesHTML())">📖 전체 규칙 보기</button><br>
+      <b>규칙</b> <button class="sm" onclick="localModal(rulesHTML())">📖 전체 규칙 보기</button> <button class="sm" onclick="localModal(cardsHTML())">✉️ 은혜카드 전체 보기</button><br>
       · 모두 <b>1,500 달란트</b>를 가지고 <b>예루살렘</b>에서 출발해요. 예루살렘을 지날 때마다 <b>파송 헌금 200</b>을 받아요<br>
       · 주인 없는 도시에 서면 <b>교회를 개척</b>할 수 있어요. 내 도시에 다시 서면 <b>가정교회 → 교회 → 선교센터</b>로 키울 수 있어요<br>
       · 다른 사람의 도시에 서면 그 교회에 <b>선교 후원금</b>을 내요. 같은 색 도시를 모두 가지면 후원금이 두 배예요<br>
@@ -310,8 +312,9 @@ const CARDS=[
  {t:"광야의 외침",d:"세례 요한처럼 바른말을 하다 붙잡혔어요. 빌립보 감옥으로",f:p=>jail(p)}];
 /* 카드 도우미 */
 function go(p,name){const k=SQ.findIndex(x=>x.n===name);return k>=0?moveTo(p,k,true):""}
-function free(p){G.P[p].free++;return"감옥 탈출 카드를 얻었어요"}
-function jail(p){if(G.P[p].free){G.P[p].free--;return"찬양 카드로 감옥을 피했어요"}goJail(p);return"빌립보 감옥으로"}
+function free(p){const P=G.P[p];P.free++;(P.keep=P.keep||[]).push(G.curCard||"감옥 탈출");return"감옥 탈출 카드를 얻어 인물 칸에 놓았어요"}
+function useKeep(p){const P=G.P[p];P.free=Math.max(0,P.free-1);const t=(P.keep||[]).shift();return t||"감옥 탈출"}
+function jail(p){if(G.P[p].free){const t=useKeep(p);return`‘${t}’ 카드로 감옥을 피했어요`}goJail(p);return"빌립보 감옥으로"}
 function pctGain(p,pct,cap){return gain(p,Math.min(cap,Math.round(G.P[p].money*pct/1000)*10))}
 function pctPay(p,pct,cap){return payPool(p,Math.min(cap,Math.round(G.P[p].money*pct/1000)*10))}
 function perCity(p,n){return gain(p,n*ownedBy(p).length)}
@@ -388,12 +391,12 @@ async function land(p){const P=G.P[p],i=P.pos,s=SQ[i];drawBoard();
     if(o.pid===p){if(o.lv<3){G.phase="build";draw()}else toast("선교센터까지 다 세웠어요 🏛️");return}
     const r=rentOf(i),ow=G.P[o.pid];const ok=pay(p,r,o.pid);log(`${P.name} → ${ow.name}: ${s.n} ${LV[o.lv]} 선교 후원금 ${r}`);
     await showModal(`<div class="em">🤝</div><h2>${esc(s.n)} · ${esc(ow.name)}의 ${LV[o.lv]}</h2><p>선교 후원금 <b>${r}</b> 달란트를 냈어요</p>`);if(!ok)return;return}
-  if(s.k==="card"){const c=CARDS[G.deck.shift()];if(!G.deck.length)G.deck=shuffle([...CARDS.keys()]);sCard();G.pending=null;const r=c.f(p);log(`✉️ ${P.name}: ${c.t} — ${r||""}`);
+  if(s.k==="card"){const c=CARDS[G.deck.shift()];if(!G.deck.length)G.deck=shuffle([...CARDS.keys()]);sCard();G.pending=null;G.curCard=c.t;const r=c.f(p);G.curCard=null;log(`✉️ ${P.name}: ${c.t} — ${r||""}`);
     await showModal(`<div class="em">✉️</div><h2>은혜카드 · ${esc(c.t)}</h2><p>${esc(c.d)}</p>`,"gcard");
     if(G.pending){const pd=G.pending;G.pending=null;await stepTo(pd.p,pd.steps);await land(pd.p)}return}
   if(s.k==="tax"){payPool(p,s.amt);log(`🪙 ${P.name}: 성전세 ${s.amt} → 구제함 (${G.pool})`);toast(`🪙 성전세 ${s.amt} → 🕊️ 안식일 쉼터에 쌓였어요 (${G.pool.toLocaleString()})`);return}
   if(s.k==="rest"){const n=G.pool;G.pool=0;if(n){gain(p,n);log(`🕊️ ${P.name}: 안식일 쉼터에서 구제함 ${n}을 받았어요`);await showModal(`<div class="em">🕊️</div><h2>안식일 쉼터</h2><p>구제함에 모인 <b>${n}</b> 달란트를 받았어요!</p>`)}else toast("🕊️ 쉬어 가요 (구제함이 비었어요)");return}
-  if(s.k==="gojail"){if(P.free){P.free--;log(`🎶 ${P.name}: 한밤의 찬양 카드로 감옥을 피했어요`);toast("🎶 찬양 카드로 감옥을 피했어요");return}goJail(p);G.dbl=0;return}}
+  if(s.k==="gojail"){if(P.free){const t=useKeep(p);log(`🎶 ${P.name}: ‘${t}’ 카드로 감옥을 피했어요`);toast(`🎶 ‘${t}’ 카드로 감옥을 피했어요`);return}goJail(p);G.dbl=0;return}}
 function buy(){const p=G.cur,i=G.P[p].pos,s=SQ[i];if(G.P[p].money<s.p){toast("달란트가 모자라요");return}G.P[p].money-=s.p;G.own[i]={pid:p,lv:0};sBuild();log(`🚩 ${G.P[p].name}: ${s.n}에 교회를 개척했어요 (-${s.p})`);G.phase="roll";afterAction()}
 function build(){const p=G.cur,i=G.P[p].pos,s=SQ[i],o=G.own[i],c=buildCost(s);if(G.P[p].money<c){toast("달란트가 모자라요");return}G.P[p].money-=c;o.lv++;sBuild();log(`${LVI[o.lv]} ${G.P[p].name}: ${s.n}에 ${LV[o.lv]}을(를) 세웠어요 (-${c})`);G.phase="roll";afterAction()}
 function skip(){G.phase="roll";afterAction()}
@@ -402,7 +405,7 @@ function endTurn(){if(G.over)return;const al=alive();if(al.length<=1){finish();r
   if(G.endAt&&Date.now()>=G.endAt){finish();return}
   let n=G.cur;do{n=(n+1)%G.P.length}while(G.P[n].out);if(n<=G.cur){G.round++;if(G.rounds&&G.round>G.rounds){finish();return}}
   G.cur=n;G.dbl=0;G.phase="roll";draw()}
-function useFree(){const P=G.P[G.cur];if(!P.free||!P.jail)return;P.free--;P.jail=0;log(`🎶 ${P.name}: 한밤의 찬양 카드로 감옥에서 나왔어요`);draw()}
+function useFree(){const P=G.P[G.cur];if(!P.free||!P.jail)return;const t=useKeep(G.cur);P.jail=0;log(`🎶 ${P.name}: ‘${t}’ 카드로 감옥에서 나왔어요`);draw()}
 function payOut(){const P=G.P[G.cur];if(!P.jail)return;pay(G.cur,50,-1);P.jail=0;log(`${P.name}: 구제함에 50을 내고 감옥에서 나왔어요`);draw()}
 /* 승리 점수 = 지금 달란트 + 가진 도시 값 + 세운 건물 값 */
 const landVal=p=>ownedBy(p).reduce((s,i)=>s+SQ[i].p,0),bldVal=p=>ownedBy(p).reduce((s,i)=>s+G.own[i].lv*buildCost(SQ[i]),0);
@@ -456,14 +459,14 @@ function draw(){if(!G)return;drawBoard();const p=G.cur,P=G.P[p],s=SQ[P.pos];$("p
   else if(G.phase==="buy"){const ok=P.money>=s.p;a=`<div style="width:100%;text-align:center">🚩 <b>${esc(s.n)}</b>에 교회를 개척할까요? (${s.p} 달란트)</div><button class="go" id="bBuy" ${ok?"":"disabled"}>🚩 개척하기</button><button id="bSkip">지나가기</button>`}
   else if(G.phase==="build"){const o=G.own[P.pos],c=buildCost(s),ok=P.money>=c;a=`<div style="width:100%;text-align:center">${LVI[o.lv+1]} <b>${esc(s.n)}</b>에 ${LV[o.lv+1]}을(를) 세울까요? (${c} 달란트)</div><button class="go" id="bBuild" ${ok?"":"disabled"}>세우기</button><button id="bSkip">다음에</button>`}
   else{a=`<button class="pri" id="bRoll" style="font-size:22px;padding:10px 30px" ${G.busy?"disabled":""}>🎲 주사위 굴리기</button>`;
-    if(P.jail){a+=`<button id="bOut" ${P.money>=50?"":"disabled"}>💰 50 내고 나가기</button>`;if(P.free)a+=`<button id="bFree">🎶 찬양 카드 쓰기</button>`}}
+    if(P.jail){a+=`<button id="bOut" ${P.money>=50?"":"disabled"}>💰 50 내고 나가기</button>`;if(P.free)a+=`<button id="bFree">🎶 ‘${esc((P.keep||[])[0]||"감옥 탈출")}’ 카드 쓰기</button>`}}
   if(!G.over&&!canAct())a=`<div class="wait">⏳ <b>${esc(P.name)}</b> 님이 ${G.phase==="buy"?"개척할지 고르고":G.phase==="build"?"건물을 세울지 고르고":"주사위를 굴리고"} 있어요</div>`;
   if(G.over&&MULTI&&!isHost)a=`<div class="wait">방장이 새 게임을 시작할 수 있어요</div>`;
   $("acts").innerHTML=a;
   const on=(id,k)=>{const e=$(id);if(e)e.onclick=()=>act(k)};on("bRoll","roll");on("bBuy","buy");on("bBuild","build");on("bSkip","skip");on("bOut","out");on("bFree","free");
   if($("again"))$("again").onclick=()=>{closeModal();if(MULTI)newGame(H.players.map(x=>({id:x.id,name:x.name})));else newGame()};
   $("plist").innerHTML=G.P.map((q,i)=>{const props=ownedBy(i).map(k=>LVI[G.own[k].lv]+SQ[k].n).join(" ");
-    return`<div class="prow${i===p&&!G.over?" now":""}${q.out?" out":""}" style="--pc:${q.color};flex-wrap:wrap"><span class="face" style="width:32px;height:32px">${face(q.ch??i)}</span><span class="n">${esc(q.name)}${q.free?" 🎶":""}</span><span class="m">💰 ${q.money.toLocaleString()}</span>${props?`<span class="props">${esc(props)}</span>`:""}</div>`}).join("")}
+    return`<div class="prow${i===p&&!G.over?" now":""}${q.out?" out":""}" style="--pc:${q.color};flex-wrap:wrap"><span class="face" style="width:32px;height:32px">${face(q.ch??i)}</span><span class="n">${esc(q.name)}</span><span class="m">💰 ${q.money.toLocaleString()}</span>${(q.keep||[]).length?`<span class="keeps">${q.keep.map(t=>`<span class="kc" title="감옥에서 바로 나갈 수 있는 카드">✉️ ${esc(t)}</span>`).join("")}</span>`:""}${props?`<span class="props">${esc(props)}</span>`:""}</div>`}).join("")}
 
 /* ---------- 남은 시간 ---------- */
 function tleft(){if(!G||!G.endAt)return"";const ms=G.endAt-Date.now();if(ms<=0)return"시간 끝! 이번 차례까지";const m=Math.floor(ms/60000),sec=Math.floor(ms%60000/1000);return`${m}:${String(sec).padStart(2,"0")} 남음`}
@@ -492,6 +495,12 @@ function rulesHTML(){const groups=Object.keys(GRP).map(g=>`<span style="backgrou
    🚨 <b>붙잡힘</b>: 빌립보 감옥으로 가요<br>⛓️ <b>빌립보 감옥</b>: 같은 숫자가 나오면 찬양으로 옥문이 열려 바로 나가요. 50을 내거나 🎶 ‘한밤의 찬양’ 카드를 써도 돼요. 세 번 안에 못 나오면 50을 내고 나가요. (그냥 지나가거나 멈춘 거면 구경만)
   <h3>😢 파산</h3>낼 돈이 모자라면 건물부터 반값에, 그다음 도시를 반값에 자동으로 팔아서 내요. <b>현금도 없고 도시도 다 팔았는데도 낼 수 없으면 파산</b>이에요. 파산한 사람은 게임에서 빠지고, 가졌던 도시는 주인 없는 곳이 돼요.</div>`}
 $("rulesB").onclick=()=>localModal(rulesHTML());
+/* ---------- 은혜카드 전체 보기 ---------- */
+function cardKind(c){const f=c.f.toString();return/free\(/.test(f)?"keep":/jail\(/.test(f)?"jail":/go\(|moveTo|moveBy/.test(f)?"move":/fromAll|fromRich/.test(f)?"from":/toAll|encourage/.test(f)?"give":/payPool|perBuild|pctPay/.test(f)?"pool":"gain"}
+const KIND=[["gain","💰 받아요"],["from","🤝 모두에게서 받아요"],["pool","🪙 구제함에 드려요"],["give","🎁 나눠 줘요"],["move","🗺️ 이동해요"],["keep","🎶 갖고 있다 쓰는 카드 (인물 칸에 놓여요)"],["jail","⛓️ 감옥으로"]];
+function cardsHTML(){return`<div class="rules"><h2 style="text-align:center">✉️ 은혜카드 전체 (${CARDS.length}장)</h2><p class="hint" style="text-align:center;margin:0">카드는 섞어서 차례대로 뽑고, 다 쓰면 다시 섞어요</p>`+
+  KIND.map(([k,lbl])=>{const L=CARDS.filter(c=>cardKind(c)===k);return L.length?`<h3>${lbl} · ${L.length}장</h3><div class="clist">${L.map(c=>`<div class="ci"><b>${esc(c.t)}</b><span>${esc(c.d)}</span></div>`).join("")}</div>`:""}).join("")+`</div>`}
+$("cardsB").onclick=()=>localModal(cardsHTML());
 
 /* ---------- 전체화면 ---------- */
 function fsToggle(){const d=document;if(!d.fullscreenElement&&!d.webkitFullscreenElement){const el=d.documentElement;(el.requestFullscreen||el.webkitRequestFullscreen||function(){}).call(el);d.body.classList.add("fs-on")}
