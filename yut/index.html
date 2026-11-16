@@ -52,6 +52,7 @@ h1{font-weight:normal;text-align:center;font-size:clamp(30px,7vw,44px);margin:6p
 #board .ln{stroke:#c9a675;stroke-width:6;stroke-linecap:round}
 #board .nd{fill:#fffaf0;stroke:#8a6a48;stroke-width:3}
 #board .nd.big{fill:#fff3c4;stroke-width:4}
+#board .nd.start{fill:#ffcfc2;stroke:#e8503a;stroke-width:5}
 #board .lbl{font-size:15px;fill:#8a6a48;text-anchor:middle}
 #board .tok{cursor:pointer;transition:transform .16s ease}
 #board .tok circle.b{stroke:#3b2a20;stroke-width:3}
@@ -96,7 +97,7 @@ h1{font-weight:normal;text-align:center;font-size:clamp(30px,7vw,44px);margin:6p
 .over .card .big{font-size:42px;margin:6px 0}
 </style>
 </head><body>
-<div class="top"><a href="../">← 목장</a><span class="ttl">🎲 윷놀이</span><button class="sm" id="toSetup" hidden>⚙️ 새 게임</button></div>
+<div class="top"><a href="../">← 목장</a><span class="ttl">🎲 윷놀이</span><button class="sm" id="snd" title="소리 켜기/끄기">🔊</button><button class="sm" id="toSetup" hidden>⚙️ 새 게임</button></div>
 <main>
   <section id="setup">
     <h1 class="sc-sky">윷놀이</h1>
@@ -139,6 +140,29 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 let tt;function toast(t,ms=1800){const e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>e.classList.remove("show"),ms)}
 const COLORS=["#3b82c4","#e0504a","#e6a51c","#3f9a45"],NAMES=["청팀","홍팀","황팀","녹팀"];
+
+/* ---------- 효과음 (소리 파일 없이 기기에서 만들어요) ---------- */
+let AC=null,SND=true;try{SND=localStorage.getItem("yut:snd")!=="0"}catch(e){}
+const ac=()=>{if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state==="suspended")AC.resume();return AC};
+["pointerdown","keydown"].forEach(ev=>addEventListener(ev,()=>ac(),{once:true}));
+function noiseBuf(a,sec){const b=a.createBuffer(1,Math.ceil(a.sampleRate*sec),a.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;return b}
+/* 나무 막대가 '딱' 부딪히는 소리 */
+function clack(a,t,f,v){const s=a.createBufferSource();s.buffer=noiseBuf(a,.06);const bp=a.createBiquadFilter();bp.type="bandpass";bp.frequency.value=f;bp.Q.value=6;
+  const g=a.createGain();g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+.06);s.connect(bp).connect(g).connect(a.destination);s.start(t);s.stop(t+.07);
+  const o=a.createOscillator(),og=a.createGain();o.type="triangle";o.frequency.setValueAtTime(f*.55,t);o.frequency.exponentialRampToValueAtTime(f*.35,t+.05);og.gain.setValueAtTime(v*.5,t);og.gain.exponentialRampToValueAtTime(.0001,t+.07);o.connect(og).connect(a.destination);o.start(t);o.stop(t+.08)}
+/* 윷 던지기: 휙 던지고 → 바닥에 우르르 떨어지는 소리 */
+function sndThrow(){if(!SND)return;const a=ac();if(!a)return;const t=a.currentTime;
+  const w=a.createBufferSource();w.buffer=noiseBuf(a,.35);const hp=a.createBiquadFilter();hp.type="bandpass";hp.frequency.setValueAtTime(600,t);hp.frequency.exponentialRampToValueAtTime(2400,t+.3);hp.Q.value=1.2;
+  const wg=a.createGain();wg.gain.setValueAtTime(.0001,t);wg.gain.exponentialRampToValueAtTime(.12,t+.12);wg.gain.exponentialRampToValueAtTime(.0001,t+.34);w.connect(hp).connect(wg).connect(a.destination);w.start(t);w.stop(t+.36);
+  for(let i=0;i<9;i++)clack(a,t+.42+i*.045+Math.random()*.03,1500+Math.random()*1300,.32-i*.025)}
+/* 말 한 칸 이동: 판 위에 '톡' */
+function sndHop(){if(!SND)return;const a=ac();if(!a)return;clack(a,a.currentTime,900+Math.random()*120,.28)}
+/* 잡기: '쿵' + 짧은 하강음 / 들어오기: 딩동 */
+function sndCatch(){if(!SND)return;const a=ac();if(!a)return;const t=a.currentTime,o=a.createOscillator(),g=a.createGain();o.type="sawtooth";o.frequency.setValueAtTime(420,t);o.frequency.exponentialRampToValueAtTime(110,t+.35);
+  g.gain.setValueAtTime(.16,t);g.gain.exponentialRampToValueAtTime(.0001,t+.4);const lp=a.createBiquadFilter();lp.type="lowpass";lp.frequency.value=1200;o.connect(lp).connect(g).connect(a.destination);o.start(t);o.stop(t+.42);clack(a,t,300,.5)}
+function sndHome(){if(!SND)return;const a=ac();if(!a)return;[784,1047,1319].forEach((f,i)=>{const t=a.currentTime+i*.11,o=a.createOscillator(),g=a.createGain();o.type="triangle";o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.16,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.3);o.connect(g).connect(a.destination);o.start(t);o.stop(t+.32)})}
+const sndBtn=()=>{document.getElementById("snd").textContent=SND?"🔊":"🔇"};
+document.getElementById("snd").onclick=()=>{SND=!SND;try{localStorage.setItem("yut:snd",SND?"1":"0")}catch(e){}sndBtn();if(SND)sndHop()};sndBtn();
 
 /* ---------- 설정 ---------- */
 let CFG={teams:2,pieces:4,names:NAMES.slice(),members:["","","",""]};
@@ -200,7 +224,7 @@ function movable(team,v){return groups(team).filter(g=>!(v===-1&&g.home))}
 function rollYut(){const s=[0,1,2,3].map(()=>Math.random()<.5);const flats=s.filter(Boolean).length;
   let v=flats===0?5:flats;if(flats===1&&s[0])v=-1;return{v,s}} /* 0번 막대의 배에 점(빽도 표시) */
 function drawSticks(s,spin){$("sticks").innerHTML=(s||[true,false,true,false]).map((f,i)=>`<div class="stick ${f?"flat":"round"}${f&&i===0?" mark":""}${spin?" spin":""}"></div>`).join("")}
-$("throw").onclick=()=>{if(!G||G.busy||G.throws<=0||G.over)return;G.busy=true;G.throws--;const r=rollYut();
+$("throw").onclick=()=>{if(!G||G.busy||G.throws<=0||G.over)return;G.busy=true;G.throws--;const r=rollYut();sndThrow();
   drawSticks(r.s.map(()=>Math.random()<.5),true);$("result").textContent="";
   setTimeout(()=>{drawSticks(r.s,false);const nm=NAMES_R[r.v];$("result").textContent=nm+"!";G.queue.push(r.v);if(G.queue.length===1)G.sel=0;
     addLog(`${G.teams[G.cur].name} ${thrower()}: ${nm}`);
@@ -223,13 +247,13 @@ function choose(gi){if(!G||G.busy||G.throws>0||!G.queue.length)return;const v=G.
   const steps=v===-1?[back(start,prev)]:path(start,v,prev);
   let i=0;const label=g.home?"새 말":(ps.length>1?ps.map(p=>p.no).join("·")+"번 말(업힘)":ps[0].no+"번 말");
   const hop=()=>{const nx=steps[i];
-    if(nx==="END"){ps.forEach(p=>{p.done=true;p.node=null;p.prev=null});addLog(`${G.teams[G.cur].name} ${label} 들어왔어요! 🏁`);toast(`🏁 ${label} 들어왔어요!`);drawBoard();finishMove(false);return}
-    const before=i===0?start:steps[i-1];ps.forEach(p=>{p.prev=v===-1?null:before;p.node=nx});drawBoard();i++;
+    if(nx==="END"){sndHome();ps.forEach(p=>{p.done=true;p.node=null;p.prev=null});addLog(`${G.teams[G.cur].name} ${label} 들어왔어요! 🏁`);toast(`🏁 ${label} 들어왔어요!`);drawBoard();finishMove(false);return}
+    const before=i===0?start:steps[i-1];ps.forEach(p=>{p.prev=v===-1?null:before;p.node=nx});drawBoard();sndHop();i++;
     if(i<steps.length)setTimeout(hop,230);else land(nx,label)};
   hop()}
 function land(node,label){/* 잡기 / 업기 */
   const foes=G.pieces.filter(p=>!p.done&&p.node===node&&p.team!==G.cur);let caught=false;
-  if(foes.length){const ft=G.teams[foes[0].team].name;foes.forEach(p=>{p.node=null;p.prev=null});caught=true;
+  if(foes.length){const ft=G.teams[foes[0].team].name;foes.forEach(p=>{p.node=null;p.prev=null});caught=true;setTimeout(sndCatch,120);
     addLog(`${G.teams[G.cur].name} ${label}이(가) ${ft} 말 ${foes.length}개를 잡았어요!`);toast(`💥 ${ft} 말을 잡았어요! 한 번 더 던져요`,2400)}
   const mates=G.pieces.filter(p=>!p.done&&p.node===node&&p.team===G.cur);
   if(mates.length>1&&!caught)toast(`🤝 ${mates.length}개가 업혔어요`);
@@ -247,7 +271,7 @@ function drawBoard(){const b=$("board");let h="";
   const seg=(a,c)=>`<line class="ln" x1="${P[a].x}" y1="${P[a].y}" x2="${P[c].x}" y2="${P[c].y}"/>`;
   h+=`<rect x="30" y="30" width="540" height="540" rx="26" fill="#f7e6c4" stroke="#8a6a48" stroke-width="4"/>`;
   h+=seg("o0","o5")+seg("o5","o10")+seg("o10","o15")+seg("o15","o0")+seg("o5","o15")+seg("o10","o0");
-  for(const n in P)h+=`<circle class="nd${BIG.has(n)?" big":""}" cx="${P[n].x}" cy="${P[n].y}" r="${BIG.has(n)?26:15}"/>`;
+  for(const n in P)h+=`<circle class="nd${BIG.has(n)?" big":""}${n==="o0"?" start":""}" cx="${P[n].x}" cy="${P[n].y}" r="${BIG.has(n)?26:15}"/>`;
   h+=`<text class="lbl" x="${Math.min(Math.max(P.o0.x,95),505)}" y="${P.o0.y+44}">참먹이 · 출발</text><text class="lbl" x="${P.C.x}" y="${P.C.y+44}">방</text>`;
   if(G){const can=new Set();const v=G.queue[G.sel];
     if(!G.busy&&G.throws===0&&v!==undefined)movable(G.cur,v).forEach(g=>{if(!g.home)can.add(g.node)});
