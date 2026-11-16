@@ -119,6 +119,13 @@ select{max-width:150px}
 .modal textarea{width:100%;min-height:110px;font-family:var(--mono)}
 .modal .row>label{flex-basis:110px}
 .modal .act{display:flex;justify-content:flex-end;gap:6px;margin-top:6px}
+.arcgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;max-height:60vh;overflow:auto;padding:2px}
+.arcit{border:1px solid var(--line);border-radius:8px;padding:6px;display:flex;flex-direction:column;gap:4px;background:var(--panel)}
+.arcit.cur{outline:2px solid var(--accent,#7a5cff)}
+.arcth{aspect-ratio:4/3;background:#fff;border-radius:6px;display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:30px}
+.arcth img{max-width:100%;max-height:100%;object-fit:contain}
+.arcnm{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.arcdt{font-size:11px;opacity:.65}
+.arcbt{display:flex;flex-wrap:wrap;gap:3px}.arcbt .btn{padding:2px 7px;font-size:12px}
 .keys{display:grid;grid-template-columns:1fr auto;gap:2px 16px}
 .keys kbd{font:11px var(--mono);color:var(--muted)}
 #toast{position:fixed;left:50%;bottom:36px;transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:6px 12px;border-radius:6px;opacity:0;pointer-events:none;transition:opacity .18s;z-index:70;max-width:80vw}
@@ -169,7 +176,7 @@ body.outline #content image{display:none}
 @media (max-width:820px){.cutbody{flex-direction:column}.cutside{flex:0 0 auto;max-height:38%}}
 </style>
 <div id="app">
-  <header id="menubar"><strong class="logo" title="주보 제작기">주보 제작기</strong><nav id="menus" aria-label="메뉴"></nav><button id="btnTpl" class="btn pri">템플릿</button><button id="btnPaper" class="btn">용지</button><span id="docname"></span><button id="dockToggle" class="ghost" aria-label="패널 열기">패널</button></header>
+  <header id="menubar"><strong class="logo" title="주보 제작기">주보 제작기</strong><nav id="menus" aria-label="메뉴"></nav><button id="btnTpl" class="btn pri">템플릿</button><button id="btnPaper" class="btn">용지</button><button id="btnArc" class="btn" title="보관함 (저장한 작업 모아 보기)">📦 보관함</button><button id="btnArcSave" class="btn" title="지금 작업을 보관함에 저장">💾 저장</button><span id="docname"></span><button id="dockToggle" class="ghost" aria-label="패널 열기">패널</button></header>
   <div id="control"></div>
   <aside id="tools" aria-label="도구"></aside>
   <main id="stage">
@@ -547,6 +554,45 @@ C('file.save','프로젝트 저장 (.json)','Ctrl+S',()=>saveFile(S.doc.name+'.j
 C('file.svg','SVG로 저장','Shift+Ctrl+S',()=>saveFile(S.doc.name+'.svg',buildSVG(exportRegion(0))));
 C('file.export','내보내기…','Alt+Ctrl+E',exportDialog);
 C('file.info','문서 정보…',null,()=>{const c={};walkAll(i=>c[i.type]=(c[i.type]||0)+1);const fonts=new Set();walkAll(i=>{if(i.type==='text')fonts.add(i.font)});infoDialog('문서 정보',`<p>대지 ${S.doc.artboards.length}개 · 레이어 ${S.doc.layers.length}개</p><p>패스 ${c.path||0} · 그룹 ${c.group||0} · 문자 ${c.text||0} · 이미지 ${c.image||0} · 심볼 ${c.use||0} · 메시 ${c.mesh||0}</p><p>글꼴: ${[...fonts].join(', ')||'없음'}</p>`)});
+/* ---------- 보관함: 작업을 이 기기에 여러 개 저장해 두고 다시 열기 (IndexedDB) ---------- */
+const ARC={db:null,name:'chiyoung-archive-jubo',
+ open(){return this.db?Promise.resolve(this.db):new Promise((res,rej)=>{const r=indexedDB.open(this.name,1);r.onupgradeneeded=()=>r.result.createObjectStore('items',{keyPath:'id'});r.onsuccess=()=>{this.db=r.result;res(this.db)};r.onerror=()=>rej(r.error)})},
+ async tx(mode,fn){const db=await this.open();return new Promise((res,rej)=>{const t=db.transaction('items',mode),q=fn(t.objectStore('items'));t.oncomplete=()=>res(q&&q.result);t.onerror=()=>rej(t.error);t.onabort=()=>rej(t.error)})},
+ all(){return this.tx('readonly',s=>s.getAll())},get(id){return this.tx('readonly',s=>s.get(id))},put(o){return this.tx('readwrite',s=>s.put(o))},del(id){return this.tx('readwrite',s=>s.delete(id))}};
+let ARC_ID=null;try{ARC_ID=sessionStorage.getItem('jubo.arcId')}catch{}
+const arcEsc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function arcThumb(){try{const r=exportRegion(0),sc=Math.min(1,360/Math.max(r.w,r.h));const c=await renderCanvas(r,sc,'#ffffff');return c.toDataURL('image/jpeg',.82)}catch(e){return''}}
+async function arcSave(asNew){
+  let cur=null;if(!asNew&&ARC_ID){try{cur=await ARC.get(ARC_ID)}catch{}}
+  const name=(prompt(cur?'보관함의 같은 작업에 덮어써요. 이름':'보관함에 저장할 이름',(cur&&cur.name)||S.doc.name||'제목 없음')||'').trim();if(!name)return;
+  S.doc.name=name;docTitle();const id=cur?cur.id:('a'+Date.now().toString(36)+Math.random().toString(36).slice(2,6));
+  toast('보관함에 저장하는 중…');
+  try{const thumb=await arcThumb();await ARC.put({id,name,created:cur?cur.created:Date.now(),updated:Date.now(),thumb,data:JSON.stringify({app:'penchok',v:1,doc:S.doc,assets:ASSETS})});
+    ARC_ID=id;try{sessionStorage.setItem('jubo.arcId',id)}catch{}toast(cur?'보관함에 덮어썼어요 📦':'보관함에 저장했어요 📦')}
+  catch(e){toast('저장하지 못했어요. 기기 저장 공간을 확인해 주세요')}}
+async function arcOpen(){let list=[];try{list=(await ARC.all()).sort((a,b)=>b.updated-a.updated)}catch(e){toast('보관함을 열지 못했어요');return}
+  closeModal();const m=document.createElement('div');m.className='modal wide';m.setAttribute('role','dialog');m.setAttribute('aria-label','보관함');
+  const q=(sel)=>m.querySelector(sel);let filt='';
+  const draw=()=>{const L=list.filter(it=>!filt||it.name.toLowerCase().includes(filt));
+    m.innerHTML=`<h2>📦 보관함 <span style="font-size:13px;opacity:.7">${list.length}개 · 이 기기의 이 브라우저에 저장돼요</span></h2>
+    <div style="display:flex;gap:6px"><input id="arcQ" placeholder="이름으로 찾기" value="${arcEsc(filt)}" style="flex:1"><button class="btn pri" id="arcSaveNow">＋ 지금 작업 저장</button></div>
+    <div class="arcgrid">${L.map(it=>`<div class="arcit${it.id===ARC_ID?' cur':''}" data-id="${arcEsc(it.id)}"><div class="arcth">${it.thumb?`<img src="${arcEsc(it.thumb)}" alt="">`:'🖼️'}</div>
+      <div class="arcnm" title="${arcEsc(it.name)}">${arcEsc(it.name)}</div><div class="arcdt">${new Date(it.updated).toLocaleString('ko-KR',{dateStyle:'short',timeStyle:'short'})}</div>
+      <div class="arcbt"><button class="btn pri" data-a="open">열기</button><button class="btn" data-a="ren">이름</button><button class="btn" data-a="dup">복제</button><button class="btn" data-a="del">삭제</button></div></div>`).join('')||`<p style="grid-column:1/-1;text-align:center;opacity:.7;padding:20px 0">${list.length?'찾는 작업이 없어요':'아직 보관한 작업이 없어요.<br>파일 메뉴의 ‘보관함에 저장’이나 위 버튼으로 지금 작업을 저장해 보세요.'}</p>`}</div>
+    <div class="act"><button class="btn" id="arcClose">닫기</button></div>`;
+    q('#arcClose').onclick=closeModal;q('#arcSaveNow').onclick=async()=>{closeModal();await arcSave(true);arcOpen()};
+    const qi=q('#arcQ');qi.oninput=()=>{filt=qi.value.trim().toLowerCase();const pos=qi.selectionStart;draw();const n=q('#arcQ');n.focus();n.setSelectionRange(pos,pos)};
+    m.querySelectorAll('[data-a]').forEach(b=>b.onclick=async()=>{const id=b.closest('[data-id]').dataset.id,it=list.find(x=>x.id===id);if(!it)return;const a=b.dataset.a;
+      if(a==='open'){if(!confirm(`‘${it.name}’을(를) 열까요? 지금 화면의 작업은 임시 저장에만 남아요. 필요하면 먼저 보관함에 저장해 주세요.`))return;
+        try{const full=await ARC.get(id),o=JSON.parse(full.data);if(!o.doc)throw 0;for(const k in ASSETS)delete ASSETS[k];Object.assign(ASSETS,o.assets||{});S.doc=o.doc;S.doc.name=it.name;S.hist=[];S.hi=-1;S.sel.clear();S.layer=S.doc.layers[0].id;commit('보관함에서 열기');fitAll();docTitle();
+          ARC_ID=id;try{sessionStorage.setItem('jubo.arcId',id)}catch{}closeModal();toast(`‘${it.name}’을(를) 열었어요`)}catch(e){toast('이 작업을 열지 못했어요')}}
+      else if(a==='ren'){const n=(prompt('새 이름',it.name)||'').trim();if(!n)return;it.name=n;const full=await ARC.get(id);full.name=n;await ARC.put(full);if(id===ARC_ID){S.doc.name=n;docTitle()}draw()}
+      else if(a==='dup'){const full=await ARC.get(id);const c={...full,id:'a'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),name:full.name+' 복사본',created:Date.now(),updated:Date.now()};await ARC.put(c);list.unshift({...c});draw()}
+      else if(a==='del'){if(!confirm(`‘${it.name}’을(를) 보관함에서 지울까요? 되돌릴 수 없어요.`))return;await ARC.del(id);list=list.filter(x=>x.id!==id);if(id===ARC_ID){ARC_ID=null;try{sessionStorage.removeItem('jubo.arcId')}catch{}}draw()}})};
+  draw();$('#modalRoot').append(m)}
+C('file.arcSave','보관함에 저장','Shift+Ctrl+B',()=>arcSave(false));
+C('file.arcSaveNew','보관함에 새로 저장',null,()=>arcSave(true));
+C('file.arcOpen','보관함 열기…','Shift+Ctrl+O',arcOpen);
 /* 편집 */
 C('edit.undo','실행 취소','Ctrl+Z',()=>restore(S.hi-1),()=>S.hi>0);
 C('edit.redo','다시 실행','Shift+Ctrl+Z',()=>restore(S.hi+1),()=>S.hi<S.hist.length-1);
@@ -1253,7 +1299,7 @@ function paintChipC(p,k){const e=h('button',{class:'btn',style:'width:26px;heigh
 function statusBar(){const s=$('#status');if(!s)return;let z=s.querySelector('#stZoom');if(!z){s.append(h('select',{id:'stZoom','aria-label':'배율',onchange:e=>{zoomAt(+e.target.value)}}),h('span',{id:'stTool'}),h('span',{id:'stCursor'}),h('span',{id:'stSel'}));z=s.querySelector('#stZoom');[.25,.5,.75,1,1.5,2,3,4,8].forEach(v=>z.append(h('option',{value:v},v*100+'%')));z.append(h('option',{value:0,id:'stZcur'}))}const o=z.querySelector('#stZcur');o.value=S.view.z;o.textContent=Math.round(S.view.z*100)+'%';z.value=S.view.z;$('#stTool').textContent=Tools[S.tool].label;$('#stSel').textContent=S.sel.size?`선택 ${S.sel.size}개`:'';}
 function docTitle(){$('#docname').textContent=S.doc.name}
 /* ---------- 메뉴 ---------- */
-const MENUS={파일:['file.new','file.templates','file.paper','|','file.open','file.place','img.placeMode','|','file.save','file.svg','file.export','|','file.info'],
+const MENUS={파일:['file.new','file.templates','file.paper','|','file.open','file.place','img.placeMode','|','file.arcSave','file.arcSaveNew','file.arcOpen','|','file.save','file.svg','file.export','|','file.info'],
  편집:['edit.undo','edit.redo','|','edit.cut','edit.copy','edit.paste','edit.pasteF','edit.pasteB','edit.place','edit.delete','edit.dup','|','col.adjust','col.invert','col.gray','col.blendH','|','edit.prefs','edit.keys'],
  오브젝트:['tf.move','tf.rotate','tf.reflect','tf.scale','tf.shear','tf.each','tf.again','|','obj.front','obj.fwd','obj.bwd','obj.back','|','obj.group','obj.ungroup','obj.lock','obj.unlockAll','obj.hide','obj.showAll','|','img.autobg','img.cutout','|','obj.expand','obj.raster','obj.mesh','obj.blend','obj.extrude','|','path.join','path.avg','path.outline','path.offset','path.reverse','path.simplify','path.smooth','path.addpts','path.rmpts','path.split','path.divideBelow','|','obj.pattern','obj.symbol','obj.artboardFit','|','obj.clip','obj.unclip','obj.opmask','obj.unopmask','path.compound','path.release'],
  문자:['type.outline','type.toArea','type.vertical','type.upper','type.lower','type.fonts','type.find'],
@@ -1291,7 +1337,7 @@ function sampleDoc(){const d=newDoc('예시 포스터 — 야간 산행',800,100
 function boot(){if(window.paper){paper.setup(new paper.Size(64,64))}
  let restored=false;try{const raw=localStorage.getItem('jubo.draft')||(()=>{const r=localStorage.getItem('penchok.draft');if(!r)return null;try{const o=JSON.parse(r);return !!(o&&o.doc&&o.doc.jubo)?r:null}catch{return null}})();if(raw){const o=JSON.parse(raw);if(o.doc?.layers){S.doc=o.doc;Object.assign(ASSETS,o.assets||{});S.layer=S.doc.layers[0].id;restored=true}}}catch{}
  if(!restored){S.doc=newDoc('제목 없음',595,842);S.layer=S.doc.layers[0].id}reindex();S.fill=solid('#7a5cff');buildMenus();renderTools();buildDock();docTitle();commit('시작');_fitted=stage.clientWidth>200&&stage.clientHeight>200;fitAll();statusBar();renderControl();
- $('#dockToggle').addEventListener('click',()=>$('#dock').classList.toggle('open'));$('#btnTpl').addEventListener('click',()=>run('file.templates'));$('#btnPaper').addEventListener('click',()=>run('file.paper'));
+ $('#dockToggle').addEventListener('click',()=>$('#dock').classList.toggle('open'));$('#btnTpl').addEventListener('click',()=>run('file.templates'));$('#btnPaper').addEventListener('click',()=>run('file.paper'));$('#btnArc').addEventListener('click',()=>run('file.arcOpen'));$('#btnArcSave').addEventListener('click',()=>run('file.arcSave'));
  document.fonts?.ready.then(()=>{renderAll();panels()});
  if(restored)toast('이전 작업을 복원했습니다');
  if(!window.paper)toast('경로 연산 라이브러리를 불러오지 못해 일부 기능이 꺼집니다');
