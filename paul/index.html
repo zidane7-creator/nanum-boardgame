@@ -51,14 +51,14 @@ h2{font-weight:normal;margin:0 0 10px;font-size:21px}
 .wait{text-align:center;font-size:17px;padding:6px}
 #fsExit{position:fixed;right:10px;top:10px;z-index:70}
 .fs-on .top,.fs-on h1,.fs-on .sub{display:none!important}.fs-on main{max-width:none;padding:8px}
-.fs-on .game{grid-template-columns:minmax(0,1fr) minmax(280px,30vw)}.fs-on .bwrap{max-height:calc(100vh - 56px)}.fs-on .board{width:calc(min(calc(100vh - 64px),68vw) * var(--z,1))!important}
+.fs-on .game{grid-template-columns:minmax(0,1fr) minmax(280px,30vw)}.fs-on .bwrap{max-height:calc(100vh - 56px)}#panel{max-height:calc(100vh - 92px);overflow:auto}.fs-on #panel{max-height:calc(100vh - 20px)}.fs-on .board{width:calc(min(calc(100vh - 64px),68vw) * var(--z,1))!important}
 @media (max-width:900px){.fs-on .game{grid-template-columns:1fr}.fs-on .board{width:100%}}
 .hint{font-size:14px;opacity:.75;line-height:1.6}
 /* board */
-.game{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:14px;align-items:start}
+.game{display:grid;grid-template-columns:minmax(0,1fr) minmax(290px,340px);gap:14px;align-items:start}
 @media (max-width:900px){.game{grid-template-columns:1fr}}
-.board{display:grid;grid-template-columns:repeat(11,1fr);grid-template-rows:repeat(11,1fr);gap:2px;aspect-ratio:1;width:100%;background:#7a5a3c;border:4px solid var(--ink);border-radius:18px;padding:4px}
-.sq{position:relative;background:#fffaf0;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:2px 2px 0;overflow:hidden;font-size:clamp(7px,1.05vw,12px);text-align:center;line-height:1.1;cursor:pointer;border:3px solid transparent}
+.board{display:grid;grid-template-columns:2.3fr repeat(9,1fr) 2.3fr;grid-template-rows:2.3fr repeat(9,1fr) 2.3fr;gap:2px;aspect-ratio:1;width:100%;background:#7a5a3c;border:4px solid var(--ink);border-radius:18px;padding:4px}
+.sq{position:relative;background:#fffaf0;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:2px 2px 0;overflow:hidden;font-size:clamp(8px,1.25vw,14px);text-align:center;line-height:1.12;cursor:pointer;border:3px solid transparent}
 .sq .band{width:100%;height:16%;border-radius:4px;flex:none}
 .sq .nm{margin-top:2px;word-break:keep-all}
 .sq .pr{font-size:.85em;opacity:.7}
@@ -66,10 +66,20 @@ h2{font-weight:normal;margin:0 0 10px;font-size:21px}
 .sq.corner{background:#fff3c4;justify-content:center;font-size:clamp(8px,1.15vw,13px)}
 .sq.corner .em{font-size:1.9em;line-height:1}
 .sq.spc{background:#f3f0ff}.sq.spc .em{font-size:1.6em;line-height:1;margin-top:4px}
+/* 왼쪽·오른쪽 줄은 가로로 눕힌 칸, 윗줄은 색띠가 안쪽(아래)으로 */
+.sq.sl,.sq.sr{flex-direction:row;align-items:center;justify-content:flex-start;padding:2px 4px 2px 2px;gap:4px;text-align:left}
+.sq.sl{flex-direction:row-reverse;padding:2px 2px 2px 4px;text-align:right}
+.sq.sl .band,.sq.sr .band{width:12%;height:100%;border-radius:4px}
+.sq.sl .txt,.sq.sr .txt{flex:1;min-width:0}
+.sq.st{flex-direction:column-reverse;justify-content:flex-start}
+.sq.st .band{margin-top:auto}
+.sq.sl.spc,.sq.sr.spc{justify-content:center}
 .sq.now{outline:3px solid var(--gold);outline-offset:-1px;z-index:1}
 .zbar{display:flex;gap:6px;align-items:center;justify-content:flex-end;margin-bottom:6px}.zbar span{min-width:48px;text-align:center;font-size:14px}
 .bwrap{overflow:auto;max-height:calc(100vh - 130px);border-radius:18px;-webkit-overflow-scrolling:touch}
-.board{width:calc(100% * var(--z,1))!important}
+.board{width:calc(min(100%,calc(100vh - 138px)) * var(--z,1))!important;margin:0 auto}
+main:has(#play:not([hidden])){padding-top:10px;padding-bottom:10px}
+.zbar{margin-bottom:4px}
 .toks{position:absolute;left:2px;right:2px;bottom:2px;display:flex;gap:2px;justify-content:center;flex-wrap:wrap}
 .tok{width:clamp(9px,1.5vw,15px);height:clamp(9px,1.5vw,15px);border-radius:50%;border:2px solid var(--ink);background:var(--pc);transition:transform .15s}
 .tok.me{transform:scale(1.2);box-shadow:0 0 0 2px #fff}
@@ -90,7 +100,7 @@ h2{font-weight:normal;margin:0 0 10px;font-size:21px}
 .prow .n{flex:1}
 .prow .m{font-size:18px}
 .prow .props{font-size:12px;opacity:.8;width:100%}
-.log{font-size:14px;max-height:150px;overflow:auto;background:#fffdf6;border-radius:12px;padding:6px 10px;margin-top:10px;border:1.5px dashed #d9c3a5;line-height:1.6}
+.log{font-size:14px;max-height:22vh;overflow:auto;background:#fffdf6;border-radius:12px;padding:6px 10px;margin-top:10px;border:1.5px dashed #d9c3a5;line-height:1.6}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:60;padding:16px}
 .modal .card{max-width:420px;width:100%;text-align:center;animation:pop .3s ease-out}
 .modal .em{font-size:48px}
@@ -399,8 +409,9 @@ function drawDice(roll){const el=$("dice");if(!el)return;const d=roll?[1+Math.fl
 function drawBoard(){let h="";SQ.forEach((s,i)=>{const [r,c]=cellPos(i),o=G.own[i],toks=G.P.map((p,k)=>({p,k})).filter(x=>!x.p.out&&x.p.pos===i);
   const brd=o?`border-color:${G.P[o.pid].color};box-shadow:inset 0 0 0 3px ${G.P[o.pid].color};background:color-mix(in srgb,${G.P[o.pid].color} 12%,#fffaf0);`:"";
   const cls=s.k==="city"?"sq":["start","jail","rest","gojail"].includes(s.k)?"sq corner":"sq spc";
-  h+=`<div class="${cls}${G.P[G.cur].pos===i?" now":""}" style="grid-row:${r};grid-column:${c};${brd}" data-i="${i}">`+
-    (s.k==="city"?`<div class="band" style="background:${GRP[s.g]}"></div><div class="nm">${esc(s.n)}</div>${o?`<div class="bd">${LVI[o.lv]}</div>`:`<div class="pr">${s.p}</div>`}`:`<div class="em">${s.em}</div><div class="nm">${esc(s.n)}</div>`)+
+  const side=i%10===0?"":i<10?" sb":i<20?" sl":i<30?" st":" sr";
+  h+=`<div class="${cls}${side}${G.P[G.cur].pos===i?" now":""}" style="grid-row:${r};grid-column:${c};${brd}" data-i="${i}">`+
+    (s.k==="city"?`<div class="band" style="background:${GRP[s.g]}"></div><div class="txt"><div class="nm">${esc(s.n)}</div>${o?`<div class="bd">${LVI[o.lv]}</div>`:`<div class="pr">${s.p}</div>`}</div>`:`<div class="em">${s.em}</div><div class="txt"><div class="nm">${esc(s.n)}</div></div>`)+
     `<div class="toks">${toks.map(x=>`<span class="tok fc${x.k===G.cur?" me":""}" title="${esc(x.p.name)}">${face(x.p.ch??x.k)}</span>`).join("")}</div></div>`});
   h+=`<div class="center"><div class="t">⛵ 바울의 전도여행</div><div class="dice" id="dice"></div><div>🪙 구제함 <b>${G.pool}</b> · ${G.endAt?`⏰ <b id="tleft">${tleft()}</b>`:G.rounds?`${Math.min(G.round,G.rounds)}/${G.rounds}바퀴`:G.round+"바퀴째"}</div></div>`;
   $("board").innerHTML=h;drawDice(false);
