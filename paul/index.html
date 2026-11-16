@@ -42,22 +42,22 @@ h2{font-weight:normal;margin:0 0 10px;font-size:21px}
 .dot{width:22px;height:22px;border-radius:50%;background:var(--pc);border:2px solid var(--ink);flex:none}
 .hint{font-size:14px;opacity:.75;line-height:1.6}
 /* board */
-.game{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:14px;align-items:start}
+.game{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:14px;align-items:start}
 @media (max-width:900px){.game{grid-template-columns:1fr}}
-.board{display:grid;grid-template-columns:repeat(7,1fr);grid-template-rows:repeat(7,1fr);gap:3px;aspect-ratio:1;width:100%;background:#7a5a3c;border:4px solid var(--ink);border-radius:18px;padding:4px}
-.sq{position:relative;background:#fffaf0;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:2px 2px 0;overflow:hidden;font-size:clamp(9px,1.5vw,14px);text-align:center;line-height:1.15;cursor:pointer;border:3px solid transparent}
+.board{display:grid;grid-template-columns:repeat(11,1fr);grid-template-rows:repeat(11,1fr);gap:2px;aspect-ratio:1;width:100%;background:#7a5a3c;border:4px solid var(--ink);border-radius:18px;padding:4px}
+.sq{position:relative;background:#fffaf0;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:2px 2px 0;overflow:hidden;font-size:clamp(7px,1.05vw,12px);text-align:center;line-height:1.1;cursor:pointer;border:3px solid transparent}
 .sq .band{width:100%;height:16%;border-radius:4px;flex:none}
 .sq .nm{margin-top:2px;word-break:keep-all}
 .sq .pr{font-size:.85em;opacity:.7}
 .sq .bd{font-size:1.15em;line-height:1}
-.sq.corner{background:#fff3c4;justify-content:center;font-size:clamp(10px,1.6vw,15px)}
+.sq.corner{background:#fff3c4;justify-content:center;font-size:clamp(8px,1.15vw,13px)}
 .sq.corner .em{font-size:1.9em;line-height:1}
 .sq.spc{background:#f3f0ff}.sq.spc .em{font-size:1.6em;line-height:1;margin-top:4px}
 .sq.now{box-shadow:0 0 0 3px var(--gold) inset}
 .toks{position:absolute;left:2px;right:2px;bottom:2px;display:flex;gap:2px;justify-content:center;flex-wrap:wrap}
-.tok{width:clamp(12px,2.2vw,20px);height:clamp(12px,2.2vw,20px);border-radius:50%;border:2px solid var(--ink);background:var(--pc);transition:transform .15s}
+.tok{width:clamp(9px,1.5vw,15px);height:clamp(9px,1.5vw,15px);border-radius:50%;border:2px solid var(--ink);background:var(--pc);transition:transform .15s}
 .tok.me{transform:scale(1.2);box-shadow:0 0 0 2px #fff}
-.center{grid-column:2/7;grid-row:2/7;background:linear-gradient(#e7f5fb,#fffaf0);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:8px;text-align:center}
+.center{grid-column:2/11;grid-row:2/11;background:linear-gradient(#e7f5fb,#fffaf0);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:8px;text-align:center}
 .center .t{font-size:clamp(16px,3vw,28px)}
 .dice{display:flex;gap:12px}
 .die{width:clamp(44px,8vw,64px);aspect-ratio:1;background:#fff;border:3px solid var(--ink);border-radius:14px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:6px}
@@ -141,38 +141,29 @@ const sBuild=()=>{if(!SND)return;const a=ac();if(!a)return;const t=a.currentTime
 const sCard=()=>{if(!SND)return;const a=ac();if(!a)return;const t=a.currentTime;[784,988,1175,1568].forEach((f,i)=>tone(a,t+i*.07,f,.1,.4,"sine"))};
 $("snd").onclick=()=>{SND=!SND;try{localStorage.setItem("paul:snd",SND?"1":"0")}catch(e){}$("snd").textContent=SND?"🔊":"🔇"};$("snd").textContent=SND?"🔊":"🔇";
 
-/* ---------- 판: 24칸 (예루살렘에서 시작해 반시계로 한 바퀴) ---------- */
-const GRP={유대:"#f2a7b8",갈릴리:"#f7c46a",사마리아:"#b9d98a",시리아:"#8fd0f0",소아시아:"#c3a6ef",그리스:"#f59e7a",로마:"#e0504a"};
+/* ---------- 판: 40칸 (예루살렘에서 시작해 한 바퀴) ---------- */
+const GRP={유대:"#f2a7b8",갈릴리:"#f7c46a",사마리아:"#b9d98a",요단:"#7fd3c4",시리아:"#8fd0f0",소아시아:"#c3a6ef",마게도냐:"#f0a6e0",그리스:"#f59e7a",로마:"#e0504a"};
+const C_=(n,g,p)=>({k:"city",n,g,p}),CARD={k:"card",n:"은혜카드",em:"✉️"};
+/* 40칸: 모퉁이 4칸 + 한 줄에 9칸씩 */
 const SQ=[
  {k:"start",n:"예루살렘",em:"✝️",d:"출발! 지날 때마다 파송 헌금 200"},
- {k:"city",n:"베들레헴",g:"유대",p:60},
- {k:"card",n:"은혜카드",em:"✉️"},
- {k:"city",n:"나사렛",g:"유대",p:80},
- {k:"tax",n:"성전세",em:"🪙",amt:100,d:"구제함에 100을 넣어요"},
- {k:"city",n:"가나",g:"갈릴리",p:100},
+ C_("베들레헴","유대",60),CARD,C_("헤브론","유대",60),{k:"tax",n:"성전세",em:"🪙",amt:100,d:"구제함에 100을 넣어요"},C_("엠마오","유대",80),
+ C_("나사렛","갈릴리",100),CARD,C_("가나","갈릴리",100),C_("가버나움","갈릴리",120),
  {k:"jail",n:"빌립보 감옥",em:"⛓️",d:"그냥 들렀다면 구경만 해요"},
- {k:"city",n:"가버나움",g:"갈릴리",p:120},
- {k:"city",n:"갈릴리 바다",g:"갈릴리",p:140},
- {k:"card",n:"은혜카드",em:"✉️"},
- {k:"city",n:"여리고",g:"사마리아",p:160},
- {k:"city",n:"수가",g:"사마리아",p:180},
+ C_("여리고","사마리아",140),CARD,C_("수가","사마리아",140),C_("세겜","사마리아",160),
+ C_("벳새다","요단",180),CARD,C_("가이사랴","요단",180),C_("갈릴리 바다","요단",200),{k:"tax",n:"성전세",em:"🪙",amt:150,d:"구제함에 150을 넣어요"},
  {k:"rest",n:"안식일 쉼터",em:"🕊️",d:"구제함에 모인 달란트를 모두 받아요"},
- {k:"city",n:"다메섹",g:"시리아",p:200},
- {k:"city",n:"안디옥",g:"시리아",p:220},
- {k:"card",n:"은혜카드",em:"✉️"},
- {k:"city",n:"다소",g:"시리아",p:220},
- {k:"city",n:"에베소",g:"소아시아",p:260},
+ C_("다메섹","시리아",220),CARD,C_("안디옥","시리아",220),C_("다소","시리아",240),
+ C_("에베소","소아시아",260),C_("버가","소아시아",260),CARD,C_("루스드라","소아시아",280),C_("빌립보","마게도냐",300),
  {k:"gojail",n:"붙잡힘",em:"🚨",d:"복음을 전하다 붙잡혔어요. 빌립보 감옥으로!"},
- {k:"city",n:"빌립보",g:"소아시아",p:280},
- {k:"city",n:"고린도",g:"그리스",p:300},
- {k:"card",n:"은혜카드",em:"✉️"},
- {k:"city",n:"아덴",g:"그리스",p:320},
- {k:"city",n:"로마",g:"로마",p:400}];
+ C_("데살로니가","마게도냐",300),C_("베뢰아","마게도냐",320),CARD,C_("아덴","그리스",350),C_("고린도","그리스",350),CARD,
+ C_("겐그레아","그리스",360),C_("멜리데","로마",380),C_("로마","로마",420)];
+const NSQ=SQ.length,JAIL=SQ.findIndex(x=>x.k==="jail");
 const LV=["개척","🏠 가정교회","⛪ 교회","🏛️ 선교센터"],LVI=["🚩","🏠","⛪","🏛️"];
 const buildCost=s=>Math.round(s.p*.5/10)*10;
 const rentOf=(i)=>{const s=SQ[i],o=G.own[i];if(!o)return 0;const base=[.12,.45,1.1,2][o.lv]*s.p;const all=SQ.every((x,j)=>x.g!==s.g||(G.own[j]&&G.own[j].pid===o.pid));return Math.round(base*(all&&o.lv===0?2:1)/10)*10};
-/* 7x7 테두리 위치: 0=오른쪽 아래, 아래줄을 왼쪽으로 → 왼쪽 줄 위로 → 윗줄 오른쪽으로 → 오른쪽 줄 아래로 */
-function cellPos(i){if(i<=6)return[7,7-i];if(i<=12)return[7-(i-6),1];if(i<=18)return[1,1+(i-12)];return[1+(i-18),7]}
+/* 11x11 테두리 위치: 0=오른쪽 아래, 아래줄을 왼쪽으로 → 왼쪽 줄 위로 → 윗줄 오른쪽으로 → 오른쪽 줄 아래로 */
+function cellPos(i){if(i<=10)return[11,11-i];if(i<=20)return[11-(i-10),1];if(i<=30)return[1,1+(i-20)];return[1+(i-30),11]}
 
 /* ---------- 은혜카드 (모두 이 사이트에서 새로 쓴 내용) ---------- */
 const CARDS=[
@@ -182,14 +173,14 @@ const CARDS=[
  {t:"탕자의 귀향",d:"아버지 집으로 돌아가요. 예루살렘으로 가서 파송 헌금을 받아요",f:p=>moveTo(p,0,true)},
  {t:"삭개오의 결심",d:"가진 도시마다 20씩 구제함에 넣어요",f:p=>payPool(p,20*ownedBy(p).length)},
  {t:"한밤의 찬양",d:"감옥 문이 열려요! 이 카드를 갖고 있다가 감옥에서 바로 나갈 수 있어요",f:p=>{G.P[p].free++;return"감옥 탈출 카드를 얻었어요"}},
- {t:"마게도냐의 부름",d:"\"건너와서 우리를 도우라\" 빌립보로 가요",f:p=>moveTo(p,19,true)},
+ {t:"마게도냐의 부름",d:"\"건너와서 우리를 도우라\" 빌립보로 가요",f:p=>moveTo(p,SQ.findIndex(x=>x.n==="빌립보"),true)},
  {t:"엠마오 가는 길",d:"걸음을 멈추고 이야기를 나눠요. 2칸 뒤로",f:p=>moveBy(p,-2)},
  {t:"바나바의 격려",d:"가장 적게 가진 친구에게 50을 나눠요",f:p=>encourage(p,50)},
  {t:"기도 응답",d:"간절한 기도에 응답하셨어요! 80을 받아요",f:p=>gain(p,80)},
  {t:"과부의 두 렙돈",d:"가진 것 중에서 정성껏 드려요. 구제함에 30",f:p=>payPool(p,30)},
  {t:"유라굴로 광풍",d:"배가 풍랑을 만났어요. 3칸 앞으로 떠밀려 가요",f:p=>moveBy(p,3)},
  {t:"루디아의 집",d:"루디아가 집을 열어 섬겨요. 60을 받아요",f:p=>gain(p,60)},
- {t:"로마로 가는 길",d:"모든 길은 로마로! 로마로 가요",f:p=>moveTo(p,23,true)},
+ {t:"로마로 가는 길",d:"모든 길은 로마로! 로마로 가요",f:p=>moveTo(p,NSQ-1,true)},
  {t:"초대교회의 나눔",d:"가진 것을 서로 나눠요. 다른 사람 모두에게 10씩 줘요",f:p=>toAll(p,10)},
  {t:"새벽 기도",d:"새벽을 깨워 기도했어요. 40을 받아요",f:p=>gain(p,40)}];
 
@@ -230,10 +221,10 @@ function toAll(p,n){alive().filter(i=>i!==p).forEach(i=>pay(p,n,i));return`모�
 function encourage(p,n){const o=alive().filter(i=>i!==p).sort((a,b)=>worth(a)-worth(b))[0];if(o==null)return"";pay(p,n,o);return`${G.P[o].name}에게 ${n}을 나눴어요`}
 
 /* ---------- 이동 ---------- */
-async function stepTo(p,steps){const P=G.P[p],dir=steps<0?-1:1;for(let k=0;k<Math.abs(steps);k++){P.pos=(P.pos+dir+24)%24;if(dir>0&&P.pos===0){P.money+=200;log(`${P.name}: 예루살렘을 지나 파송 헌금 +200`);sCoin(true)}sHop();drawBoard();await sleep(170)}}
-function moveTo(p,i,passGo){const P=G.P[p];const steps=(i-P.pos+24)%24;G.pending={p,steps};return`${SQ[i].n}(으)로 가요`}
+async function stepTo(p,steps){const P=G.P[p],dir=steps<0?-1:1;for(let k=0;k<Math.abs(steps);k++){P.pos=(P.pos+dir+NSQ)%NSQ;if(dir>0&&P.pos===0){P.money+=200;log(`${P.name}: 예루살렘을 지나 파송 헌금 +200`);sCoin(true)}sHop();drawBoard();await sleep(170)}}
+function moveTo(p,i,passGo){const P=G.P[p];const steps=(i-P.pos+NSQ)%NSQ;G.pending={p,steps};return`${SQ[i].n}(으)로 가요`}
 function moveBy(p,k){G.pending={p,steps:k};return k>0?`${k}칸 앞으로`:`${-k}칸 뒤로`}
-function goJail(p){const P=G.P[p];P.pos=6;P.jail=1;G.dbl=0;log(`⛓️ ${P.name}: 빌립보 감옥에 갇혔어요`);toast(`⛓️ ${P.name}: 빌립보 감옥으로!`,2400);drawBoard()}
+function goJail(p){const P=G.P[p];P.pos=JAIL;P.jail=1;G.dbl=0;log(`⛓️ ${P.name}: 빌립보 감옥에 갇혔어요`);toast(`⛓️ ${P.name}: 빌립보 감옥으로!`,2400);drawBoard()}
 
 /* ---------- 차례 ---------- */
 function rollDice(){return[1+Math.floor(Math.random()*6),1+Math.floor(Math.random()*6)]}
