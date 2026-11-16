@@ -32,6 +32,8 @@ a{color:inherit}
 .c1{width:220px;height:60px;top:150px;left:-240px;animation-duration:70s}
 .c2{width:160px;height:46px;top:70px;left:-200px;animation-duration:95s;animation-delay:-40s}
 .c3{width:260px;height:70px;top:210px;left:-280px;animation-duration:120s;animation-delay:-80s}
+/* 구름: 위아래 모두 몽글몽글한 모양 */
+.cloud{background:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 100'><g fill='%23fff'><circle cx='44' cy='60' r='27'/><circle cx='80' cy='44' r='33'/><circle cx='122' cy='40' r='31'/><circle cx='158' cy='58' r='26'/><circle cx='100' cy='70' r='27'/><circle cx='64' cy='74' r='20'/><circle cx='136' cy='74' r='20'/><ellipse cx='100' cy='64' rx='72' ry='22'/></g></svg>") center/100% 100% no-repeat;border-radius:0;height:auto!important;aspect-ratio:2/1;margin-top:-28px}.cloud::before,.cloud::after{display:none}
 @keyframes drift{to{transform:translateX(calc(100vw + 560px))}}
 .title{position:absolute;left:0;right:0;top:calc(52px + env(safe-area-inset-top,0px));display:flex;flex-direction:column;align-items:center;gap:12px;padding:0 12px}
 .ttl{display:flex;align-items:center;gap:6px}
@@ -331,7 +333,7 @@ $("list").innerHTML=ZONES.map(z=>'<li><b>'+z.name+'</b> — '+(z.items.length?z.
  let t;const go=()=>{clearTimeout(t);t=setTimeout(fit,60)};
  go();addEventListener("resize",go);if(document.fonts)document.fonts.ready.then(go);setTimeout(go,1200)})();
 </script>
-<script src="assets/daynight.js?v=20261116c"></script>
+<script src="assets/daynight.js?v=20261116d"></script>
 <script>
 /* 예수님이 언덕 위에서 양 떼를 몰고 다님 (앞 양이 길을 내고, 나머지 양과 예수님이 그 길을 따라감) */
 (function(){

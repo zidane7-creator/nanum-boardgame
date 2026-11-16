@@ -305,5 +305,5 @@ function draw(){if(!G)return;drawBoard();const p=G.cur,P=G.P[p],s=SQ[P.pos];$("p
   $("plist").innerHTML=G.P.map((q,i)=>{const props=ownedBy(i).map(k=>LVI[G.own[k].lv]+SQ[k].n).join(" ");
     return`<div class="prow${i===p&&!G.over?" now":""}${q.out?" out":""}" style="--pc:${q.color};flex-wrap:wrap"><span class="dot"></span><span class="n">${esc(q.name)}${q.free?" 🎶":""}</span><span class="m">💰 ${q.money.toLocaleString()}</span>${props?`<span class="props">${esc(props)}</span>`:""}</div>`}).join("")}
 </script>
-<script src="../assets/scene.js?v=20261116c"></script><script src="../assets/home.js"></script>
+<script src="../assets/scene.js?v=20261116d"></script><script src="../assets/home.js"></script>
 </body></html>

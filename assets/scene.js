@@ -11,6 +11,7 @@
     "#scene .cl{position:absolute;left:0;background:#fff;border-radius:999px;opacity:.95;animation:sc-drift linear infinite}" +
     "#scene .cl::before,#scene .cl::after{content:'';position:absolute;background:#fff;border-radius:50%}" +
     "#scene .cl::before{width:55%;height:150%;left:15%;bottom:20%}#scene .cl::after{width:40%;height:120%;right:12%;bottom:25%}" +
+    "#scene .cl{background:url(\"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 100'><g fill='%23fff'><circle cx='44' cy='60' r='27'/><circle cx='80' cy='44' r='33'/><circle cx='122' cy='40' r='31'/><circle cx='158' cy='58' r='26'/><circle cx='100' cy='70' r='27'/><circle cx='64' cy='74' r='20'/><circle cx='136' cy='74' r='20'/><ellipse cx='100' cy='64' rx='72' ry='22'/></g></svg>\") center/100% 100% no-repeat!important;border-radius:0;height:auto!important;aspect-ratio:2/1;margin-top:-26px}#scene .cl::before,#scene .cl::after{display:none}" +
     "#scene .h1,#scene .h2{position:absolute;bottom:47.9%;border-radius:50% 50% 0 0}" +
     "#scene .h1{left:-10%;width:70%;height:13vh;background:var(--scene-grass2,color-mix(in srgb,var(--scene-grass,#a9d86e) 86%,#2d5a1e))}" +
     "#scene .h2{right:-12%;width:75%;height:9vh;background:var(--scene-grass,#a9d86e)}" +
