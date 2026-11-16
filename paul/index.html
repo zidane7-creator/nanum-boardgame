@@ -109,7 +109,7 @@ h2{font-weight:normal;margin:0 0 10px;font-size:21px}
     <div class="card">
       <div class="row" style="margin-bottom:10px"><b>방식</b><div class="seg" id="mode"><button data-v="single">📱 싱글 · 한 기기로 돌아가며</button><button data-v="multi">🌐 멀티 · 초대해서 각자 기기로</button></div></div>
       <div class="row"><span id="nPw"><b>몇 명</b> <div class="seg" id="nP"><button data-v="2">2명</button><button data-v="3">3명</button><button data-v="4">4명</button></div></span>
-        <span style="width:12px"></span><b>게임 길이</b><div class="seg" id="nR"><button data-v="10">10바퀴</button><button data-v="15">15바퀴</button><button data-v="0">끝까지</button></div></div>
+        <span style="width:12px"></span><b>끝내는 방법</b><div class="seg" id="nR"><button data-v="r10">10바퀴</button><button data-v="r15">15바퀴</button><button data-v="t30">⏰ 30분</button><button data-v="t60">⏰ 60분</button><button data-v="t90">⏰ 90분</button><button data-v="0">끝까지</button></div></div>
       <div class="players" id="pins"></div>
       <p class="hint" id="modeHint" style="text-align:center;margin:10px 0 0"></p><div class="row" style="justify-content:center;margin-top:12px"><button class="pri" id="start" style="font-size:20px;padding:10px 28px">⛵ 여행 시작</button></div>
     </div>
@@ -121,7 +121,7 @@ h2{font-weight:normal;margin:0 0 10px;font-size:21px}
       · 다른 사람의 도시에 서면 그 교회에 <b>선교 후원금</b>을 내요. 같은 색 도시를 모두 가지면 후원금이 두 배예요<br>
       · <b>✉️ 은혜카드</b>, <b>🪙 성전세</b>(구제함에 모여요), <b>🕊️ 안식일 쉼터</b>(구제함을 받아요), <b>⛓️ 빌립보 감옥</b><br>
       · 같은 숫자 두 개가 나오면 한 번 더! (세 번 연속이면 감옥) · 달란트가 모자라면 건물과 도시를 팔고, 그래도 모자라면 여행이 끝나요<br>
-      · 정한 바퀴가 끝나면 <b>달란트 + 도시·건물 값</b>이 가장 많은 사람이 이겨요
+      · 정한 바퀴나 시간이 끝나면 <b>달란트 + 도시·건물 값</b>이 가장 많은 사람이 이겨요. 파산하면 게임에서 빠져요
     </div>
   </section>
   <section id="play" hidden>
@@ -298,8 +298,11 @@ function fromRich(p,n){const r=alive().filter(i=>i!==p).sort((a,b)=>worth(b)-wor
 
 
 /* ---------- 설정 ---------- */
-let CFG={n:2,rounds:15,names:["","","",""],mode:"single",me:""};try{const o=JSON.parse(localStorage.getItem("paul:cfg")||"null");if(o)CFG=Object.assign(CFG,o)}catch(e){}
-function drawSetup(){document.querySelectorAll("#nP button").forEach(b=>b.classList.toggle("on",+b.dataset.v===CFG.n));document.querySelectorAll("#nR button").forEach(b=>b.classList.toggle("on",+b.dataset.v===CFG.rounds));
+let CFG={n:2,end:"r15",names:["","","",""],mode:"single",me:""};try{const o=JSON.parse(localStorage.getItem("paul:cfg")||"null");if(o)CFG=Object.assign(CFG,o)}catch(e){}
+if(CFG.rounds!=null&&!CFG.endMigr){CFG.end=CFG.rounds?"r"+CFG.rounds:"0";CFG.endMigr=1}
+/* 끝내는 방법: r10 = 10바퀴, t30 = 30분, 0 = 한 사람 남을 때까지 */
+const endText=e=>!e||e==="0"?"끝까지 (한 사람이 남을 때까지)":e[0]==="r"?e.slice(1)+"바퀴":e.slice(1)+"분";
+function drawSetup(){document.querySelectorAll("#nP button").forEach(b=>b.classList.toggle("on",+b.dataset.v===CFG.n));document.querySelectorAll("#nR button").forEach(b=>b.classList.toggle("on",b.dataset.v===String(CFG.end)));
   document.querySelectorAll("#mode button").forEach(b=>b.classList.toggle("on",b.dataset.v===CFG.mode));const multi=CFG.mode==="multi";
   $("nPw").style.display=multi?"none":"";$("start").textContent=multi?"🌐 방 만들기":"⛵ 여행 시작";
   $("modeHint").textContent=multi?"방을 만들면 QR·링크로 친구를 초대해요. 들어온 순서대로 바울 · 바나바 · 실라 · 디모데가 돼요 (최대 4명)":"한 기기를 돌려 가며 차례대로 해요";
@@ -307,7 +310,7 @@ function drawSetup(){document.querySelectorAll("#nP button").forEach(b=>b.classL
   $("pins").innerHTML=(multi?[0]:[...Array(CFG.n).keys()]).map(i=>`<div class="pin" style="--pc:${COLORS[i]}"><span class="face">${face(i)}</span><b>${DEFN[i]}</b><input data-i="${i}" maxlength="8" value="${esc(multi?CFG.me:(CFG.names[i]||""))}" placeholder="${multi?"내 이름":"이름 (안 적어도 돼요)"}" aria-label="${DEFN[i]} 이름"></div>`).join("")}
 function readSetup(){document.querySelectorAll("#pins input").forEach(x=>{if(CFG.mode==="multi")CFG.me=x.value.trim();else CFG.names[+x.dataset.i]=x.value.trim()});try{localStorage.setItem("paul:cfg",JSON.stringify(CFG))}catch(e){}}
 $("nP").onclick=e=>{const b=e.target.closest("button");if(!b)return;readSetup();CFG.n=+b.dataset.v;drawSetup()};
-$("nR").onclick=e=>{const b=e.target.closest("button");if(!b)return;readSetup();CFG.rounds=+b.dataset.v;drawSetup()};
+$("nR").onclick=e=>{const b=e.target.closest("button");if(!b)return;readSetup();CFG.end=b.dataset.v;drawSetup()};
 $("mode").onclick=e=>{const b=e.target.closest("button");if(!b)return;readSetup();CFG.mode=b.dataset.v;drawSetup()};drawSetup();
 
 /* ---------- 게임 상태 ---------- */
@@ -315,7 +318,7 @@ let G=null;
 let MULTI=false,isHost=false,ME=null;
 function newGame(seats){if(!seats)readSetup();const roster=seats||[...Array(CFG.n).keys()].map(i=>({id:null,name:CFG.names[i]||""}));
   G={seat:roster.map(r=>r.id),P:roster.map((r,i)=>({name:dispName(i,r.name),ch:i,color:COLORS[i],pos:0,money:1500,jail:0,free:0,out:false})),
-  own:{},cur:0,pool:0,round:1,rounds:CFG.rounds,phase:"roll",dbl:0,last:[1,1],log:[],over:false,deck:shuffle([...CARDS.keys()])};
+  own:{},cur:0,pool:0,round:1,rounds:CFG.end[0]==="r"?+CFG.end.slice(1):0,mins:CFG.end[0]==="t"?+CFG.end.slice(1):0,endAt:CFG.end[0]==="t"?Date.now()+(+CFG.end.slice(1))*60000:0,timeUp:false,phase:"roll",dbl:0,last:[1,1],log:[],over:false,deck:shuffle([...CARDS.keys()])};
   $("setup").hidden=true;$("play").hidden=false;$("toSetup").hidden=false;log(`여행 시작! ${G.P.map(p=>p.name).join(" · ")}`);draw();window.scrollTo({top:0,behavior:"smooth"})}
 $("start").onclick=()=>{readSetup();if(CFG.mode==="multi"){if(!CFG.me){toast("내 이름을 적어 주세요");return}createRoom()}else newGame()};
 $("toSetup").onclick=()=>{if(G&&!G.over&&!confirm("지금 게임을 그만두고 새로 시작할까요?"))return;closeModal();if(MULTI&&isHost){newGame(H.players.map(x=>({id:x.id,name:x.name})));return}G=null;$("play").hidden=true;$("setup").hidden=false;$("toSetup").hidden=true;drawSetup()};
@@ -334,7 +337,7 @@ function pay(p,n,to){/* 모자라면 건물·도시를 팔아서 냄. 그래도 
 function raise(p,need){const P=G.P[p];let list=ownedBy(p).sort((a,b)=>SQ[a].p-SQ[b].p);
   for(const i of list){while(P.money<need&&G.own[i].lv>0){G.own[i].lv--;P.money+=Math.round(buildCost(SQ[i])/2);log(`${P.name}: ${SQ[i].n} 건물을 팔았어요`)}}
   for(const i of list){if(P.money>=need)break;P.money+=Math.round(SQ[i].p/2);delete G.own[i];log(`${P.name}: ${SQ[i].n}을(를) 내놓았어요`)}}
-function bankrupt(p,to){const P=G.P[p];P.out=true;P.money=0;ownedBy(p).forEach(i=>delete G.own[i]);log(`😢 ${P.name}의 여행이 끝났어요`);toast(`${P.name}의 여행이 끝났어요`,3000)}
+function bankrupt(p,to){const P=G.P[p];P.out=true;P.outAt=Date.now();P.money=0;ownedBy(p).forEach(i=>delete G.own[i]);log(`😢 ${P.name}의 여행이 끝났어요`);toast(`${P.name}의 여행이 끝났어요`,3000)}
 const payPool=(p,n)=>{pay(p,n,-1);return`${G.P[p].name}: 구제함에 ${n}`};
 function fromAll(p,n){alive().filter(i=>i!==p).forEach(i=>pay(i,n,p));sCoin(true);return`모두에게서 ${n}씩 받았어요`}
 function toAll(p,n){alive().filter(i=>i!==p).forEach(i=>pay(p,n,i));return`모두에게 ${n}씩 줬어요`}
@@ -374,12 +377,16 @@ function build(){const p=G.cur,i=G.P[p].pos,s=SQ[i],o=G.own[i],c=buildCost(s);if
 function skip(){G.phase="roll";afterAction()}
 function afterAction(){const d=G.last;if(d[0]===d[1]&&G.dbl>0&&!G.P[G.cur].jail){toast("같은 숫자! 한 번 더 굴려요 🎲");draw()}else endTurn()}
 function endTurn(){if(G.over)return;const al=alive();if(al.length<=1){finish();return}
+  if(G.endAt&&Date.now()>=G.endAt){finish();return}
   let n=G.cur;do{n=(n+1)%G.P.length}while(G.P[n].out);if(n<=G.cur){G.round++;if(G.rounds&&G.round>G.rounds){finish();return}}
   G.cur=n;G.dbl=0;G.phase="roll";draw()}
 function useFree(){const P=G.P[G.cur];if(!P.free||!P.jail)return;P.free--;P.jail=0;log(`🎶 ${P.name}: 한밤의 찬양 카드로 감옥에서 나왔어요`);draw()}
 function payOut(){const P=G.P[G.cur];if(!P.jail)return;pay(G.cur,50,-1);P.jail=0;log(`${P.name}: 구제함에 50을 내고 감옥에서 나왔어요`);draw()}
-function finish(){G.over=true;const rank=G.P.map((p,i)=>({i,p,w:p.out?-1:worth(i)})).sort((a,b)=>b.w-a.w);draw();
-  showModal(`<div class="em">🏆</div><h2>${esc(rank[0].p.name)} 승리!</h2><div class="info">${rank.map((r,k)=>`${["🥇","🥈","🥉","🏅"][k]} ${esc(r.p.name)} — ${r.p.out?"여행 끝":r.w.toLocaleString()+" (현금 "+r.p.money.toLocaleString()+")"}`).join("<br>")}</div>`).then(()=>{})}
+/* 승리 점수 = 지금 달란트 + 가진 도시 값 + 세운 건물 값 */
+const landVal=p=>ownedBy(p).reduce((s,i)=>s+SQ[i].p,0),bldVal=p=>ownedBy(p).reduce((s,i)=>s+G.own[i].lv*buildCost(SQ[i]),0);
+function finish(){G.over=true;clearInterval(G._tick);const rank=G.P.map((p,i)=>({i,p,w:p.out?-1:worth(i)})).sort((a,b)=>b.w-a.w||(a.p.outAt||0)-(b.p.outAt||0));draw();
+  const why=alive().length<=1?"한 사람만 남았어요":G.endAt&&Date.now()>=G.endAt?"⏰ 정한 시간이 끝났어요":"정한 바퀴를 다 돌았어요";
+  showModal(`<div class="em">🏆</div><h2>${esc(rank[0].p.name)} 승리!</h2><p class="hint" style="margin:0">${why}</p><div class="info">${rank.map((r,k)=>`${["🥇","🥈","🥉","🏅"][k]} <b>${esc(r.p.name)}</b> — ${r.p.out?"파산 (여행 끝)":`<b>${r.w.toLocaleString()}</b><br><span style="opacity:.75;font-size:13px">　현금 ${r.p.money.toLocaleString()} + 도시 ${landVal(r.i).toLocaleString()} + 건물 ${bldVal(r.i).toLocaleString()}</span>`}`).join("<br>")}</div>`).then(()=>{})}
 
 /* ---------- 화면 ---------- */
 function localModal(html,cls){return new Promise(res=>{$("modal").innerHTML=`<div class="modal"><div class="card ${cls||""}">${html}<div class="acts"><button class="pri" id="mOk">확인</button></div></div></div>`;
@@ -395,7 +402,7 @@ function drawBoard(){let h="";SQ.forEach((s,i)=>{const [r,c]=cellPos(i),o=G.own[
   h+=`<div class="${cls}${G.P[G.cur].pos===i?" now":""}" style="grid-row:${r};grid-column:${c};${brd}" data-i="${i}">`+
     (s.k==="city"?`<div class="band" style="background:${GRP[s.g]}"></div><div class="nm">${esc(s.n)}</div>${o?`<div class="bd">${LVI[o.lv]}</div>`:`<div class="pr">${s.p}</div>`}`:`<div class="em">${s.em}</div><div class="nm">${esc(s.n)}</div>`)+
     `<div class="toks">${toks.map(x=>`<span class="tok fc${x.k===G.cur?" me":""}" title="${esc(x.p.name)}">${face(x.p.ch??x.k)}</span>`).join("")}</div></div>`});
-  h+=`<div class="center"><div class="t">⛵ 바울의 전도여행</div><div class="dice" id="dice"></div><div>🪙 구제함 <b>${G.pool}</b> · ${G.rounds?`${Math.min(G.round,G.rounds)}/${G.rounds}바퀴`:G.round+"바퀴째"}</div></div>`;
+  h+=`<div class="center"><div class="t">⛵ 바울의 전도여행</div><div class="dice" id="dice"></div><div>🪙 구제함 <b>${G.pool}</b> · ${G.endAt?`⏰ <b id="tleft">${tleft()}</b>`:G.rounds?`${Math.min(G.round,G.rounds)}/${G.rounds}바퀴`:G.round+"바퀴째"}</div></div>`;
   $("board").innerHTML=h;drawDice(false);
   $("board").querySelectorAll(".sq").forEach(el=>el.onclick=()=>info(+el.dataset.i))}
 function info(i){const s=SQ[i],o=G.own[i];if(s.k!=="city"){toast(`${s.em} ${s.n}${s.d?" — "+s.d:""}`,2600);return}
@@ -420,6 +427,11 @@ function draw(){if(!G)return;drawBoard();const p=G.cur,P=G.P[p],s=SQ[P.pos];$("p
   $("plist").innerHTML=G.P.map((q,i)=>{const props=ownedBy(i).map(k=>LVI[G.own[k].lv]+SQ[k].n).join(" ");
     return`<div class="prow${i===p&&!G.over?" now":""}${q.out?" out":""}" style="--pc:${q.color};flex-wrap:wrap"><span class="face" style="width:32px;height:32px">${face(q.ch??i)}</span><span class="n">${esc(q.name)}${q.free?" 🎶":""}</span><span class="m">💰 ${q.money.toLocaleString()}</span>${props?`<span class="props">${esc(props)}</span>`:""}</div>`}).join("")}
 
+/* ---------- 남은 시간 ---------- */
+function tleft(){if(!G||!G.endAt)return"";const ms=G.endAt-Date.now();if(ms<=0)return"시간 끝! 이번 차례까지";const m=Math.floor(ms/60000),sec=Math.floor(ms%60000/1000);return`${m}:${String(sec).padStart(2,"0")} 남음`}
+setInterval(()=>{if(!G||G.over||!G.endAt)return;const e=document.getElementById("tleft");if(e)e.textContent=tleft();
+  if(Date.now()>=G.endAt&&!G.timeUp&&(!MULTI||isHost)){G.timeUp=true;toast("⏰ 시간이 다 됐어요! 이번 차례가 끝나면 게임이 끝나요",4000)}},1000);
+
 /* ---------- 판 확대/축소 ---------- */
 let ZOOM=1;try{ZOOM=+localStorage.getItem("paul:zoom")||1}catch(e){}
 function setZoom(z,keep){ZOOM=Math.max(1,Math.min(3,Math.round(z*100)/100));document.documentElement.style.setProperty("--z",ZOOM);$("zl").textContent=Math.round(ZOOM*100)+"%";try{localStorage.setItem("paul:zoom",ZOOM)}catch(e){}
@@ -431,7 +443,7 @@ setZoom(ZOOM,false);
 /* ---------- 전체 규칙 ---------- */
 function rulesHTML(){const groups=Object.keys(GRP).map(g=>`<span style="background:${GRP[g]}">${g}: ${SQ.filter(x=>x.g===g).map(x=>x.n).join("·")}</span>`).join("");
   return`<div class="rules"><h2 style="text-align:center">📖 바울의 전도여행 전체 규칙</h2>
-  <h3>🎯 목표</h3>성경 속 도시를 여행하며 교회를 개척하고 키워요. 정한 바퀴가 끝났을 때 <b>달란트 + 도시·건물 값</b>이 가장 많은 사람이 이겨요. (‘끝까지’를 고르면 한 사람만 남을 때까지)
+  <h3>🎯 목표와 끝내는 방법</h3>성경 속 도시를 여행하며 교회를 개척하고 키워요. 끝내는 방법은 방장이 정해요.<br>· <b>바퀴</b>(10·15바퀴): 정한 바퀴를 다 돌면 끝나요<br>· <b>시간</b>(30·60·90분): 시간이 다 되면 그때 차례인 사람까지 하고 끝나요<br>· <b>끝까지</b>: 한 사람만 남을 때까지 해요<br>끝났을 때 <b>지금 달란트 + 가진 도시 값 + 세운 건물 값</b>이 가장 많은 사람이 이겨요. 그 전에 파산한 사람은 순위에서 빠져요.
   <h3>👥 함께하기</h3><b>싱글</b>: 한 기기를 돌려 가며 2~4명이 해요. <b>멀티</b>: 방장이 방을 만들고 QR·링크로 초대하면 각자 휴대폰으로 해요. 바울·바나바·실라·디모데 중 한 사람이 되고, 이름을 적으면 ‘바울 (이름)’처럼 보여요.
   <h3>🎲 차례</h3>주사위 두 개를 굴려 나온 수만큼 앞으로 가요. <b>같은 숫자</b>가 나오면 한 번 더 굴려요. 세 번 연속이면 빌립보 감옥으로 가요.
   <h3>💰 달란트</h3>모두 1,500으로 시작해요. <b>✝️ 예루살렘</b>을 지나거나 멈추면 파송 헌금 <b>200</b>을 받아요.
@@ -440,7 +452,7 @@ function rulesHTML(){const groups=Object.keys(GRP).map(g=>`<span style="backgrou
   <h3>🗺️ 지역</h3><div class="cl">${groups}</div>
   <h3>✨ 특별한 칸</h3>✉️ <b>은혜카드</b>: 성경 이야기 카드를 한 장 뽑아 그대로 해요 (80장)<br>🪙 <b>성전세</b>: 구제함에 100·150을 넣어요<br>🕊️ <b>안식일 쉼터</b>: 구제함에 모인 달란트를 모두 받아요<br>
    🚨 <b>붙잡힘</b>: 빌립보 감옥으로 가요<br>⛓️ <b>빌립보 감옥</b>: 같은 숫자가 나오면 찬양으로 옥문이 열려 바로 나가요. 50을 내거나 🎶 ‘한밤의 찬양’ 카드를 써도 돼요. 세 번 안에 못 나오면 50을 내고 나가요. (그냥 지나가거나 멈춘 거면 구경만)
-  <h3>😢 달란트가 모자라면</h3>건물부터 반값에, 그다음 도시를 반값에 자동으로 팔아서 내요. 그래도 모자라면 그 사람의 여행은 끝나고 도시는 주인 없는 곳이 돼요.</div>`}
+  <h3>😢 파산</h3>낼 돈이 모자라면 건물부터 반값에, 그다음 도시를 반값에 자동으로 팔아서 내요. <b>현금도 없고 도시도 다 팔았는데도 낼 수 없으면 파산</b>이에요. 파산한 사람은 게임에서 빠지고, 가졌던 도시는 주인 없는 곳이 돼요.</div>`}
 $("rulesB").onclick=()=>localModal(rulesHTML());
 
 /* ---------- 전체화면 ---------- */
@@ -486,13 +498,13 @@ function hostJoin(c,d){const id=String(d.id||"").replace(/[^a-z0-9]/gi,"").slice
     pl={id,name,conn:c};H.players.push(pl)}
   sendTo(pl,{t:"hello",room:ROOM,seat:H.players.indexOf(pl)});pushLobby();if(G){sendTo(pl,{t:"state",G})}renderLobby();if(G)draw()}
 function hostHandle(from,m){if(!m||!G)return;if(m.t==="act"&&ACTS[m.a]&&G.seat[G.cur]===from&&!G.busy)ACTS[m.a]()}
-function pushLobby(){broadcast({t:"lobby",players:H.players.map((x,i)=>({name:x.name,ch:i,online:online(x.id)})),rounds:CFG.rounds})}
+function pushLobby(){broadcast({t:"lobby",players:H.players.map((x,i)=>({name:x.name,ch:i,online:online(x.id)})),end:CFG.end})}
 function lobbyMsg(t){$("lobby").innerHTML=`<div class="card" style="text-align:center"><p style="font-size:19px">${t}</p></div>`;document.querySelector("#setup>.card").hidden=true}
 function renderLobby(){if(!isHost||G)return;const url=location.origin+location.pathname+"?room="+ROOM;let qr="";try{const q=qrcode(0,"M");q.addData(url);q.make();qr=q.createSvgTag(6,2)}catch(e){}
   document.querySelector("#setup>.card").hidden=true;
   $("lobby").innerHTML=`<div class="lob"><div class="card" style="text-align:center"><h2>📷 QR로 초대하기</h2><div class="qr">${qr}</div><div class="hint">방 코드</div><div class="code">${esc(ROOM)}</div><button class="sm" id="cpL">🔗 초대 링크 복사</button><p class="hint">이 화면을 켜 두세요 · 최대 4명</p></div>
     <div class="card"><h2>👥 함께 여행할 사람 (${H.players.length}/4)</h2>${H.players.map((x,i)=>`<div class="prow" style="--pc:${COLORS[i]}"><span class="face" style="width:36px;height:36px">${face(i)}</span><span class="n">${esc(dispName(i,x.name))}${x.id==="host"?" · 방장":""}</span><span class="hint">${online(x.id)?"🟢":"⚪ 연결 끊김"}</span></div>`).join("")}
-      <p class="hint">게임 길이: ${CFG.rounds?CFG.rounds+"바퀴":"끝까지"}</p><div class="row" style="justify-content:center"><button class="pri" id="goL" style="font-size:20px" ${H.players.length<2?"disabled":""}>⛵ 여행 시작 (${H.players.length}명)</button></div>
+      <p class="hint">끝내는 방법: ${endText(CFG.end)}</p><div class="row" style="justify-content:center"><button class="pri" id="goL" style="font-size:20px" ${H.players.length<2?"disabled":""}>⛵ 여행 시작 (${H.players.length}명)</button></div>
       ${H.players.length<2?'<p class="hint" style="text-align:center">한 명 이상 들어오면 시작할 수 있어요</p>':""}</div></div>`;
   $("cpL").onclick=async()=>{try{await navigator.clipboard.writeText(url);toast("초대 링크를 복사했어요")}catch(e){prompt("이 링크를 복사해 주세요",url)}};
   $("goL").onclick=()=>{newGame(H.players.map(x=>({id:x.id,name:x.name})))}}
@@ -525,7 +537,7 @@ async function relayDial(id,name){for(const url of BROKERS){if(conn&&conn.open&&
 function client(m){if(!m||!m.t)return;
   if(m.t==="err"){lobbyMsg(esc(m.msg));return}
   if(m.t==="lobby"&&!G){document.querySelector("#setup>.card").hidden=true;
-    $("lobby").innerHTML=`<div class="card" style="text-align:center"><div style="font-size:44px">🙌</div><h2>들어왔어요!</h2><p class="hint">방장이 여행을 시작하면 바로 판이 나와요 · 게임 길이 ${m.rounds?m.rounds+"바퀴":"끝까지"}</p>
+    $("lobby").innerHTML=`<div class="card" style="text-align:center"><div style="font-size:44px">🙌</div><h2>들어왔어요!</h2><p class="hint">방장이 여행을 시작하면 바로 판이 나와요 · 끝내는 방법: ${endText(m.end)}</p>
       ${m.players.map(x=>`<div class="prow" style="--pc:${COLORS[x.ch]};max-width:360px;margin:6px auto 0"><span class="face" style="width:36px;height:36px">${face(x.ch)}</span><span class="n">${esc(dispName(x.ch,x.name))}</span><span class="hint">${x.online?"🟢":"⚪"}</span></div>`).join("")}</div>`;return}
   if(m.t==="state"){const first=!G;G=m.G;if(first){$("setup").hidden=true;$("play").hidden=false;$("toSetup").hidden=true}_draw();return}
   if(m.t==="modal"){localModal(m.html,m.cls);setTimeout(()=>{if($("mOk"))closeModal()},2600);return}
