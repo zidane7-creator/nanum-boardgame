@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://js.tosspayments.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' data: blob: https://api.github.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://api.open-meteo.com https://api.met.no https://wttr.in https://api.mymemory.translated.net https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.doubleclick.net https://www.google.com https://*.tosspayments.com https://0.peerjs.com wss://0.peerjs.com wss://broker.emqx.io:8084 wss://broker.hivemq.com:8884 https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self' blob:; frame-src 'self' https://www.bskorea.or.kr https://*.tosspayments.com; object-src 'none'; base-uri 'self'; form-action 'self' https://*.tosspayments.com">
+<meta name="referrer" content="strict-origin-when-cross-origin"><script async src="https://www.googletagmanager.com/gtag/js?id=G-0WTWY3TPES"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-0WTWY3TPES");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>윷놀이 | 치영의 교회 생활 즐기기 · 팀 대항 윷놀이</title>
+<meta name="description" content="교회 모임·수련회에서 바로 하는 팀 대항 윷놀이. 팀 2~4개, 팀원 이름 입력, 말 2~4개. 윷을 던지고 움직일 말을 골라요. 업기·잡기·지름길까지 기본 규칙 그대로.">
+<meta name="keywords" content="윷놀이, 온라인 윷놀이, 팀 윷놀이, 교회 레크리에이션, 수련회 게임, 명절 게임">
+<link rel="canonical" href="https://zidane7-creator.github.io/nanum-boardgame/yut/">
+<meta property="og:title" content="윷놀이 — 치영의 교회 생활 즐기기">
+<meta property="og:description" content="팀 2~4개, 팀원이 돌아가며 던지는 윷놀이">
+<meta property="og:url" content="https://zidane7-creator.github.io/nanum-boardgame/yut/">
+<meta property="og:image" content="https://zidane7-creator.github.io/nanum-boardgame/assets/og.jpg">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎲</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<script src="../assets/jua.js"></script>
+<style>
+:root{--ink:#3b2a20;--cream:#fffaf0;--accent:#e8503a;--gold:#f5b82e;--green:#5aa957}
+*{box-sizing:border-box}
+html,body{margin:0;color:var(--ink);font-family:"Jua","Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+button{font:inherit;color:inherit;border:2px solid var(--ink);background:var(--cream);border-radius:16px;padding:8px 16px;cursor:pointer;box-shadow:0 3px 0 var(--ink)}
+button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+button:disabled{opacity:.4;cursor:default;transform:none}
+button.pri{background:var(--accent);color:#fff}button.go{background:var(--green);color:#fff}
+button.sm{padding:4px 10px;font-size:14px;border-radius:12px;box-shadow:0 2px 0 var(--ink)}
+input,textarea{font:inherit;color:inherit;border:2px solid var(--ink);border-radius:12px;padding:6px 10px;background:#fff}
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:calc(8px + env(safe-area-inset-top,0px)) 14px 8px;background:rgba(255,255,255,.92);border-bottom:4px solid var(--gold)}
+.top a{color:var(--ink);text-decoration:none;font-size:15px;border:2px solid var(--ink);border-radius:14px;padding:3px 10px;background:var(--cream)}
+.top .ttl{flex:1;font-size:19px}
+main{max-width:1100px;margin:0 auto;padding:16px 12px 60px}
+.card{background:var(--cream);border:3px solid var(--ink);border-radius:22px;padding:18px;margin-bottom:16px;box-shadow:0 5px 0 rgba(0,0,0,.12)}
+h1{font-weight:normal;text-align:center;font-size:clamp(30px,7vw,44px);margin:6px 0 2px}
+.sub{text-align:center;margin:0 0 14px;opacity:.8}
+.sc-sky{}
+/* setup */
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.seg{display:inline-flex;border:2px solid var(--ink);border-radius:12px;overflow:hidden}
+.seg button{border:0;border-radius:0;box-shadow:none;padding:5px 14px;background:#fff}
+.seg button+button{border-left:2px solid var(--ink)}
+.seg button.on{background:var(--gold)}
+.teams{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:14px}
+.tcard{border:3px solid var(--tc);border-radius:18px;background:#fff;padding:12px}
+.tcard .tn{display:flex;gap:8px;align-items:center}
+.tcard .tn input{flex:1;min-width:0;font-size:18px}
+.dot{width:22px;height:22px;border-radius:50%;background:var(--tc);border:2px solid var(--ink);flex:none}
+.tcard textarea{width:100%;height:96px;margin-top:8px;resize:vertical;line-height:1.5}
+.hint{font-size:13px;opacity:.7}
+/* game */
+.game{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:820px){.game{grid-template-columns:1fr}}
+.boardwrap{padding:10px}
+#board{display:block;width:100%;height:auto;touch-action:manipulation}
+#board .ln{stroke:#c9a675;stroke-width:6;stroke-linecap:round}
+#board .nd{fill:#fffaf0;stroke:#8a6a48;stroke-width:3}
+#board .nd.big{fill:#fff3c4;stroke-width:4}
+#board .lbl{font-size:15px;fill:#8a6a48;text-anchor:middle}
+#board .tok{cursor:pointer;transition:transform .16s ease}
+#board .tok circle.b{stroke:#3b2a20;stroke-width:3}
+#board .tok text{font-size:18px;fill:#fff;text-anchor:middle;dominant-baseline:central;pointer-events:none;font-family:"Jua",sans-serif}
+#board .tok .cnt{font-size:14px;fill:#3b2a20}
+#board .tok.can circle.b{stroke:#e8503a;stroke-width:5;animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{50%{stroke-width:8}}
+#board .dest{fill:none;stroke:#e8503a;stroke-width:4;stroke-dasharray:6 5}
+.turn{display:flex;align-items:center;gap:10px;border:3px solid var(--tc);border-radius:18px;background:#fff;padding:10px 12px}
+.turn .big{font-size:22px}
+.turn .who{font-size:15px;opacity:.85}
+.sticks{display:flex;gap:10px;justify-content:center;margin:14px 0 6px;perspective:400px;height:96px;align-items:center}
+.stick{width:30px;height:92px;border-radius:15px;border:3px solid var(--ink);transition:transform .5s ease;position:relative}
+.stick.flat{background:#fff6dc}
+.stick.flat::after{content:"✕ ✕ ✕";position:absolute;inset:8px 0;writing-mode:vertical-rl;text-align:center;font-size:12px;color:#8a6a48;letter-spacing:6px}
+.stick.flat.mark::before{content:"";position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:#e8503a}
+.stick.round{background:linear-gradient(90deg,#b8763c,#d9995a 45%,#b8763c)}
+.stick.spin{animation:spin .55s ease-in-out}
+@keyframes spin{0%{transform:translateY(0) rotateX(0)}50%{transform:translateY(-40px) rotateX(540deg)}100%{transform:translateY(0) rotateX(1080deg)}}
+.result{text-align:center;font-size:34px;min-height:44px;color:var(--accent)}
+.acts{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:8px 0}
+.queue{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:6px 0}
+.queue button{padding:4px 12px;font-size:17px}
+.queue button.on{background:var(--gold)}
+.pick{margin-top:8px}
+.pick h4{margin:6px 0;font-weight:normal;text-align:center}
+.picks{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.picks button{border-color:var(--tc);background:#fff}
+.score{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.srow{display:flex;align-items:center;gap:8px;border:2px solid var(--tc);border-radius:14px;padding:6px 10px;background:#fff}
+.srow.now{box-shadow:0 0 0 3px var(--gold)}
+.srow .nm{flex:1}
+.pcs{display:flex;gap:4px}
+.pcs i{width:16px;height:16px;border-radius:50%;border:2px solid var(--ink);background:var(--tc);opacity:.35}
+.pcs i.on{opacity:1}.pcs i.done{opacity:1;background:#fff;border-color:var(--tc);position:relative}
+.pcs i.done::after{content:"✓";position:absolute;inset:-4px 0 0;font-size:12px;text-align:center;color:var(--ink)}
+.log{font-size:14px;max-height:120px;overflow:auto;background:#fffdf6;border-radius:12px;padding:6px 10px;margin-top:10px;border:1.5px dashed #d9c3a5}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) scale(.9);background:var(--ink);color:#fff;padding:10px 18px;border-radius:16px;font-size:18px;opacity:0;transition:.25s;z-index:50;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) scale(1)}
+.over{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:60;padding:16px}
+.over .card{text-align:center;max-width:420px;width:100%}
+.over .card .big{font-size:42px;margin:6px 0}
+</style>
+</head><body>
+<div class="top"><a href="../">← 목장</a><span class="ttl">🎲 윷놀이</span><button class="sm" id="toSetup" hidden>⚙️ 새 게임</button></div>
+<main>
+  <section id="setup">
+    <h1 class="sc-sky">윷놀이</h1>
+    <p class="sub sc-sky">팀을 나누고 팀원 이름을 적으면, 팀마다 한 명씩 돌아가며 윷을 던져요.</p>
+    <div class="card">
+      <div class="row"><b>팀 수</b><div class="seg" id="nTeams"><button data-v="2">2팀</button><button data-v="3">3팀</button><button data-v="4">4팀</button></div>
+        <span style="width:16px"></span><b>팀마다 말</b><div class="seg" id="nPieces"><button data-v="2">2개</button><button data-v="3">3개</button><button data-v="4">4개</button></div></div>
+      <div class="teams" id="teams"></div>
+      <p class="hint" style="margin:10px 0 0">팀원 이름은 한 줄에 한 명씩 (또는 쉼표로 구분) 적어 주세요. 비워 두면 팀 이름으로 진행해요.</p>
+      <div class="acts" style="margin-top:14px"><button class="pri" id="start" style="font-size:20px;padding:10px 28px">🎲 게임 시작</button></div>
+    </div>
+    <div class="card hint" style="opacity:.9;font-size:15px;line-height:1.6">
+      <b>기본 규칙</b> · 도 1칸 · 개 2칸 · 걸 3칸 · 윷 4칸 · 모 5칸 · <b>빽도</b>는 1칸 뒤로<br>
+      · <b>윷·모</b>가 나오거나 상대 말을 <b>잡으면</b> 한 번 더 던져요<br>
+      · 우리 팀 말이 같은 칸에 서면 <b>업혀서</b> 함께 움직여요<br>
+      · 모서리나 한가운데(방)에 <b>딱 멈추면</b> 다음에 지름길로 가요<br>
+      · 오른쪽 아래 <b>참먹이</b>에 닿거나 지나가면 그 말은 들어온 거예요. 말을 모두 먼저 들여보낸 팀이 이겨요
+    </div>
+  </section>
+
+  <section id="play" hidden>
+    <div class="game">
+      <div class="card boardwrap"><svg id="board" viewBox="0 0 600 600" aria-label="윷판"></svg></div>
+      <div class="card" id="panel">
+        <div class="turn" id="turn"></div>
+        <div class="sticks" id="sticks"></div>
+        <div class="result" id="result"></div>
+        <div class="acts"><button class="pri" id="throw" style="font-size:22px;padding:10px 30px">윷 던지기</button></div>
+        <div class="queue" id="queue"></div>
+        <div class="pick" id="pick"></div>
+        <div class="score" id="score"></div>
+        <div class="log" id="log"></div>
+      </div>
+    </div>
+  </section>
+</main>
+<div class="toast" id="toast"></div>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let tt;function toast(t,ms=1800){const e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>e.classList.remove("show"),ms)}
+const COLORS=["#3b82c4","#e0504a","#e6a51c","#3f9a45"],NAMES=["청팀","홍팀","황팀","녹팀"];
+
+/* ---------- 설정 ---------- */
+let CFG={teams:2,pieces:4,names:NAMES.slice(),members:["","","",""]};
+try{const o=JSON.parse(localStorage.getItem("yut:setup")||"null");if(o)CFG=Object.assign(CFG,o)}catch(e){}
+function drawSetup(){
+  document.querySelectorAll("#nTeams button").forEach(b=>b.classList.toggle("on",+b.dataset.v===CFG.teams));
+  document.querySelectorAll("#nPieces button").forEach(b=>b.classList.toggle("on",+b.dataset.v===CFG.pieces));
+  let h="";for(let i=0;i<CFG.teams;i++)h+=`<div class="tcard" style="--tc:${COLORS[i]}"><div class="tn"><span class="dot"></span><input data-i="${i}" class="tname" maxlength="12" value="${esc(CFG.names[i]||NAMES[i])}" aria-label="${i+1}번 팀 이름"></div>
+    <textarea data-i="${i}" class="tmem" placeholder="팀원 이름&#10;예) 김철수&#10;이영희" aria-label="${esc(CFG.names[i]||NAMES[i])} 팀원">${esc(CFG.members[i]||"")}</textarea></div>`;
+  $("teams").innerHTML=h}
+function readSetup(){document.querySelectorAll(".tname").forEach(x=>CFG.names[+x.dataset.i]=x.value.trim()||NAMES[+x.dataset.i]);
+  document.querySelectorAll(".tmem").forEach(x=>CFG.members[+x.dataset.i]=x.value);try{localStorage.setItem("yut:setup",JSON.stringify(CFG))}catch(e){}}
+$("nTeams").onclick=e=>{const b=e.target.closest("button");if(!b)return;readSetup();CFG.teams=+b.dataset.v;drawSetup()};
+$("nPieces").onclick=e=>{const b=e.target.closest("button");if(!b)return;readSetup();CFG.pieces=+b.dataset.v;drawSetup()};
+drawSetup();
+
+/* ---------- 윷판: 바깥 20칸(o0=참먹이, 오른쪽 아래) + 대각선 두 줄(a: 모→찌모, b: 뒷모→참먹이), 가운데 C(방) ---------- */
+const P={};const S=96,L=60,R=540;
+for(let k=0;k<20;k++){let x,y;if(k<=5){x=R;y=R-k*S}else if(k<=10){x=R-(k-5)*S;y=L}else if(k<=15){x=L;y=L+(k-10)*S}else{x=L+(k-15)*S;y=R}P["o"+k]={x,y}}
+const lerp=(a,b,t)=>({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t});
+["a1","a2","C","a3","a4"].forEach((n,i)=>P[n]=lerp(P.o5,P.o15,(i+1)/6));
+["b1","b2",null,"b3","b4"].forEach((n,i)=>{if(n)P[n]=lerp(P.o10,P.o0,(i+1)/6)});
+const BIG=new Set(["o0","o5","o10","o15","C"]);
+/* 한 칸 앞으로. first=이번 이동의 첫 걸음, prev=바로 전 칸(가운데를 지나는 방향을 정함) */
+function fwd(n,first,prev){
+  if(n===null)return"o1";
+  if(first&&n==="o5")return"a1";if(first&&n==="o10")return"b1";if(first&&n==="C")return"b3";
+  if(n==="C")return prev==="a2"?"a3":"b3";
+  const nx={a1:"a2",a2:"C",a3:"a4",a4:"o15",b1:"b2",b2:"C",b3:"b4",b4:"END"};if(nx[n])return nx[n];
+  const k=+n.slice(1);if(k===0)return"END";return k===19?"END":"o"+(k+1)}
+const BACK={a1:"o5",a2:"a1",a3:"C",a4:"a3",b1:"o10",b2:"b1",b3:"C",b4:"b3",C:"b2",o0:"o19"};
+function back(n,prev){if(prev)return prev;if(BACK[n])return BACK[n];const k=+n.slice(1);return"o"+(k-1)}
+/* n칸 이동 경로 (끝까지 가면 "END") */
+function path(n,steps,prev){const out=[];let cur=n,pv=prev;for(let i=0;i<steps;i++){const nx=fwd(cur,i===0,pv);out.push(nx);if(nx==="END")break;pv=cur;cur=nx}return out}
+
+/* ---------- 게임 상태 ---------- */
+const NAMES_R={"-1":"빽도",1:"도",2:"개",3:"걸",4:"윷",5:"모"};
+let G=null;
+function newGame(){readSetup();
+  const teams=[];for(let i=0;i<CFG.teams;i++){const mem=String(CFG.members[i]||"").split(/[\n,]+/).map(s=>s.trim()).filter(Boolean);
+    teams.push({name:CFG.names[i]||NAMES[i],color:COLORS[i],members:mem,turnNo:0})}
+  const pieces=[];teams.forEach((t,ti)=>{for(let k=0;k<CFG.pieces;k++)pieces.push({id:ti+"-"+k,team:ti,no:k+1,node:null,prev:null,done:false})});
+  G={teams,pieces,cur:0,throws:1,queue:[],sel:0,busy:false,log:[],over:false};
+  $("setup").hidden=true;$("play").hidden=false;$("toSetup").hidden=false;
+  addLog(`게임 시작! ${teams.map(t=>t.name).join(" · ")} · 말 ${CFG.pieces}개씩`);drawBoard();drawPanel();window.scrollTo({top:0,behavior:"smooth"})}
+$("start").onclick=newGame;
+$("toSetup").onclick=()=>{if(G&&!G.over&&!confirm("지금 게임을 그만두고 새 게임을 설정할까요?"))return;G=null;$("play").hidden=true;$("setup").hidden=false;$("toSetup").hidden=true;drawSetup()};
+const thrower=()=>{const t=G.teams[G.cur];return t.members.length?t.members[t.turnNo%t.members.length]:t.name};
+function addLog(s){G.log.unshift(s);$("log").innerHTML=G.log.slice(0,40).map(x=>"· "+esc(x)).join("<br>")}
+
+/* 움직일 수 있는 말 묶음: 판 위 같은 칸의 우리 말은 한 묶음(업힘), 집에 있는 말은 '새 말' */
+function groups(team){const out=[],seen={};G.pieces.filter(p=>p.team===team&&!p.done).forEach(p=>{if(p.node===null){if(!seen.home){seen.home=1;out.push({home:true,ps:[p]})}return}
+  if(!seen[p.node]){seen[p.node]={home:false,node:p.node,ps:[]};out.push(seen[p.node])}seen[p.node].ps.push(p)});return out}
+function movable(team,v){return groups(team).filter(g=>!(v===-1&&g.home))}
+
+/* ---------- 던지기 ---------- */
+function rollYut(){const s=[0,1,2,3].map(()=>Math.random()<.5);const flats=s.filter(Boolean).length;
+  let v=flats===0?5:flats;if(flats===1&&s[0])v=-1;return{v,s}} /* 0번 막대의 배에 점(빽도 표시) */
+function drawSticks(s,spin){$("sticks").innerHTML=(s||[true,false,true,false]).map((f,i)=>`<div class="stick ${f?"flat":"round"}${f&&i===0?" mark":""}${spin?" spin":""}"></div>`).join("")}
+$("throw").onclick=()=>{if(!G||G.busy||G.throws<=0||G.over)return;G.busy=true;G.throws--;const r=rollYut();
+  drawSticks(r.s.map(()=>Math.random()<.5),true);$("result").textContent="";
+  setTimeout(()=>{drawSticks(r.s,false);const nm=NAMES_R[r.v];$("result").textContent=nm+"!";G.queue.push(r.v);if(G.queue.length===1)G.sel=0;
+    addLog(`${G.teams[G.cur].name} ${thrower()}: ${nm}`);
+    if(r.v>=4){G.throws++;toast(nm+"! 한 번 더 던져요 🎉")}
+    G.busy=false;afterChange()},600)};
+
+/* 결과를 쓸 수 없는 경우(예: 판 위에 말이 없는데 빽도) 버림 */
+function afterChange(){if(G.over)return;
+  if(G.throws===0){let changed=true;while(changed){changed=false;for(let i=0;i<G.queue.length;i++){if(!movable(G.cur,G.queue[i]).length){addLog(`${NAMES_R[G.queue[i]]}: 움직일 말이 없어서 넘어가요`);toast(NAMES_R[G.queue[i]]+"는 움직일 말이 없어서 넘어가요",2200);G.queue.splice(i,1);changed=true;break}}}
+    if(G.sel>=G.queue.length)G.sel=0;
+    if(!G.queue.length){nextTeam();return}}
+  drawBoard();drawPanel()}
+function nextTeam(){const t=G.teams[G.cur];t.turnNo++;G.cur=(G.cur+1)%G.teams.length;G.throws=1;G.queue=[];G.sel=0;
+  $("result").textContent="";drawBoard();drawPanel();toast(`${G.teams[G.cur].name} 차례 · ${thrower()} 던져요`)}
+
+/* ---------- 말 움직이기 ---------- */
+function choose(gi){if(!G||G.busy||G.throws>0||!G.queue.length)return;const v=G.queue[G.sel],g=movable(G.cur,v)[gi];if(!g)return;
+  G.queue.splice(G.sel,1);G.sel=0;G.busy=true;
+  const ps=g.home?[g.ps[0]]:g.ps,start=g.home?null:g.node,prev=ps[0].prev;
+  const steps=v===-1?[back(start,prev)]:path(start,v,prev);
+  let i=0;const label=g.home?"새 말":(ps.length>1?ps.map(p=>p.no).join("·")+"번 말(업힘)":ps[0].no+"번 말");
+  const hop=()=>{const nx=steps[i];
+    if(nx==="END"){ps.forEach(p=>{p.done=true;p.node=null;p.prev=null});addLog(`${G.teams[G.cur].name} ${label} 들어왔어요! 🏁`);toast(`🏁 ${label} 들어왔어요!`);drawBoard();finishMove(false);return}
+    const before=i===0?start:steps[i-1];ps.forEach(p=>{p.prev=v===-1?null:before;p.node=nx});drawBoard();i++;
+    if(i<steps.length)setTimeout(hop,230);else land(nx,label)};
+  hop()}
+function land(node,label){/* 잡기 / 업기 */
+  const foes=G.pieces.filter(p=>!p.done&&p.node===node&&p.team!==G.cur);let caught=false;
+  if(foes.length){const ft=G.teams[foes[0].team].name;foes.forEach(p=>{p.node=null;p.prev=null});caught=true;
+    addLog(`${G.teams[G.cur].name} ${label}이(가) ${ft} 말 ${foes.length}개를 잡았어요!`);toast(`💥 ${ft} 말을 잡았어요! 한 번 더 던져요`,2400)}
+  const mates=G.pieces.filter(p=>!p.done&&p.node===node&&p.team===G.cur);
+  if(mates.length>1&&!caught)toast(`🤝 ${mates.length}개가 업혔어요`);
+  drawBoard();finishMove(caught)}
+function finishMove(caught){G.busy=false;
+  const t=G.cur;if(G.pieces.filter(p=>p.team===t).every(p=>p.done)){G.over=true;drawBoard();drawPanel();win(t);return}
+  if(caught)G.throws++;afterChange()}
+function win(t){const tm=G.teams[t];addLog(`🎉 ${tm.name} 승리!`);
+  const o=document.createElement("div");o.className="over";o.innerHTML=`<div class="card" style="border-color:${tm.color}"><div class="big">🎉</div><h2 style="font-weight:normal;margin:0">${esc(tm.name)} 승리!</h2>
+    <p>${tm.members.length?esc(tm.members.join(", "))+" 수고했어요!":"축하해요!"}</p><div class="acts"><button class="pri" id="again">같은 팀으로 다시</button><button id="reset">새로 설정</button></div></div>`;
+  document.body.appendChild(o);o.querySelector("#again").onclick=()=>{o.remove();newGame()};o.querySelector("#reset").onclick=()=>{o.remove();G=null;$("play").hidden=true;$("setup").hidden=false;$("toSetup").hidden=true;drawSetup()}}
+
+/* ---------- 그리기 ---------- */
+function drawBoard(){const b=$("board");let h="";
+  const seg=(a,c)=>`<line class="ln" x1="${P[a].x}" y1="${P[a].y}" x2="${P[c].x}" y2="${P[c].y}"/>`;
+  h+=`<rect x="30" y="30" width="540" height="540" rx="26" fill="#f7e6c4" stroke="#8a6a48" stroke-width="4"/>`;
+  h+=seg("o0","o5")+seg("o5","o10")+seg("o10","o15")+seg("o15","o0")+seg("o5","o15")+seg("o10","o0");
+  for(const n in P)h+=`<circle class="nd${BIG.has(n)?" big":""}" cx="${P[n].x}" cy="${P[n].y}" r="${BIG.has(n)?26:15}"/>`;
+  h+=`<text class="lbl" x="${P.o0.x-2}" y="${P.o0.y+44}">참먹이 · 출발</text><text class="lbl" x="${P.C.x}" y="${P.C.y+44}">방</text>`;
+  if(G){const can=new Set();const v=G.queue[G.sel];
+    if(!G.busy&&G.throws===0&&v!==undefined)movable(G.cur,v).forEach(g=>{if(!g.home)can.add(g.node)});
+    /* 이동할 곳 미리 보기 (선택한 결과 기준) */
+    const at={};G.pieces.filter(p=>!p.done&&p.node!==null).forEach(p=>{(at[p.node]=at[p.node]||{})[p.team]=(at[p.node][p.team]||[]).concat(p)});
+    for(const n in at){const teams=Object.keys(at[n]);teams.forEach((ti,j)=>{const ps=at[n][ti],t=G.teams[ti],off=teams.length>1?(j-(teams.length-1)/2)*20:0;
+      const mine=+ti===G.cur&&can.has(n);
+      h+=`<g class="tok${mine?" can":""}" data-node="${n}" transform="translate(${P[n].x+off},${P[n].y-off})"><circle class="b" r="20" fill="${t.color}"/><text>${ps.map(p=>p.no).join("")}</text>${ps.length>1?`<circle r="10" cx="18" cy="-18" fill="#fff" stroke="#3b2a20" stroke-width="2"/><text class="cnt" x="18" y="-18">${ps.length}</text>`:""}</g>`})}}
+  b.innerHTML=h;
+  b.querySelectorAll(".tok.can").forEach(el=>el.onclick=()=>{const v=G.queue[G.sel];const i=movable(G.cur,v).findIndex(g=>!g.home&&g.node===el.dataset.node);if(i>=0)choose(i)})}
+function drawPanel(){if(!G)return;const t=G.teams[G.cur];$("panel").style.setProperty("--tc",t.color);
+  $("turn").style.setProperty("--tc",t.color);
+  $("turn").innerHTML=`<span class="dot" style="--tc:${t.color}"></span><div><div class="big">${esc(t.name)} 차례</div><div class="who">🙋 ${esc(thrower())} ${G.throws>0?"던져 주세요":"말을 골라 주세요"}</div></div>`;
+  $("throw").disabled=G.busy||G.throws<=0||G.over;$("throw").textContent=G.throws>1?`윷 던지기 (${G.throws}번)`:"윷 던지기";
+  if(!$("sticks").children.length)drawSticks(null,false);
+  $("queue").innerHTML=G.queue.length?`<span class="hint" style="align-self:center">쓸 결과:</span>`+G.queue.map((v,i)=>`<button class="${i===G.sel?"on":""}" data-q="${i}">${NAMES_R[v]}</button>`).join(""):"";
+  $("queue").querySelectorAll("[data-q]").forEach(x=>x.onclick=()=>{G.sel=+x.dataset.q;drawBoard();drawPanel()});
+  let pk="";const v=G.queue[G.sel];
+  if(G.throws>0&&G.queue.length)pk=`<h4>한 번 더 던질 수 있어요! 먼저 던진 뒤에 말을 움직여요</h4>`;
+  else if(G.throws===0&&v!==undefined&&!G.busy){const gs=movable(G.cur,v);
+    pk=`<h4><b>${NAMES_R[v]}</b> (${v===-1?"1칸 뒤로":v+"칸"}) — 어떤 말을 움직일까요?</h4><div class="picks">`+gs.map((g,i)=>{const lbl=g.home?"＋ 새 말 놓기":(g.ps.length>1?g.ps.map(p=>p.no).join("·")+"번 말 (업힘)":g.ps[0].no+"번 말");
+      return`<button data-g="${i}" style="--tc:${t.color}">${lbl}</button>`}).join("")+`</div><p class="hint" style="text-align:center;margin:6px 0 0">윷판에서 반짝이는 말을 눌러도 돼요</p>`}
+  $("pick").innerHTML=pk;$("pick").querySelectorAll("[data-g]").forEach(x=>x.onclick=()=>choose(+x.dataset.g));
+  $("score").innerHTML=G.teams.map((tm,i)=>{const ps=G.pieces.filter(p=>p.team===i);
+    return`<div class="srow${i===G.cur?" now":""}" style="--tc:${tm.color}"><span class="dot"></span><span class="nm">${esc(tm.name)}${tm.members.length?` <span class="hint">(${esc(tm.members.join(", "))})</span>`:""}</span><span class="pcs">${ps.map(p=>`<i class="${p.done?"done":p.node!==null?"on":""}" title="${p.no}번 말: ${p.done?"들어옴":p.node!==null?"판 위":"대기"}"></i>`).join("")}</span></div>`}).join("")}
+</script>
+<script src="../assets/scene.js?v=20261116c"></script><script src="../assets/home.js"></script>
+</body></html>
