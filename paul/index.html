@@ -44,6 +44,7 @@ h2{font-weight:normal;margin:0 0 10px;font-size:21px}
 .pin b{min-width:52px}
 .tok.fc{background:none;border:0;width:clamp(16px,2.4vw,28px);height:clamp(16px,2.4vw,28px)}.tok.fc svg{width:100%;height:100%;display:block;filter:drop-shadow(0 1px 1px rgba(0,0,0,.4))}
 .tok.fc.me{transform:scale(1.25)}
+.sq.corner .toks{flex-wrap:nowrap;gap:1px}.sq.corner .tok.fc{width:clamp(13px,1.8vw,22px);height:clamp(13px,1.8vw,22px)}
 .qr svg{width:190px;height:190px;background:#fff;border-radius:12px}.code{font-size:36px;letter-spacing:8px}
 .lob{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:14px;align-items:start}@media (max-width:760px){.lob{grid-template-columns:1fr}}
 .clist{display:flex;flex-direction:column;gap:4px}.ci{background:#fff;border:1.5px solid #e6d6b8;border-radius:10px;padding:4px 10px;display:flex;flex-direction:column}.ci span{font-size:13px;opacity:.8}
@@ -69,9 +70,9 @@ h2{font-weight:normal;margin:0 0 10px;font-size:21px}
 @media (max-width:600px){.top .lbl{display:none}.top{gap:6px;padding-left:8px;padding-right:8px}.top .ttl{font-size:15px}#toSetup{font-size:12px;padding:3px 7px}}
 .sq .pr{font-size:.85em;opacity:.7}
 .sq .bd{font-size:1.15em;line-height:1}
-.sq.corner{background:#fff3c4;justify-content:center;font-size:clamp(8px,1.15vw,13px)}
+.sq.corner{background:#fff3c4;justify-content:flex-start;padding-top:5px;font-size:clamp(8px,1.15vw,13px)}
 .sq.corner .em{font-size:1.9em;line-height:1}
-.sq.corner .ds{font-size:.78em;opacity:.75;white-space:nowrap;margin-top:1px}
+.sq.corner .ds{font-size:.85em;opacity:.8;white-space:normal;word-break:keep-all;line-height:1.2;margin-top:2px}
 .sq .pool{position:relative;display:flex;flex-direction:column;align-items:center;margin-top:2px;line-height:1}
 .sq .pool .pile{font-size:.9em;letter-spacing:-.35em;padding-right:.35em;white-space:nowrap}
 .sq .pool b{color:#b07a12;font-size:1.05em}
@@ -432,7 +433,7 @@ function drawBoard(){let h="";SQ.forEach((s,i)=>{const [r,c]=cellPos(i),o=G.own[
   $("board").innerHTML=h;drawDice(false);fitCells();
   $("board").querySelectorAll(".sq").forEach(el=>el.onclick=()=>info(+el.dataset.i))}
 /* 모퉁이 칸 짧은 설명 */
-const CDESC={start:"출발 · 지날 때 +200",jail:"같은 숫자면 탈출<br>그냥 오면 구경만",rest:"모인 구제함을 받아요",gojail:"감옥으로 가요!"};
+const CDESC={start:"출발점<br>지날 때 +200",jail:"같은 숫자면 탈출<br>그냥 오면 구경만",rest:"모인 구제함을 받아요",gojail:"감옥으로 가요!"};
 /* 안식일 쉼터에 쌓이는 구제함: 금액이 커질수록 동전 더미가 높아져요 */
 let lastPool=0,poolUp=null;
 function poolHTML(){const n=G.pool,coins=Math.min(6,Math.ceil(n/100));if(n>lastPool)poolUp={n:n-lastPool,t:Date.now()};lastPool=n;
