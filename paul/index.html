@@ -69,6 +69,14 @@ h2{font-weight:normal;margin:0 0 10px;font-size:21px}
 .sq .bd{font-size:1.15em;line-height:1}
 .sq.corner{background:#fff3c4;justify-content:center;font-size:clamp(8px,1.15vw,13px)}
 .sq.corner .em{font-size:1.9em;line-height:1}
+.sq.corner .ds{font-size:.78em;opacity:.75;white-space:nowrap;margin-top:1px}
+.sq .pool{position:relative;display:flex;flex-direction:column;align-items:center;margin-top:2px;line-height:1}
+.sq .pool .pile{font-size:.9em;letter-spacing:-.35em;padding-right:.35em;white-space:nowrap}
+.sq .pool b{color:#b07a12;font-size:1.05em}
+.sq .pool b.bm{animation:pbump .9s ease-out both}
+.sq .pool .plus{position:absolute;top:-10px;right:0;font-size:.95em;color:#3f9a45;font-weight:bold;animation:pplus 1.6s ease-out forwards;white-space:nowrap}
+@keyframes pbump{30%{transform:scale(1.5)}}
+@keyframes pplus{0%{opacity:0;transform:translateY(8px)}20%{opacity:1}100%{opacity:0;transform:translateY(-14px)}}
 .sq.spc{background:#f3f0ff}.sq.spc .em{font-size:1.6em;line-height:1;margin-top:4px}
 /* 왼쪽·오른쪽 줄은 가로로 눕힌 칸, 윗줄은 색띠가 안쪽(아래)으로 */
 .sq.sl,.sq.sr{flex-direction:row;align-items:center;justify-content:flex-start;padding:2px 4px 2px 2px;gap:4px;text-align:left}
@@ -383,7 +391,7 @@ async function land(p){const P=G.P[p],i=P.pos,s=SQ[i];drawBoard();
   if(s.k==="card"){const c=CARDS[G.deck.shift()];if(!G.deck.length)G.deck=shuffle([...CARDS.keys()]);sCard();G.pending=null;const r=c.f(p);log(`✉️ ${P.name}: ${c.t} — ${r||""}`);
     await showModal(`<div class="em">✉️</div><h2>은혜카드 · ${esc(c.t)}</h2><p>${esc(c.d)}</p>`,"gcard");
     if(G.pending){const pd=G.pending;G.pending=null;await stepTo(pd.p,pd.steps);await land(pd.p)}return}
-  if(s.k==="tax"){payPool(p,s.amt);log(`🪙 ${P.name}: 성전세 ${s.amt} → 구제함 (${G.pool})`);toast(`🪙 성전세 ${s.amt} · 구제함 ${G.pool}`);return}
+  if(s.k==="tax"){payPool(p,s.amt);log(`🪙 ${P.name}: 성전세 ${s.amt} → 구제함 (${G.pool})`);toast(`🪙 성전세 ${s.amt} → 🕊️ 안식일 쉼터에 쌓였어요 (${G.pool.toLocaleString()})`);return}
   if(s.k==="rest"){const n=G.pool;G.pool=0;if(n){gain(p,n);log(`🕊️ ${P.name}: 안식일 쉼터에서 구제함 ${n}을 받았어요`);await showModal(`<div class="em">🕊️</div><h2>안식일 쉼터</h2><p>구제함에 모인 <b>${n}</b> 달란트를 받았어요!</p>`)}else toast("🕊️ 쉬어 가요 (구제함이 비었어요)");return}
   if(s.k==="gojail"){if(P.free){P.free--;log(`🎶 ${P.name}: 한밤의 찬양 카드로 감옥을 피했어요`);toast("🎶 찬양 카드로 감옥을 피했어요");return}goJail(p);G.dbl=0;return}}
 function buy(){const p=G.cur,i=G.P[p].pos,s=SQ[i];if(G.P[p].money<s.p){toast("달란트가 모자라요");return}G.P[p].money-=s.p;G.own[i]={pid:p,lv:0};sBuild();log(`🚩 ${G.P[p].name}: ${s.n}에 교회를 개척했어요 (-${s.p})`);G.phase="roll";afterAction()}
@@ -415,15 +423,22 @@ function drawBoard(){let h="";SQ.forEach((s,i)=>{const [r,c]=cellPos(i),o=G.own[
   const cls=s.k==="city"?"sq":["start","jail","rest","gojail"].includes(s.k)?"sq corner":"sq spc";
   const side=i%10===0?"":i<10?" sb":i<20?" sl":i<30?" st":" sr";
   h+=`<div class="${cls}${side}${G.P[G.cur].pos===i?" now":""}" style="grid-row:${r};grid-column:${c};${brd}" data-i="${i}">`+
-    (s.k==="city"?`<div class="band" style="background:${GRP[s.g]}"></div><div class="txt"><div class="nm">${esc(s.n)}</div>${o?`<div class="bd">${LVI[o.lv]}</div>`:`<div class="pr">${s.p}</div>`}</div>`:`<div class="em">${s.em}</div><div class="txt"><div class="nm">${esc(s.n)}</div></div>`)+
+    (s.k==="city"?`<div class="band" style="background:${GRP[s.g]}"></div><div class="txt"><div class="nm">${esc(s.n)}</div>${o?`<div class="bd">${LVI[o.lv]}</div>`:`<div class="pr">${s.p}</div>`}</div>`:`<div class="em">${s.em}</div><div class="txt"><div class="nm">${esc(s.n)}</div>${CDESC[s.k]?`<div class="ds">${CDESC[s.k]}</div>`:""}${s.k==="rest"?poolHTML():""}</div>`)+
     `<div class="toks">${toks.map(x=>`<span class="tok fc${x.k===G.cur?" me":""}" title="${esc(x.p.name)}">${face(x.p.ch??x.k)}</span>`).join("")}</div></div>`});
-  h+=`<div class="center"><div class="t">⛵ 바울의 전도여행</div><div class="dice" id="dice"></div><div>🪙 구제함 <b>${G.pool}</b> · ${G.endAt?`⏰ <b id="tleft">${tleft()}</b>`:G.rounds?`${Math.min(G.round,G.rounds)}/${G.rounds}바퀴`:G.round+"바퀴째"}</div></div>`;
+  h+=`<div class="center"><div class="t">⛵ 바울의 전도여행</div><div class="dice" id="dice"></div><div>🕊️ 안식일 쉼터 구제함 <b>${G.pool.toLocaleString()}</b> · ${G.endAt?`⏰ <b id="tleft">${tleft()}</b>`:G.rounds?`${Math.min(G.round,G.rounds)}/${G.rounds}바퀴`:G.round+"바퀴째"}</div></div>`;
   $("board").innerHTML=h;drawDice(false);fitCells();
   $("board").querySelectorAll(".sq").forEach(el=>el.onclick=()=>info(+el.dataset.i))}
+/* 모퉁이 칸 짧은 설명 */
+const CDESC={start:"출발 · 지날 때 +200",jail:"같은 숫자면 탈출<br>그냥 오면 구경만",rest:"모인 구제함을 받아요",gojail:"감옥으로 가요!"};
+/* 안식일 쉼터에 쌓이는 구제함: 금액이 커질수록 동전 더미가 높아져요 */
+let lastPool=0,poolUp=null;
+function poolHTML(){const n=G.pool,coins=Math.min(6,Math.ceil(n/100));if(n>lastPool)poolUp={n:n-lastPool,t:Date.now()};lastPool=n;
+  const age=poolUp?Date.now()-poolUp.t:9999,show=age<1600,d=`style="animation-delay:-${age}ms"`;
+  return`<div class="pool"><span class="pile">${"🪙".repeat(coins)||"·"}</span><b ${show?`class="bm" ${d}`:""}>${n.toLocaleString()}</b>${show?`<span class="plus" ${d}>+${poolUp.n}</span>`:""}</div>`}
 /* 칸 글자가 잘리지 않게: 넘치면 그 칸만 글자를 조금씩 줄여요 (판 크기가 바뀔 때만 다시 재요) */
 const FIT={w:0,fs:{}};
 function fitCells(){const b=$("board");if(!b)return;const W=Math.round(b.clientWidth);const cells=b.querySelectorAll(".sq");
-  if(W!==FIT.w){FIT.w=W;FIT.fs={};cells.forEach(el=>{el.style.fontSize="";let fs=parseFloat(getComputedStyle(el).fontSize);const parts=[...el.querySelectorAll(".nm,.pr,.bd")];
+  if(W!==FIT.w){FIT.w=W;FIT.fs={};cells.forEach(el=>{el.style.fontSize="";let fs=parseFloat(getComputedStyle(el).fontSize);const parts=[...el.querySelectorAll(".nm,.pr,.bd,.ds,.pool b")];
     const over=()=>el.scrollHeight>el.clientHeight+1||el.scrollWidth>el.clientWidth+1||parts.some(n=>n.scrollWidth>n.clientWidth+1||n.getBoundingClientRect().width>el.clientWidth);
     el.classList.remove("wrap");while(over()&&fs>7){fs-=.5;el.style.fontSize=fs+"px"}if(over()){el.classList.add("wrap");while(over()&&fs>5.5){fs-=.5;el.style.fontSize=fs+"px"}}FIT.fs[el.dataset.i]=[el.style.fontSize,el.classList.contains("wrap")]})}
   else cells.forEach(el=>{const f=FIT.fs[el.dataset.i]||["",false];el.style.fontSize=f[0];el.classList.toggle("wrap",f[1])})}
