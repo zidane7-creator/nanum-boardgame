@@ -40,6 +40,19 @@ h2{font-weight:normal;margin:0 0 10px;font-size:21px}
 .pin{display:flex;gap:8px;align-items:center;border:3px solid var(--pc);border-radius:16px;background:#fff;padding:8px 10px}
 .pin input{flex:1;font-size:18px}
 .dot{width:22px;height:22px;border-radius:50%;background:var(--pc);border:2px solid var(--ink);flex:none}
+.face{display:inline-block;flex:none;width:44px;height:44px}.face svg{width:100%;height:100%;display:block}
+.pin b{min-width:52px}
+.tok.fc{background:none;border:0;width:clamp(16px,2.4vw,28px);height:clamp(16px,2.4vw,28px)}.tok.fc svg{width:100%;height:100%;display:block;filter:drop-shadow(0 1px 1px rgba(0,0,0,.4))}
+.tok.fc.me{transform:scale(1.25)}
+.qr svg{width:190px;height:190px;background:#fff;border-radius:12px}.code{font-size:36px;letter-spacing:8px}
+.lob{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:14px;align-items:start}@media (max-width:760px){.lob{grid-template-columns:1fr}}
+.rules h3{font-weight:normal;margin:12px 0 4px;color:var(--accent)}.rules{text-align:left;max-height:70vh;overflow:auto;font-size:15px;line-height:1.65}
+.rules .cl{display:flex;flex-wrap:wrap;gap:4px}.rules .cl span{border-radius:8px;padding:0 8px;font-size:13px}
+.wait{text-align:center;font-size:17px;padding:6px}
+#fsExit{position:fixed;right:10px;top:10px;z-index:70}
+.fs-on .top,.fs-on h1,.fs-on .sub{display:none!important}.fs-on main{max-width:none;padding:8px}
+.fs-on .game{grid-template-columns:minmax(0,1fr) minmax(280px,30vw)}.fs-on .bwrap{max-height:calc(100vh - 56px)}.fs-on .board{width:calc(min(calc(100vh - 64px),68vw) * var(--z,1))!important}
+@media (max-width:900px){.fs-on .game{grid-template-columns:1fr}.fs-on .board{width:100%}}
 .hint{font-size:14px;opacity:.75;line-height:1.6}
 /* board */
 .game{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:14px;align-items:start}
@@ -53,7 +66,10 @@ h2{font-weight:normal;margin:0 0 10px;font-size:21px}
 .sq.corner{background:#fff3c4;justify-content:center;font-size:clamp(8px,1.15vw,13px)}
 .sq.corner .em{font-size:1.9em;line-height:1}
 .sq.spc{background:#f3f0ff}.sq.spc .em{font-size:1.6em;line-height:1;margin-top:4px}
-.sq.now{box-shadow:0 0 0 3px var(--gold) inset}
+.sq.now{outline:3px solid var(--gold);outline-offset:-1px;z-index:1}
+.zbar{display:flex;gap:6px;align-items:center;justify-content:flex-end;margin-bottom:6px}.zbar span{min-width:48px;text-align:center;font-size:14px}
+.bwrap{overflow:auto;max-height:calc(100vh - 130px);border-radius:18px;-webkit-overflow-scrolling:touch}
+.board{width:calc(100% * var(--z,1))!important}
 .toks{position:absolute;left:2px;right:2px;bottom:2px;display:flex;gap:2px;justify-content:center;flex-wrap:wrap}
 .tok{width:clamp(9px,1.5vw,15px);height:clamp(9px,1.5vw,15px);border-radius:50%;border:2px solid var(--ink);background:var(--pc);transition:transform .15s}
 .tok.me{transform:scale(1.2);box-shadow:0 0 0 2px #fff}
@@ -85,19 +101,21 @@ h2{font-weight:normal;margin:0 0 10px;font-size:21px}
 .toast.show{opacity:1;transform:translateX(-50%) scale(1)}
 </style>
 </head><body>
-<div class="top"><a href="../">← 목장</a><span class="ttl">⛵ 바울의 전도여행</span><button class="sm" id="snd">🔊</button><button class="sm" id="toSetup" hidden>⚙️ 새 게임</button></div>
+<div class="top"><a href="../">← 목장</a><span class="ttl">⛵ 바울의 전도여행</span><button class="sm" id="rulesB">📖 규칙</button><button class="sm" id="fsB">⛶ 전체화면</button><button class="sm" id="snd">🔊</button><button class="sm" id="toSetup" hidden>⚙️ 새 게임</button></div>
 <main>
   <section id="setup">
     <h1 class="sc-sky">바울의 전도여행</h1>
     <p class="sub sc-sky">주사위를 굴려 성경 속 도시를 여행하며 교회를 세워 가요</p>
     <div class="card">
-      <div class="row"><b>몇 명</b><div class="seg" id="nP"><button data-v="2">2명</button><button data-v="3">3명</button><button data-v="4">4명</button></div>
+      <div class="row" style="margin-bottom:10px"><b>방식</b><div class="seg" id="mode"><button data-v="single">📱 싱글 · 한 기기로 돌아가며</button><button data-v="multi">🌐 멀티 · 초대해서 각자 기기로</button></div></div>
+      <div class="row"><span id="nPw"><b>몇 명</b> <div class="seg" id="nP"><button data-v="2">2명</button><button data-v="3">3명</button><button data-v="4">4명</button></div></span>
         <span style="width:12px"></span><b>게임 길이</b><div class="seg" id="nR"><button data-v="10">10바퀴</button><button data-v="15">15바퀴</button><button data-v="0">끝까지</button></div></div>
       <div class="players" id="pins"></div>
-      <div class="row" style="justify-content:center;margin-top:14px"><button class="pri" id="start" style="font-size:20px;padding:10px 28px">⛵ 여행 시작</button></div>
+      <p class="hint" id="modeHint" style="text-align:center;margin:10px 0 0"></p><div class="row" style="justify-content:center;margin-top:12px"><button class="pri" id="start" style="font-size:20px;padding:10px 28px">⛵ 여행 시작</button></div>
     </div>
+    <div id="lobby"></div>
     <div class="card hint">
-      <b>규칙</b><br>
+      <b>규칙</b> <button class="sm" onclick="localModal(rulesHTML())">📖 전체 규칙 보기</button><br>
       · 모두 <b>1,500 달란트</b>를 가지고 <b>예루살렘</b>에서 출발해요. 예루살렘을 지날 때마다 <b>파송 헌금 200</b>을 받아요<br>
       · 주인 없는 도시에 서면 <b>교회를 개척</b>할 수 있어요. 내 도시에 다시 서면 <b>가정교회 → 교회 → 선교센터</b>로 키울 수 있어요<br>
       · 다른 사람의 도시에 서면 그 교회에 <b>선교 후원금</b>을 내요. 같은 색 도시를 모두 가지면 후원금이 두 배예요<br>
@@ -108,7 +126,7 @@ h2{font-weight:normal;margin:0 0 10px;font-size:21px}
   </section>
   <section id="play" hidden>
     <div class="game">
-      <div><div class="board" id="board"></div></div>
+      <div class="bzone"><div class="zbar"><button class="sm" data-z="-" aria-label="축소">－</button><span id="zl">100%</span><button class="sm" data-z="+" aria-label="확대">＋</button><button class="sm" data-z="0">맞춤</button></div><div class="bwrap" id="bwrap"><div class="board" id="board"></div></div></div>
       <div class="card" id="panel">
         <div class="turnbox" id="turn"></div>
         <div class="acts" id="acts"></div>
@@ -118,13 +136,34 @@ h2{font-weight:normal;margin:0 0 10px;font-size:21px}
     </div>
   </section>
 </main>
-<div id="modal"></div>
+<div id="modal"></div><button class="sm" id="fsExit" hidden>✕ 전체화면 끝</button>
 <div class="toast" id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js" integrity="sha384-nlUQ8ZqCbvStErob+biJNzSgltf6urV3VGqhfIfzhmg9RXmpeRm76ELw0pYnKlTR" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js" integrity="sha384-8FWZA6BGMXhsfO+BLtrJK0We6gg5o1JyO8xQm6peWDEUs17ACA5ziE/NIAkl9z2k" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js" integrity="sha384-u4uqeACkFcoKl57rBQJHVGDd1pqhW4w8X3WjTu1ZksPdxoLqdt34jpoNkJisE25W" crossorigin="anonymous"></script>
 <script>
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 let tt;function toast(t,ms=2000){const e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>e.classList.remove("show"),ms)}
-const COLORS=["#3b82c4","#e0504a","#e6a51c","#3f9a45"],DEFN=["바울","바나바","실라","디모데"];
+const COLORS=["#3b82c4","#3f9a45","#e0504a","#e6a51c"],DEFN=["바울","바나바","실라","디모데"];
+/* 말 얼굴 (그림을 참고해 새로 그린 캐릭터): 0 바울 · 1 바나바 · 2 실라 · 3 디모데 */
+function face(i){const bg=COLORS[i],sk="#f6c7a1",o='stroke="#3b2a20" stroke-width="2.4"';
+  const ear=`<circle cx="22" cy="56" r="7" fill="${sk}" ${o}/><circle cx="78" cy="56" r="7" fill="${sk}" ${o}/>`;
+  const head=`<ellipse cx="50" cy="54" rx="27" ry="29" fill="${sk}" ${o}/>`;
+  const cheek=`<ellipse cx="34" cy="62" rx="5" ry="3.4" fill="#f59a9a" opacity=".75"/><ellipse cx="66" cy="62" rx="5" ry="3.4" fill="#f59a9a" opacity=".75"/>`;
+  const eyes=`<circle cx="40" cy="53" r="3.6" fill="#2b1e16"/><circle cx="60" cy="53" r="3.6" fill="#2b1e16"/><circle cx="41.2" cy="51.8" r="1.1" fill="#fff"/><circle cx="61.2" cy="51.8" r="1.1" fill="#fff"/>`;
+  let x="";
+  if(i===0)x=ear+head+`<path d="M24 50Q24 32 33 30Q30 40 28 52Z M76 50Q76 32 67 30Q70 40 72 52Z" fill="#8a5a33" ${o}/>`+eyes+cheek+
+    `<path d="M33 46q6-4 11-1M56 45q5-3 11 1" fill="none" stroke="#6b4325" stroke-width="2.6" stroke-linecap="round"/><path d="M27 60Q30 84 50 86Q70 84 73 60Q66 70 50 70Q34 70 27 60Z" fill="#8a5a33" ${o}/><path d="M42 69q8 6 16 0" fill="none" stroke="#5a3418" stroke-width="2.4" stroke-linecap="round"/><path d="M44 73q6 4 12 0" fill="#c24a4a"/>`;
+  if(i===1)x=ear+head+`<path d="M22 54Q18 26 50 22Q82 26 78 54Q74 36 66 34Q58 26 50 30Q42 26 34 34Q26 36 22 54Z" fill="#d6d6d6" ${o}/>`+
+    `<path d="M34 54q6-6 12 0M54 54q6-6 12 0" fill="none" stroke="#2b1e16" stroke-width="2.8" stroke-linecap="round"/><path d="M32 47q7-5 13-1M55 46q6-4 13 1" fill="none" stroke="#9a9a9a" stroke-width="3.4" stroke-linecap="round"/>`+cheek+
+    `<path d="M24 60Q24 94 50 95Q76 94 76 60Q68 72 50 71Q32 72 24 60Z" fill="#d9d9d9" ${o}/><path d="M40 67q10 9 20 0" fill="#fff" stroke="#3b2a20" stroke-width="2"/><path d="M38 64q12 5 24 0" fill="none" stroke="#b0b0b0" stroke-width="3" stroke-linecap="round"/>`;
+  if(i===2)x=ear+head+`<path d="M23 54Q20 24 50 24Q80 24 77 54Q74 40 68 38Q60 30 50 34Q40 30 32 38Q26 40 23 54Z" fill="#2b2320" ${o}/>`+eyes+cheek+
+    `<path d="M33 46q6-4 11-1M56 45q5-3 11 1" fill="none" stroke="#2b2320" stroke-width="3" stroke-linecap="round"/><path d="M27 62Q30 84 50 85Q70 84 73 62Q65 70 50 69Q35 70 27 62Z" fill="#2b2320" ${o}/><path d="M40 67q10 8 20 0Z" fill="#fff" stroke="#fff" stroke-width="1.4"/>`;
+  if(i===3)x=ear+head+`<g fill="#7a4a2a" ${o}><circle cx="30" cy="38" r="9"/><circle cx="40" cy="30" r="9"/><circle cx="52" cy="27" r="9"/><circle cx="64" cy="30" r="9"/><circle cx="72" cy="39" r="8"/><circle cx="25" cy="48" r="6"/><circle cx="76" cy="48" r="6"/></g>`+eyes+cheek+
+    `<path d="M40 64Q50 76 60 64Z" fill="#c24a4a" stroke="#3b2a20" stroke-width="2.2" stroke-linejoin="round"/>`;
+  return`<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="48" fill="${bg}" stroke="#3b2a20" stroke-width="3"/><clipPath id="fc${i}"><circle cx="50" cy="50" r="46"/></clipPath><g clip-path="url(#fc${i})">${x}</g></svg>`}
+const dispName=(ch,nm)=>nm?`${DEFN[ch]} (${nm})`:DEFN[ch];
 const won=n=>n.toLocaleString("ko-KR")+" 달란트";
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
@@ -134,11 +173,11 @@ const ac=()=>{if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)
 function nz(a,sec){const b=a.createBuffer(1,Math.ceil(a.sampleRate*sec),a.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;return b}
 function knock(a,t,f,v){const s=a.createBufferSource();s.buffer=nz(a,.05);const bp=a.createBiquadFilter();bp.type="bandpass";bp.frequency.value=f;bp.Q.value=5;const g=a.createGain();g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+.05);s.connect(bp).connect(g).connect(a.destination);s.start(t);s.stop(t+.06)}
 function tone(a,t,f,v,d,type){const o=a.createOscillator(),g=a.createGain();o.type=type||"triangle";o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(a.destination);o.start(t);o.stop(t+d+.02)}
-const sDice=()=>{if(!SND)return;const a=ac();if(!a)return;const t=a.currentTime;for(let i=0;i<7;i++)knock(a,t+i*.06+Math.random()*.03,1800+Math.random()*900,.3)};
-const sHop=()=>{if(!SND)return;const a=ac();if(!a)return;knock(a,a.currentTime,1000,.25)};
-const sCoin=up=>{if(!SND)return;const a=ac();if(!a)return;const t=a.currentTime;(up?[988,1319]:[660,440]).forEach((f,i)=>tone(a,t+i*.08,f,.14,.25))};
-const sBuild=()=>{if(!SND)return;const a=ac();if(!a)return;const t=a.currentTime;[523,659,784].forEach((f,i)=>tone(a,t+i*.1,f,.15,.3))};
-const sCard=()=>{if(!SND)return;const a=ac();if(!a)return;const t=a.currentTime;[784,988,1175,1568].forEach((f,i)=>tone(a,t+i*.07,f,.1,.4,"sine"))};
+let sDice=()=>{if(!SND)return;const a=ac();if(!a)return;const t=a.currentTime;for(let i=0;i<7;i++)knock(a,t+i*.06+Math.random()*.03,1800+Math.random()*900,.3)};
+let sHop=()=>{if(!SND)return;const a=ac();if(!a)return;knock(a,a.currentTime,1000,.25)};
+let sCoin=up=>{if(!SND)return;const a=ac();if(!a)return;const t=a.currentTime;(up?[988,1319]:[660,440]).forEach((f,i)=>tone(a,t+i*.08,f,.14,.25))};
+let sBuild=()=>{if(!SND)return;const a=ac();if(!a)return;const t=a.currentTime;[523,659,784].forEach((f,i)=>tone(a,t+i*.1,f,.15,.3))};
+let sCard=()=>{if(!SND)return;const a=ac();if(!a)return;const t=a.currentTime;[784,988,1175,1568].forEach((f,i)=>tone(a,t+i*.07,f,.1,.4,"sine"))};
 $("snd").onclick=()=>{SND=!SND;try{localStorage.setItem("paul:snd",SND?"1":"0")}catch(e){}$("snd").textContent=SND?"🔊":"🔇"};$("snd").textContent=SND?"🔊":"🔇";
 
 /* ---------- 판: 40칸 (예루살렘에서 시작해 한 바퀴) ---------- */
@@ -185,20 +224,27 @@ const CARDS=[
  {t:"새벽 기도",d:"새벽을 깨워 기도했어요. 40을 받아요",f:p=>gain(p,40)}];
 
 /* ---------- 설정 ---------- */
-let CFG={n:2,rounds:15,names:DEFN.slice()};try{const o=JSON.parse(localStorage.getItem("paul:cfg")||"null");if(o)CFG=Object.assign(CFG,o)}catch(e){}
+let CFG={n:2,rounds:15,names:["","","",""],mode:"single",me:""};try{const o=JSON.parse(localStorage.getItem("paul:cfg")||"null");if(o)CFG=Object.assign(CFG,o)}catch(e){}
 function drawSetup(){document.querySelectorAll("#nP button").forEach(b=>b.classList.toggle("on",+b.dataset.v===CFG.n));document.querySelectorAll("#nR button").forEach(b=>b.classList.toggle("on",+b.dataset.v===CFG.rounds));
-  $("pins").innerHTML=[...Array(CFG.n)].map((_,i)=>`<div class="pin" style="--pc:${COLORS[i]}"><span class="dot"></span><input data-i="${i}" maxlength="10" value="${esc(CFG.names[i]||DEFN[i])}" aria-label="${i+1}번 사람 이름"></div>`).join("")}
-function readSetup(){document.querySelectorAll("#pins input").forEach(x=>CFG.names[+x.dataset.i]=x.value.trim()||DEFN[+x.dataset.i]);try{localStorage.setItem("paul:cfg",JSON.stringify(CFG))}catch(e){}}
+  document.querySelectorAll("#mode button").forEach(b=>b.classList.toggle("on",b.dataset.v===CFG.mode));const multi=CFG.mode==="multi";
+  $("nPw").style.display=multi?"none":"";$("start").textContent=multi?"🌐 방 만들기":"⛵ 여행 시작";
+  $("modeHint").textContent=multi?"방을 만들면 QR·링크로 친구를 초대해요. 들어온 순서대로 바울 · 바나바 · 실라 · 디모데가 돼요 (최대 4명)":"한 기기를 돌려 가며 차례대로 해요";
+  if(DEFN.includes(CFG.names[0]))CFG.names=CFG.names.map(n=>DEFN.includes(n)?"":n);
+  $("pins").innerHTML=(multi?[0]:[...Array(CFG.n).keys()]).map(i=>`<div class="pin" style="--pc:${COLORS[i]}"><span class="face">${face(i)}</span><b>${DEFN[i]}</b><input data-i="${i}" maxlength="8" value="${esc(multi?CFG.me:(CFG.names[i]||""))}" placeholder="${multi?"내 이름":"이름 (안 적어도 돼요)"}" aria-label="${DEFN[i]} 이름"></div>`).join("")}
+function readSetup(){document.querySelectorAll("#pins input").forEach(x=>{if(CFG.mode==="multi")CFG.me=x.value.trim();else CFG.names[+x.dataset.i]=x.value.trim()});try{localStorage.setItem("paul:cfg",JSON.stringify(CFG))}catch(e){}}
 $("nP").onclick=e=>{const b=e.target.closest("button");if(!b)return;readSetup();CFG.n=+b.dataset.v;drawSetup()};
-$("nR").onclick=e=>{const b=e.target.closest("button");if(!b)return;readSetup();CFG.rounds=+b.dataset.v;drawSetup()};drawSetup();
+$("nR").onclick=e=>{const b=e.target.closest("button");if(!b)return;readSetup();CFG.rounds=+b.dataset.v;drawSetup()};
+$("mode").onclick=e=>{const b=e.target.closest("button");if(!b)return;readSetup();CFG.mode=b.dataset.v;drawSetup()};drawSetup();
 
 /* ---------- 게임 상태 ---------- */
 let G=null;
-function newGame(){readSetup();G={P:[...Array(CFG.n)].map((_,i)=>({name:CFG.names[i]||DEFN[i],color:COLORS[i],pos:0,money:1500,jail:0,free:0,out:false})),
+let MULTI=false,isHost=false,ME=null;
+function newGame(seats){if(!seats)readSetup();const roster=seats||[...Array(CFG.n).keys()].map(i=>({id:null,name:CFG.names[i]||""}));
+  G={seat:roster.map(r=>r.id),P:roster.map((r,i)=>({name:dispName(i,r.name),ch:i,color:COLORS[i],pos:0,money:1500,jail:0,free:0,out:false})),
   own:{},cur:0,pool:0,round:1,rounds:CFG.rounds,phase:"roll",dbl:0,last:[1,1],log:[],over:false,deck:shuffle([...CARDS.keys()])};
   $("setup").hidden=true;$("play").hidden=false;$("toSetup").hidden=false;log(`여행 시작! ${G.P.map(p=>p.name).join(" · ")}`);draw();window.scrollTo({top:0,behavior:"smooth"})}
-$("start").onclick=newGame;
-$("toSetup").onclick=()=>{if(G&&!G.over&&!confirm("지금 게임을 그만두고 새로 시작할까요?"))return;G=null;closeModal();$("play").hidden=true;$("setup").hidden=false;$("toSetup").hidden=true;drawSetup()};
+$("start").onclick=()=>{readSetup();if(CFG.mode==="multi"){if(!CFG.me){toast("내 이름을 적어 주세요");return}createRoom()}else newGame()};
+$("toSetup").onclick=()=>{if(G&&!G.over&&!confirm("지금 게임을 그만두고 새로 시작할까요?"))return;closeModal();if(MULTI&&isHost){newGame(H.players.map(x=>({id:x.id,name:x.name})));return}G=null;$("play").hidden=true;$("setup").hidden=false;$("toSetup").hidden=true;drawSetup()};
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function log(s){G.log.unshift(s);$("log").innerHTML=G.log.slice(0,60).map(x=>"· "+esc(x)).join("<br>")}
 const ownedBy=p=>Object.keys(G.own).map(Number).filter(i=>G.own[i].pid===p);
@@ -262,39 +308,160 @@ function finish(){G.over=true;const rank=G.P.map((p,i)=>({i,p,w:p.out?-1:worth(i
   showModal(`<div class="em">🏆</div><h2>${esc(rank[0].p.name)} 승리!</h2><div class="info">${rank.map((r,k)=>`${["🥇","🥈","🥉","🏅"][k]} ${esc(r.p.name)} — ${r.p.out?"여행 끝":r.w.toLocaleString()+" (현금 "+r.p.money.toLocaleString()+")"}`).join("<br>")}</div>`).then(()=>{})}
 
 /* ---------- 화면 ---------- */
-function showModal(html,cls){return new Promise(res=>{$("modal").innerHTML=`<div class="modal"><div class="card ${cls||""}">${html}<div class="acts"><button class="pri" id="mOk">확인</button></div></div></div>`;
+function localModal(html,cls){return new Promise(res=>{$("modal").innerHTML=`<div class="modal"><div class="card ${cls||""}">${html}<div class="acts"><button class="pri" id="mOk">확인</button></div></div></div>`;
   const ok=$("mOk");ok.focus();ok.onclick=()=>{closeModal();res()}})}
+function showModal(html,cls){return localModal(html,cls)}
 function closeModal(){$("modal").innerHTML=""}
 const PIPS={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
 function dieHTML(v,roll){return`<div class="die${roll?" roll":""}">${[...Array(9)].map((_,k)=>`<i class="${PIPS[v].includes(k)?"on":""}"></i>`).join("")}</div>`}
 function drawDice(roll){const el=$("dice");if(!el)return;const d=roll?[1+Math.floor(Math.random()*6),1+Math.floor(Math.random()*6)]:G.last;el.innerHTML=dieHTML(d[0],roll)+dieHTML(d[1],roll)}
 function drawBoard(){let h="";SQ.forEach((s,i)=>{const [r,c]=cellPos(i),o=G.own[i],toks=G.P.map((p,k)=>({p,k})).filter(x=>!x.p.out&&x.p.pos===i);
-  const brd=o?`border-color:${G.P[o.pid].color};`:"";
+  const brd=o?`border-color:${G.P[o.pid].color};box-shadow:inset 0 0 0 3px ${G.P[o.pid].color};background:color-mix(in srgb,${G.P[o.pid].color} 12%,#fffaf0);`:"";
   const cls=s.k==="city"?"sq":["start","jail","rest","gojail"].includes(s.k)?"sq corner":"sq spc";
   h+=`<div class="${cls}${G.P[G.cur].pos===i?" now":""}" style="grid-row:${r};grid-column:${c};${brd}" data-i="${i}">`+
     (s.k==="city"?`<div class="band" style="background:${GRP[s.g]}"></div><div class="nm">${esc(s.n)}</div>${o?`<div class="bd">${LVI[o.lv]}</div>`:`<div class="pr">${s.p}</div>`}`:`<div class="em">${s.em}</div><div class="nm">${esc(s.n)}</div>`)+
-    `<div class="toks">${toks.map(x=>`<span class="tok${x.k===G.cur?" me":""}" style="--pc:${x.p.color}" title="${esc(x.p.name)}"></span>`).join("")}</div></div>`});
+    `<div class="toks">${toks.map(x=>`<span class="tok fc${x.k===G.cur?" me":""}" title="${esc(x.p.name)}">${face(x.p.ch??x.k)}</span>`).join("")}</div></div>`});
   h+=`<div class="center"><div class="t">⛵ 바울의 전도여행</div><div class="dice" id="dice"></div><div>🪙 구제함 <b>${G.pool}</b> · ${G.rounds?`${Math.min(G.round,G.rounds)}/${G.rounds}바퀴`:G.round+"바퀴째"}</div></div>`;
   $("board").innerHTML=h;drawDice(false);
   $("board").querySelectorAll(".sq").forEach(el=>el.onclick=()=>info(+el.dataset.i))}
 function info(i){const s=SQ[i],o=G.own[i];if(s.k!=="city"){toast(`${s.em} ${s.n}${s.d?" — "+s.d:""}`,2600);return}
   const rows=[0,1,2,3].map(lv=>`${LV[lv]}: 후원금 ${Math.round([.12,.45,1.1,2][lv]*s.p/10)*10}`).join("<br>");
-  showModal(`<div class="em">📍</div><h2>${esc(s.n)} <span style="font-size:14px;background:${GRP[s.g]};border-radius:8px;padding:1px 8px">${esc(s.g)}</span></h2>
+  localModal(`<div class="em">📍</div><h2>${esc(s.n)} <span style="font-size:14px;background:${GRP[s.g]};border-radius:8px;padding:1px 8px">${esc(s.g)}</span></h2>
     <div class="info">개척 ${s.p} · 건물 한 단계 ${buildCost(s)}<br>${rows}<br><span style="opacity:.7">같은 색 도시를 모두 가지면 개척 단계 후원금 두 배</span></div>
     <p>${o?`주인: <b style="color:${G.P[o.pid].color}">${esc(G.P[o.pid].name)}</b> · ${LV[o.lv]}`:"아직 주인이 없어요"}</p>`)}
 function draw(){if(!G)return;drawBoard();const p=G.cur,P=G.P[p],s=SQ[P.pos];$("panel").style.setProperty("--pc",P.color);
   $("turn").style.setProperty("--pc",P.color);
-  $("turn").innerHTML=`<span class="dot" style="--pc:${P.color}"></span><div><div class="big">${esc(P.name)} 차례</div><div class="hint">📍 ${esc(s.n)} · 💰 ${won(P.money)}${P.jail?" · ⛓️ 감옥":""}</div></div>`;
+  $("turn").innerHTML=`<span class="face">${face(P.ch??p)}</span><div><div class="big">${esc(P.name)} 차례</div><div class="hint">📍 ${esc(s.n)} · 💰 ${won(P.money)}${P.jail?" · ⛓️ 감옥":""}</div></div>`;
   let a="";
   if(G.over)a=`<button class="pri" id="again">다시 하기</button>`;
   else if(G.phase==="buy"){const ok=P.money>=s.p;a=`<div style="width:100%;text-align:center">🚩 <b>${esc(s.n)}</b>에 교회를 개척할까요? (${s.p} 달란트)</div><button class="go" id="bBuy" ${ok?"":"disabled"}>🚩 개척하기</button><button id="bSkip">지나가기</button>`}
   else if(G.phase==="build"){const o=G.own[P.pos],c=buildCost(s),ok=P.money>=c;a=`<div style="width:100%;text-align:center">${LVI[o.lv+1]} <b>${esc(s.n)}</b>에 ${LV[o.lv+1]}을(를) 세울까요? (${c} 달란트)</div><button class="go" id="bBuild" ${ok?"":"disabled"}>세우기</button><button id="bSkip">다음에</button>`}
   else{a=`<button class="pri" id="bRoll" style="font-size:22px;padding:10px 30px" ${G.busy?"disabled":""}>🎲 주사위 굴리기</button>`;
     if(P.jail){a+=`<button id="bOut" ${P.money>=50?"":"disabled"}>💰 50 내고 나가기</button>`;if(P.free)a+=`<button id="bFree">🎶 찬양 카드 쓰기</button>`}}
+  if(!G.over&&!canAct())a=`<div class="wait">⏳ <b>${esc(P.name)}</b> 님이 ${G.phase==="buy"?"개척할지 고르고":G.phase==="build"?"건물을 세울지 고르고":"주사위를 굴리고"} 있어요</div>`;
+  if(G.over&&MULTI&&!isHost)a=`<div class="wait">방장이 새 게임을 시작할 수 있어요</div>`;
   $("acts").innerHTML=a;
-  const on=(id,f)=>{const e=$(id);if(e)e.onclick=f};on("bRoll",doRoll);on("bBuy",buy);on("bBuild",build);on("bSkip",skip);on("bOut",payOut);on("bFree",useFree);on("again",()=>{closeModal();newGame()});
+  const on=(id,k)=>{const e=$(id);if(e)e.onclick=()=>act(k)};on("bRoll","roll");on("bBuy","buy");on("bBuild","build");on("bSkip","skip");on("bOut","out");on("bFree","free");
+  if($("again"))$("again").onclick=()=>{closeModal();if(MULTI)newGame(H.players.map(x=>({id:x.id,name:x.name})));else newGame()};
   $("plist").innerHTML=G.P.map((q,i)=>{const props=ownedBy(i).map(k=>LVI[G.own[k].lv]+SQ[k].n).join(" ");
-    return`<div class="prow${i===p&&!G.over?" now":""}${q.out?" out":""}" style="--pc:${q.color};flex-wrap:wrap"><span class="dot"></span><span class="n">${esc(q.name)}${q.free?" 🎶":""}</span><span class="m">💰 ${q.money.toLocaleString()}</span>${props?`<span class="props">${esc(props)}</span>`:""}</div>`}).join("")}
+    return`<div class="prow${i===p&&!G.over?" now":""}${q.out?" out":""}" style="--pc:${q.color};flex-wrap:wrap"><span class="face" style="width:32px;height:32px">${face(q.ch??i)}</span><span class="n">${esc(q.name)}${q.free?" 🎶":""}</span><span class="m">💰 ${q.money.toLocaleString()}</span>${props?`<span class="props">${esc(props)}</span>`:""}</div>`}).join("")}
+
+/* ---------- 판 확대/축소 ---------- */
+let ZOOM=1;try{ZOOM=+localStorage.getItem("paul:zoom")||1}catch(e){}
+function setZoom(z,keep){ZOOM=Math.max(1,Math.min(3,Math.round(z*100)/100));document.documentElement.style.setProperty("--z",ZOOM);$("zl").textContent=Math.round(ZOOM*100)+"%";try{localStorage.setItem("paul:zoom",ZOOM)}catch(e){}
+  if(keep!==false)requestAnimationFrame(()=>{const c=document.querySelector("#board .sq.now");if(c&&ZOOM>1)c.scrollIntoView({block:"center",inline:"center",behavior:"smooth"})})}
+document.querySelector(".zbar").onclick=e=>{const b=e.target.closest("[data-z]");if(!b)return;const k=b.dataset.z;setZoom(k==="+"?ZOOM+.25:k==="-"?ZOOM-.25:1)};
+$("bwrap").addEventListener("wheel",e=>{if(!e.ctrlKey)return;e.preventDefault();setZoom(ZOOM+(e.deltaY<0?.15:-.15),false)},{passive:false});
+setZoom(ZOOM,false);
+
+/* ---------- 전체 규칙 ---------- */
+function rulesHTML(){const groups=Object.keys(GRP).map(g=>`<span style="background:${GRP[g]}">${g}: ${SQ.filter(x=>x.g===g).map(x=>x.n).join("·")}</span>`).join("");
+  return`<div class="rules"><h2 style="text-align:center">📖 바울의 전도여행 전체 규칙</h2>
+  <h3>🎯 목표</h3>성경 속 도시를 여행하며 교회를 개척하고 키워요. 정한 바퀴가 끝났을 때 <b>달란트 + 도시·건물 값</b>이 가장 많은 사람이 이겨요. (‘끝까지’를 고르면 한 사람만 남을 때까지)
+  <h3>👥 함께하기</h3><b>싱글</b>: 한 기기를 돌려 가며 2~4명이 해요. <b>멀티</b>: 방장이 방을 만들고 QR·링크로 초대하면 각자 휴대폰으로 해요. 바울·바나바·실라·디모데 중 한 사람이 되고, 이름을 적으면 ‘바울 (이름)’처럼 보여요.
+  <h3>🎲 차례</h3>주사위 두 개를 굴려 나온 수만큼 앞으로 가요. <b>같은 숫자</b>가 나오면 한 번 더 굴려요. 세 번 연속이면 빌립보 감옥으로 가요.
+  <h3>💰 달란트</h3>모두 1,500으로 시작해요. <b>✝️ 예루살렘</b>을 지나거나 멈추면 파송 헌금 <b>200</b>을 받아요.
+  <h3>🚩 도시와 교회</h3>주인 없는 도시에 서면 값을 내고 <b>교회를 개척</b>할 수 있어요. 내 도시에 다시 서면 <b>🏠 가정교회 → ⛪ 교회 → 🏛️ 선교센터</b>로 한 단계씩 키울 수 있어요 (한 단계 = 도시 값의 절반).<br>
+   다른 사람의 도시에 서면 그 교회에 <b>선교 후원금</b>을 내요. 건물이 클수록 후원금이 커지고, <b>같은 지역 도시를 모두 가지면</b> 개척 단계 후원금이 두 배예요. 도시 칸을 누르면 값과 후원금을 볼 수 있어요.
+  <h3>🗺️ 지역</h3><div class="cl">${groups}</div>
+  <h3>✨ 특별한 칸</h3>✉️ <b>은혜카드</b>: 성경 이야기 카드를 한 장 뽑아 그대로 해요 (16장)<br>🪙 <b>성전세</b>: 구제함에 100·150을 넣어요<br>🕊️ <b>안식일 쉼터</b>: 구제함에 모인 달란트를 모두 받아요<br>
+   🚨 <b>붙잡힘</b>: 빌립보 감옥으로 가요<br>⛓️ <b>빌립보 감옥</b>: 같은 숫자가 나오면 찬양으로 옥문이 열려 바로 나가요. 50을 내거나 🎶 ‘한밤의 찬양’ 카드를 써도 돼요. 세 번 안에 못 나오면 50을 내고 나가요. (그냥 지나가거나 멈춘 거면 구경만)
+  <h3>😢 달란트가 모자라면</h3>건물부터 반값에, 그다음 도시를 반값에 자동으로 팔아서 내요. 그래도 모자라면 그 사람의 여행은 끝나고 도시는 주인 없는 곳이 돼요.</div>`}
+$("rulesB").onclick=()=>localModal(rulesHTML());
+
+/* ---------- 전체화면 ---------- */
+function fsToggle(){const d=document;if(!d.fullscreenElement&&!d.webkitFullscreenElement){const el=d.documentElement;(el.requestFullscreen||el.webkitRequestFullscreen||function(){}).call(el);d.body.classList.add("fs-on")}
+  else{(d.exitFullscreen||d.webkitExitFullscreen||function(){}).call(d);d.body.classList.remove("fs-on")}setTimeout(fsSync,300)}
+function fsSync(){const on=!!(document.fullscreenElement||document.webkitFullscreenElement);document.body.classList.toggle("fs-on",on);$("fsExit").hidden=!on}
+document.addEventListener("fullscreenchange",fsSync);document.addEventListener("webkitfullscreenchange",fsSync);$("fsB").onclick=fsToggle;$("fsExit").onclick=fsToggle;
+
+/* ---------- 차례 행동: 싱글은 바로, 멀티는 방장 기기가 처리 ---------- */
+const ACTS={roll:()=>doRoll(),buy:()=>buy(),build:()=>build(),skip:()=>skip(),out:()=>payOut(),free:()=>useFree()};
+const online=id=>id==="host"||!!((H.players.find(x=>x.id===id)||{}).conn||{}).open;
+function canAct(){if(!G)return false;if(!MULTI)return true;const sid=G.seat[G.cur];if(isHost)return sid==="host"||!online(sid);return sid===ME}
+function act(k){if(!G||!ACTS[k])return;if(!MULTI||isHost){if(canAct()&&!G.busy)ACTS[k]()}else toHost({t:"act",a:k})}
+
+/* ================= 멀티: 방장 기기가 게임을 돌리고, 참가자는 화면만 받아요 ================= */
+const PREFIX="chiyoung-paul-",H={players:[]};
+const params=new URLSearchParams(location.search);let ROOM=(params.get("room")||"").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6);
+const store={get(k){try{return JSON.parse(sessionStorage.getItem(k))}catch(e){return null}},set(k,v){try{sessionStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+let peer=null,conn=null,retry=0,usingRelay=false;
+function sendTo(pl,m){if(pl&&pl.conn&&pl.conn.open){try{pl.conn.send(m)}catch(e){}}}
+const broadcast=m=>H.players.forEach(pl=>sendTo(pl,m));
+function toHost(m){if(conn&&conn.open)conn.send(m);else toast("방장과 연결이 끊겼어요. 다시 연결하는 중…")}
+/* 방장 쪽: 화면이 바뀔 때마다 게임 상태를 보내요 */
+let syncQ=false;function sync(){if(!MULTI||!isHost||!G||syncQ)return;syncQ=true;queueMicrotask(()=>{syncQ=false;broadcast({t:"state",G})})}
+const _draw=draw;draw=function(){_draw();sync()};const _drawBoard=drawBoard;drawBoard=function(){_drawBoard();sync()};
+const _toast=toast;toast=function(t,ms){_toast(t,ms);if(MULTI&&isHost)broadcast({t:"toast",m:t,ms})};
+showModal=function(html,cls){if(!(MULTI&&isHost))return localModal(html,cls);broadcast({t:"modal",html,cls});
+  return new Promise(res=>{let done=false;const fin=()=>{if(done)return;done=true;closeModal();res()};localModal(html,cls).then(fin);setTimeout(fin,2600)})};
+const SNDF={sDice,sHop,sCoin,sBuild,sCard};
+sDice=()=>{SNDF.sDice();if(MULTI&&isHost)broadcast({t:"snd",k:"sDice"})};sHop=()=>{SNDF.sHop();if(MULTI&&isHost)broadcast({t:"snd",k:"sHop"})};
+sCoin=u=>{SNDF.sCoin(u);if(MULTI&&isHost)broadcast({t:"snd",k:"sCoin",u})};sBuild=()=>{SNDF.sBuild();if(MULTI&&isHost)broadcast({t:"snd",k:"sBuild"})};sCard=()=>{SNDF.sCard();if(MULTI&&isHost)broadcast({t:"snd",k:"sCard"})};
+
+function createRoom(){MULTI=true;isHost=true;ME="host";ROOM=Array.from({length:4},()=>"ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.floor(Math.random()*32)]).join("");
+  H.players=[{id:"host",name:CFG.me,conn:null}];lobbyMsg("방을 만들고 있어요…");
+  peer=new Peer(PREFIX+ROOM,PEER_OPTS());
+  peer.on("open",()=>{startRelayHost();renderLobby()});
+  peer.on("error",e=>{if(e.type=="unavailable-id"){peer.destroy();createRoom()}else if(e.type=="network"||e.type=="server-error"||e.type=="socket-error")toast("인터넷 연결을 확인해 주세요")});
+  peer.on("disconnected",()=>{setTimeout(()=>{try{peer.reconnect()}catch(e){}},1500)});
+  peer.on("connection",c=>{c.on("data",d=>{if(d&&d.t=="join")hostJoin(c,d);else{const pl=H.players.find(x=>x.conn===c);if(pl)hostHandle(pl.id,d)}});c.on("close",()=>{renderLobby();if(G)draw()})})}
+function hostJoin(c,d){const id=String(d.id||"").replace(/[^a-z0-9]/gi,"").slice(0,20);if(!id)return;const name=String(d.name||"").trim().slice(0,8);
+  let pl=H.players.find(x=>x.id===id);
+  if(pl){pl.conn=c}else{if(G){c.send({t:"err",msg:"게임이 이미 시작됐어요. 이번 판이 끝나면 들어와 주세요."});return}if(H.players.length>=4){c.send({t:"err",msg:"방이 꽉 찼어요 (최대 4명)"});return}
+    pl={id,name,conn:c};H.players.push(pl)}
+  sendTo(pl,{t:"hello",room:ROOM,seat:H.players.indexOf(pl)});pushLobby();if(G){sendTo(pl,{t:"state",G})}renderLobby();if(G)draw()}
+function hostHandle(from,m){if(!m||!G)return;if(m.t==="act"&&ACTS[m.a]&&G.seat[G.cur]===from&&!G.busy)ACTS[m.a]()}
+function pushLobby(){broadcast({t:"lobby",players:H.players.map((x,i)=>({name:x.name,ch:i,online:online(x.id)})),rounds:CFG.rounds})}
+function lobbyMsg(t){$("lobby").innerHTML=`<div class="card" style="text-align:center"><p style="font-size:19px">${t}</p></div>`;document.querySelector("#setup>.card").hidden=true}
+function renderLobby(){if(!isHost||G)return;const url=location.origin+location.pathname+"?room="+ROOM;let qr="";try{const q=qrcode(0,"M");q.addData(url);q.make();qr=q.createSvgTag(6,2)}catch(e){}
+  document.querySelector("#setup>.card").hidden=true;
+  $("lobby").innerHTML=`<div class="lob"><div class="card" style="text-align:center"><h2>📷 QR로 초대하기</h2><div class="qr">${qr}</div><div class="hint">방 코드</div><div class="code">${esc(ROOM)}</div><button class="sm" id="cpL">🔗 초대 링크 복사</button><p class="hint">이 화면을 켜 두세요 · 최대 4명</p></div>
+    <div class="card"><h2>👥 함께 여행할 사람 (${H.players.length}/4)</h2>${H.players.map((x,i)=>`<div class="prow" style="--pc:${COLORS[i]}"><span class="face" style="width:36px;height:36px">${face(i)}</span><span class="n">${esc(dispName(i,x.name))}${x.id==="host"?" · 방장":""}</span><span class="hint">${online(x.id)?"🟢":"⚪ 연결 끊김"}</span></div>`).join("")}
+      <p class="hint">게임 길이: ${CFG.rounds?CFG.rounds+"바퀴":"끝까지"}</p><div class="row" style="justify-content:center"><button class="pri" id="goL" style="font-size:20px" ${H.players.length<2?"disabled":""}>⛵ 여행 시작 (${H.players.length}명)</button></div>
+      ${H.players.length<2?'<p class="hint" style="text-align:center">한 명 이상 들어오면 시작할 수 있어요</p>':""}</div></div>`;
+  $("cpL").onclick=async()=>{try{await navigator.clipboard.writeText(url);toast("초대 링크를 복사했어요")}catch(e){prompt("이 링크를 복사해 주세요",url)}};
+  $("goL").onclick=()=>{newGame(H.players.map(x=>({id:x.id,name:x.name})))}}
+/* 참가자 쪽 */
+function PEER_OPTS(){const d=(window.peerjs&&peerjs.util&&peerjs.util.defaultConfig||{}).iceServers||[];
+  return{debug:0,config:{iceServers:[{urls:["stun:stun.l.google.com:19302","stun:stun1.l.google.com:19302","stun:stun.cloudflare.com:3478"]},...d.filter(x=>String(x.urls).includes("turn"))],iceCandidatePoolSize:4,sdpSemantics:"unified-plan"}}}
+let warm=null,attempt=0,myName="";
+function warmPeer(){if(peer&&!peer.destroyed&&warm)return warm;peer=new Peer(PEER_OPTS());warm=new Promise(res=>{peer.on("open",()=>res(true));setTimeout(()=>res(false),8000)});
+  peer.on("error",e=>{if(e.type=="network"||e.type=="server-error"||e.type=="socket-error")toast("인터넷 연결을 확인해 주세요")});peer.on("disconnected",()=>{try{if(!peer.destroyed)peer.reconnect()}catch(e){}});return warm}
+async function joinRoom(name){MULTI=true;isHost=false;myName=name;let id=store.get("paul-id-"+ROOM);if(!id){id="p"+Math.random().toString(36).slice(2,10);store.set("paul-id-"+ROOM,id)}ME=id;store.set("paul-name-"+ROOM,name);
+  lobbyMsg("방에 들어가는 중…");let ok=await warmPeer();if(!ok||!peer.open){try{peer.destroy()}catch(e){}warm=null;ok=await warmPeer()}attempt=0;usingRelay=false;if(ok)dial(id,name);
+  setTimeout(async()=>{if(conn&&conn.open&&!conn.relay)return;const r=await relayDial(id,name);if(!r&&!(conn&&conn.open))lobbyMsg("방장 기기와 연결이 잘 안 돼요 😢<br><span class='hint'>방장 화면이 켜져 있는지, 방 코드가 맞는지 확인하고 새로고침해 주세요</span>")},ok?7000:500)}
+function dial(id,name){const c=peer.connect(PREFIX+ROOM,{reliable:true});conn=c;let opened=false;
+  const to=setTimeout(()=>{if(opened)return;try{c.close()}catch(e){}if(!usingRelay&&++attempt<=2)dial(id,name)},6000);
+  c.on("open",()=>{opened=true;clearTimeout(to);if(usingRelay){try{c.close()}catch(e){}return}retry=0;c.send({t:"join",id,name})});c.on("data",client);
+  c.on("close",()=>{clearTimeout(to);if(!opened||conn!==c)return;toast("방장과 연결이 끊겼어요. 다시 연결하는 중…",4000);setTimeout(()=>{if(!(conn&&conn.open)&&++retry<20)joinRoom(myName)},1200)})}
+const BROKERS=["wss://broker.emqx.io:8084/mqtt","wss://broker.hivemq.com:8884/mqtt"],relayBase=()=>"chiyoung-paul/v1/"+ROOM;
+function mqttOpen(url,ms){return new Promise(res=>{if(typeof mqtt=="undefined")return res(null);let done=false;const cl=mqtt.connect(url,{connectTimeout:ms,reconnectPeriod:2000,clientId:"cp"+Math.random().toString(36).slice(2,12)});
+  cl.on("connect",()=>{if(!done){done=true;res(cl)}});setTimeout(()=>{if(!done){done=true;try{cl.end(true)}catch(e){}res(null)}},ms)})}
+function startRelayHost(){if(typeof mqtt=="undefined")return;BROKERS.forEach(async url=>{const cl=await mqttOpen(url,8000);if(!cl)return;const base=relayBase(),conns={};
+  cl.subscribe(base+"/h",{qos:1});cl.on("connect",()=>cl.subscribe(base+"/h",{qos:1}));
+  cl.on("message",(t,buf)=>{let d;try{d=JSON.parse(buf.toString())}catch(e){return}if(!d||!d.from||!d.m)return;const from=String(d.from).replace(/[^a-z0-9]/gi,"").slice(0,20);
+    const c=conns[from]||(conns[from]={open:true,relay:true,send:m=>cl.publish(base+"/c/"+from,JSON.stringify(m),{qos:1})});
+    if(d.m.t=="join"){d.m.id=from;hostJoin(c,d.m)}else{const pl=H.players.find(x=>x.id===from);if(pl&&pl.conn===c)hostHandle(pl.id,d.m)}})})}
+async function relayDial(id,name){for(const url of BROKERS){if(conn&&conn.open&&!conn.relay)return true;const cl=await mqttOpen(url,6000);if(!cl)continue;const base=relayBase();
+  cl.subscribe(base+"/c/"+id,{qos:1});cl.on("connect",()=>cl.subscribe(base+"/c/"+id,{qos:1}));let heard=false;
+  cl.on("message",(t,buf)=>{let m;try{m=JSON.parse(buf.toString())}catch(e){return}heard=true;if(usingRelay)client(m)});
+  usingRelay=true;const c={open:true,relay:true,send:m=>cl.publish(base+"/h",JSON.stringify({from:id,m}),{qos:1})};conn=c;c.send({t:"join",id,name});
+  for(let i=0;i<25&&!heard;i++)await new Promise(r=>setTimeout(r,200));if(heard)return true;usingRelay=false;try{cl.end(true)}catch(e){}}return false}
+function client(m){if(!m||!m.t)return;
+  if(m.t==="err"){lobbyMsg(esc(m.msg));return}
+  if(m.t==="lobby"&&!G){document.querySelector("#setup>.card").hidden=true;
+    $("lobby").innerHTML=`<div class="card" style="text-align:center"><div style="font-size:44px">🙌</div><h2>들어왔어요!</h2><p class="hint">방장이 여행을 시작하면 바로 판이 나와요 · 게임 길이 ${m.rounds?m.rounds+"바퀴":"끝까지"}</p>
+      ${m.players.map(x=>`<div class="prow" style="--pc:${COLORS[x.ch]};max-width:360px;margin:6px auto 0"><span class="face" style="width:36px;height:36px">${face(x.ch)}</span><span class="n">${esc(dispName(x.ch,x.name))}</span><span class="hint">${x.online?"🟢":"⚪"}</span></div>`).join("")}</div>`;return}
+  if(m.t==="state"){const first=!G;G=m.G;if(first){$("setup").hidden=true;$("play").hidden=false;$("toSetup").hidden=true}_draw();return}
+  if(m.t==="modal"){localModal(m.html,m.cls);setTimeout(()=>{if($("mOk"))closeModal()},2600);return}
+  if(m.t==="toast"){_toast(m.m,m.ms);return}
+  if(m.t==="snd"&&SNDF[m.k]){SNDF[m.k](m.u);return}}
+/* 초대 링크로 들어왔을 때 */
+if(ROOM){CFG.mode="multi";document.querySelector("#setup>.card").hidden=true;const saved=store.get("paul-name-"+ROOM)||CFG.me||"";
+  $("lobby").innerHTML=`<div class="card" style="text-align:center"><h2>방 <b style="letter-spacing:4px">${esc(ROOM)}</b> 에 들어가요</h2><p class="hint">내 이름을 적어 주세요. 들어온 순서대로 바울 · 바나바 · 실라 · 디모데가 돼요</p>
+    <div class="row" style="justify-content:center"><input id="jn" maxlength="8" value="${esc(saved)}" placeholder="이름" style="font-size:20px;width:200px"><button class="pri" id="jb">들어가기</button></div></div>`;
+  $("jb").onclick=()=>{const n=$("jn").value.trim();if(!n){toast("이름을 적어 주세요");return}joinRoom(n)};$("jn").onkeydown=e=>{if(e.key==="Enter")$("jb").click()};warmPeer()}
 </script>
 <script src="../assets/scene.js?v=20261116d"></script><script src="../assets/home.js"></script>
 </body></html>
