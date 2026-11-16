@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://js.tosspayments.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' data: blob: https://api.github.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://api.open-meteo.com https://api.met.no https://wttr.in https://api.mymemory.translated.net https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.doubleclick.net https://www.google.com https://*.tosspayments.com https://0.peerjs.com wss://0.peerjs.com wss://broker.emqx.io:8084 wss://broker.hivemq.com:8884 https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self' blob:; frame-src 'self' https://www.bskorea.or.kr https://*.tosspayments.com; object-src 'none'; base-uri 'self'; form-action 'self' https://*.tosspayments.com">
+<meta name="referrer" content="strict-origin-when-cross-origin"><script async src="https://www.googletagmanager.com/gtag/js?id=G-0WTWY3TPES"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-0WTWY3TPES");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>빙고게임 | 치영의 교회 생활 즐기기 · 미션빙고·일반빙고</title>
+<meta name="description" content="방을 만들고 QR·링크로 초대하는 온라인 빙고. 미션빙고(칸마다 미션, 이름을 적으면 동그라미)와 일반빙고(단어 배치·직접 입력), 3x3~6x6, 몇 줄 빙고·전체 칸 승리 조건, 전체화면.">
+<meta name="keywords" content="빙고게임, 미션빙고, 온라인 빙고, 아이스브레이킹, 교회 레크리에이션, 수련회 게임">
+<link rel="canonical" href="https://zidane7-creator.github.io/nanum-boardgame/bingo/">
+<meta property="og:title" content="빙고게임 — 치영의 교회 생활 즐기기">
+<meta property="og:description" content="QR로 들어와서 함께 하는 미션빙고·일반빙고">
+<meta property="og:url" content="https://zidane7-creator.github.io/nanum-boardgame/bingo/">
+<meta property="og:image" content="https://zidane7-creator.github.io/nanum-boardgame/assets/og.jpg">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<script src="../assets/jua.js"></script>
+<style>
+:root{--ink:#3b2a20;--cream:#fffaf0;--accent:#e8503a;--gold:#f5b82e;--green:#5aa957;--blue:#3b82c4}
+*{box-sizing:border-box}
+html,body{margin:0;color:var(--ink);font-family:"Jua","Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+button{font:inherit;color:inherit;border:2px solid var(--ink);background:var(--cream);border-radius:16px;padding:8px 16px;cursor:pointer;box-shadow:0 3px 0 var(--ink)}
+button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+button:disabled{opacity:.4;cursor:default;transform:none}
+button.pri{background:var(--accent);color:#fff}button.go{background:var(--green);color:#fff}
+button.sm{padding:4px 10px;font-size:14px;border-radius:12px;box-shadow:0 2px 0 var(--ink)}
+input,textarea,select{font:inherit;color:inherit;border:2px solid var(--ink);border-radius:12px;padding:6px 10px;background:#fff;min-width:0}
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:calc(8px + env(safe-area-inset-top,0px)) 14px 8px;background:rgba(255,255,255,.92);border-bottom:4px solid var(--gold)}
+.top a{color:var(--ink);text-decoration:none;font-size:15px;border:2px solid var(--ink);border-radius:14px;padding:3px 10px;background:var(--cream)}
+.top .ttl{flex:1;font-size:19px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+main{max-width:1100px;margin:0 auto;padding:16px 12px 70px}
+.card{background:var(--cream);border:3px solid var(--ink);border-radius:22px;padding:18px;margin-bottom:16px;box-shadow:0 5px 0 rgba(0,0,0,.12)}
+.center{text-align:center}
+h1{font-weight:normal;font-size:clamp(30px,7vw,44px);margin:6px 0 2px}
+h2{font-weight:normal;margin:0 0 10px;font-size:22px}
+h3{font-weight:normal;margin:14px 0 6px;font-size:18px}
+.muted{opacity:.7;font-size:15px}
+.hero{text-align:center;padding:6px 0 10px}.hero .em{font-size:60px;line-height:1}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:16px;align-items:start}
+@media (max-width:820px){.grid2{grid-template-columns:1fr}}
+.seg{display:inline-flex;border:2px solid var(--ink);border-radius:12px;overflow:hidden;flex-wrap:wrap}
+.seg button{border:0;border-radius:0;box-shadow:none;padding:5px 12px;background:#fff}
+.seg button+button{border-left:2px solid var(--ink)}
+.seg button.on{background:var(--gold)}
+.qr svg{width:200px;height:200px;background:#fff;border-radius:12px}
+.code{font-size:38px;letter-spacing:8px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips span{background:#fff;border:2px solid var(--ink);border-radius:999px;padding:2px 10px;font-size:15px}
+.opt{border:2px dashed #d9c3a5;border-radius:16px;padding:10px 12px;margin-top:10px;background:#fffdf6}
+.ed{display:grid;gap:4px;margin-top:8px}
+.ed input{width:100%;font-size:14px;padding:6px;text-align:center;border-radius:8px}
+textarea.words{width:100%;height:120px;line-height:1.5}
+/* board */
+.board{--n:5;display:grid;grid-template-columns:repeat(var(--n),1fr);gap:6px;width:min(100%,560px);margin:0 auto;aspect-ratio:1;user-select:none;-webkit-user-select:none}
+.cell{position:relative;border:3px solid var(--ink);border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;text-align:center;padding:4px;font-size:clamp(11px,calc(26px - var(--n)*2.4px),22px);line-height:1.2;overflow:hidden;word-break:keep-all;overflow-wrap:anywhere;cursor:pointer;touch-action:manipulation}
+.cell .tx{position:relative;z-index:1}
+.cell .nt{display:block;font-size:.72em;color:var(--blue);margin-top:2px}
+.cell.mk::before{content:"";position:absolute;inset:7%;border:5px solid var(--accent);border-radius:50%;opacity:.85;animation:pop .3s ease-out}
+.cell.mk{background:#fff3ef}
+.cell.win{background:#ffe9a8}
+.cell.empty{background:#fffaf0;border-style:dashed;color:#b9a68c}
+.cell.over{background:#ffe9a8}
+.cell input{width:100%;height:100%;border:0;text-align:center;font:inherit;background:transparent;padding:2px}
+@keyframes pop{from{transform:scale(.4);opacity:0}}
+.pool{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:12px 0;min-height:42px}
+.chip{background:#fff3c4;border:2px solid var(--ink);border-radius:12px;padding:5px 12px;font-size:16px;cursor:grab;touch-action:none;user-select:none}
+.chip.sel{background:var(--gold)}
+.drag{position:fixed;z-index:80;pointer-events:none;transform:translate(-50%,-50%) scale(1.08);box-shadow:0 6px 14px rgba(0,0,0,.25)}
+.stat{display:flex;gap:10px;justify-content:center;align-items:center;margin:10px 0;font-size:20px}
+.stat b{color:var(--accent);font-size:28px}
+.called{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.called span{background:#fff;border:2px solid var(--ink);border-radius:999px;padding:2px 10px}
+.called span:first-child{background:var(--gold)}
+.plist{display:flex;flex-direction:column;gap:6px;max-height:420px;overflow:auto}
+.prow{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid #e2cfb2;border-radius:12px;padding:5px 10px}
+.prow .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prow .ln{font-size:14px;opacity:.8}
+.prow.off{opacity:.5}
+.medal{font-size:18px}
+.winbox{background:#fff3c4;border:3px solid var(--gold);border-radius:16px;padding:10px;text-align:center;margin:10px 0}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:70;padding:16px}
+.modal .card{width:min(420px,100%)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) scale(.9);background:var(--ink);color:#fff;padding:10px 18px;border-radius:16px;font-size:17px;opacity:0;transition:.25s;z-index:90;pointer-events:none;max-width:calc(100% - 32px);text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) scale(1)}
+.boom{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:75;pointer-events:none;font-size:clamp(60px,18vw,150px);color:var(--accent);text-shadow:0 5px 0 var(--ink);animation:boom 1.6s ease-out forwards}
+@keyframes boom{0%{transform:scale(.3);opacity:0}25%{transform:scale(1.1);opacity:1}75%{opacity:1}100%{transform:scale(1);opacity:0}}
+/* 전체화면: 빙고판을 화면에 꽉 차게 */
+.fs-on .top,.fs-on .hide-fs{display:none!important}
+.fs-on main{max-width:none;padding:10px}
+.fs-on .board{width:min(96vw,calc(100vh - 150px))}
+.fs-on .card{box-shadow:none}
+#fsBtn{position:fixed;right:12px;bottom:12px;z-index:30}
+</style>
+</head><body>
+<div class="top"><a href="../">← 목장</a><div class="ttl" id="ttl">🎯 빙고게임</div></div>
+<main id="app"></main>
+<button class="sm" id="fsBtn" hidden>⛶ 전체화면</button>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js" integrity="sha384-nlUQ8ZqCbvStErob+biJNzSgltf6urV3VGqhfIfzhmg9RXmpeRm76ELw0pYnKlTR" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js" integrity="sha384-8FWZA6BGMXhsfO+BLtrJK0We6gg5o1JyO8xQm6peWDEUs17ACA5ziE/NIAkl9z2k" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js" integrity="sha384-u4uqeACkFcoKl57rBQJHVGDd1pqhW4w8X3WjTu1ZksPdxoLqdt34jpoNkJisE25W" crossorigin="anonymous"></script>
+<script>
+"use strict";
+/* =====================================================================
+   빙고게임 — 서버 없이: 방을 만든 기기(호스트)가 방이고, 참가자 기기는
+   호스트에 바로 연결해요 (WebRTC/PeerJS, 안 되면 공개 중계 서버로).
+   ===================================================================== */
+const PREFIX="chiyoung-bingo-",MAX=60;
+const $=s=>document.querySelector(s),app=$("#app");
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const norm=s=>String(s||"").replace(/\s+/g,"").toLowerCase();
+const clip=(s,n)=>String(s??"").replace(/[\u0000-\u001f]/g," ").trim().slice(0,n);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+let tt;function toast(t,ms=2200){const e=$("#toast");e.textContent=t;e.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>e.classList.remove("show"),ms)}
+const params=new URLSearchParams(location.search);
+let ROOM=(params.get("room")||params.get("host")||"").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6);
+const HOSTING=!!params.get("host");
+const store={get(k){try{return JSON.parse(sessionStorage.getItem(k))}catch(e){return null}},set(k,v){try{sessionStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+let wake=null;async function keepAwake(){try{if("wakeLock" in navigator&&!wake){wake=await navigator.wakeLock.request("screen");wake.addEventListener("release",()=>wake=null)}}catch(e){}}
+
+/* ---------- 빙고 계산 ---------- */
+function lineSets(n){const L=[];for(let r=0;r<n;r++)L.push([...Array(n)].map((_,c)=>r*n+c));for(let c=0;c<n;c++)L.push([...Array(n)].map((_,r)=>r*n+c));
+  L.push([...Array(n)].map((_,i)=>i*n+i));L.push([...Array(n)].map((_,i)=>i*n+(n-1-i)));return L}
+function countLines(marks,n){if(!marks)return 0;return lineSets(n).filter(l=>l.every(i=>marks[i])).length}
+function isWin(marks,n,win){if(!marks||marks.length!==n*n)return false;return win.type==="all"?marks.every(Boolean):countLines(marks,n)>=win.n}
+const winText=w=>w.type==="all"?"전체 칸을 다 채우면 승리":w.n+"줄 빙고면 승리";
+
+/* ---------- 전체화면 ---------- */
+function fsToggle(){const d=document;if(!d.fullscreenElement&&!d.webkitFullscreenElement){const el=d.documentElement;(el.requestFullscreen||el.webkitRequestFullscreen||function(){}).call(el);d.body.classList.add("fs-on")}
+  else{(d.exitFullscreen||d.webkitExitFullscreen||function(){}).call(d);d.body.classList.remove("fs-on")}setTimeout(fsLabel,300)}
+function fsLabel(){const on=!!(document.fullscreenElement||document.webkitFullscreenElement);document.body.classList.toggle("fs-on",on);$("#fsBtn").textContent=on?"✕ 전체화면 끝":"⛶ 전체화면"}
+document.addEventListener("fullscreenchange",fsLabel);document.addEventListener("webkitfullscreenchange",fsLabel);$("#fsBtn").onclick=fsToggle;
+
+/* ================= 상태 ================= */
+const C={phase:"home",me:null,name:"",lobby:null,game:null,board:null,marks:null,notes:null,called:[],winners:[],done:false,sentWin:false};
+let peer=null,conn=null,isHost=false,retry=0;
+function toHost(msg){if(isHost)hostHandle("host",msg);else if(conn&&conn.open)conn.send(msg);else toast("연결이 끊겼어요. 다시 연결하는 중…")}
+
+/* ================= HOST ================= */
+const DEF={mode:"mission",size:5,win:{type:"lines",n:3},fill:"words",shuffle:true,mission:[],words:""};
+const H={players:[],phase:"lobby",cfg:JSON.parse(JSON.stringify(DEF)),called:[],winners:[],round:0};
+try{const o=JSON.parse(localStorage.getItem("bingo:cfg")||"null");if(o)H.cfg=Object.assign(H.cfg,o)}catch(e){}
+const saveCfg=()=>{try{localStorage.setItem("bingo:cfg",JSON.stringify(H.cfg))}catch(e){}};
+const P=id=>H.players.find(p=>p.id==id);
+function sendTo(p,msg){if(!p||!p.conn||!p.conn.open)return;try{p.conn.send(msg)}catch(e){}}
+const broadcast=msg=>H.players.forEach(p=>sendTo(p,msg));
+const plist=()=>H.players.map(p=>({name:p.name,online:!!(p.conn&&p.conn.open),lines:p.lines||0,filled:!!p.board,cnt:(p.marks||[]).filter(Boolean).length,place:p.place||0}));
+function lobbyMsg(){return{t:"lobby",room:ROOM,phase:H.phase,players:plist(),cfg:{mode:H.cfg.mode,size:H.cfg.size,win:H.cfg.win,fill:H.cfg.fill}}}
+function hostRefresh(){broadcast(lobbyMsg());if(C.phase!=="host")return;const el=$("#ppl");if(el){el.outerHTML=pplHTML();const pc=$("#pcnt");if(pc)pc.textContent=H.players.length}else renderHost()}
+function wordList(){return [...new Set(String(H.cfg.words||"").split(/[\n,]+/).map(s=>clip(s,24)).filter(Boolean))]}
+
+function createRoom(code,tries){
+  isHost=true;C.me="host";ROOM=code||Array.from({length:4},()=>"ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.floor(Math.random()*32)]).join("");
+  renderMsg("방을 만들고 있어요…");
+  peer=new Peer(PREFIX+ROOM,PEER_OPTS());
+  peer.on("open",()=>{startRelayHost();history.replaceState(null,"","?host="+ROOM);C.phase="host";renderHost();keepAwake()});
+  peer.on("error",e=>{if(e.type=="unavailable-id"){peer.destroy();if(code&&(tries||0)<4)setTimeout(()=>createRoom(code,(tries||0)+1),2500);else createRoom()}
+    else if(e.type=="network"||e.type=="server-error"||e.type=="socket-error")toast("인터넷 연결을 확인해 주세요");else console.warn(e)});
+  peer.on("disconnected",()=>{setTimeout(()=>{try{peer.reconnect()}catch(e){}},1500)});
+  peer.on("connection",c=>{c.on("data",d=>{if(d&&d.t=="join")hostJoin(c,d);else{const p=H.players.find(p=>p.conn===c);if(p)hostHandle(p.id,d)}});
+    c.on("close",()=>hostRefresh())});
+}
+function hostJoin(c,d){
+  const id=String(d.id||"").replace(/[^a-z0-9]/gi,"").slice(0,20);if(!id)return;
+  const name=clip(d.name,10)||"이름없음";let p=P(id);
+  if(p){p.conn=c}else{if(H.players.length>=MAX){c.send({t:"err",msg:"방이 꽉 찼어요 (최대 "+MAX+"명)"});return}
+    p={id,name,conn:c,board:null,marks:null,notes:null,lines:0,place:0};H.players.push(p)}
+  hostRefresh();syncOne(p)}
+/* 다시 연결된 사람에게 지금 볼 화면을 다시 보내 줌 */
+function syncOne(p){if(H.phase==="lobby")return;sendTo(p,startMsg(p));
+  if(p.board)sendTo(p,{t:"state",board:p.board,marks:p.marks,notes:p.notes});sendTo(p,{t:"called",list:H.called});sendTo(p,{t:"winners",list:winList()});if(H.phase==="end")sendTo(p,{t:"end",list:rankList()})}
+function startMsg(p){const c=H.cfg,n=c.size;const m={t:"start",round:H.round,mode:c.mode,size:n,win:c.win,fill:c.fill};
+  if(c.mode==="mission"){if(!p.board){const cells=c.mission.slice(0,n*n).map(s=>clip(s,40));p.board=c.shuffle?shuffle(cells):cells;p.marks=Array(n*n).fill(false);p.notes=Array(n*n).fill("")}m.board=p.board}
+  else if(c.fill==="words"){if(!p.pool)p.pool=shuffle(wordList()).slice(0,n*n);m.pool=p.pool}
+  return m}
+const winList=()=>H.winners.map(id=>{const p=P(id);return p?p.name:"?"});
+const rankList=()=>H.players.filter(p=>p.board).map(p=>({name:p.name,lines:p.lines||0,cnt:(p.marks||[]).filter(Boolean).length,place:p.place||0}))
+  .sort((a,b)=>(a.place||999)-(b.place||999)||b.lines-a.lines||b.cnt-a.cnt);
+function hostHandle(from,m){if(!m||!m.t)return;const p=P(from);
+  if(m.t==="board"&&p&&H.phase!=="lobby"&&!p.board){const n=H.cfg.size;if(!Array.isArray(m.cells)||m.cells.length!==n*n)return;
+    p.board=m.cells.map(s=>clip(s,24));p.marks=Array(n*n).fill(false);p.notes=Array(n*n).fill("");
+    autoMark(p);sendTo(p,{t:"state",board:p.board,marks:p.marks,notes:p.notes});checkWin(p);hostRefresh()}
+  else if(m.t==="upd"&&p&&p.board&&H.phase==="play"){const n=H.cfg.size;if(!Array.isArray(m.marks)||m.marks.length!==n*n)return;
+    p.marks=m.marks.map(Boolean);if(Array.isArray(m.notes)&&m.notes.length===n*n)p.notes=m.notes.map(s=>clip(s,20));p.lines=countLines(p.marks,n);checkWin(p);hostRefresh()}
+}
+function autoMark(p){const set=new Set(H.called.map(norm));if(H.cfg.mode!=="normal"||!p.board)return;p.board.forEach((w,i)=>{if(set.has(norm(w)))p.marks[i]=true});p.lines=countLines(p.marks,H.cfg.size)}
+function checkWin(p){if(p.place||H.phase!=="play")return;if(isWin(p.marks,H.cfg.size,H.cfg.win)){H.winners.push(p.id);p.place=H.winners.length;
+  broadcast({t:"winners",list:winList(),newName:p.name});sendTo(p,{t:"youWin",place:p.place});toast(`🎉 ${p.name} 님 빙고! (${p.place}등)`,3500)}}
+function hostStart(){const c=H.cfg,n=c.size;
+  if(c.mode==="mission"&&c.mission.slice(0,n*n).filter(s=>clip(s,40)).length<n*n){toast(`미션 ${n*n}칸을 모두 채워 주세요`);return}
+  if(c.mode==="normal"&&c.fill==="words"&&wordList().length<n*n){toast(`단어가 ${n*n}개 이상 있어야 해요 (지금 ${wordList().length}개)`);return}
+  if(!H.players.length){toast("아직 들어온 사람이 없어요. QR이나 링크로 초대해 주세요");return}
+  if(c.win.type==="lines"&&c.win.n>2*n+2)c.win.n=2*n+2;saveCfg();
+  H.round++;H.phase="play";H.called=[];H.winners=[];H.players.forEach(p=>{p.board=null;p.marks=null;p.notes=null;p.pool=null;p.lines=0;p.place=0});
+  H.players.forEach(p=>sendTo(p,startMsg(p)));if(c.mode==="mission")H.players.forEach(p=>sendTo(p,{t:"state",board:p.board,marks:p.marks,notes:p.notes}));
+  hostRefresh();renderHost();toast("게임 시작!")}
+function hostCall(w){w=clip(w,24);if(!w)return;if(H.called.some(x=>norm(x)===norm(w))){toast("이미 부른 단어예요");return}
+  H.called.unshift(w);broadcast({t:"called",list:H.called});setTimeout(()=>{renderHost();const c=$("#cw");if(c)c.focus()},0);H.players.forEach(p=>{if(p.board){autoMark(p);sendTo(p,{t:"state",board:p.board,marks:p.marks,notes:p.notes});checkWin(p)}});hostRefresh()}
+function hostEnd(){H.phase="end";broadcast({t:"end",list:rankList()});hostRefresh();renderHost()}
+function hostLobby(){H.phase="lobby";H.players.forEach(p=>{p.board=null;p.marks=null;p.lines=0;p.place=0});H.called=[];H.winners=[];broadcast({t:"toLobby"});hostRefresh();renderHost()}
+
+/* ================= GUEST 연결 (텔레스트레이션과 같은 방식) ================= */
+function PEER_OPTS(){const d=(window.peerjs&&peerjs.util&&peerjs.util.defaultConfig||{}).iceServers||[];
+  return{debug:0,config:{iceServers:[{urls:["stun:stun.l.google.com:19302","stun:stun1.l.google.com:19302","stun:stun.cloudflare.com:3478"]},...d.filter(s=>String(s.urls).includes("turn"))],iceCandidatePoolSize:4,sdpSemantics:"unified-plan"}}}
+let warm=null,attempt=0;
+function warmPeer(){if(peer&&!peer.destroyed&&warm)return warm;
+  peer=new Peer(PEER_OPTS());warm=new Promise(res=>{peer.on("open",()=>res(true));setTimeout(()=>res(false),8000)});
+  peer.on("error",e=>{if(e.type=="peer-unavailable"){if(!(C.phase=="home"||C.phase=="msg"))setTimeout(reconnect,2000)}else if(e.type=="network"||e.type=="server-error"||e.type=="socket-error")toast("인터넷 연결을 확인해 주세요")});
+  peer.on("disconnected",()=>{try{if(!peer.destroyed)peer.reconnect()}catch(e){}});return warm}
+async function joinRoom(name){
+  C.name=name;let id=store.get("bingo-id-"+ROOM);if(!id){id="p"+Math.random().toString(36).slice(2,10);store.set("bingo-id-"+ROOM,id)}
+  C.me=id;store.set("bingo-name-"+ROOM,name);renderMsg("방에 들어가는 중… ①");
+  let ok=await warmPeer();if(!ok||!peer.open){try{peer.destroy()}catch(e){}warm=null;ok=await warmPeer()}
+  attempt=0;usingRelay=false;if(ok)dial(id,name);
+  setTimeout(async()=>{if(conn&&conn.open&&!conn.relay)return;
+    if(C.phase=="msg")renderMsg("방장 기기와 연결하는 중… ③<br><span class='muted'>다른 길로 연결하고 있어요</span>");
+    const r=await relayDial(id,name);
+    if(!r&&!(conn&&conn.open))renderMsg("방장 기기와 연결이 잘 안 돼요 😢<br><span class='muted'>· 방장 화면이 켜져 있는지 확인해 주세요<br>· 방 코드가 맞는지 확인해 주세요<br>· 그래도 안 되면 새로고침해 주세요</span>",true)},ok?7000:500)}
+function dial(id,name){if(C.phase=="msg"&&!usingRelay)renderMsg("방장 기기와 연결하는 중… ②");
+  const c=peer.connect(PREFIX+ROOM,{reliable:true});conn=c;let opened=false;
+  const to=setTimeout(()=>{if(opened)return;try{c.close()}catch(e){}if(!usingRelay&&++attempt<=2)dial(id,name)},6000);
+  c.on("open",()=>{opened=true;clearTimeout(to);if(usingRelay){try{c.close()}catch(e){}return}retry=0;attempt=0;c.send({t:"join",id,name});keepAwake()});
+  c.on("data",client);
+  c.on("close",()=>{clearTimeout(to);if(!opened||conn!==c)return;toast("방장과 연결이 끊겼어요. 다시 연결하는 중…",4000);setTimeout(reconnect,1200)})}
+function reconnect(){if(isHost||usingRelay||conn&&conn.open)return;if(++retry>20){renderMsg("방장과 다시 연결하지 못했어요.<br><span class='muted'>방장의 화면이 꺼지지 않았는지 확인하고 새로고침해 주세요.</span>",true);return}joinRoom(C.name)}
+const BROKERS=["wss://broker.emqx.io:8084/mqtt","wss://broker.hivemq.com:8884/mqtt"];
+const relayBase=()=>"chiyoung-bingo/v1/"+ROOM;let usingRelay=false;
+function mqttOpen(url,ms){return new Promise(res=>{if(typeof mqtt=="undefined")return res(null);let done=false;
+  const cl=mqtt.connect(url,{connectTimeout:ms,reconnectPeriod:2000,clientId:"cb"+Math.random().toString(36).slice(2,12)});
+  cl.on("connect",()=>{if(!done){done=true;res(cl)}});setTimeout(()=>{if(!done){done=true;try{cl.end(true)}catch(e){}res(null)}},ms)})}
+function startRelayHost(){if(typeof mqtt=="undefined")return;
+  BROKERS.forEach(async url=>{const cl=await mqttOpen(url,8000);if(!cl)return;const base=relayBase(),conns={};
+    cl.subscribe(base+"/h",{qos:1});cl.on("connect",()=>cl.subscribe(base+"/h",{qos:1}));
+    cl.on("message",(t,buf)=>{let d;try{d=JSON.parse(buf.toString())}catch(e){return}if(!d||!d.from||!d.m)return;
+      const from=String(d.from).replace(/[^a-z0-9]/gi,"").slice(0,20);
+      const c=conns[from]||(conns[from]={open:true,relay:true,send:m=>cl.publish(base+"/c/"+from,JSON.stringify(m),{qos:1})});
+      if(d.m.t=="join"){d.m.id=from;hostJoin(c,d.m)}else{const pl=P(from);if(pl&&pl.conn===c)hostHandle(pl.id,d.m)}})})}
+async function relayDial(id,name){
+  for(const url of BROKERS){if(conn&&conn.open&&!conn.relay)return true;
+    const cl=await mqttOpen(url,6000);if(!cl)continue;const base=relayBase();
+    cl.subscribe(base+"/c/"+id,{qos:1});cl.on("connect",()=>cl.subscribe(base+"/c/"+id,{qos:1}));
+    let heard=false;cl.on("message",(t,buf)=>{let m;try{m=JSON.parse(buf.toString())}catch(e){return}heard=true;if(usingRelay)client(m)});
+    usingRelay=true;const c={open:true,relay:true,send:m=>cl.publish(base+"/h",JSON.stringify({from:id,m}),{qos:1})};conn=c;
+    c.send({t:"join",id,name});
+    for(let i=0;i<25&&!heard;i++)await new Promise(r=>setTimeout(r,200));
+    if(heard){keepAwake();return true}
+    usingRelay=false;try{cl.end(true)}catch(e){}}
+  return false}
+
+/* ================= GUEST 메시지 ================= */
+function client(m){if(!m||!m.t)return;
+  if(m.t=="lobby"){C.lobby=m;if(m.phase==="lobby"&&(C.phase==="msg"||C.phase==="wait"||C.phase==="end")){C.phase="wait";renderWait()}else if(C.phase==="wait")renderWait()}
+  else if(m.t=="err")renderMsg(esc(m.msg),true);
+  else if(m.t=="start"){if(C.game&&C.game.round===m.round&&C.phase!=="msg"&&C.phase!=="wait")return;
+    C.game=m;C.board=null;C.marks=null;C.notes=null;C.called=[];C.winners=[];C.sentWin=false;C.win=false;
+    if(m.mode==="mission"){const k=m.size*m.size;C.board=m.board||null;C.marks=Array(k).fill(false);C.notes=Array(k).fill("");C.phase="play";renderPlay()}else{C.phase="fill";C.draft=Array(m.size*m.size).fill("");C.pool=(m.pool||[]).slice();renderFill()}}
+  else if(m.t=="state"){C.board=m.board;C.marks=m.marks;C.notes=m.notes;if(C.phase==="fill"||C.phase==="msg"||C.phase==="wait")C.phase="play";if(C.phase==="play")renderPlay()}
+  else if(m.t=="called"){C.called=m.list||[];if(C.phase==="play")renderPlay()}
+  else if(m.t=="winners"){C.winners=m.list||[];if(m.newName&&m.newName!==C.name)toast(`🎉 ${m.newName} 님 빙고!`,2600);if(C.phase==="play")renderPlay()}
+  else if(m.t=="youWin"){C.win=m.place;boom(m.place===1?"빙고! 🏆":"빙고! "+m.place+"등");if(C.phase==="play")renderPlay()}
+  else if(m.t=="end"){C.phase="end";renderEnd(m.list)}
+  else if(m.t=="toLobby"){C.phase="wait";C.game=null;renderWait()}
+}
+function boom(t){const d=document.createElement("div");d.className="boom";d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),1700)}
+
+/* ================= 화면 ================= */
+function renderMsg(html,back){C.phase="msg";$("#fsBtn").hidden=true;app.innerHTML='<div class="card center"><p style="font-size:20px">'+html+'</p>'+(back?'<button onclick="location.href=location.pathname">처음으로</button>':'<div class="muted">잠시만요…</div>')+'</div>'}
+function renderHome(){C.phase="home";$("#fsBtn").hidden=true;
+  if(ROOM&&!HOSTING){const saved=store.get("bingo-name-"+ROOM)||"";
+    app.innerHTML=`<div class="hero"><div class="em">🎯</div><h1>빙고게임</h1></div><div class="card center"><h2>방 <b style="letter-spacing:4px">${esc(ROOM)}</b> 에 들어가요</h2><p class="muted">내 이름을 적어 주세요. 다른 사람 화면에 보여요.</p>
+      <div class="row" style="justify-content:center"><input id="nm" maxlength="10" placeholder="이름" value="${esc(saved)}" style="font-size:20px;width:200px"><button class="pri" id="join">들어가기</button></div></div>`;
+    $("#join").onclick=()=>{const n=$("#nm").value.trim();if(!n){toast("이름을 적어 주세요");return}joinRoom(n)};$("#nm").onkeydown=e=>{if(e.key=="Enter")$("#join").click()};warmPeer();return}
+  app.innerHTML=`<div class="hero"><div class="em">🎯</div><h1>빙고게임</h1><p class="muted">방을 만들고 QR이나 링크로 사람들을 초대해요</p></div>
+    <div class="card center"><h2>🏠 방장으로 시작</h2><p class="muted">미션빙고·일반빙고, 판 크기, 승리 조건을 정하고 진행해요</p><button class="pri" id="mk" style="font-size:20px;padding:10px 26px">방 만들기</button></div>
+    <div class="card center"><h2>🙋 초대받았어요</h2><div class="row" style="justify-content:center"><input id="rc" maxlength="6" placeholder="방 코드" style="text-transform:uppercase;letter-spacing:4px;width:160px;font-size:20px"><button id="go">들어가기</button></div></div>`;
+  $("#mk").onclick=()=>createRoom();$("#go").onclick=()=>{const c=$("#rc").value.toUpperCase().replace(/[^A-Z0-9]/g,"");if(c.length<4){toast("방 코드 4자리를 넣어 주세요");return}location.href="?room="+c}}
+
+/* ---------- 호스트 화면 ---------- */
+function pplHTML(){return `<div class="card" id="ppl"><h2>👥 참가자 ${H.players.length}명</h2>${H.phase!=="lobby"&&H.winners.length?`<div class="winbox">🏆 ${winList().map((w,i)=>(i+1)+"등 "+esc(w)).join(" · ")}</div>`:""}
+    <div class="plist">${H.players.length?[...H.players].sort((a,b)=>(a.place||999)-(b.place||999)||(b.lines||0)-(a.lines||0)).map(p=>`<div class="prow${p.conn&&p.conn.open?"":" off"}"><span class="medal">${p.place?["🥇","🥈","🥉"][p.place-1]||"🏅":"🙂"}</span><span class="nm">${esc(p.name)}</span>
+      <span class="ln">${H.phase==="lobby"?"대기 중":!p.board?"판 만드는 중…":`${p.lines||0}줄 · ${(p.marks||[]).filter(Boolean).length}칸`}</span></div>`).join(""):'<p class="muted">아직 아무도 없어요</p>'}</div></div>`}
+function renderHost(){if(C.phase!=="host")return;const c=H.cfg,n=c.size;$("#fsBtn").hidden=false;
+  $("#ttl").textContent="🎯 빙고 · 방 "+ROOM;
+  const url=location.origin+location.pathname+"?room="+ROOM;let qr="";try{const q=qrcode(0,"M");q.addData(url);q.make();qr=q.createSvgTag(6,2)}catch(e){}
+  const inv=`<div class="card center hide-fs"><h2>📷 QR로 초대하기</h2><div class="qr">${qr}</div><div class="muted" style="margin-top:6px">방 코드</div><div class="code">${esc(ROOM)}</div>
+    <button class="sm" id="cp">🔗 초대 링크 복사</button><p class="muted">지금 <span id="pcnt">${H.players.length}</span>명 · 이 화면을 켜 두세요</p></div>`;
+  const ppl=pplHTML();
+  if(H.phase==="lobby"){
+    const ed=c.mode==="mission"?`<div class="opt"><b>미션 ${n*n}칸</b> <span class="muted">· 칸마다 미션을 적어요 (예: 안경 쓴 사람, 3월생)</span>
+        <div class="ed" style="grid-template-columns:repeat(${n},1fr)">${[...Array(n*n)].map((_,i)=>`<input data-m="${i}" maxlength="40" value="${esc(c.mission[i]||"")}" placeholder="${i+1}">`).join("")}</div>
+        <div class="row" style="margin-top:8px"><button class="sm" id="pasteM">📋 여러 줄 한 번에 넣기</button><label class="row" style="gap:4px"><input type="checkbox" id="shuf" ${c.shuffle?"checked":""}> 사람마다 칸 순서 섞기</label></div></div>`
+      :`<div class="opt"><b>빙고판 채우기</b><div class="seg" id="fill" style="margin:6px 0"><button data-v="words" class="${c.fill==="words"?"on":""}">정해진 단어 배치 (드래그)</button><button data-v="type" class="${c.fill==="type"?"on":""}">직접 입력 (타자)</button></div>
+        ${c.fill==="words"?`<div class="muted">단어를 ${n*n}개 이상 적어 주세요 (한 줄에 하나 또는 쉼표). 많으면 사람마다 ${n*n}개를 골라 줘요. 지금 <b>${wordList().length}</b>개</div><textarea class="words" id="words" placeholder="사과&#10;바나나&#10;…">${esc(c.words||"")}</textarea>`
+        :`<div class="muted">참가자가 ${n*n}칸을 직접 적어요. 게임 중에 방장이 단어를 부르면 같은 단어가 있는 칸에 자동으로 동그라미가 쳐져요.</div>`}</div>`;
+    const maxL=2*n+2;
+    app.innerHTML=`<div class="grid2"><div>${inv}</div><div><div class="card hide-fs"><h2>⚙️ 게임 설정</h2>
+      <div class="row"><b>종류</b><div class="seg" id="mode"><button data-v="mission" class="${c.mode==="mission"?"on":""}">🎯 미션빙고</button><button data-v="normal" class="${c.mode==="normal"?"on":""}">🔤 일반빙고</button></div></div>
+      <div class="row" style="margin-top:8px"><b>판 크기</b><div class="seg" id="size">${[3,4,5,6].map(k=>`<button data-v="${k}" class="${n===k?"on":""}">${k}×${k}</button>`).join("")}</div></div>
+      <div class="row" style="margin-top:8px"><b>승리 조건</b><div class="seg" id="wtype"><button data-v="lines" class="${c.win.type==="lines"?"on":""}">빙고 줄 수</button><button data-v="all" class="${c.win.type==="all"?"on":""}">전체 칸 다</button></div>
+        ${c.win.type==="lines"?`<select id="wn">${[...Array(maxL)].map((_,i)=>`<option value="${i+1}" ${c.win.n===i+1?"selected":""}>${i+1}줄 빙고</option>`).join("")}</select>`:""}</div>
+      ${ed}
+      <div class="row" style="justify-content:center;margin-top:14px"><button class="pri" id="start" style="font-size:20px;padding:10px 28px">▶ 게임 시작</button></div></div>${ppl}</div></div>`;
+    bindHostLobby()}
+  else{
+    const callUI=c.mode==="normal"&&H.phase==="play"?`<div class="card center"><h2>📣 단어 부르기</h2><div class="row" style="justify-content:center"><input id="cw" maxlength="24" placeholder="부를 단어" style="font-size:20px;width:220px"><button class="pri" id="callB">부르기</button></div>
+        ${c.fill==="words"?`<div class="chips" style="justify-content:center;margin-top:10px">${wordList().filter(w=>!H.called.some(x=>norm(x)===norm(w))).map(w=>`<button class="sm" data-call="${esc(w)}">${esc(w)}</button>`).join("")}</div>`:""}
+        <h3>부른 단어 ${H.called.length}개</h3><div class="called" style="font-size:${H.called.length?22:16}px">${H.called.map(w=>`<span>${esc(w)}</span>`).join("")||'<span class="muted" style="border:0;background:none">아직 없어요</span>'}</div></div>`:"";
+    const info=`<div class="card center"><h2>${c.mode==="mission"?"🎯 미션빙고":"🔤 일반빙고"} · ${n}×${n}</h2><div class="muted">${winText(c.win)}${H.phase==="end"?" · 게임 끝":""}</div>
+      ${c.mode==="mission"?`<p class="muted">참가자는 미션에 맞는 사람의 이름을 칸에 적으면 동그라미가 쳐져요</p>`:""}
+      <div class="row hide-fs" style="justify-content:center;margin-top:10px">${H.phase==="play"?`<button id="endB">🏁 게임 끝내기</button>`:""}<button id="lobB">⚙️ 설정으로 (새 게임)</button></div></div>`;
+    app.innerHTML=`<div class="grid2"><div>${info}${callUI}${inv}</div><div>${ppl}</div></div>`;
+    const cw=$("#cw");if(cw){$("#callB").onclick=()=>{hostCall(cw.value);cw.value="";cw.focus()};cw.onkeydown=e=>{if(e.key==="Enter"&&!e.isComposing)$("#callB").click()}}
+    app.querySelectorAll("[data-call]").forEach(b=>b.onclick=()=>hostCall(b.dataset.call));
+    if($("#endB"))$("#endB").onclick=()=>{if(confirm("게임을 끝내고 순위를 보여 줄까요?"))hostEnd()};
+    $("#lobB").onclick=()=>{if(H.phase==="end"||confirm("지금 게임을 그만두고 설정으로 돌아갈까요?"))hostLobby()}}
+  const cp=$("#cp");if(cp)cp.onclick=async()=>{try{await navigator.clipboard.writeText(url);toast("초대 링크를 복사했어요")}catch(e){prompt("이 링크를 복사해 주세요",url)}}}
+function bindHostLobby(){const c=H.cfg;
+  const seg=(id,fn)=>{const el=$("#"+id);if(el)el.onclick=e=>{const b=e.target.closest("button");if(b){fn(b.dataset.v);saveCfg();renderHost();hostRefresh()}}};
+  seg("mode",v=>c.mode=v);seg("size",v=>{c.size=+v;if(c.win.type==="lines")c.win.n=Math.min(c.win.n,2*c.size+2)});seg("wtype",v=>{c.win={type:v,n:c.win.n||3}});seg("fill",v=>c.fill=v);
+  const wn=$("#wn");if(wn)wn.onchange=()=>{c.win={type:"lines",n:+wn.value};saveCfg();hostRefresh()};
+  app.querySelectorAll("[data-m]").forEach(i=>i.oninput=()=>{c.mission[+i.dataset.m]=i.value;saveCfg()});
+  const sh=$("#shuf");if(sh)sh.onchange=()=>{c.shuffle=sh.checked;saveCfg()};
+  const w=$("#words");if(w)w.oninput=()=>{c.words=w.value;saveCfg();const b=w.previousElementSibling&&w.previousElementSibling.querySelector("b");if(b)b.textContent=wordList().length};
+  const pm=$("#pasteM");if(pm)pm.onclick=()=>{const t=prompt("미션을 한 줄에 하나씩 붙여 넣어 주세요 (앞 칸부터 채워요)");if(!t)return;t.split(/\n+/).map(s=>s.trim()).filter(Boolean).slice(0,c.size*c.size).forEach((s,i)=>c.mission[i]=s);saveCfg();renderHost()};
+  $("#start").onclick=hostStart}
+
+/* ---------- 참가자: 대기 ---------- */
+function renderWait(){const L=C.lobby;$("#fsBtn").hidden=true;if(!L){renderMsg("방장 기기와 연결하는 중…");return}
+  $("#ttl").textContent="🎯 빙고 · 방 "+L.room;
+  app.innerHTML=`<div class="card center"><div style="font-size:50px">🙌</div><h2>들어왔어요, ${esc(C.name)} 님!</h2><p class="muted">방장이 게임을 시작하면 바로 빙고판이 나와요</p>
+    <p>${L.cfg.mode==="mission"?"🎯 미션빙고":"🔤 일반빙고"} · ${L.cfg.size}×${L.cfg.size} · ${winText(L.cfg.win)}</p>
+    <div class="chips" style="justify-content:center">${L.players.map(p=>`<span>${esc(p.name)}</span>`).join("")}</div></div>`}
+
+/* ---------- 참가자: 일반빙고 판 만들기 ---------- */
+function renderFill(){const g=C.game,n=g.size;$("#fsBtn").hidden=false;$("#ttl").textContent="🎯 빙고판 만들기";
+  const filled=C.draft.filter(Boolean).length;
+  if(g.fill==="type"){
+    app.innerHTML=`<div class="card center"><h2>✍️ 빙고판을 채워 주세요</h2><p class="muted">칸을 눌러 단어를 적어요 (${filled}/${n*n})</p>
+      <div class="board" style="--n:${n}">${C.draft.map((w,i)=>`<div class="cell${w?"":" empty"}"><input data-i="${i}" maxlength="24" value="${esc(w)}" aria-label="${i+1}번 칸"></div>`).join("")}</div>
+      <div class="row hide-fs" style="justify-content:center;margin-top:14px"><button class="go" id="done" style="font-size:20px">✅ 완성!</button></div></div>`;
+    app.querySelectorAll("[data-i]").forEach(inp=>{inp.oninput=()=>{C.draft[+inp.dataset.i]=clip(inp.value,24);inp.parentElement.classList.toggle("empty",!inp.value.trim());app.querySelector(".muted").textContent=`칸을 눌러 단어를 적어요 (${C.draft.filter(Boolean).length}/${n*n})`};
+      inp.onkeydown=e=>{if(e.key==="Enter"&&!e.isComposing){const nx=app.querySelector(`[data-i="${+inp.dataset.i+1}"]`);if(nx)nx.focus();else $("#done").focus()}}});
+    $("#done").onclick=()=>{const em=C.draft.findIndex(w=>!w.trim());if(em>=0){toast("빈 칸이 있어요");app.querySelector(`[data-i="${em}"]`).focus();return}
+      const dup=C.draft.map(norm).filter((w,i,a)=>a.indexOf(w)!==i);if(dup.length&&!confirm("같은 단어가 두 번 있어요. 그대로 할까요?"))return;sendBoard()};return}
+  /* 정해진 단어: 단어 칩을 칸으로 끌어다 놓기 (또는 칩을 누르고 칸을 누르기) */
+  const left=C.pool.filter(w=>!C.draft.includes(w));
+  app.innerHTML=`<div class="card center"><h2>🧩 단어를 원하는 칸에 놓아 주세요</h2><p class="muted">단어를 끌어서 칸에 놓아요. 놓은 단어를 다시 끌면 옮기거나 바꿀 수 있어요 (${filled}/${n*n})</p>
+    <div class="pool" id="pool">${left.map(w=>`<span class="chip${C.selChip===w?" sel":""}" data-w="${esc(w)}">${esc(w)}</span>`).join("")||'<span class="muted">모든 단어를 놓았어요!</span>'}</div>
+    <div class="board" style="--n:${n}">${C.draft.map((w,i)=>`<div class="cell${w?"":" empty"}" data-c="${i}">${w?`<span class="tx chip-in" data-w="${esc(w)}">${esc(w)}</span>`:i+1}</div>`).join("")}</div>
+    <div class="row hide-fs" style="justify-content:center;margin-top:14px"><button class="sm" id="auto">🎲 나머지 자동으로</button><button class="sm" id="clr">↺ 다시 놓기</button><button class="go" id="done" style="font-size:20px">✅ 완성!</button></div></div>`;
+  $("#auto").onclick=()=>{const rest=shuffle(C.pool.filter(w=>!C.draft.includes(w)));C.draft=C.draft.map(w=>w||rest.shift()||"");C.selChip=null;renderFill()};
+  $("#clr").onclick=()=>{C.draft=C.draft.map(()=>"");C.selChip=null;renderFill()};
+  $("#done").onclick=()=>{if(C.draft.some(w=>!w)){toast("빈 칸에 단어를 놓아 주세요");return}sendBoard()};
+  bindDrag()}
+function placeWord(w,ci){const n=C.game.size;if(ci==null||ci<0||ci>=n*n)return;const from=C.draft.indexOf(w),cur=C.draft[ci];
+  if(from>=0)C.draft[from]=cur||"";C.draft[ci]=w;C.selChip=null;renderFill()}
+function bindDrag(){let drag=null;
+  const start=(e,w)=>{e.preventDefault();const g=document.createElement("span");g.className="chip drag";g.textContent=w;document.body.appendChild(g);drag={w,g,x:e.clientX,y:e.clientY,moved:false};move(e)};
+  const move=e=>{if(!drag)return;drag.g.style.left=e.clientX+"px";drag.g.style.top=e.clientY+"px";if(Math.abs(e.clientX-drag.x)+Math.abs(e.clientY-drag.y)>6)drag.moved=true;
+    app.querySelectorAll(".cell.over").forEach(c=>c.classList.remove("over"));const t=document.elementFromPoint(e.clientX,e.clientY),cell=t&&t.closest("[data-c]");if(cell)cell.classList.add("over")};
+  const end=e=>{if(!drag)return;const d=drag;drag=null;d.g.remove();app.querySelectorAll(".cell.over").forEach(c=>c.classList.remove("over"));
+    const t=document.elementFromPoint(e.clientX,e.clientY),cell=t&&t.closest("[data-c]"),pool=t&&t.closest("#pool");
+    if(!d.moved){C.selChip=C.selChip===d.w?null:d.w;renderFill();return}
+    if(cell)placeWord(d.w,+cell.dataset.c);else if(pool){const i=C.draft.indexOf(d.w);if(i>=0){C.draft[i]="";renderFill()}}};
+  app.querySelectorAll(".chip,.chip-in").forEach(ch=>ch.addEventListener("pointerdown",e=>start(e,ch.dataset.w)));
+  app.querySelectorAll("[data-c]").forEach(cell=>cell.addEventListener("click",()=>{if(C.selChip)placeWord(C.selChip,+cell.dataset.c)}));
+  window.onpointermove=move;window.onpointerup=end;window.onpointercancel=()=>{if(drag){drag.g.remove();drag=null}}}
+function sendBoard(){toHost({t:"board",cells:C.draft.slice()});C.board=C.draft.slice();C.marks=C.board.map(()=>false);C.notes=C.board.map(()=>"");C.phase="play";renderPlay()}
+
+/* ---------- 참가자: 게임 ---------- */
+function renderPlay(){const g=C.game;if(!g||!C.board){renderMsg("빙고판을 받는 중…");return}const n=g.size;$("#fsBtn").hidden=false;
+  $("#ttl").textContent="🎯 "+(g.mode==="mission"?"미션빙고":"빙고");
+  const lines=countLines(C.marks,n),winCells=new Set();lineSets(n).forEach(l=>{if(l.every(i=>C.marks[i]))l.forEach(i=>winCells.add(i))});
+  app.innerHTML=`<div class="card center"><div class="stat"><span>빙고 <b>${lines}</b>줄</span><span class="muted">· ${winText(g.win)}</span></div>
+    ${C.win?`<div class="winbox">🎉 ${C.win}등으로 빙고했어요!</div>`:""}
+    <div class="board" style="--n:${n}">${C.board.map((w,i)=>`<div class="cell${C.marks[i]?" mk":""}${winCells.has(i)?" win":""}" data-i="${i}"><span class="tx">${esc(w)}${g.mode==="mission"&&C.notes&&C.notes[i]?`<span class="nt">✍️ ${esc(C.notes[i])}</span>`:""}</span></div>`).join("")}</div>
+    ${g.mode==="normal"?`<h3>📣 부른 단어</h3><div class="called">${C.called.map(w=>`<span>${esc(w)}</span>`).join("")||'<span class="muted" style="border:0;background:none">방장이 단어를 부르면 여기 나와요</span>'}</div><p class="muted hide-fs">부른 단어는 자동으로 동그라미가 쳐져요. 말로 불렀다면 칸을 눌러 직접 표시해도 돼요.</p>`:`<p class="muted hide-fs">칸을 누르고 미션에 맞는 사람의 이름을 적으면 동그라미가 쳐져요</p>`}
+    ${C.winners.length?`<div class="winbox">🏆 ${C.winners.map((w,i)=>(i+1)+"등 "+esc(w)).join(" · ")}</div>`:""}</div>`;
+  app.querySelectorAll("[data-i]").forEach(el=>el.onclick=()=>{const i=+el.dataset.i;if(g.mode==="mission")askNote(i);else{C.marks[i]=!C.marks[i];pushMarks()}})}
+function askNote(i){const g=C.game;const d=document.createElement("div");d.className="modal";
+  d.innerHTML=`<div class="card center"><h2>🎯 ${esc(C.board[i])}</h2><p class="muted">이 미션에 맞는 사람의 이름(또는 내용)을 적어 주세요</p>
+    <input id="nt" maxlength="20" value="${esc(C.notes[i]||"")}" style="width:100%;font-size:20px;text-align:center"><div class="row" style="justify-content:center;margin-top:12px">
+    ${C.marks[i]?'<button id="ntDel">지우기</button>':""}<button id="ntX">취소</button><button class="pri" id="ntOk">동그라미 ⭕</button></div></div>`;
+  document.body.appendChild(d);const inp=d.querySelector("#nt");inp.focus();
+  const close=()=>d.remove();d.onclick=e=>{if(e.target===d)close()};d.querySelector("#ntX").onclick=close;
+  if(d.querySelector("#ntDel"))d.querySelector("#ntDel").onclick=()=>{C.marks[i]=false;C.notes[i]="";close();pushMarks()};
+  d.querySelector("#ntOk").onclick=()=>{const v=clip(inp.value,20);if(!v){toast("내용을 적어 주세요");inp.focus();return}C.notes[i]=v;C.marks[i]=true;close();pushMarks()};
+  inp.onkeydown=e=>{if(e.key==="Enter"&&!e.isComposing)d.querySelector("#ntOk").click()}}
+function pushMarks(){toHost({t:"upd",marks:C.marks,notes:C.notes});const n=C.game.size;if(!C.win&&isWin(C.marks,n,C.game.win)&&!C.sentWin){C.sentWin=true}renderPlay()}
+function renderEnd(list){$("#fsBtn").hidden=true;$("#ttl").textContent="🎯 빙고 · 결과";
+  app.innerHTML=`<div class="card center"><div style="font-size:50px">🏁</div><h2>게임이 끝났어요!</h2><div class="plist" style="max-width:420px;margin:0 auto">${(list||[]).map((p,i)=>`<div class="prow"><span class="medal">${p.place?["🥇","🥈","🥉"][p.place-1]||"🏅":(i+1)+"."}</span><span class="nm">${esc(p.name)}</span><span class="ln">${p.lines}줄 · ${p.cnt}칸</span></div>`).join("")}</div>
+    <p class="muted">방장이 새 게임을 시작하면 다시 빙고판이 나와요</p></div>`}
+
+/* ---------- 시작 ---------- */
+if(HOSTING&&ROOM)createRoom(ROOM);else renderHome();
+</script>
+<script src="../assets/scene.js?v=20261116c"></script><script src="../assets/home.js"></script>
+</body></html>
