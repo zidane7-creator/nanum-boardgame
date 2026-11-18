@@ -121,8 +121,21 @@ table.rt td{border:0;padding:2px 3px;white-space:nowrap}table.rt td.hint{width:1
 .sline{font-size:14px;margin:3px 0}
 .room-r{gap:4px;margin:3px 0;font-size:13px;flex-wrap:wrap;border-bottom:1px dotted var(--line);padding-bottom:3px}.room-r input{padding:3px 5px}.room-r span{white-space:nowrap}
 .frule{gap:5px;margin:4px 0;padding:5px;border:1px dashed var(--line);border-radius:10px;background:#fffdf7}
-label.paid{display:inline-flex;align-items:center;gap:3px;cursor:pointer;border-radius:8px;padding:1px 6px;background:#fde3dc;color:#a3301a;font-size:13px}
+label.paid{display:inline-flex;align-items:center;gap:3px;cursor:pointer;border-radius:8px;padding:3px 7px;white-space:nowrap;background:#fde3dc;color:#a3301a;font-size:13px}
 label.paid.on{background:#dff3e4;color:#1f6a35}
+/* people list: 한 사람 = 두 줄, 좌우 스크롤 없이 */
+.plist{margin-top:6px}
+.prow{display:grid;grid-template-columns:30px repeat(8,minmax(0,1fr));gap:6px 8px;align-items:start;padding:8px 4px;border-bottom:1px solid var(--line)}
+.prow:nth-child(odd):not(.phead){background:#fffaf0}
+.prow .c input,.prow .c select{width:100%}
+.prow .w2{grid-column:span 2}
+.prow .no{color:var(--muted);font-size:13px;padding-top:6px;grid-row:span 2}
+.prow .no2{display:none}
+.prow .del{text-align:right}
+.phead{position:sticky;top:56px;z-index:4;background:var(--soft);border-radius:10px;font-size:13px;font-weight:600;padding:5px 4px;gap:2px 8px}
+.phead>div:nth-child(9){display:none}.phead>div:first-child{grid-row:span 2}
+@media (max-width:820px){.phead{display:none}.prow{grid-template-columns:repeat(2,minmax(0,1fr))}.prow .no{grid-row:auto;grid-column:1/-1;padding:0}.prow .w2{grid-column:span 2}
+ .prow .c::before{content:attr(data-l);display:block;font-size:11px;color:var(--muted)}.prow .del{grid-column:1/-1}}
 /* supplies */
 .steps{display:flex;flex-wrap:wrap;gap:2px}
 .steps button{font-size:12px;padding:1px 6px;border-radius:7px;background:#fff;border-color:#cdbda6;color:var(--muted)}
@@ -623,11 +636,16 @@ function vPeople(){const L=R.people,m=L.filter(p=>p.gender==='남').length,f=L.f
   return `${vFee()}<div class="card"><div class="row"><h2 style="margin:0">🙋 참석인원 (${L.length})</h2><span class="sp"></span><input id="pq" placeholder="🔍 이름·소속 찾기" style="width:150px"><button data-act="xls">📊 엑셀·CSV 불러오기</button><button data-act="pExport">⬇️ CSV 내보내기</button><button class="pri" data-act="pAdd">+ 한 명 추가</button></div>
   <div class="row hint" style="margin:6px 0">남 ${m} · 여 ${f} · 보험 미가입 ${L.filter(p=>p.ins==='미가입').length} · 사역자 ${L.filter(p=>p.prep==='min').length} · 준비인원 ${L.filter(p=>p.prep==='staff').length} · 찬양팀 ${L.filter(p=>p.praise).length}</div>
   <p class="hint" style="margin:0 0 6px">구글폼·네이버폼 응답을 엑셀(.xlsx)이나 CSV로 받아서 ‘📊 엑셀·CSV 불러오기’로 올리면 한 번에 추가돼요. 오른쪽 <b>구분</b>에서 사역자·준비인원을, <b>찬양팀</b> 칸으로 찬양팀을 지정해요.</p>
-  ${L.length?`<div class="hs" data-keep="people"><table class="t" id="ptbl"><tr><th>#</th><th>이름</th><th>성별</th><th>나이</th><th>소속</th><th>사는 곳</th><th>핸드폰번호</th><th>보험</th><th>들어오는 시간</th><th>나가는 시간</th><th>구분</th><th>직책</th><th>찬양팀</th><th class="num">회비</th><th>입금확인</th><th></th></tr>
-  ${L.map((p,i)=>{const k='people#'+p.id;return `<tr data-s="${esc((p.name||'')+' '+(p.org||'')+' '+(p.phone||''))}"><td class="hint">${i+1}</td><td>${inp(k,'name',{st:'min-width:70px'})}</td><td>${sel(k,'gender',['남','여'],{blank:'-',st:'width:52px'})}</td><td>${inp(k,'age',{st:'width:50px'})}</td><td>${inp(k,'org',{st:'min-width:80px'})}</td><td>${inp(k,'addr',{st:'min-width:80px'})}</td><td>${inp(k,'phone',{type:'tel',st:'min-width:115px'})}</td><td>${sel(k,'ins',['가입','미가입'],{blank:'-',st:'width:72px'})}</td><td>${inp(k,'inT',{ph:'예) 1일차 18시',st:'min-width:95px'})}</td><td>${inp(k,'outT',{ph:'예) 3일차 점심후',st:'min-width:95px'})}</td>
-  <td>${sel(k,'prep',[['min','사역자'],['staff','준비인원']],{blank:'일반',rr:1,st:'width:88px'})}</td><td>${p.prep?sel(k,'role',R.cfg[p.prep==='min'?'minRoles':'staffRoles'],{blank:'—',st:'width:80px'}):''}</td><td style="text-align:center"><input type="checkbox" data-o="${k}" data-k="praise" data-rr ${p.praise?'checked':''}></td>${(()=>{const fe=feeOf(p),bk=feeBooked(p.id);return `<td class="num" style="min-width:110px">${inp(k,'fee',{n:1,rr:1,ph:fe.amt!=null&&!(p.fee!=null&&p.fee!=='')?won(fe.amt):'금액',st:'width:100px;text-align:right'})}<div class="hint" style="font-size:11px">${esc(fe.why)}</div></td>
-  <td style="text-align:center;white-space:nowrap"><label class="paid ${p.paid?'on':''}"><input type="checkbox" data-o="${k}" data-k="paid" data-rr ${p.paid?'checked':''}> ${p.paid?'입금':'미입금'}</label>${p.paid&&p.paidDate?`<div class="hint" style="font-size:11px">${esc(p.paidDate.slice(5).replace('-','/'))}${bk?' · 수입 ✔':' · 회계 대기'}</div>`:''}</td>`})()}<td><button class="x" data-act="pDel" data-v="${p.id}">🗑</button></td></tr>`}).join('')}</table></div>`:'<div class="empty">참석인원을 추가하거나 엑셀로 불러와요</div>'}</div>`}
-function filterPeople(q){q=(q||'').trim();$$('#ptbl tr[data-s]').forEach(tr=>tr.style.display=!q||tr.dataset.s.includes(q)?'':'none')}
+  ${L.length?`<div id="ptbl" class="plist"><div class="prow phead"><div>#</div><div>이름</div><div>성별</div><div>나이</div><div>소속</div><div>사는 곳</div><div class="w2">핸드폰번호</div><div>보험</div>
+   <div></div><div>들어오는 시간</div><div>나가는 시간</div><div>구분</div><div>직책</div><div>찬양팀</div><div>회비</div><div>입금확인</div><div></div></div>
+  ${L.map((p,i)=>{const k='people#'+p.id,fe=feeOf(p),bk=feeBooked(p.id);return `<div class="prow" data-s="${esc((p.name||'')+' '+(p.org||'')+' '+(p.phone||''))}"><div class="no">${i+1}</div>
+   <div class="c" data-l="이름">${inp(k,'name',{ph:'이름'})}</div><div class="c" data-l="성별">${sel(k,'gender',['남','여'],{blank:'-'})}</div><div class="c" data-l="나이">${inp(k,'age')}</div><div class="c" data-l="소속">${inp(k,'org')}</div><div class="c" data-l="사는 곳">${inp(k,'addr')}</div><div class="c w2" data-l="핸드폰번호">${inp(k,'phone',{type:'tel'})}</div><div class="c" data-l="보험">${sel(k,'ins',['가입','미가입'],{blank:'-'})}</div>
+   <div class="no2"></div><div class="c" data-l="들어오는 시간">${inp(k,'inT',{ph:'예) 1일차 18시'})}</div><div class="c" data-l="나가는 시간">${inp(k,'outT',{ph:'예) 3일차 점심후'})}</div><div class="c" data-l="구분">${sel(k,'prep',[['min','사역자'],['staff','준비인원']],{blank:'일반',rr:1})}</div><div class="c" data-l="직책">${p.prep?sel(k,'role',R.cfg[p.prep==='min'?'minRoles':'staffRoles'],{blank:'—'}):'<span class="hint">—</span>'}</div>
+   <div class="c" data-l="찬양팀"><label class="chip tog ${p.praise?'on':''}" style="margin:0"><input type="checkbox" data-o="${k}" data-k="praise" data-rr ${p.praise?'checked':''} style="display:none">🎸 ${p.praise?'찬양팀':'아니요'}</label></div>
+   <div class="c" data-l="회비">${inp(k,'fee',{n:1,rr:1,ph:fe.amt!=null&&!(p.fee!=null&&p.fee!=='')?won(fe.amt):'금액',st:'text-align:right'})}<div class="hint" style="font-size:11px">${esc(fe.why)}</div></div>
+   <div class="c" data-l="입금확인"><label class="paid ${p.paid?'on':''}"><input type="checkbox" data-o="${k}" data-k="paid" data-rr ${p.paid?'checked':''}> ${p.paid?'입금':'미입금'}</label>${p.paid&&p.paidDate?`<div class="hint" style="font-size:11px">${esc(p.paidDate.slice(5).replace('-','/'))}${bk?' · 수입 ✔':' · 회계 대기'}</div>`:''}</div>
+   <div class="c del"><button class="x" data-act="pDel" data-v="${p.id}" title="지우기">🗑</button></div></div>`}).join('')}</div>`:'<div class="empty">참석인원을 추가하거나 엑셀로 불러와요</div>'}</div>`}
+function filterPeople(q){q=(q||'').trim();$$('#ptbl [data-s]').forEach(tr=>tr.style.display=!q||tr.dataset.s.includes(q)?'':'none')}
 function filterPool(q){q=(q||'').trim();SUB.poolQ=q;$$('.pool .chip').forEach(c=>c.style.display=!q||c.textContent.includes(q)?'':'none')}
 
 /* ---------- 차량배정 ---------- */
