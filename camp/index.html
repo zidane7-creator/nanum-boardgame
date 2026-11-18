@@ -178,6 +178,14 @@ table.ptab .mvr select,table.ptab .mvr input{width:auto;font-size:13px;padding:3
 table.spk{width:max-content;min-width:100%}table.spk td input,table.spk td select{width:auto}
 .fsg{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}.fsg>div{background:var(--soft);border-radius:10px;padding:6px 8px}.fsg b{display:block;margin-bottom:4px}
 .fsg .mv{background:none;padding:0}.fsg .mvr{flex-wrap:nowrap}.fsg .mvr select,.fsg .mvr input{width:auto;font-size:13px;padding:3px 4px}
+.progs{display:grid;grid-template-columns:1fr;gap:12px}
+.box.pgbox .pgf{display:grid;grid-template-columns:repeat(3,minmax(110px,170px)) minmax(240px,1.3fr) minmax(220px,1fr);gap:8px;align-items:start}
+.box.pgbox .pg2{display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-top:6px}
+@media (max-width:900px){.box.pgbox .pgf{grid-template-columns:1fr 1fr}.box.pgbox .pgf .pgw{grid-column:1/-1}.box.pgbox .pg2{grid-template-columns:1fr}}
+.ttc{display:flex;align-items:stretch}.ttc input{flex:1}
+select.ttp{border:0;border-left:1px dashed #d8c9b0;border-radius:0;background:transparent;font-size:12px;padding:0 2px;width:84px;color:var(--muted)}
+select.ttp.same{color:transparent}select.ttp.same:focus{color:var(--ink)}
+table.spt{width:max-content;min-width:100%}table.spt td input{width:auto}
 /* supplies */
 .steps{display:flex;flex-wrap:wrap;gap:2px}
 .steps button{font-size:12px;padding:1px 6px;border-radius:7px;background:#fff;border-color:#cdbda6;color:var(--muted)}
@@ -312,7 +320,7 @@ function fill(R){
   d('acc',{});if(!R.acc.cats)R.acc.cats={in:['수련회비','후원','지원금','기타'],out:['준비(데코)','준비(간식)','준비(프로그램)','장소비','강사비','식사','간식','기타']};if(!R.acc.items)R.acc.items=[];
   d('cars',{});if(!R.cars.types)R.cars.types={in:['버스 본대','버스 후발대','자차 본대','자차 후발대','스탭차'],out:['버스 본대','버스 후발대','자차 본대','자차 후발대','스탭차']};if(!R.cars.list)R.cars.list=[];
   d('grp',{});const g=R.grp;if(!g.roles)g.roles=['부조장','서기'];if(g.useLeader==null)g.useLeader=true;if(g.useStaff==null)g.useStaff=true;if(!g.list)g.list=[];
-  d('rooms',[]);d('notices',[]);d('fullStd',{});
+  d('rooms',[]);d('notices',[]);d('fullStd',{});d('spaces',[]);if(!R.tt.places)R.tt.places={};
   d('fee',{});if(R.fee.base===undefined)R.fee.base=null;if(!R.fee.rules)R.fee.rules=[];
   R.cars.list.forEach(c=>{if(c.time&&!/^\d{2}:\d{2}$/.test(c.time)){const dm=String(c.time).match(/(\d+)\s*일차/),tm=String(c.time).match(/(\d{1,2})\s*[:시]\s*(\d{2})?/);if(dm&&c.day==null)c.day=+dm[1]-1;c.time=tm?pad(+tm[1])+':'+pad(+(tm[2]||0)):''}});
   return R}
@@ -374,16 +382,16 @@ function addSel(to,cands){return `<select data-act="assign" data-to="${to}" styl
 function poolHTML(cands,label){return `<div class="pool" data-drop="pool"><div class="row" style="margin-bottom:4px"><b class="j">🙋 ${esc(label)} (${cands.length})</b><span class="hint">이름을 끌어다 놓거나, 각 칸의 ‘+ 추가’로 넣어요</span><input id="poolQ" placeholder="이름 찾기" style="margin-left:auto;width:120px" value="${esc(SUB.poolQ||'')}"></div>${cands.length?cands.slice().sort(byName).map(p=>CHIP(p.id,'pool')).join(''):'<span class="hint">모두 배정했어요 👏</span>'}</div>`}
 
 /* ============ 메뉴 ============ */
-const TABS=[['people','🙋 참석인원'],['staff','👥 준비인원'],['praise','🎸 찬양팀'],['minutes','📝 회의록'],['sched','📅 일정'],['theme','💡 주제정하기'],['venue','🏕️ 장소탐색'],['speaker','🎤 강사탐색'],['program','🎲 프로그램'],['tt','⏰ 시간표'],['confirm','✅ 확정사항'],['sup','📦 준비물'],['chk','☑️ 체크리스트'],['files','📁 자료실'],['acc','💰 회계'],['cars','🚌 차량배정'],['grp','🧩 조배정'],['rooms','🛏️ 방배정'],['notice','📢 공지문']];
+const TABS=[['people','🙋 참석인원'],['staff','👥 준비인원'],['praise','🎸 찬양팀'],['minutes','📝 회의록'],['sched','📅 일정'],['theme','💡 주제정하기'],['venue','🏕️ 장소탐색'],['spaces','🏠 사용공간'],['speaker','🎤 강사탐색'],['program','🎲 프로그램'],['tt','⏰ 시간표'],['confirm','✅ 확정사항'],['sup','📦 준비물'],['chk','☑️ 체크리스트'],['files','📁 자료실'],['acc','💰 회계'],['cars','🚌 차량배정'],['grp','🧩 조배정'],['rooms','🛏️ 방배정'],['notice','📢 공지문']];
 
 function render(){
   const ae=document.activeElement,key=ae&&(ae.dataset&&ae.dataset.o!=null?'o:'+ae.dataset.o+'|'+ae.dataset.k:ae.id?'#'+ae.id:null),selS=ae&&ae.selectionStart,keep={};
   $$('[data-keep]').forEach(e=>keep[e.dataset.keep]=[e.scrollLeft,e.scrollTop]);
-  const app=$('#app');app.classList.toggle('wide',!!R&&(TAB==='people'||TAB==='speaker'));
+  const app=$('#app');app.classList.toggle('wide',!!R&&['people','speaker','program','spaces'].includes(TAB));
   if(!R){app.innerHTML=vHome();return}
   const dd=R.start?diffD(todayStr(),R.start):null;
   if(TAB==='cars'||TAB==='people'){let n=0;while(n<3&&syncCars())n++;if(n)save()}
-  const V={staff:vStaff,praise:vPraise,minutes:vMinutes,sched:vSched,theme:vTheme,venue:vVenue,speaker:vSpeaker,program:vProgram,tt:vTT,confirm:vConfirm,sup:vSup,chk:vChk,files:vFiles,acc:vAcc,people:vPeople,cars:vCars,grp:vGrp,rooms:vRooms,notice:vNotice}[TAB]||vPeople;
+  const V={staff:vStaff,praise:vPraise,minutes:vMinutes,sched:vSched,theme:vTheme,venue:vVenue,spaces:vSpaces,speaker:vSpeaker,program:vProgram,tt:vTT,confirm:vConfirm,sup:vSup,chk:vChk,files:vFiles,acc:vAcc,people:vPeople,cars:vCars,grp:vGrp,rooms:vRooms,notice:vNotice}[TAB]||vPeople;
   app.innerHTML=`<div class="head no-print"><a class="btn" href="./">☰ 수련회 목록</a><h1 class="j">${esc(R.name)}</h1>${dd!=null?`<span class="dday">${dd>0?'D-'+dd:dd===0?'D-DAY':dd>=-(+R.nights)?'수련회 중':'끝났어요'}</span>`:''}<span class="hint">${esc(campRange()||'날짜 미정')}</span><button class="sm" data-act="campSet">⚙️ 설정·백업</button><span class="sync" id="sync">✔ 이 기기에 저장됨</span></div>
   <nav class="tabs">${TABS.map(([k,l])=>`<button data-act="tab" data-v="${k}" class="${k===TAB?'on':''}">${l}</button>`).join('')}</nav>
   <div id="view">${V()}</div>`;
@@ -571,27 +579,35 @@ function vSpeaker(){const L=R.speakers,cnt={};L.forEach(s=>cnt[s.status||'후보
   <div class="row" style="margin-top:8px;gap:4px"><b>🔎 상태</b><span class="chip tog ${!SUB.spkF?'on':''}" data-act="spkF" data-v="">전체 ${L.length}</span>${SPK_ST.map(s=>`<span class="chip tog ${SUB.spkF===s?'on':''}" data-act="spkF" data-v="${s}" style="${cnt[s]?'':'opacity:.45'}">${s} ${cnt[s]||0}</span>`).join('')}</div>
   ${L.length?`<div class="hs" style="margin-top:10px"><table class="t spk"><tr><th>이름</th><th>맡을 순서</th><th>소속</th><th>연락처</th><th>주제·분야</th><th>사례비</th><th>상태</th><th>가능 일정</th><th style="min-width:160px">메모</th><th></th></tr>${L.filter(s=>!SUB.spkF||(s.status||'후보')===SUB.spkF).map(s=>{const k='speakers#'+s.id;return `<tr><td>${inp(k,'name',{st:'min-width:100px'})}</td><td>${(()=>{const opts=R.spkSlots.map(x=>[x.id,(x.kind==='집회'?'⛪ ':'🎤 ')+x.name]);if(s.role&&!R.spkSlots.some(x=>x.id===s.role))opts.push([s.role,s.role]);return sel(k,'role',opts,{blank:'— 맡을 순서 —',st:'min-width:150px'})})()}</td><td>${inp(k,'org',{st:'width:110px'})}</td><td>${inp(k,'phone',{st:'width:125px'})}</td><td>${inp(k,'topic',{st:'width:140px'})}</td><td>${inp(k,'fee',{n:1,st:'width:100px'})}</td><td>${sel(k,'status',SPK_ST,{rr:1,st:'min-width:110px'})}</td><td>${inp(k,'avail',{st:'width:120px'})}</td><td>${inp(k,'memo',{st:'width:200px'})}</td><td><button class="x" data-act="del" data-c="speakers" data-v="${s.id}">🗑</button></td></tr>`}).join('')}</table></div>`:'<div class="empty" style="margin-top:10px">강사 후보를 추가해서 섭외 상황을 정리해요</div>'}</div>`}
 
+/* ---------- 사용공간 ---------- */
+const spName=id=>{const x=R.spaces.find(y=>y.id===id);return x?(x.name||'(이름 없음)'):''};
+function spUse(id){const tt=Object.values(R.tt.places||{}).filter(v=>v===id).length,pg=R.programs.filter(p=>(p.spaces||[]).includes(id)).length;return[tt,pg]}
+function vSpaces(){const L=R.spaces;
+  return `<datalist id="spUse">${['예배당','숙소','프로그램','식당','세미나실','회의실','스탭룸','창고','운동장'].map(x=>`<option value="${x}">`).join('')}</datalist><datalist id="spUser">${['전체','형제','자매','스탭','사역자','찬양팀'].map(x=>`<option value="${x}">`).join('')}</datalist>
+  <div class="card"><div class="row"><h2 style="margin:0">🏠 사용공간</h2><span class="hint">수련회 장소에서 우리가 쓸 수 있는 공간을 정리해요. 여기 적은 공간은 [시간표]와 [프로그램]에서 골라 쓸 수 있어요.</span><span class="sp"></span><button class="pri" data-act="spAdd">+ 공간 추가</button></div>
+  ${L.length?`<div class="hs" style="margin-top:10px"><table class="t spt"><tr><th>장소명</th><th>위치</th><th>용도</th><th>사용자</th><th>인원</th><th>사용가능시간</th><th>메모</th><th>쓰이는 곳</th><th></th></tr>
+   ${L.map(x=>{const k='spaces#'+x.id,[tt,pg]=spUse(x.id);return `<tr><td>${inp(k,'name',{ph:'예) OO홀',st:'width:130px;font-weight:600'})}</td><td>${inp(k,'loc',{ph:'예) 본관 2층',st:'width:120px'})}</td><td>${inp(k,'use',{ph:'예) 예배당',list:'spUse',st:'width:110px'})}</td><td>${inp(k,'user',{ph:'예) 전체',list:'spUser',st:'width:90px'})}</td><td>${inp(k,'cap',{ph:'예) 100명',st:'width:80px'})}</td><td>${inp(k,'time',{ph:'예) 새벽2시까지',st:'width:150px'})}</td><td>${inp(k,'memo',{st:'width:200px'})}</td><td class="hint" style="white-space:nowrap">${tt?`⏰ 시간표 ${tt}칸`:''}${tt&&pg?' · ':''}${pg?`🎲 프로그램 ${pg}개`:''}${!tt&&!pg?'-':''}</td><td><button class="sm" data-act="mvUp" data-c="spaces" data-v="${x.id}" title="위로">↑</button><button class="x" data-act="spDel" data-v="${x.id}" title="지우기">🗑</button></td></tr>`}).join('')}</table></div>`:'<div class="empty" style="margin-top:10px">‘+ 공간 추가’로 예배당·숙소·프로그램실 등을 적어요</div>'}</div>`}
+/* 공간 여러 개 고르기 (프로그램 장소) */
+function SPC(spec,key){const o=objOf(spec)||{},arr=o[key]||[];return `<div class="who">${arr.map(id=>`<span class="chip p">🏠 ${esc(spName(id)||'(지운 공간)')}<button class="x" data-act="rmFrom" data-o="${spec}" data-k="${key}" data-v="${id}">×</button></span>`).join('')}<select data-act="addTo" data-o="${spec}" data-k="${key}"><option value="">+ 사용공간에서 고르기</option>${R.spaces.filter(x=>!arr.includes(x.id)).map(x=>`<option value="${x.id}">${esc(x.name||'(이름 없음)')}${x.loc?' · '+esc(x.loc):''}${x.use?' · '+esc(x.use):''}</option>`).join('')}</select>${R.spaces.length?'':'<span class="hint">[🏠 사용공간]에 먼저 공간을 적어 주세요</span>'}</div>`}
 /* ---------- 프로그램 ---------- */
 function vProgram(){const cands=prepList().length?prepList():R.people;
   return `<div class="card"><div class="row"><h2 style="margin:0">🎲 프로그램</h2><span class="sp"></span><button class="pri" data-act="add" data-c="programs">+ 프로그램</button></div><p class="hint">여기에 적은 프로그램 이름은 [시간표]에서 골라 쓸 수 있어요.</p></div>
-  ${R.programs.length?`<div class="grid">${R.programs.map(p=>{const k='programs#'+p.id;return `<div class="box"><div class="bh">${inp(k,'name',{ph:'프로그램 이름 (예: 레크리에이션)',st:'font-weight:600'})}<button class="x" data-act="del" data-c="programs" data-v="${p.id}" title="지우기">🗑</button></div>
-   <div class="f2 two"><label class="fld">언제${inp(k,'when',{ph:'예) 1일차 저녁'})}</label><label class="fld">소요 시간${inp(k,'dur',{ph:'예) 90분'})}</label><label class="fld">장소${inp(k,'place')}</label><label class="fld">예산 (원)${inp(k,'budget',{n:1})}</label></div>
-   <div class="fld" style="margin-top:4px">담당${WHO(k,'who',cands,'+ 담당')}</div>
-   <label class="fld" style="margin-top:4px">내용·진행 순서${ta(k,'content','진행 방법, 순서',4)}</label>
-   <label class="fld">필요한 것${ta(k,'need','준비물, 음향, 인원 등',2)}</label></div>`}).join('')}</div>`:'<div class="card"><div class="empty">프로그램을 추가해 내용을 정리해요</div></div>'}`}
+  ${R.programs.length?`<div class="progs">${R.programs.map(p=>{const k='programs#'+p.id;return `<div class="box pgbox"><div class="bh">${inp(k,'name',{ph:'프로그램 이름 (예: 레크리에이션)',st:'font-weight:600;font-size:17px'})}<button class="sm" data-act="mvUp" data-c="programs" data-v="${p.id}" title="위로">↑</button><button class="x" data-act="del" data-c="programs" data-v="${p.id}" title="지우기">🗑</button></div>
+   <div class="pgf"><label class="fld">언제${inp(k,'when',{ph:'예) 1일차 저녁'})}</label><label class="fld">소요 시간${inp(k,'dur',{ph:'예) 90분'})}</label><label class="fld">예산 (원)${inp(k,'budget',{n:1})}</label><div class="fld pgw">🏠 장소 (여러 개 가능)${SPC(k,'spaces')}${p.place?`<span class="hint">예전에 적은 장소: ${esc(p.place)}</span>`:''}</div><div class="fld pgw">담당${WHO(k,'who',cands,'+ 담당')}</div></div>
+   <div class="pg2"><label class="fld">내용·진행 순서${ta(k,'content','진행 방법, 순서',6)}</label><label class="fld">필요한 것${ta(k,'need','준비물, 음향, 인원 등',6)}</label></div></div>`}).join('')}</div>`:'<div class="card"><div class="empty">프로그램을 추가해 내용을 정리해요</div></div>'}`}
 
 /* ---------- 시간표 ---------- */
 function slots(){const toM=s=>{const[h,m]=String(s).split(':').map(Number);return h*60+(m||0)};let f=toM(R.tt.from),t=toM(R.tt.to);if(t<=f)t=f+60*18;const L=[];for(let m=f;m<t;m+=30)L.push(pad(Math.floor(m/60)%24)+':'+pad(m%60));return L}
 function vTT(){const days=(+R.nights||0)+1,S=slots(),C=R.tt.cells;
   const head=Array.from({length:days},(_,d)=>`<th>${d+1}일차${R.start?' · '+fmtD(addD(R.start,d)):''}</th>`).join('');
   const times=Array.from({length:S.length+1},(_,i)=>{const m=S[0].split(':').map(Number);const x=m[0]*60+m[1]+i*30;return pad(Math.floor(x/60)%24)+':'+pad(x%60)});
-  const body=S.map((s,i)=>`<tr><td class="tm ${s.endsWith(':00')?'h':''}">${s}~${times[i+1]}</td>${Array.from({length:days},(_,d)=>{const v=C[d+'-'+s]||'',pv=i?C[d+'-'+S[i-1]]||'':'';const cont=v&&v===pv;return `<td class="${cont?'cont':''}" style="${v?`background:hsl(${hue(v)},70%,90%)`:''}"><input data-o="tt.cells" data-k="${d}-${s}" data-rr list="progList" value="${esc(v)}"></td>`}).join('')}</tr>`).join('');
+  const body=S.map((s,i)=>`<tr><td class="tm ${s.endsWith(':00')?'h':''}">${s}~${times[i+1]}</td>${Array.from({length:days},(_,d)=>{const v=C[d+'-'+s]||'',pv=i?C[d+'-'+S[i-1]]||'':'';const cont=v&&v===pv;const pl=(R.tt.places||{})[d+'-'+s]||'',ppl=i?(R.tt.places||{})[d+'-'+S[i-1]]||'':'';return `<td class="${cont?'cont':''}" style="${v?`background:hsl(${hue(v)},70%,90%)`:''}"><div class="ttc"><input data-o="tt.cells" data-k="${d}-${s}" data-rr list="progList" value="${esc(v)}">${R.spaces.length?`<select data-o="tt.places" data-k="${d}-${s}" data-rr class="ttp ${cont&&pl===ppl?'same':''}" title="장소"><option value="">장소</option>${R.spaces.map(x=>`<option value="${x.id}"${pl===x.id?' selected':''}>${esc(x.name||'(이름 없음)')}</option>`).join('')}</select>`:''}</div></td>`}).join('')}</tr>`).join('');
   return `<datalist id="progList">${[...new Set([...R.programs.map(p=>p.name).filter(Boolean),'기상','아침 식사','점심 식사','저녁 식사','간식','자유시간','개회예배','집회','소그룹 나눔','레크리에이션','세면·정리','취침','폐회예배','이동','출발','도착','QT'])].map(n=>`<option value="${esc(n)}">`).join('')}</datalist>
   <div class="card"><div class="row"><h2 style="margin:0">⏰ 시간표</h2><span class="sp"></span><button data-act="ttCopy">📋 텍스트로 복사</button><button data-act="print">🖨️ 인쇄</button></div>
    <div class="row" style="margin-top:8px"><label class="fld">시작일${inp('.','start',{type:'date',rr:1})}</label><label class="fld">기간${sel('.','nights',[0,1,2,3,4,5].map(n=>[n,n+'박 '+(n+1)+'일']),{rr:1})}</label><label class="fld">하루 시작${inp('tt','from',{type:'time',rr:1})}</label><label class="fld">하루 끝${inp('tt','to',{type:'time',rr:1})}</label></div>
-   <p class="hint">30분 단위 칸에 일정을 적어요. 이어지는 칸에 같은 내용을 적으면 한 덩어리로 묶여 보여요. [프로그램]에 적은 이름도 골라 쓸 수 있어요.</p>
+   <p class="hint">30분 단위 칸에 일정을 적어요. 이어지는 칸에 같은 내용을 적으면 한 덩어리로 묶여 보여요. [프로그램]에 적은 이름도 골라 쓸 수 있어요. ${R.spaces.length?'칸 오른쪽의 ‘장소’에서 [🏠 사용공간]을 골라요. 일정을 고르면 그 프로그램의 첫 장소가 저절로 들어가요.':'[🏠 사용공간]에 공간을 적으면 칸마다 장소도 고를 수 있어요.'}</p>
    <div class="hs" data-keep="tt"><table class="tt"><tr><th>시간</th>${head}</tr>${body}</table></div></div>`}
-function ttText(){const days=(+R.nights||0)+1,S=slots(),C=R.tt.cells;let out=`⏰ ${R.name} 시간표\n`;for(let d=0;d<days;d++){out+=`\n[${d+1}일차${R.start?' '+fmtD(addD(R.start,d)):''}]\n`;let i=0;while(i<S.length){const v=C[d+'-'+S[i]];if(!v){i++;continue}let j=i;while(j+1<S.length&&C[d+'-'+S[j+1]]===v)j++;const e=S[j].split(':').map(Number),em=e[0]*60+e[1]+30;out+=`${S[i]}~${pad(Math.floor(em/60)%24)}:${pad(em%60)} ${v}\n`;i=j+1}}return out}
+function ttText(){const days=(+R.nights||0)+1,S=slots(),C=R.tt.cells;let out=`⏰ ${R.name} 시간표\n`;for(let d=0;d<days;d++){out+=`\n[${d+1}일차${R.start?' '+fmtD(addD(R.start,d)):''}]\n`;let i=0;while(i<S.length){const v=C[d+'-'+S[i]];if(!v){i++;continue}let j=i;while(j+1<S.length&&C[d+'-'+S[j+1]]===v)j++;const e=S[j].split(':').map(Number),em=e[0]*60+e[1]+30,pl=spName((R.tt.places||{})[d+'-'+S[i]]);out+=`${S[i]}~${pad(Math.floor(em/60)%24)}:${pad(em%60)} ${v}${pl?' @'+pl:''}\n`;i=j+1}}return out}
 
 /* ---------- 확정사항 ---------- */
 const CONF_A=[['sched','일정'],['place','장소'],['theme','주제'],['verse','주제말씀'],['song','주제찬양']],CONF_B=[['tt','시간표'],['praise','찬양팀'],['staff','준비인원'],['snack','야식']];
@@ -1068,6 +1084,9 @@ const ACT={
   spkF:t=>{SUB.spkF=t.dataset.v;render()},
   fullAll:()=>{const L=R.people.filter(p=>p.full==='풀참');if(!L.length){toast('풀참에 체크된 사람이 없어요');return}if(!confirm(`풀참인 ${L.length}명의 들어올 때·나갈 때를 풀참 기준으로 바꿀까요?`))return;L.forEach(applyFull);save();render();toast(`${L.length}명에게 적용했어요`)},
   pFit:t=>{SUB.pFit=t.dataset.v==='1';try{localStorage.setItem('camp-pfit',SUB.pFit?'1':'0')}catch(_){}render()},
+  spAdd:()=>{const it={id:uid()};R.spaces.push(it);save();render();setTimeout(()=>{const e=$(`[data-o="spaces#${it.id}"][data-k="name"]`);if(e){e.focus();e.scrollIntoView({block:'center'})}},30)},
+  spDel:t=>{const x=R.spaces.find(y=>y.id===t.dataset.v),[tt,pg]=spUse(x.id);if(!confirm(`‘${x.name||'공간'}’을 지울까요?${tt||pg?` 시간표 ${tt}칸·프로그램 ${pg}개에서도 빠져요.`:''}`))return;
+    R.spaces=R.spaces.filter(y=>y!==x);for(const k in R.tt.places)if(R.tt.places[k]===x.id)delete R.tt.places[k];R.programs.forEach(p=>{if(p.spaces)p.spaces=p.spaces.filter(i=>i!==x.id)});save();render()},
   pSort:t=>{const k=t.dataset.v;if(SUB.ps===k){if(SUB.pd==='desc'){SUB.ps='';SUB.pd=''}else SUB.pd='desc'}else{SUB.ps=k;SUB.pd='asc'}render()},
   pSortDir:()=>{SUB.pd=SUB.pd==='desc'?'asc':'desc';render()},
   pfClear:()=>{SUB.pf={};render()},
@@ -1150,6 +1169,7 @@ document.addEventListener('change',e=>{const t=e.target;
   if(t.dataset.o.startsWith('people#')&&t.dataset.k==='full'&&t.checked){const p=objOf(t.dataset.o);const S=R.fullStd;if(['in','out'].some(d=>FS_F.some(f=>S[d+f]!=null&&S[d+f]!==''))){applyFull(p);save();toast(`✅ ${p.name||''} 풀참 기준 시각·이동방법을 넣었어요`)}}
   if(t.dataset.o.startsWith('people#')&&t.dataset.k==='advance'&&!t.checked){const p=objOf(t.dataset.o);if(String(p.inDay)==='-1'){p.inDay='0';save()}}
   if(t.dataset.o.startsWith('people#')&&t.dataset.k==='phone'){const p=objOf(t.dataset.o),f=fmtPhone(t.value);if(f!==t.value){t.value=f;p.phone=f;save()}}
+  if(t.dataset.o==='tt.cells'){const pg=R.programs.find(x=>x.name&&x.name===t.value.trim());const k=t.dataset.k;if(pg&&(pg.spaces||[]).length&&!(R.tt.places||{})[k]){R.tt.places[k]=pg.spaces[0];save()}}
   if(t.dataset.o.startsWith('people#')&&t.dataset.k==='prep'){const p=objOf(t.dataset.o);p.role=''}
   if(t.dataset.o.startsWith('people#')&&t.dataset.k==='payMethod'){const p=objOf(t.dataset.o),b=feeBooked(p.id);if(b)b.method=p.payMethod}
   if(t.dataset.o.startsWith('people#')&&t.dataset.k==='paid'){const p=objOf(t.dataset.o);p.paidDate=p.paid?todayStr():'';if(p.paid&&!p.payMethod)p.payMethod='계좌이체';if(p.paid&&feeOf(p).amt)toast(`💰 ${p.name||''} 입금확인 · [회계]에서 수입으로 넣을 수 있어요`)}
