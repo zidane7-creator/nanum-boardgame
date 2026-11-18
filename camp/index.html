@@ -153,6 +153,7 @@ select.pm{font-size:12px;padding:1px 3px;margin-top:3px;width:100%}
 .prow.phi{background:#fff1cc!important;outline:2px solid var(--gold)}
 .chip[data-pid]{cursor:pointer}
 table.pinfo th{width:96px;background:var(--soft);position:static}
+.snk{display:flex;flex-direction:column;gap:4px}.snk label{gap:6px}
 /* supplies */
 .steps{display:flex;flex-wrap:wrap;gap:2px}
 .steps button{font-size:12px;padding:1px 6px;border-radius:7px;background:#fff;border-color:#cdbda6;color:var(--muted)}
@@ -274,7 +275,10 @@ function fill(R){
   if(!v.mealPP){v.rules.meal=RULE_DEF.meal.rows.map(([f,t,sc])=>({id:uid(),from:f,to:t,s:sc}));v.mealPP=1}
   d('speakers',[]);d('programs',[]);
   d('tt',{});if(!R.tt.from)R.tt.from='07:00';if(!R.tt.to)R.tt.to='24:00';if(!R.tt.cells)R.tt.cells={};
-  d('conf',{});CONF.forEach(([k])=>{if(!R.conf[k])R.conf[k]={v:'',ok:false}});
+  d('conf',{});if(R.conf.speaker&&!R.conf.speaker1)R.conf.speaker1=R.conf.speaker;CONF.forEach(([k])=>{if(!R.conf[k])R.conf[k]={v:'',ok:false}});
+  if(!R.conf.snack.days){R.conf.snack.days={};if(R.conf.snack.v){R.conf.snack.days[0]=R.conf.snack.v;R.conf.snack.v=''}}
+  /* 예전엔 ‘불러오기’로 복사해 둔 값 → 출처와 같으면 비워서 자동으로 */
+  d('spkFinal',{});
   d('sup',[]);d('chk',[]);d('folders',[]);d('files',[]);
   d('acc',{});if(!R.acc.cats)R.acc.cats={in:['수련회비','후원','지원금','기타'],out:['준비(데코)','준비(간식)','준비(프로그램)','장소비','강사비','식사','간식','기타']};if(!R.acc.items)R.acc.items=[];
   d('cars',{});if(!R.cars.types)R.cars.types={in:['버스 본대','버스 후발대','자차 본대','자차 후발대','스탭차'],out:['버스 본대','버스 후발대','자차 본대','자차 후발대','스탭차']};if(!R.cars.list)R.cars.list=[];
@@ -376,7 +380,7 @@ function vHome(){return `<div class="head"><h1 class="j">⛺ 수련회 준비 �
  <div class="card"><h2>새 수련회 만들기</h2><div class="f2">
   <label class="fld">수련회 이름<input id="nName" placeholder="예) 2027 청년부 겨울수련회"></label>
   <label class="fld">시작일<input id="nStart" type="date"></label>
-  <label class="fld">몇 박<select id="nNights">${[0,1,2,3,4,5].map(n=>`<option value="${n}"${n===2?' selected':''}>${n}박 ${n+1}일</option>`).join('')}</select></label>
+  <label class="fld">몇 박<select id="nNights">${[0,1,2,3,4,5,6,7].map(n=>`<option value="${n}"${n===2?' selected':''}>${n}박 ${n+1}일</option>`).join('')}</select></label>
  </div><div class="row" style="margin-top:10px"><button class="pri big" data-act="newCamp">⛺ 만들기</button><button data-act="bakIn">📂 백업 파일 불러오기</button></div>
  <p class="hint">스탭·찬양팀·회의록·일정(간트차트)·주제·장소 비교·강사·프로그램·시간표·확정사항·준비물·체크리스트·자료실·회계·참석인원·차량·조·방 배정을 수련회마다 따로 관리해요. 기록은 이 기기의 브라우저에 저장돼요.</p></div>
  <div class="card"><h2>📒 나의 수련회 (${CAMPS.length})</h2>${CAMPS.length?`<div class="camps">${CAMPS.sort((a,b)=>(b.updated||0)-(a.updated||0)).map(c=>{const dd=c.start?diffD(todayStr(),c.start):null;return `<div class="camp" data-act="openCamp" data-v="${c.id}"><div class="n">${esc(c.name)}</div><div class="hint">${c.start?esc(c.start.replace(/-/g,'.'))+` · ${c.nights}박 ${+c.nights+1}일`:'날짜 미정'}${dd!=null&&dd>=0?` · <b style="color:var(--accent)">D-${dd}</b>`:''}</div><div class="hint">참석 ${(c.people||[]).length}명 · 준비인원 ${(c.people||[]).filter(p=>p.prep).length}명</div></div>`}).join('')}</div>`:'<div class="empty">아직 만든 수련회가 없어요. 위에서 만들어 보세요 ⛺</div>'}</div>`}
@@ -443,7 +447,7 @@ function vSched(){
 /* ---------- 주제정하기 ---------- */
 function vTheme(){const t=R.theme,names=R.people.map(p=>p.name);
   return `<datalist id="pnames">${names.map(n=>`<option value="${esc(n)}">`).join('')}</datalist>
-  <div class="card" style="border-color:var(--accent)"><h2>🎯 수련회 주제</h2><div class="f2"><label class="fld" style="grid-column:1/-1">주제${inp('theme','title',{ph:'예) 다시, 처음 사랑으로'})}</label><label class="fld">주제말씀 (본문)${inp('theme','verse',{ph:'예) 요한계시록 2:4-5'})}</label><label class="fld" style="grid-column:span 2">말씀 내용${inp('theme','verseText',{ph:'말씀을 적어 두세요'})}</label></div></div>
+  <div class="card" style="border-color:var(--accent)"><h2>🎯 수련회 주제</h2><div class="f2"><label class="fld" style="grid-column:1/-1">주제${inp('theme','title',{ph:'예) 다시, 처음 사랑으로'})}</label><label class="fld">주제말씀 (본문)${inp('theme','verse',{ph:'예) 요한계시록 2:4-5'})}</label><label class="fld" style="grid-column:span 2">말씀 내용${inp('theme','verseText',{ph:'말씀을 적어 두세요'})}</label><label class="fld" style="grid-column:1/-1">🎵 주제찬양${inp('theme','song',{ph:'예) 처음 사랑 (곡명 · 아티스트)'})}</label></div><p class="hint" style="margin:6px 0 0">여기 적은 주제·주제말씀·주제찬양은 [확정사항]에 저절로 들어가요.</p></div>
   <div class="card"><div class="row"><h2 style="margin:0">💗 수련회에 대한 마음 나누기</h2><span class="sp"></span><button class="pri" data-act="add" data-c="theme.hearts">+ 마음 적기</button></div><p class="hint">이번 수련회를 위해 기도하며 받은 마음, 바라는 것, 우리 공동체에 필요한 것을 나눠요.</p>
   ${t.hearts.length?t.hearts.map(h=>`<div class="box" style="margin-bottom:8px"><div class="row">${inp('theme.hearts#'+h.id,'who',{ph:'누구',list:'pnames',st:'width:130px'})}<span class="sp"></span><button class="x" data-act="del" data-c="theme.hearts" data-v="${h.id}">🗑</button></div>${ta('theme.hearts#'+h.id,'text','받은 마음',3)}</div>`).join(''):'<div class="empty">아직 나눈 마음이 없어요</div>'}</div>
   <div class="card"><div class="row"><h2 style="margin:0">📖 관련 말씀 찾아보기</h2><span class="sp"></span><a class="btn" href="../bible/" target="_blank">성경 읽기에서 찾기 ↗</a><button class="pri" data-act="add" data-c="theme.verses">+ 말씀 추가</button></div>
@@ -484,8 +488,8 @@ const fmtN=(x,u)=>x==null||x===''?'∞':u==='원'?won(x):String(x);
 const wBadge=w=>`<span class="wsum badge ${w===100?'b-ok':'b-no'}" style="font-size:15px;padding:3px 10px">${w===100?'✔ 가중치 합계 100%':`⚠️ 가중치 합계 ${w}% · ${w<100?(100-w)+'% 모자라요':(w-100)+'% 넘어요'}`}</span>`;
 const venueTxt=v=>(v.name||'(이름 없음)')+(v.addr?' ('+v.addr+')':'');
 function setFinal(id){const old=R.venue.list.find(x=>x.id===R.venue.finalId);R.venue.finalId=id||'';const v=R.venue.list.find(x=>x.id===id);
-  if(v){R.conf.place.v=venueTxt(v);R.conf.place.ok=true;toast(`📌 ${v.name||'장소'}로 최종확정했어요 · [확정사항]에 들어갔어요`)}
-  else if(old&&R.conf.place.v===venueTxt(old)){R.conf.place.v='';R.conf.place.ok=false;toast('최종확정을 취소했어요')}
+  if(v){R.conf.place.v='';R.conf.place.ok=true;toast(`📌 ${v.name||'장소'}로 최종확정했어요 · [확정사항]에 들어갔어요`)}
+  else if(old){R.conf.place.ok=false;toast('최종확정을 취소했어요')}
   save();render()}
 function vVenue(){const V=R.venue,C=critList(),S=scores(),wsum=C.reduce((s,k)=>s+(+V.w[k.id]||0),0),E=expN(),SC={};S.forEach(o=>SC[o.v.id]=o);
   const ruleBox=k=>{const D=RULE_DEF[k],L=V.rules[k];return `<div class="rbox"><div class="row"><b class="j" style="font-size:16px">${D.name}</b><span class="hint">${D.sub} · 단위 ${D.unit}</span></div>
@@ -528,7 +532,9 @@ function vVenue(){const V=R.venue,C=critList(),S=scores(),wsum=C.reduce((s,k)=>s
 /* ---------- 강사탐색 ---------- */
 function vSpeaker(){const L=R.speakers,cnt={};L.forEach(s=>cnt[s.status||'후보']=(cnt[s.status||'후보']||0)+1);
   const cls=s=>s==='확정'||s==='수락'?'b-ok':s==='거절'?'b-no':s==='후보'?'':'b-mid';
-  return `<div class="card"><div class="row"><h2 style="margin:0">🎤 강사 섭외 현황</h2><span class="sp"></span>${SPK_ST.filter(s=>cnt[s]).map(s=>`<span class="badge ${cls(s)}">${s} ${cnt[s]}</span>`).join(' ')}<button class="pri" data-act="add" data-c="speakers">+ 강사 후보</button></div>
+  const F=R.spkFinal,fs=(k,l)=>`<label class="fld">${l}<select data-o="spkFinal" data-k="${k}" data-rr><option value="">— 아직 —</option>${L.filter(s=>s.status!=='거절'||F[k]===s.id).map(s=>`<option value="${s.id}"${F[k]===s.id?' selected':''}>${esc(s.name||'(이름 없음)')}${s.org?' · '+esc(s.org):''} (${esc(s.status||'후보')})</option>`).join('')}</select></label>`;
+  return `<div class="card" style="border-color:var(--green)"><h2>✅ 확정 강사</h2><div class="f2">${fs('preacher','⛪ 집회설교자')}${fs('s1','🎤 강사1')}${fs('s2','🎤 강사2')}</div><p class="hint" style="margin:6px 0 0">고르면 그 강사는 ‘확정’ 상태가 되고 [확정사항]의 집회설교자·강사1·강사2에 들어가요. 아래 표에 후보를 먼저 추가해 주세요.</p></div>
+  <div class="card"><div class="row"><h2 style="margin:0">🎤 강사 섭외 현황</h2><span class="sp"></span>${SPK_ST.filter(s=>cnt[s]).map(s=>`<span class="badge ${cls(s)}">${s} ${cnt[s]}</span>`).join(' ')}<button class="pri" data-act="add" data-c="speakers">+ 강사 후보</button></div>
   ${L.length?`<div class="hs" style="margin-top:10px"><table class="t"><tr><th>이름</th><th>맡을 순서</th><th>소속</th><th>연락처</th><th>주제·분야</th><th>사례비</th><th>상태</th><th>가능 일정</th><th style="min-width:160px">메모</th><th></th></tr>${L.map(s=>{const k='speakers#'+s.id;return `<tr><td>${inp(k,'name',{st:'min-width:80px'})}</td><td>${inp(k,'role',{ph:'예) 집회 설교, 특강',st:'min-width:110px'})}</td><td>${inp(k,'org')}</td><td>${inp(k,'phone',{st:'min-width:110px'})}</td><td>${inp(k,'topic')}</td><td>${inp(k,'fee',{n:1,st:'width:90px'})}</td><td>${sel(k,'status',SPK_ST,{rr:1})} </td><td>${inp(k,'avail',{st:'min-width:90px'})}</td><td>${inp(k,'memo')}</td><td><button class="x" data-act="del" data-c="speakers" data-v="${s.id}">🗑</button></td></tr>`}).join('')}</table></div>`:'<div class="empty" style="margin-top:10px">강사 후보를 추가해서 섭외 상황을 정리해요</div>'}</div>`}
 
 /* ---------- 프로그램 ---------- */
@@ -554,20 +560,28 @@ function vTT(){const days=(+R.nights||0)+1,S=slots(),C=R.tt.cells;
 function ttText(){const days=(+R.nights||0)+1,S=slots(),C=R.tt.cells;let out=`⏰ ${R.name} 시간표\n`;for(let d=0;d<days;d++){out+=`\n[${d+1}일차${R.start?' '+fmtD(addD(R.start,d)):''}]\n`;let i=0;while(i<S.length){const v=C[d+'-'+S[i]];if(!v){i++;continue}let j=i;while(j+1<S.length&&C[d+'-'+S[j+1]]===v)j++;const e=S[j].split(':').map(Number),em=e[0]*60+e[1]+30;out+=`${S[i]}~${pad(Math.floor(em/60)%24)}:${pad(em%60)} ${v}\n`;i=j+1}}return out}
 
 /* ---------- 확정사항 ---------- */
-const CONF=[['sched','일정'],['place','장소'],['theme','주제'],['verse','주제말씀'],['song','주제찬양'],['preacher','집회설교자'],['speaker','강사'],['tt','시간표'],['praise','찬양팀'],['staff','스탭'],['snack','간식']];
-function confSrc(k){const okS=R.speakers.filter(s=>s.status==='확정'||s.status==='수락');
+const CONF=[['sched','일정'],['place','장소'],['theme','주제'],['verse','주제말씀'],['song','주제찬양'],['preacher','집회설교자'],['speaker1','강사1'],['speaker2','강사2'],['tt','시간표'],['praise','찬양팀'],['staff','준비인원'],['snack','야식']];
+const CONF_FROM={sched:['campSet','⚙️ 설정'],place:['venue','🏕️ 장소탐색'],theme:['theme','💡 주제정하기'],verse:['theme','💡 주제정하기'],song:['theme','💡 주제정하기'],preacher:['speaker','🎤 강사탐색'],speaker1:['speaker','🎤 강사탐색'],speaker2:['speaker','🎤 강사탐색'],tt:['tt','⏰ 시간표'],praise:['praise','🎸 찬양팀'],staff:['staff','👥 준비인원']};
+const spkTxt=id=>{const s=R.speakers.find(x=>x.id===id);return s?(s.name||'(이름 없음)')+(s.org?' ('+s.org+')':'')+(s.topic?' · '+s.topic:''):''};
+function snackText(){const D=(R.conf.snack&&R.conf.snack.days)||{};return Array.from({length:(+R.nights||0)+1},(_,d)=>D[d]?`${d+1}일차 야식: ${D[d]}`:'').filter(Boolean).join(' / ')}
+function confVal(k){if(k==='snack')return snackText();return R.conf[k].v||(k==='place'&&!R.venue.finalId?'':confSrc(k))}
+function confSrc(k){const F=R.spkFinal||{};
   switch(k){case'sched':return campRange();case'place':{const f=R.venue.list.find(x=>x.id===R.venue.finalId);if(f)return venueTxt(f);const S=scores().sort((a,b)=>a.plusR-b.plusR);return S[0]?venueTxt(S[0].v)+' (ICE+ 1위 · 아직 최종확정 전)':''}
-   case'theme':return R.theme.title||'';case'verse':return[R.theme.verse,R.theme.verseText].filter(Boolean).join(' — ');
-   case'preacher':return okS.filter(s=>/설교|집회/.test(s.role||'')).map(s=>s.name+(s.org?'('+s.org+')':'')).join(', ');
-   case'speaker':return okS.filter(s=>!/설교|집회/.test(s.role||'')).map(s=>s.name+(s.role?' - '+s.role:'')).join(', ');
-   case'tt':{const n=Object.values(R.tt.cells).filter(Boolean).length;return n?`[시간표] 메뉴 참고 (${n}칸 작성)`:''}
-   case'praise':return R.cfg.parts.map(x=>{const n=R.people.filter(p=>p.praise&&(p.parts||[]).includes(x));return n.length?x+': '+n.map(p=>p.name).join(', '):''}).filter(Boolean).join(' / ');
-   case'staff':return prepList().sort((a,b)=>(a.prep===b.prep?0:a.prep==='min'?-1:1)).map(p=>`${p.name}(${roleOf(p)}${p.duty?' · '+p.duty:''})`).join(', ');
-   case'snack':return R.programs.filter(p=>/간식/.test(p.name||'')).map(p=>p.content).filter(Boolean).join(' / ');default:return''}}
-function vConfirm(){const n=CONF.filter(([k])=>R.conf[k].ok).length;
-  return `<div class="card"><div class="row"><h2 style="margin:0">✅ 확정사항</h2><span class="badge ${n===CONF.length?'b-ok':'b-mid'}">${n}/${CONF.length} 확정</span><span class="sp"></span><button data-act="confAll">⤵ 빈 칸 모두 불러오기</button><button class="pri" data-act="confCopy">📋 카톡용 복사</button></div>
-  <p class="hint">‘⤵ 불러오기’를 누르면 다른 메뉴에 적어 둔 내용을 가져와요. 확정되면 ✔에 체크해요.</p>
-  <div class="kv" style="margin-top:8px">${CONF.map(([k,l])=>{const src=confSrc(k);return `<b>${l}</b><div>${ta('conf.'+k,'v',src?'불러올 내용: '+src:'직접 적어요',/praise|staff|tt/.test(k)?2:1)}</div><div class="row" style="gap:4px;padding-top:3px"><button class="sm" data-act="confFill" data-v="${k}" ${src?'':'disabled'} title="다른 메뉴에서 불러오기">⤵</button><label class="chip tog ${R.conf[k].ok?'on':''}"><input type="checkbox" data-o="conf.${k}" data-k="ok" data-rr ${R.conf[k].ok?'checked':''} style="display:none">✔ 확정</label></div>`}).join('')}</div></div>`}
+   case'theme':return R.theme.title||'';case'verse':return[R.theme.verse,R.theme.verseText].filter(Boolean).join(' — ');case'song':return R.theme.song||'';
+   case'preacher':return spkTxt(F.preacher);case'speaker1':return spkTxt(F.s1);case'speaker2':return spkTxt(F.s2);
+   case'tt':return Object.values(R.tt.cells).some(Boolean)?ttText().split('\n').slice(1).join('\n').trim().split(/\n+(?=\[)/).map(b=>b.trim()).filter(b=>b.includes('\n')).join('\n\n'):'';
+   case'praise':return R.cfg.parts.map(x=>{const n=R.people.filter(p=>p.praise&&(p.parts||[]).includes(x));return n.length?x+': '+n.map(p=>p.name).join(', '):''}).filter(Boolean).join('\n');
+   case'staff':{const L=prepList();return[['min','사역자'],['staff','준비인원']].map(([t,l])=>{const a=L.filter(p=>p.prep===t);return a.length?l+': '+a.map(p=>`${p.name}(${p.role||l}${p.duty?' · '+p.duty:''})`).join(', '):''}).filter(Boolean).join('\n')}
+   default:return''}}
+function vConfirm(){const n=CONF.filter(([k])=>R.conf[k].ok).length,days=(+R.nights||0)+1,D=(R.conf.snack.days=R.conf.snack.days||{});
+  const row=([k,l])=>{const c=R.conf[k],src=k==='snack'?'':confSrc(k),own=!!c.v,fr=CONF_FROM[k];
+    const body=k==='snack'?`<div class="snk">${Array.from({length:days},(_,d)=>`<label class="row"><span class="badge">${d+1}일차 야식</span>${inp('conf.snack>days',String(d),{ph:'예) 치킨·피자',st:'flex:1'})}</label>`).join('')}</div>`
+      :`<textarea data-o="conf.${k}" data-k="v" data-rr rows="${k==='tt'?Math.min(14,Math.max(3,(own?c.v:src).split('\n').length)):/praise|staff/.test(k)?3:1}" placeholder="${esc(fr?fr[1]+'에서 정하면 저절로 들어와요':'직접 적어요')}">${esc(own?c.v:src)}</textarea>
+       <div class="hint" style="font-size:12px">${own?`✏️ 직접 고친 내용${src?` · <a href="#" data-act="confAuto" data-v="${k}">🔗 ${esc(fr[1])} 내용으로 되돌리기</a>`:''}`:src?`🔗 ${esc(fr[1])}에서 자동으로 들어왔어요`:fr?`${esc(fr[1])}에서 정하면 저절로 들어와요`:''}${fr?` · <a href="#" data-act="${fr[0]==='campSet'?'campSet':'tab'}" data-v="${fr[0]}">가기 →</a>`:''}</div>`;
+    return `<b>${l}</b><div>${body}</div><div class="row" style="gap:4px;padding-top:3px"><label class="chip tog ${c.ok?'on':''}"><input type="checkbox" data-o="conf.${k}" data-k="ok" data-rr ${c.ok?'checked':''} style="display:none">✔ 확정</label></div>`};
+  return `<div class="card"><div class="row"><h2 style="margin:0">✅ 확정사항</h2><span class="badge ${n===CONF.length?'b-ok':'b-mid'}">${n}/${CONF.length} 확정</span><span class="sp"></span><button class="pri" data-act="confCopy">📋 카톡용 복사</button></div>
+  <p class="hint">설정·장소탐색·주제정하기·강사탐색·시간표·찬양팀·준비인원에서 정한 내용이 저절로 들어와요. 칸을 직접 고치면 그 내용이 우선이고, ‘되돌리기’로 다시 자동으로 바꿀 수 있어요. 다 정해지면 ✔ 확정을 눌러요.</p>
+  <div class="kv" style="margin-top:8px">${CONF.map(row).join('')}</div></div>`}
 
 /* ---------- 준비물 ---------- */
 function vSup(){const L=R.sup,f=SUB.supF||'all',td=todayStr(),cands=prepList().length?prepList():R.people;
@@ -676,7 +690,7 @@ function vFee(){const F=R.fee,L=R.people,open=SUB.feeOpen!==false;
    <div class="row" style="margin-top:6px"><button class="sm pri" data-act="feeAdd">+ 회비 기준 추가</button><span class="hint">표 맨 뒤 ‘회비’ 칸에 금액을 직접 적으면 그 사람만 따로 정할 수 있어요.</span></div></details>`}
 /* 📢 공지문: 써서 보관하고, 카톡용으로 복사해요 */
 function noticeText(n){return `${n.title?'📢 '+n.title+'\n':''}${n.body||''}`}
-function confSummary(){return CONF.map(([k,l])=>{const v=R.conf[k].v||(k==='place'?'':confSrc(k));return v&&k!=='tt'?`▪ ${l}: ${v}`:''}).filter(Boolean).join('\n')}
+function confSummary(){return CONF.map(([k,l])=>{const v=confVal(k);return v&&k!=='tt'?`▪ ${l}: ${v}`:''}).filter(Boolean).join('\n')}
 function vNotice(){
   if(SUB.ntc){const n=R.notices.find(x=>x.id===SUB.ntc);if(n){const s='notices#'+n.id;
     return `<div class="card"><div class="row"><button data-act="ntcBack">← 공지문 보관함</button><span class="sp"></span><button data-act="ntcPin">${n.pin?'📌 고정 풀기':'📌 맨 위 고정'}</button><button data-act="ntcCopy">📋 카톡용 복사</button><button data-act="ntcPrint">🖨️ 인쇄·PDF</button><button data-act="ntcDup">복제</button><button class="danger" data-act="ntcDel">지우기</button></div>
@@ -855,11 +869,16 @@ const ACT={
     const c=fill({id:uid(),name:n,start:$('#nStart').value,nights:+$('#nNights').value,created:Date.now()});await idb.put('camps',c.id,c);location.href='./?c='+c.id},
   openCamp:t=>{location.href='./?c='+t.dataset.v},
   bakIn:()=>{$('#bakUp').value='';$('#bakUp').click()},
-  campSet:()=>{const m=modal(`<h2>⚙️ 수련회 설정·백업</h2><div class="f2"><label class="fld" style="grid-column:1/-1">이름<input id="sN" value="${esc(R.name)}"></label><label class="fld">시작일<input id="sS" type="date" value="${esc(R.start||'')}"></label><label class="fld">기간<select id="sT">${[0,1,2,3,4,5].map(n=>`<option value="${n}"${n===+R.nights?' selected':''}>${n}박 ${n+1}일</option>`).join('')}</select></label></div>
+  campSet:()=>{const m=modal(`<h2>⚙️ 수련회 설정·백업</h2><div class="f2"><label class="fld" style="grid-column:1/-1">이름<input id="sN" value="${esc(R.name)}"></label><label class="fld">시작일<input id="sS" type="date" value="${esc(R.start||'')}"></label><label class="fld">끝나는 날<input id="sE" type="date" value="${esc(R.start?addD(R.start,+R.nights||0):'')}"></label><label class="fld">기간<select id="sT">${[0,1,2,3,4,5,6,7].map(n=>`<option value="${n}"${n===+R.nights?' selected':''}>${n}박 ${n+1}일</option>`).join('')}</select></label></div>
+    <p class="hint" id="sInfo" style="margin:6px 0 0"></p>
     <div class="row" style="margin-top:10px"><button class="pri" id="sSave">저장</button><button data-close>닫기</button></div>
     <h3>💾 백업</h3><p class="hint">모든 메뉴의 기록과 자료실 파일·영수증까지 한 파일로 저장해요. 다른 기기에서는 수련회 목록의 ‘📂 백업 파일 불러오기’로 열어요.</p><button id="sBak">⬇️ 백업 파일 저장</button>
     <h3 style="color:#b5361f">🗑 지우기</h3><button class="danger" id="sDel">이 수련회 통째로 지우기</button>`);
     m.querySelector('#sSave').onclick=()=>{R.name=m.querySelector('#sN').value.trim()||R.name;R.start=m.querySelector('#sS').value;R.nights=+m.querySelector('#sT').value;save();m.remove();render()};
+    const sS=m.querySelector('#sS'),sE=m.querySelector('#sE'),sT=m.querySelector('#sT'),sI=m.querySelector('#sInfo');
+    const info=()=>{sI.textContent=sS.value?`📅 ${sS.value.replace(/-/g,'.')}(${DOW[new Date(toT(sS.value)).getUTCDay()]}) ~ ${fmtD(addD(sS.value,+sT.value))} · ${sT.value}박 ${+sT.value+1}일 → [확정사항] 일정에 들어가요`:'시작일을 고르면 [확정사항] 일정에 들어가요'};
+    sS.onchange=()=>{if(sS.value)sE.value=addD(sS.value,+sT.value);info()};sT.onchange=()=>{if(sS.value)sE.value=addD(sS.value,+sT.value);info()};
+    sE.onchange=()=>{if(sS.value&&sE.value){let n=diffD(sS.value,sE.value);if(n<0){toast('끝나는 날이 시작일보다 빨라요');sE.value=addD(sS.value,+sT.value);return}if(n>7){toast('8박 이상은 기간에서 고를 수 없어요');n=7;sE.value=addD(sS.value,7)}sT.value=n}info()};info();
     m.querySelector('#sBak').onclick=backup;
     m.querySelector('#sDel').onclick=async()=>{if(!confirm(`‘${R.name}’의 모든 기록과 자료를 지울까요? 되돌릴 수 없어요.`))return;for(const f of R.files)try{await idb.del('files',f.id)}catch(_){}await idb.del('camps',R.id);location.href='./'}},
   leDel:t=>{const a=objOf(t.dataset.le),i=+t.dataset.i,old=a[i];if(!confirm(`‘${old}’을(를) 뺄까요?`))return;a.splice(i,1);const f=LE_REF[t.dataset.le];if(f)f(old,'');save();render()},
@@ -925,9 +944,8 @@ const ACT={
   critRen:t=>{const c=R.venue.crit.find(x=>x.id===t.dataset.v);const n=(prompt('새 이름',c.name)||'').trim();if(n){c.name=n;save();render()}},
   wEven:()=>{const C=critList(),b=Math.floor(100/C.length);C.forEach((k,i)=>R.venue.w[k.id]=b+(i<100-b*C.length?1:0));save();render()},
   /* 확정 */
-  confFill:t=>{R.conf[t.dataset.v].v=confSrc(t.dataset.v);save();render()},
-  confAll:()=>{CONF.forEach(([k])=>{if(!R.conf[k].v)R.conf[k].v=confSrc(k)});save();render()},
-  confCopy:()=>copy(`✅ ${R.name} 확정사항\n`+CONF.map(([k,l])=>`• ${l}: ${R.conf[k].v||confSrc(k)||'(미정)'}${R.conf[k].ok?' ✔':''}`).join('\n')),
+  confAuto:(t,e)=>{e.preventDefault();R.conf[t.dataset.v].v='';save();render()},
+  confCopy:()=>copy(`✅ ${R.name} 확정사항\n`+CONF.map(([k,l])=>{const v=confVal(k)||'(미정)';return `• ${l}${R.conf[k].ok?' ✔':''}: ${v.includes('\n')?'\n  '+v.split('\n').join('\n  '):v}`}).join('\n')),
   ttCopy:()=>copy(ttText()),
   /* 준비물·체크 */
   supAdd:()=>{const it={id:uid(),name:'',method:'',stage:0};R.sup.push(it);SUB.supF='all';save();render();setTimeout(()=>{const el=$(`[data-o="sup#${it.id}"][data-k="name"]`);if(el){el.focus();el.scrollIntoView({block:'center'})}},30)},
@@ -1053,7 +1071,7 @@ document.addEventListener('change',e=>{const t=e.target;
   if(t.tagName==='SELECT'&&t.dataset.act==='assign'){if(t.value)assign(t.value,t.dataset.to,null);return}
   if(t.tagName==='SELECT'&&t.dataset.act==='gRole'){const g=R.grp.list.find(x=>x.id===t.dataset.g);g.roles=g.roles||{};if(t.value)g.roles[t.dataset.pid]=t.value;else delete g.roles[t.dataset.pid];save();return}
   if(t.dataset.o==null)return;if(t.tagName==='SELECT'||t.type==='checkbox')apply(t);
-  if(t.dataset.o==='venue.list#'+R.venue.finalId&&(t.dataset.k==='name'||t.dataset.k==='addr')){const v=objOf(t.dataset.o);R.conf.place.v=venueTxt(v);save()}
+  if(t.dataset.o==='spkFinal'&&t.value){const sp=R.speakers.find(x=>x.id===t.value);if(sp&&sp.status!=='확정'){sp.status='확정';save()}}
   if(t.dataset.o.startsWith('people#')&&t.dataset.k==='prep'){const p=objOf(t.dataset.o);p.role=''}
   if(t.dataset.o.startsWith('people#')&&t.dataset.k==='payMethod'){const p=objOf(t.dataset.o),b=feeBooked(p.id);if(b)b.method=p.payMethod}
   if(t.dataset.o.startsWith('people#')&&t.dataset.k==='paid'){const p=objOf(t.dataset.o);p.paidDate=p.paid?todayStr():'';if(p.paid&&!p.payMethod)p.payMethod='계좌이체';if(p.paid&&feeOf(p).amt)toast(`💰 ${p.name||''} 입금확인 · [회계]에서 수입으로 넣을 수 있어요`)}
@@ -1081,7 +1099,7 @@ $('#rcpUp').onchange=e=>{const f=e.target.files[0];if(f){SUB.rcpFile=f;const n=$
 (async()=>{try{await idb.open()}catch(e){$('#app').innerHTML='<div class="card"><div class="empty">이 브라우저에서는 저장소를 쓸 수 없어요. (시크릿 창이면 일반 창에서 열어 주세요)</div></div>';return}
   try{TAB=localStorage.getItem('camp-tab')||'people';SUB.carView=localStorage.getItem('camp-carview')||'card'}catch(_){}if(!TABS.some(x=>x[0]===TAB))TAB='people';
   const cid=new URLSearchParams(location.search).get('c');
-  if(cid){const c=await idb.get('camps',cid);if(!c){location.replace('./');return}R=fill(c);R.people.forEach(p=>['in','out'].forEach(k=>{if((p[k+'H']==null||p[k+'H']==='')&&p[k+'T'])setWhenFromText(p,k)}));document.title=R.name+' | 수련회 준비 패키지'}
+  if(cid){const c=await idb.get('camps',cid);if(!c){location.replace('./');return}R=fill(c);CONF.forEach(([k])=>{try{if(k!=='snack'&&R.conf[k].v&&R.conf[k].v.trim()===confSrc(k).trim())R.conf[k].v=''}catch(_){}});R.people.forEach(p=>['in','out'].forEach(k=>{if((p[k+'H']==null||p[k+'H']==='')&&p[k+'T'])setWhenFromText(p,k)}));document.title=R.name+' | 수련회 준비 패키지'}
   else CAMPS=(await idb.all('camps'))||[];
   render()})();
 })();
