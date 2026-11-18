@@ -484,12 +484,15 @@ function vSup(){const L=R.sup,f=SUB.supF||'all',td=todayStr(),cands=prepList().l
   <p class="hint">준비방법별 단계 — 온라인: 구입필요→구입완료→배송완료→준비완료 · 오프라인: 구입필요→구입완료→준비완료 · 챙기기: 준비필요→준비완료 · 제작: 준비전→시안제작완료→발주완료→배송완료→준비완료 · 인쇄: 준비전→작성완료→인쇄완료→준비완료</p></div>`}
 
 /* ---------- 체크리스트 ---------- */
-function vChk(){const L=R.chk,cats=[...new Set(L.map(x=>x.cat||'기타'))],done=L.filter(x=>x.done).length;
+const chkCands=()=>prepList().length?prepList():R.people;
+function supState(id){const s=R.sup.find(x=>x.id===id);if(!s)return'';const st=s.method?METHODS[s.method]:null,fin=st&&(+s.stage||0)>=st.length-1;return ` <span class="badge ${fin?'b-ok':'b-no'}">${st?st[+s.stage||0]:'준비방법 미정'}</span>${s.place?` <span class="hint">📍${esc(s.place)}</span>`:''}`}
+function vChk(){const L=R.chk,ORD=['출발 전','장소 도착','예배·집회','식사·간식','안전','정리'],cats=[...new Set(L.map(x=>x.cat||'기타'))].sort((a,b)=>{const i=ORD.indexOf(a),j=ORD.indexOf(b);return(i<0?99:i)-(j<0?99:j)}),done=L.filter(x=>x.done).length;
   return `<datalist id="chkCats">${[...new Set([...cats,'출발 전','장소 도착','예배·집회','식사·간식','안전','정리'])].map(c=>`<option value="${esc(c)}">`).join('')}</datalist>
-  <div class="card"><div class="row"><h2 style="margin:0">☑️ 체크리스트</h2><span class="badge ${done===L.length&&L.length?'b-ok':'b-mid'}">${done}/${L.length}</span><span class="sp"></span><button data-act="chkSup">📦 덜 된 준비물 가져오기</button><button data-act="chkReset">체크 모두 풀기</button></div>
+  <div class="card"><div class="row"><h2 style="margin:0">☑️ 체크리스트</h2><span class="badge ${done===L.length&&L.length?'b-ok':'b-mid'}">${done}/${L.length}</span><span class="sp"></span><button data-act="chkSup" title="준비물 전체를 ‘출발 전’ 분류로 가져와요">📦 준비물 모두 가져오기 (출발 전)</button><button data-act="chkReset">체크 모두 풀기</button></div>
   <div class="prog" style="margin:8px 0"><i style="width:${L.length?done/L.length*100:0}%"></i></div>
-  <div class="row"><input id="chkT" placeholder="체크할 것 (예: 마이크 배터리 확인)" style="flex:2;min-width:180px"><input id="chkC" list="chkCats" placeholder="분류" style="width:120px"><button class="pri" data-act="chkAdd">+ 추가</button></div>
-  ${cats.length?cats.map(c=>`<h3>${esc(c)} <span class="hint">${L.filter(x=>(x.cat||'기타')===c&&x.done).length}/${L.filter(x=>(x.cat||'기타')===c).length}</span></h3>${L.filter(x=>(x.cat||'기타')===c).map(x=>`<div class="row" style="padding:3px 0;border-bottom:1px dashed var(--line)"><label class="row" style="flex:1;gap:8px;cursor:pointer;${x.done?'text-decoration:line-through;color:var(--muted)':''}"><input type="checkbox" data-o="chk#${x.id}" data-k="done" data-rr ${x.done?'checked':''} style="width:20px;height:20px">${esc(x.text)}</label><button class="x" data-act="del" data-c="chk" data-v="${x.id}">🗑</button></div>`).join('')}`).join(''):'<div class="empty" style="margin-top:8px">수련회 직전에 확인할 것들을 적어 두세요</div>'}</div>`}
+  <div class="row"><input id="chkT" placeholder="체크할 것 (예: 마이크 배터리 확인)" style="flex:2;min-width:180px"><input id="chkC" list="chkCats" placeholder="분류" style="width:120px" value="${esc(SUB.chkC||'')}"><select id="chkO" style="width:130px">${peopleOpts(chkCands(),'담당 (선택)').map(([v,l])=>`<option value="${v}"${v===(SUB.chkO||'')?' selected':''}>${esc(l)}</option>`).join('')}</select><button class="pri" data-act="chkAdd">+ 추가</button></div>
+  <p class="hint" style="margin:6px 0 0">‘📦 준비물 모두 가져오기’는 준비된 것·덜 된 것 모두 <b>출발 전</b> 분류로 가져와요(담당·둔 곳도 함께). 다 챙겼는지 하나씩 체크하세요. 이미 가져온 준비물은 담당·상태만 새로 맞춰요.</p>
+  ${cats.length?cats.map(c=>`<h3>${esc(c)} <span class="hint">${L.filter(x=>(x.cat||'기타')===c&&x.done).length}/${L.filter(x=>(x.cat||'기타')===c).length}</span></h3>${L.filter(x=>(x.cat||'기타')===c).map(x=>`<div class="row" style="padding:3px 0;border-bottom:1px dashed var(--line)"><label class="row" style="flex:1;gap:8px;cursor:pointer;${x.done?'text-decoration:line-through;color:var(--muted)':''}"><input type="checkbox" data-o="chk#${x.id}" data-k="done" data-rr ${x.done?'checked':''} style="width:20px;height:20px">${esc(x.text)}${x.supId?supState(x.supId):''}</label>${sel('chk#'+x.id,'owner',peopleOpts(chkCands(),'담당 —'),{st:'width:120px;font-size:13px'})}<button class="x" data-act="del" data-c="chk" data-v="${x.id}">🗑</button></div>`).join('')}`).join(''):'<div class="empty" style="margin-top:8px">수련회 직전에 확인할 것들을 적어 두세요</div>'}</div>`}
 
 /* ---------- 자료실 ---------- */
 const fsize=n=>!n?"0KB":n>1048576?(n/1048576).toFixed(1)+'MB':Math.max(1,Math.round(n/1024))+'KB';
@@ -662,8 +665,10 @@ const ACT={
   supAdd:()=>{const it={id:uid(),name:'',method:'',stage:0};R.sup.push(it);SUB.supF='all';save();render();setTimeout(()=>{const el=$(`[data-o="sup#${it.id}"][data-k="name"]`);if(el){el.focus();el.scrollIntoView({block:'center'})}},30)},
   supF:t=>{SUB.supF=t.dataset.v;render()},
   stage:t=>{const s=R.sup.find(x=>x.id===t.dataset.v);const n=+t.dataset.n;s.stage=(+s.stage===n&&n>0)?n-1:n;save();render()},
-  chkAdd:()=>{const x=$('#chkT').value.trim();if(!x)return;SUB.chkC=$('#chkC').value.trim();R.chk.push({id:uid(),text:x,cat:SUB.chkC||'기타',done:false});save();render();const c=$('#chkC');if(c)c.value=SUB.chkC;$('#chkT').focus()},
-  chkSup:()=>{let n=0;R.sup.forEach(s=>{const fin=s.method&&(+s.stage||0)>=METHODS[s.method].length-1;const tx='📦 '+(s.name||'준비물')+(s.qty?' ×'+s.qty:'');if(!fin&&s.name&&!R.chk.some(c=>c.text===tx)){R.chk.push({id:uid(),text:tx,cat:'준비물',done:false});n++}});save();render();toast(n?`${n}개 가져왔어요`:'가져올 준비물이 없어요')},
+  chkAdd:()=>{const x=$('#chkT').value.trim();if(!x)return;SUB.chkC=$('#chkC').value.trim();SUB.chkO=$('#chkO').value;R.chk.push({id:uid(),text:x,cat:SUB.chkC||'기타',owner:SUB.chkO,done:false});save();render();$('#chkT').focus()},
+  chkSup:()=>{let n=0,u=0;R.sup.forEach(s=>{if(!s.name)return;const tx='📦 '+s.name+(s.qty?' ×'+s.qty:'');const ex=R.chk.find(c=>c.supId===s.id||(!c.supId&&c.text===tx));
+    if(ex){ex.supId=s.id;ex.text=tx;if(s.owner)ex.owner=s.owner;if(ex.cat==='준비물')ex.cat='출발 전';u++}else{R.chk.push({id:uid(),supId:s.id,text:tx,cat:'출발 전',owner:s.owner||'',done:false});n++}});
+    save();render();toast(n||u?`준비물 ${n}개를 ‘출발 전’에 가져왔어요${u?` (${u}개는 새로 맞춤)`:''}`:'가져올 준비물이 없어요. [준비물]에 먼저 적어 주세요')},
   chkReset:()=>{if(confirm('체크를 모두 풀까요?')){R.chk.forEach(c=>c.done=false);save();render()}},
   /* 자료실 */
   cd:(t,e)=>{e.preventDefault();SUB.folder=t.dataset.v;render()},
@@ -720,7 +725,7 @@ function fpath(id){const L=[];let c=id;while(c){const f=R.folders.find(x=>x.id==
 function purge(id){R.people=R.people.filter(p=>p.id!==id);const rm=a=>(a||[]).filter(x=>x!==id);
   R.sched.forEach(t=>t.who=rm(t.who));R.programs.forEach(t=>t.who=rm(t.who));R.minutes.forEach(m=>m.att=rm(m.att));
   R.cars.list.forEach(c=>{c.members=rm(c.members);if(c.driver===id)c.driver=''});R.grp.list.forEach(g=>{g.members=rm(g.members);g.staff=rm(g.staff);if(g.leader===id)g.leader='';if(g.roles)delete g.roles[id]});
-  R.rooms.forEach(r=>{r.members=rm(r.members);if(r.captain===id)r.captain=''});R.sup.forEach(s=>{if(s.owner===id)s.owner=''})}
+  R.rooms.forEach(r=>{r.members=rm(r.members);if(r.captain===id)r.captain=''});R.sup.forEach(s=>{if(s.owner===id)s.owner=''});R.chk.forEach(c=>{if(c.owner===id)c.owner=''})}
 function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)}
 async function copy(t){try{await navigator.clipboard.writeText(t);toast('📋 복사했어요. 카톡에 붙여넣으세요')}catch(e){const x=document.createElement('textarea');x.value=t;document.body.appendChild(x);x.select();try{document.execCommand('copy');toast('📋 복사했어요')}catch(_){toast('복사하지 못했어요')}x.remove()}}
 function indent(dir){const b=$('#mbody');if(!b)return;const v=b.value,s=b.selectionStart,e=b.selectionEnd;const ls=v.lastIndexOf('\n',s-1)+1;let le=v.indexOf('\n',Math.max(s,e-1));if(le<0)le=v.length;
