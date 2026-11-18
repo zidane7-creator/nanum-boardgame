@@ -96,6 +96,10 @@ label.lb .f{font-size:.95rem;color:var(--ink);font-weight:400}
 .team.t1{color:var(--t1);background:color-mix(in srgb,var(--t1) 13%,transparent)}
 .team.t2{color:var(--t2);background:color-mix(in srgb,var(--t2) 13%,transparent)}
 .team.t3{color:var(--t3);background:color-mix(in srgb,var(--t3) 13%,transparent)}
+.team.t4{color:#4f62c4;background:#4f62c422}.team.t5{color:#4c8a2a;background:#4c8a2a22}.team.t6{color:#8a52c0;background:#8a52c022}.team.t7{color:#c0532f;background:#c0532f22}.team.t8{color:#6b6b6b;background:#6b6b6b22}
+.cfgbox{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}@media (max-width:700px){.cfgbox{grid-template-columns:1fr}}
+.cfgbox .chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.cfgbox .ck{display:inline-flex;align-items:center;gap:2px;border:1.5px solid var(--line,#ccc);border-radius:999px;padding:2px 4px 2px 10px}
+.cfgbox .ck button{border:0;background:none;cursor:pointer;padding:2px 5px;font:inherit;color:inherit;opacity:.7}.cfgbox .ck button:hover{opacity:1}
 .mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
 
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
@@ -463,9 +467,12 @@ label.lb{color:var(--ink);font-weight:normal}
 <script>
 (function(){
 'use strict';
-const TEAMS=['싱어팀','세션팀','방송팀'];
-const ROLES=['팀장','회계','서기','싱어팀장','세션팀장','방송팀장'];
-const TCLS={'싱어팀':'t1','세션팀':'t2','방송팀':'t3'};
+/* 소속·직책은 팀마다 직접 정할 수 있어요 (S.cfg.teams / S.cfg.roles). 정하지 않았으면 기본값 */
+const DEF_TEAMS=['싱어팀','세션팀','방송팀'],DEF_ROLES=['팀장','회계','서기','싱어팀장','세션팀장','방송팀장'];
+let TEAMS=DEF_TEAMS.slice(),ROLES=DEF_ROLES.slice(),TCLS={'싱어팀':'t1','세션팀':'t2','방송팀':'t3'};
+function applyCfg(){const c=(typeof S!=='undefined'&&S.cfg)||{};
+  TEAMS=Array.isArray(c.teams)&&c.teams.length?c.teams.slice():DEF_TEAMS.slice();ROLES=Array.isArray(c.roles)?c.roles.slice():DEF_ROLES.slice();
+  TCLS={};TEAMS.forEach((t,i)=>TCLS[t]='t'+(i%8+1))}
 
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -605,7 +612,7 @@ document.addEventListener('focusout',()=>setTimeout(()=>{if(pendingRender&&!edit
 let toastT;function toast(msg){const t=$('#toast');t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,msg.length>40?6000:2600)}
 
 function render(){
-  buildDates();
+  applyCfg();buildDates();
   document.querySelectorAll('#tabs a').forEach(a=>{if(a.dataset.v===UI.view)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
   setSync();
   let h='';
@@ -653,16 +660,31 @@ function vAttendance(){
 }
 function attRec(date){if(!S.att[date])S.att[date]={date,records:{}};if(!S.att[date].records)S.att[date].records={};return S.att[date].records}
 
+/* ---------- 소속·직책 설정 ---------- */
+function vCfg(){const box=(k,ttl,list,ph,tip)=>`<div class="panel"><b>${ttl}</b> <span class="sub">${tip}</span>
+    <div class="chips">${list.map((v,i)=>`<span class="ck">${k==='teams'?teamChip(v):esc(v)}<button type="button" data-act="cfgup" data-k="${k}" data-i="${i}" title="앞으로" ${i?'':'disabled'} data-w>◀</button><button type="button" data-act="cfgren" data-k="${k}" data-i="${i}" title="이름 바꾸기" data-w>✏️</button><button type="button" data-act="cfgdel" data-k="${k}" data-i="${i}" title="빼기" data-w>✕</button></span>`).join('')||'<span class="sub">아직 없어요</span>'}</div>
+    <div class="row"><input class="f" id="cfg-${k}" maxlength="20" placeholder="${ph}" style="flex:1;min-width:0"><button class="btn" type="button" data-act="cfgadd" data-k="${k}" data-w>추가</button></div></div>`;
+  return `<div class="cfgbox">${box('teams','소속',TEAMS,'예) 찬양팀','팀원 등록·출석부·통계에 쓰여요')}${box('roles','직책',ROLES,'예) 부팀장','앞에 있을수록 정렬할 때 먼저 나와요')}</div>`}
+function setCfgList(k,list,msg){S.cfg=Object.assign({},S.cfg,{[k]:list});applyCfg();persist('cfg',()=>DB.doc('settings/cfg').set(clone(S.cfg)));render();if(msg)toast(msg)}
+function cfgAct(act,k,i){if(S.readOnly){toast('보기 권한이라 바꿀 수 없어요');return}
+  const list=(k==='teams'?TEAMS:ROLES).slice(),fld=k==='teams'?'team':'role',name=k==='teams'?'소속':'직책';
+  if(act==='cfgadd'){const inp=$('#cfg-'+k),v=(inp&&inp.value||'').trim();if(!v)return;if(list.includes(v)){toast(`‘${v}’ ${name}은 이미 있어요`);return}list.push(v);setCfgList(k,list,`${name} ‘${v}’을 추가했어요`);const n=$('#cfg-'+k);if(n)n.focus();return}
+  const old=list[i];if(old==null)return;
+  if(act==='cfgup'){if(i>0){list.splice(i,1);list.splice(i-1,0,old);setCfgList(k,list)}return}
+  if(act==='cfgdel'){const used=S.members.filter(m=>m[fld]===old).length;if(k==='teams'&&list.length<=1){toast('소속은 하나 이상 있어야 해요');return}
+    if(used&&!confirm(`‘${old}’ ${name}인 팀원이 ${used}명 있어요. 목록에서만 빼고, 그 팀원들의 ${name}은 그대로 둘까요?`))return;list.splice(i,1);setCfgList(k,list,`${name} ‘${old}’을 뺐어요`);return}
+  if(act==='cfgren'){const v=(prompt(`‘${old}’의 새 이름`,old)||'').trim();if(!v||v===old)return;if(list.includes(v)){toast(`‘${v}’ ${name}은 이미 있어요`);return}
+    list[i]=v;let n=0;S.members.forEach(m=>{if(m[fld]===old){saveMember(Object.assign({},m,{[fld]:v}));n++}});setCfgList(k,list,`‘${old}’ → ‘${v}’ 로 바꿨어요${n?` (팀원 ${n}명도 함께)`:''}`)}}
 /* ---------- 팀원 명부 ---------- */
 function vMembers(){
   const e0=UI.mEdit?S.members.find(m=>m.id===UI.mEdit):null;
   const e=UI.mDraft?Object.assign({},e0,UI.mDraft):e0;
   const act=sortedMembers();
-  let h=`<div class="head"><div><h2>팀원 명부</h2><div class="sub">현재 ${act.length}명 · ${TEAMS.map(t=>`${t} ${act.filter(m=>m.team===t).length}`).join(' · ')}</div></div></div>
+  let h=`<div class="head"><div><h2>팀원 명부</h2><div class="sub">현재 ${act.length}명 · ${TEAMS.map(t=>`${esc(t)} ${act.filter(m=>m.team===t).length}`).join(' · ')}</div></div><button class="btn" type="button" data-act="cfgopen" aria-expanded="${!!UI.cfgOpen}">⚙️ 소속·직책 설정</button></div>${UI.cfgOpen?vCfg():''}
   <form class="panel" id="mform" style="margin-bottom:16px" autocomplete="off">
    <div class="mform">
     <label class="lb">이름<input class="f" id="m-name" required value="${esc(e&&e.name)}" placeholder="홍길동"></label>
-    <label class="lb">소속<select class="f" id="m-team">${TEAMS.map(t=>`<option ${e&&e.team===t?'selected':''}>${t}</option>`).join('')}</select></label>
+    <label class="lb">소속<select class="f" id="m-team">${TEAMS.concat(e&&e.team&&!TEAMS.includes(e.team)?[e.team]:[]).map(t=>`<option ${e&&e.team===t?'selected':''}>${esc(t)}</option>`).join('')}</select></label>
     <label class="lb">직책<select class="f" id="m-role"><option value="">없음</option>${ROLES.concat(e&&e.role&&!ROLES.includes(e.role)?[e.role]:[]).map(r=>`<option ${e&&e.role===r?'selected':''}>${esc(r)}</option>`).join('')}</select></label>
     <label class="lb">생일 (YY-MM-DD)<input class="f mono" id="m-bday" value="${esc(e&&e.bday)}" placeholder="98-03-21" inputmode="numeric" maxlength="12"></label>
     <div class="act row"><button class="btn primary" type="submit" id="m-save" data-w>저장</button>${UI.mEdit||UI.mDraft?`<button class="btn" type="button" data-act="mcancel">취소</button>`:''}</div>
@@ -1160,6 +1182,8 @@ view.addEventListener('click',e=>{
     case 'st':{const r=attRec(UI.attDate);const cur=r[id]||{};r[id]={s:cur.s===v?null:v,note:cur.note||''};if(!r[id].s&&!r[id].note)delete r[id];render();saveAtt(UI.attDate);break}
     case 'allp':{const r=attRec(UI.attDate);let n=0;sortedMembers(UI.attTeam).forEach(m=>{if(!r[m.id]||!r[m.id].s){r[m.id]={s:'p',note:(r[m.id]&&r[m.id].note)||''};n++}});render();if(n)saveAtt(UI.attDate);toast(n?`${n}명을 출석으로 체크했어요`:'미체크 인원이 없어요');break}
     case 'clr':{if(b.dataset.sure){S.att[UI.attDate]={date:UI.attDate,records:{}};render();saveAtt(UI.attDate);toast('이 날 기록을 지웠어요')}else{b.dataset.sure='1';b.textContent='한 번 더 누르면 지워져요';b.classList.add('danger')}break}
+    case 'cfgopen':UI.cfgOpen=!UI.cfgOpen;render();break;
+    case 'cfgadd':case 'cfgup':case 'cfgdel':case 'cfgren':cfgAct(a,b.dataset.k,+b.dataset.i);break;
     case 'mcancel':UI.mEdit=null;UI.mDraft=null;UI.mErr='';render();break;
     case 'medit':UI.mEdit=id;UI.mDraft=null;UI.mErr='';render();$('#m-name').focus();break;
     case 'mdel':UI.confirmDel=id;render();break;
