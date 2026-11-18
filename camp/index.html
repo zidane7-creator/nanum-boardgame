@@ -146,6 +146,7 @@ table.tl td.tm.h{color:var(--ink);font-weight:600}
 table.tl td.ev{width:38%;min-width:120px;font-size:14px}
 table.tl td.cv{min-width:200px}
 table.tl td.pv{min-width:220px;font-size:13px}
+.morebtn{font-size:12px;padding:0 8px;margin:2px;border-radius:999px;background:#fff}
 table.tl .pin,table.tl .pout{border-radius:10px;padding:3px 6px;margin:2px 0}
 table.tl .pin{background:#eaf3ff}table.tl .pout{background:#fff0e0}
 table.tl .pin b,table.tl .pout b{font-family:Jua,sans-serif;font-weight:normal;margin-right:2px}
@@ -652,14 +653,17 @@ function parseWhen(t,kind){t=String(t||'').trim();if(!t)return null;const last=+
 function peopleMoves(){const L=[];R.people.forEach(p=>{[['in','inT'],['out','outT']].forEach(([k,f])=>{let w=parseWhen(p[f],k),src='';
     if(!w||w.m==null){const car=R.cars.list.find(c=>c.dir===k&&(c.members||[]).includes(p.id)&&c.day!=null&&c.day!==''&&c.time);if(car){const[h,mi]=car.time.split(':').map(Number);w={d:+car.day,m:h*60+mi};src=car}}
     L.push({p,k,w,src,raw:p[f]||''})})});return L}
+/* 사람이 많으면 앞의 몇 명만 보이고 ‘더보기’로 펼쳐요 */
+function moreList(arr,n,sep){sep=sep||'';if(arr.length<=n)return arr.join(sep);
+  return arr.slice(0,n).join(sep)+`<span class="more" hidden>${sep}${arr.slice(n).join(sep)}</span> <button class="sm morebtn" data-act="pmore" data-n="${arr.length-n}">＋ ${arr.length-n}명 더보기</button>`}
 function carTimeline(){const days=(+R.nights||0)+1,S=slots(),C=R.tt.cells,toM=t=>{const[h,m]=String(t).split(':').map(Number);return h*60+(m||0)};
   const cars=R.cars.list.filter(c=>c.day!=null&&c.day!==''&&c.time);const none=R.cars.list.filter(c=>!(c.day!=null&&c.day!==''&&c.time));
   const sm=S.map(toM),f0=sm[0],last=sm[sm.length-1]+30;
   const slotM=m=>{if(m<f0&&m+1440<last)m+=1440;if(m<f0||m>=last)return -1;return Math.floor((m-f0)/30)};const slotOf=c=>slotM(toM(c.time));
   const MV=peopleMoves(),ok=MV.filter(x=>x.w&&x.w.m!=null&&x.w.d>=0&&x.w.d<days),unk=MV.filter(x=>x.raw&&!(x.w&&x.w.m!=null)&&!x.src);
   const pchip=x=>`<span class="chip p ${x.p.gender==='여'?'f':x.p.gender==='남'?'m':''}" title="${esc((x.k==='in'?'들어오는 시간: ':'나가는 시간: ')+(x.raw||(x.src?'차 출발 시각':'')))}">${esc(x.p.name||'(이름 없음)')}${x.src?' 🚌':''}</span>`;
-  const pcell=list=>{const a=list.filter(x=>x.k==='in'),b=list.filter(x=>x.k==='out');return (a.length?`<div class="pin"><b>⬇️ 들어와요 ${a.length}명</b> ${a.map(pchip).join('')}</div>`:'')+(b.length?`<div class="pout"><b>⬆️ 나가요 ${b.length}명</b> ${b.map(pchip).join('')}</div>`:'')};
-  const badge=c=>{const n=(c.members||[]).length,names=(c.members||[]).map(pn);return `<div class="cbadge ${c.dir}"><b>${c.dir==='in'?'🚌 들어오는 차':'🏠 집에 가는 차'} · ${esc(c.time)}</b><div>${esc(c.type||'')}${c.name?' · '+esc(c.name):''} <span class="cnt ${c.cap&&n>c.cap?'over':''}">${n}/${c.cap||'?'}</span></div>${c.place?`<div class="hint">${c.dir==='in'?'출발':'도착'}: ${esc(c.place)}</div>`:''}${c.driver?`<div class="hint">운전: ${esc(pn(c.driver))}</div>`:''}${names.length?`<div class="nm">${names.map(esc).join(', ')}</div>`:''}</div>`};
+  const pcell=list=>{const a=list.filter(x=>x.k==='in'),b=list.filter(x=>x.k==='out');return (a.length?`<div class="pin"><b>⬇️ 들어와요 ${a.length}명</b> ${moreList(a.map(pchip),6)}</div>`:'')+(b.length?`<div class="pout"><b>⬆️ 나가요 ${b.length}명</b> ${moreList(b.map(pchip),6)}</div>`:'')};
+  const badge=c=>{const n=(c.members||[]).length,names=(c.members||[]).map(pn);return `<div class="cbadge ${c.dir}"><b>${c.dir==='in'?'🚌 들어오는 차':'🏠 집에 가는 차'} · ${esc(c.time)}</b><div>${esc(c.type||'')}${c.name?' · '+esc(c.name):''} <span class="cnt ${c.cap&&n>c.cap?'over':''}">${n}/${c.cap||'?'}</span></div>${c.place?`<div class="hint">${c.dir==='in'?'출발':'도착'}: ${esc(c.place)}</div>`:''}${c.driver?`<div class="hint">운전: ${esc(pn(c.driver))}</div>`:''}${names.length?`<div class="nm">${moreList(names.map(esc),8,', ')}</div>`:''}</div>`};
   let out='';
   for(let d=0;d<days;d++){const dc=cars.filter(c=>+c.day===d),off=dc.filter(c=>slotOf(c)<0);
     let rows='',i=0;const span={};while(i<S.length){const v=C[d+'-'+S[i]]||'';let j=i;if(v)while(j+1<S.length&&C[d+'-'+S[j+1]]===v)j++;span[i]=[v,j-i+1];i=j+1}
@@ -820,6 +824,7 @@ const ACT={
     dl(new Blob(['﻿'+[H,...rows].map(r=>r.map(q).join(',')).join('\r\n')],{type:'text/csv'}),R.name+'_참석인원.csv')},
   /* 배정 */
   dir:t=>{SUB.dir=t.dataset.v;render()},
+  pmore:t=>{const m=t.previousElementSibling;if(!m)return;m.hidden=!m.hidden;t.textContent=m.hidden?`＋ ${t.dataset.n}명 더보기`:'접기 ▲'},
   carView:t=>{SUB.carView=t.dataset.v;try{localStorage.setItem('camp-carview',SUB.carView)}catch(_){}render()},
   carAdd:()=>{SUB.carView='card';R.cars.list.push({id:uid(),dir:SUB.dir,type:R.cars.types[SUB.dir][0]||'',day:SUB.dir==='in'?0:(+R.nights||0),time:'',members:[]});save();render()},
   gApply:()=>{const n=Math.max(0,Math.min(60,+$('#gCnt').value||0)),G=R.grp.list;if(n<G.length){const lost=G.slice(n).reduce((s,g)=>s+(g.members||[]).length,0);if(lost&&!confirm(`${G.length-n}개 조를 줄이면 그 조의 ${lost}명이 미배정으로 돌아가요. 할까요?`))return;G.length=n}else for(let i=G.length;i<n;i++)G.push({id:uid(),name:(i+1)+'조',members:[],leader:'',staff:[],roles:{}});save();render()},
