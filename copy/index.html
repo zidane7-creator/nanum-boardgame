@@ -246,7 +246,7 @@ function openP(i,c,grew){cur=i;const p=DB.list[i];if(!p){home();return}const N=B
     const top=(y-337)*sc;
     ref.scrollTop=Math.max(0,top-84*sc)};
   if(!LPOS)loadPos().then(()=>{lastV=0;paint()});
-  const paint=()=>{const lines=tx.value.split("\n"),cv=curLine();
+  const paint=()=>{/* 입력칸에 스크롤바가 생기면 그만큼 번호 칸도 좁혀서 줄바꿈 위치를 똑같이 맞춰요 */bd.style.right=Math.max(0,tx.offsetWidth-tx.clientWidth)+"px";const lines=tx.value.split("\n"),cv=curLine();
     bd.innerHTML=lines.map((l,k)=>`<div class="vl${k+1===cv?" cur":k+1<cv&&l.trim()?" dn":""}${k+1>vn?" over":""}"><span class="vn">${k+1<cv&&l.trim()?"✓":""}${k+1}</span>${esc(l)||"&#8203;"}</div>`).join("");
     bd.scrollTop=tx.scrollTop;const v=Math.min(cv,vn);$("vNow").textContent=cv>vn?`${vn}절 다음`:cv;if(v!==lastV){lastV=v;scrollRef(v)}else{clearTimeout(paint.t);paint.t=setTimeout(()=>scrollRef(v),600)}};
   /* 자동 저장: 글자를 칠 때마다 바로 이 기기에 저장하고, 페이지를 떠날 때도 한 번 더 저장해요 */
