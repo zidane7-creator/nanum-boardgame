@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://js.tosspayments.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' data: blob: https://api.github.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://api.open-meteo.com https://api.met.no https://wttr.in https://api.mymemory.translated.net https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.doubleclick.net https://www.google.com https://*.tosspayments.com https://0.peerjs.com wss://0.peerjs.com wss://broker.emqx.io:8084 wss://broker.hivemq.com:8884 https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self' blob:; frame-src 'self' https://www.bskorea.or.kr https://*.tosspayments.com; object-src 'none'; base-uri 'self'; form-action 'self' https://*.tosspayments.com">
+<meta name="referrer" content="strict-origin-when-cross-origin"><script async src="https://www.googletagmanager.com/gtag/js?id=G-0WTWY3TPES"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-0WTWY3TPES");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>말씀카드 | 치영의 교회 생활 즐기기 · 말씀 배경화면 PC·휴대폰 다운로드</title>
+<meta name="description" content="말씀 카드 이미지를 PC용·휴대폰용으로 내려받아 배경화면이나 묵상 카드로 써 보세요.">
+<meta name="keywords" content="말씀카드, 말씀 배경화면, 성경 구절 이미지, 휴대폰 배경화면, PC 배경화면, 묵상 카드">
+<link rel="canonical" href="https://zidane7-creator.github.io/nanum-boardgame/cards/">
+<meta property="og:title" content="말씀카드 — 치영의 교회 생활 즐기기">
+<meta property="og:description" content="PC용·휴대폰용 말씀카드를 내려받아요">
+<meta property="og:url" content="https://zidane7-creator.github.io/nanum-boardgame/cards/">
+<meta property="og:image" content="https://zidane7-creator.github.io/nanum-boardgame/assets/og.jpg">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💌</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<script src="../assets/jua.js"></script>
+<style>
+:root{--ink:#3b2a20;--cream:#fffaf0;--accent:#e8503a;--gold:#f5b82e;--green:#5aa957}
+*{box-sizing:border-box}
+html,body{margin:0;color:var(--ink);font-family:"Jua","Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+button{font:inherit;color:inherit;border:2px solid var(--ink);background:var(--cream);border-radius:16px;padding:8px 16px;cursor:pointer;box-shadow:0 3px 0 var(--ink)}
+button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+button:disabled{opacity:.45;cursor:default;transform:none}
+button.pri{background:var(--accent);color:#fff}button.go{background:var(--green);color:#fff}
+button.sm{padding:4px 10px;font-size:14px;border-radius:12px;box-shadow:0 2px 0 var(--ink)}
+input{font:inherit;color:inherit;border:2px solid var(--ink);border-radius:12px;padding:6px 10px;background:#fff;min-width:0}
+a{color:inherit}
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:calc(8px + env(safe-area-inset-top,0px)) 14px 8px;background:rgba(255,255,255,.92);border-bottom:4px solid var(--gold)}
+.top a{color:var(--ink);text-decoration:none;font-size:15px;border:2px solid var(--ink);border-radius:14px;padding:3px 10px;background:var(--cream)}
+.top .ttl{flex:1;font-size:19px}
+main{max-width:1150px;margin:0 auto;padding:16px 12px 70px}
+.card{background:var(--cream);border:3px solid var(--ink);border-radius:22px;padding:16px;margin-bottom:16px;box-shadow:0 5px 0 rgba(0,0,0,.12)}
+h1{font-weight:normal;text-align:center;font-size:clamp(30px,7vw,44px);margin:6px 0 2px}
+h2{font-weight:normal;margin:0 0 10px;font-size:21px}
+.sub{text-align:center;margin:0 0 14px;opacity:.8}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.hint{font-size:14px;opacity:.7}
+.bar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
+.wc{background:#fff;border:3px solid var(--ink);border-radius:18px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 4px 0 rgba(0,0,0,.12);transition:transform .15s}
+.wc:hover{transform:translateY(-3px)}
+.wc .im{aspect-ratio:3/4;background:#f3eadb center/cover no-repeat}
+.wc .t{padding:8px 10px;font-size:15px;line-height:1.3}
+.wc .t small{display:block;opacity:.65;font-size:13px}
+.wc .tags{display:flex;gap:4px;padding:0 10px 10px}.wc .tags span{font-size:11px;border:1.5px solid var(--ink);border-radius:8px;padding:0 6px;background:#fff3c4}
+.empty{text-align:center;padding:40px 10px;opacity:.75}
+.modal{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:14px}
+.modal .card{max-width:900px;width:100%;max-height:92vh;overflow:auto;margin:0}
+.pv{display:grid;grid-template-columns:1.6fr 1fr;gap:14px;align-items:start}
+@media (max-width:700px){.pv{grid-template-columns:1fr}}
+.pv figure{margin:0;text-align:center}.pv img{max-width:100%;max-height:60vh;border-radius:12px;border:2px solid var(--ink);background:#f3eadb}
+.pv figcaption{margin-top:6px}
+.f{display:flex;flex-direction:column;gap:8px}.f label{display:flex;flex-direction:column;gap:4px}
+.drop{border:2.5px dashed #c9b79e;border-radius:14px;padding:10px;text-align:center;background:#fff;min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.drop img{max-width:100%;max-height:180px;border-radius:8px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media (max-width:600px){.two{grid-template-columns:1fr}}
+.busy{position:fixed;inset:0;z-index:80;background:rgba(255,255,255,.75);display:flex;align-items:center;justify-content:center;font-size:20px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) scale(.9);background:var(--ink);color:#fff;padding:10px 18px;border-radius:16px;font-size:17px;opacity:0;transition:.25s;z-index:90;pointer-events:none;text-align:center;max-width:calc(100% - 32px)}
+.toast.show{opacity:1;transform:translateX(-50%) scale(1)}
+.foot{text-align:center;margin-top:20px;font-size:14px;opacity:.7}
+</style>
+</head><body>
+<div class="top"><a href="../">← 목장</a><span class="ttl">💌 말씀카드</span></div>
+<main>
+  <h1 class="sc-sky">말씀카드</h1>
+  <p class="sub sc-sky">마음에 드는 카드를 눌러 PC용·휴대폰용으로 내려받으세요</p>
+  <div class="bar"><input id="q" placeholder="말씀·구절로 찾기 (예: 요 3:16, 사랑)" style="width:min(360px,100%)"><span id="adm"></span></div>
+  <div class="grid" id="grid"><div class="empty">카드를 불러오는 중…</div></div>
+  <div class="foot" id="foot"></div>
+</main>
+<div id="modal"></div>
+<div class="toast" id="toast"></div>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let tt;function toast(t,ms=2400){const e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>e.classList.remove("show"),ms)}
+const busy=m=>{const d=document.createElement("div");d.className="busy";d.textContent=m;document.body.appendChild(d);return()=>d.remove()};
+/* ---------- 저장소: 이 사이트 GitHub 저장소의 cards/ 폴더 (자막스튜디오·전자책과 같은 관리자 키) ---------- */
+const GH={owner:"zidane7-creator",repo:"nanum-boardgame",branch:"main",dir:"cards/",KEY:"csub:gh-token",
+  token(){try{return localStorage.getItem(this.KEY)||""}catch(_){return""}},admin(){return!!this.token()},
+  async api(path,opt={}){const r=await fetch("https://api.github.com/repos/"+this.owner+"/"+this.repo+path,{...opt,headers:{Accept:"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28",Authorization:"Bearer "+this.token(),...(opt.body?{"Content-Type":"application/json"}:{}),...(opt.headers||{})}});
+    if(!r.ok){let m="";try{m=(await r.json()).message}catch(_){}const e=new Error(m||("GitHub "+r.status));e.status=r.status;throw e}return r},
+  raw(file){return this.api("/contents/"+encodeURI(this.dir+file)+"?ref="+this.branch,{headers:{Accept:"application/vnd.github.raw+json"}})},
+  async check(tok){const r=await fetch("https://api.github.com/repos/"+this.owner+"/"+this.repo,{headers:{Accept:"application/vnd.github+json",Authorization:"Bearer "+tok}});if(!r.ok)return{ok:false,status:r.status};const sc=r.headers.get("x-oauth-scopes");if(sc!==null&&!/(^|[ ,])(public_repo|repo)([ ,]|$)/.test(sc))return{ok:false,status:403};let j={};try{j=await r.json()}catch(_){}return{ok:!(j.permissions&&j.permissions.push===false),status:r.status}},
+  async commit(message,files,del=[]){
+    const ref=await (await this.api("/git/ref/heads/"+this.branch)).json();const base=ref.object.sha;
+    const bc=await (await this.api("/git/commits/"+base)).json();const tree=[];
+    for(const f of files){const bl=await (await this.api("/git/blobs",{method:"POST",body:JSON.stringify({content:f.b64,encoding:"base64"})})).json();tree.push({path:this.dir+f.path,mode:"100644",type:"blob",sha:bl.sha})}
+    for(const d of del)tree.push({path:this.dir+d,mode:"100644",type:"blob",sha:null});
+    const t=await (await this.api("/git/trees",{method:"POST",body:JSON.stringify({base_tree:bc.tree.sha,tree})})).json();
+    const c=await (await this.api("/git/commits",{method:"POST",body:JSON.stringify({message,tree:t.sha,parents:[base]})})).json();
+    await this.api("/git/refs/heads/"+this.branch,{method:"PATCH",body:JSON.stringify({sha:c.sha})});return c.sha}};
+const b64bytes=u=>{let b="";for(let i=0;i<u.length;i+=0x8000)b+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(b)};
+const b64txt=s=>b64bytes(new TextEncoder().encode(s));
+function ghErr(what,e){const st=e&&e.status;toast(what+" 실패: "+(st===401?"키가 틀렸거나 만료됐어요":st===403?"키에 저장소 쓰기 권한이 없어요 (public_repo)":st===409||st===422?"방금 저장소가 바뀌었어요. 잠시 뒤 다시 해 주세요":"인터넷 연결을 확인해 주세요"),5000)}
+async function readIndex(){
+  if(GH.admin()){try{return await (await GH.raw("index.json")).json()}catch(e){if(e.status===404)return[];if(e.status===401){toast("관리자 키가 만료됐어요. 다시 넣어 주세요",4500);try{localStorage.removeItem(GH.KEY)}catch(_){}}}}
+  try{const r=await fetch("index.json?t="+Date.now());return r.ok?await r.json():[]}catch(_){return[]}}
+/* 이미지를 그대로(원본 화질) 올리되, 너무 크면 JPEG로 줄여요. 목록용 작은 그림도 따로 만들어요 */
+function loadImg(file){return new Promise((res,rej)=>{const u=URL.createObjectURL(file),im=new Image();im.onload=()=>res({im,u});im.onerror=()=>rej(new Error("img"));im.src=u})}
+async function toJpeg(im,maxSide,q){const k=Math.min(1,maxSide/Math.max(im.naturalWidth,im.naturalHeight)),c=document.createElement("canvas");c.width=Math.round(im.naturalWidth*k);c.height=Math.round(im.naturalHeight*k);
+  const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);return new Uint8Array(await (await new Promise(r=>c.toBlob(r,"image/jpeg",q))).arrayBuffer())}
+async function prepFile(file){const{im}=await loadImg(file);const big=file.size>8*1048576||!/^image\/(jpeg|png|webp)$/.test(file.type);
+  const bytes=big?await toJpeg(im,4000,.92):new Uint8Array(await file.arrayBuffer());const ext=big?"jpg":({"image/jpeg":"jpg","image/png":"png","image/webp":"webp"})[file.type];
+  return{bytes,ext,w:im.naturalWidth,h:im.naturalHeight,thumb:await toJpeg(im,520,.82)}}
+
+/* ---------- 목록 ---------- */
+let CARDS=[];
+async function load(){CARDS=await readIndex();if(!Array.isArray(CARDS))CARDS=[];render()}
+function render(){const q=($("q").value||"").trim().toLowerCase(),L=CARDS.filter(c=>!q||(c.title+" "+(c.ref||"")+" "+(c.tags||[]).join(" ")).toLowerCase().includes(q));
+  const adm=GH.admin();$("adm").innerHTML=adm?'<button class="go sm" id="add">＋ 카드 올리기</button>':"";if($("add"))$("add").onclick=()=>edit();
+  $("foot").innerHTML=adm?'관리자로 들어와 있어요 · <a href="#" id="out">관리자 로그아웃</a>':'<a href="#" id="in">🔑 관리자</a>';
+  if($("out"))$("out").onclick=e=>{e.preventDefault();try{localStorage.removeItem(GH.KEY)}catch(_){}toast("관리자 키를 이 브라우저에서 지웠어요");load()};
+  if($("in"))$("in").onclick=e=>{e.preventDefault();login()};
+  $("grid").innerHTML=L.length?L.map(c=>`<div class="wc" data-id="${esc(c.id)}"><div class="im" style="background-image:url('${esc(c.thumb)}?v=${c.updated||0}')"></div><div class="t">${esc(c.title)}${c.ref?`<small>${esc(c.ref)}</small>`:""}</div>
+    <div class="tags">${c.pc?"<span>💻 PC</span>":""}${c.mobile?"<span>📱 휴대폰</span>":""}</div></div>`).join(""):`<div class="empty" style="grid-column:1/-1">${CARDS.length?"찾는 카드가 없어요":"아직 올라온 말씀카드가 없어요. 곧 채워질 거예요 🙏"}</div>`;
+  document.querySelectorAll(".wc").forEach(el=>el.onclick=()=>view(el.dataset.id))}
+$("q").oninput=render;
+function modal(html,mount){$("modal").innerHTML=`<div class="modal"><div class="card">${html}</div></div>`;const m=$("modal").firstChild;m.onclick=e=>{if(e.target===m)close()};m.querySelectorAll("[data-close]").forEach(b=>b.onclick=close);mount&&mount(m)}
+function close(){$("modal").innerHTML=""}
+addEventListener("keydown",e=>{if(e.key==="Escape")close()});
+const fname=(c,kind,ext)=>(c.title||"말씀카드").replace(/[\\/:*?"<>|\n]+/g," ").trim().slice(0,40)+(kind==="pc"?"_PC":"_휴대폰")+"."+ext;
+function view(id){const c=CARDS.find(x=>x.id===id);if(!c)return;const v="?v="+(c.updated||0);
+  const fig=(k,lbl)=>c[k]?`<figure><img src="${esc(c[k])}${v}" alt="${esc(c.title)} ${lbl}" loading="lazy"><figcaption><a href="${esc(c[k])}${v}" download="${esc(fname(c,k,c[k].split(".").pop()))}"><button class="pri">${k==="pc"?"💻 PC용 받기":"📱 휴대폰용 받기"}</button></a><div class="hint">${c[k+"Size"]||""}</div></figcaption></figure>`:"";
+  modal(`<div class="row" style="justify-content:space-between"><h2 style="margin:0">💌 ${esc(c.title)} ${c.ref?`<span class="hint">${esc(c.ref)}</span>`:""}</h2><button class="sm" data-close>✕</button></div>
+    <div class="pv" style="margin-top:12px">${fig("pc","PC용")}${fig("mobile","휴대폰용")}</div>
+    <p class="hint" style="text-align:center">PC는 바탕화면, 휴대폰은 잠금화면·배경화면으로 써 보세요. 휴대폰에서 버튼이 안 되면 그림을 길게 눌러 저장하세요.</p>
+    ${GH.admin()?`<div class="row" style="justify-content:center"><button class="sm" id="ed">✏️ 고치기</button><button class="sm" id="dl">🗑️ 내리기</button></div>`:""}`,m=>{
+    if(m.querySelector("#ed"))m.querySelector("#ed").onclick=()=>edit(c);
+    if(m.querySelector("#dl"))m.querySelector("#dl").onclick=()=>del(c)})}
+
+/* ---------- 관리자: 올리기·고치기·내리기 ---------- */
+function login(){modal(`<h2>🔑 관리자 키 넣기</h2><p class="hint">말씀카드는 관리자만 올릴 수 있어요. 자막스튜디오·전자책에 넣었던 GitHub 키를 이 브라우저에 넣었다면 이미 관리자예요.</p>
+  <p class="hint">키가 없다면 GitHub에 로그인한 채로 <a href="https://github.com/settings/tokens/new?scopes=public_repo&description=%EB%A7%90%EC%94%80%EC%B9%B4%EB%93%9C" target="_blank" rel="noopener"><b>여기를 눌러</b></a> public_repo가 체크된 키를 만들어 붙여 넣으세요.</p>
+  <input type="password" id="tok" placeholder="ghp_… 키 붙여 넣기" autocomplete="off" style="width:100%"><p class="hint">키는 이 브라우저에만 저장돼요. 다른 사람에게 보내지 마세요.</p>
+  <div class="row" style="justify-content:flex-end"><button data-close>취소</button><button class="pri" id="ok">확인</button></div>`,m=>{
+  m.querySelector("#ok").onclick=async()=>{const t=m.querySelector("#tok").value.trim();if(!t)return;const d=busy("키를 확인하는 중…");let r={ok:false};try{r=await GH.check(t)}catch(_){}d();
+    if(!r.ok){ghErr("키 확인",{status:r.status||403});return}try{localStorage.setItem(GH.KEY,t)}catch(_){}close();toast("관리자로 들어왔어요");load()}})}
+const sizeTxt=f=>f?`${f.w}×${f.h} · ${(f.bytes.length/1048576).toFixed(1)}MB`:"";
+function edit(c){const files={pc:null,mobile:null};
+  const slot=(k,lbl,tip)=>`<div><b>${lbl}</b> <span class="hint">${tip}</span><label class="drop" id="d-${k}">${c&&c[k]?`<img src="${esc(c[k])}?v=${c.updated||0}" alt="">`:"<span style='font-size:30px'>🖼️</span>"}<span class="hint" id="s-${k}">${c&&c[k]?"바꾸려면 눌러서 새 그림 고르기":"눌러서 그림 고르기"}</span><input type="file" accept="image/*" id="f-${k}" hidden></label></div>`;
+  modal(`<div class="row" style="justify-content:space-between"><h2 style="margin:0">${c?"✏️ 말씀카드 고치기":"＋ 말씀카드 올리기"}</h2><button class="sm" data-close>✕</button></div>
+    <div class="f" style="margin-top:10px"><label>말씀 (제목) <input id="ti" maxlength="80" value="${esc(c?c.title:"")}" placeholder="예) 내가 너를 사랑하노라"></label>
+      <label>출처 (선택) <input id="rf" maxlength="40" value="${esc(c?c.ref||"":"")}" placeholder="예) 사 43:4"></label>
+      <div class="two">${slot("pc","💻 PC용","가로 그림 (예: 1920×1080)")}${slot("mobile","📱 휴대폰용","세로 그림 (예: 1080×1920)")}</div>
+      <p class="hint">두 가지 중 하나만 올려도 돼요. 그림은 원래 화질 그대로 올라가요 (8MB가 넘으면 조금 줄여요).</p></div>
+    <div class="row" style="justify-content:flex-end;margin-top:10px"><button data-close>취소</button><button class="go" id="save">${c?"고친 내용 저장":"올리기"}</button></div>`,m=>{
+    ["pc","mobile"].forEach(k=>{const inp=m.querySelector("#f-"+k);inp.onchange=async()=>{const f=inp.files[0];if(!f)return;const d=busy("그림을 준비하는 중…");try{files[k]=await prepFile(f);d();
+      m.querySelector("#d-"+k).querySelector("img,span").outerHTML=`<img src="${URL.createObjectURL(f)}" alt="">`;m.querySelector("#s-"+k).textContent=sizeTxt(files[k])}catch(e){d();toast("그림을 읽지 못했어요")}}});
+    m.querySelector("#save").onclick=async()=>{const title=m.querySelector("#ti").value.trim(),ref=m.querySelector("#rf").value.trim();
+      if(!title){toast("말씀(제목)을 적어 주세요");return}if(!c&&!files.pc&&!files.mobile){toast("PC용이나 휴대폰용 그림을 하나 이상 골라 주세요");return}
+      const id=c?c.id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),now=Date.now(),up=[],del=[];
+      const card=Object.assign({},c||{id,created:now},{title,ref,updated:now});
+      for(const k of ["pc","mobile"]){const f=files[k];if(!f)continue;const path=`img/${id}-${k}.${f.ext}`;if(c&&c[k]&&c[k]!==path)del.push(c[k]);up.push({path,b64:b64bytes(f.bytes)});card[k]=path;card[k+"Size"]=sizeTxt(f)}
+      const tsrc=files.mobile||files.pc;if(tsrc){const tp=`img/${id}-t.jpg`;up.push({path:tp,b64:b64bytes(tsrc.thumb)});card.thumb=tp}
+      const d=busy("올리는 중…");try{const list=await readIndex(),next=c?list.map(x=>x.id===id?card:x):[card,...list];up.push({path:"index.json",b64:b64txt(JSON.stringify(next,null,1))});
+        await GH.commit("말씀카드: "+title+(c?" 고치기":" 올리기"),up,del);CARDS=next;d();close();render();toast("올렸어요! 다른 사람 화면에는 1분쯤 뒤에 보여요",4000)}catch(e){d();ghErr("올리기",e)}}})}
+async function del(c){if(!confirm(`‘${c.title}’ 카드를 내릴까요? 그림 파일도 함께 지워져요.`))return;const d=busy("내리는 중…");
+  try{const list=(await readIndex()).filter(x=>x.id!==c.id);await GH.commit("말씀카드: "+c.title+" 내리기",[{path:"index.json",b64:b64txt(JSON.stringify(list,null,1))}],[c.pc,c.mobile,c.thumb].filter(Boolean));CARDS=list;d();close();render();toast("내렸어요")}catch(e){d();ghErr("내리기",e)}}
+load();
+</script>
+<script src="../assets/scene.js?v=20261116d"></script><script src="../assets/home.js?v=20261118"></script>
+</body></html>

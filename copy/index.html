@@ -203,11 +203,15 @@ function openP(i,c,grew){cur=i;const p=DB.list[i];if(!p){home();return}const N=B
     bd.innerHTML=lines.map((l,k)=>`<div class="vl${k+1===cv?" cur":k+1<cv&&l.trim()?" dn":""}${k+1>vn?" over":""}"><span class="vn">${k+1<cv&&l.trim()?"✓":""}${k+1}</span>${esc(l)||"&#8203;"}</div>`).join("");
     bd.scrollTop=tx.scrollTop;const v=Math.min(cv,vn);$("vNow").textContent=cv>vn?`${vn}절 다음`:cv;if(v!==lastV){lastV=v;scrollRef(v)}else{clearTimeout(paint.t);paint.t=setTimeout(()=>scrollRef(v),600)}};
   let st;tx.oninput=()=>{upd();paint();clearTimeout(st);st=setTimeout(()=>setTx(p.id,curC,tx.value),400)};
+  /* 필사는 직접 쳐서 써요: 붙여넣기·끌어다 놓기는 막아요 */
+  const noPaste=e=>{e.preventDefault();toast("필사는 한 글자씩 직접 쳐서 써요 ✍️ (붙여넣기는 안 돼요)",2600)};
+  tx.addEventListener("paste",noPaste);tx.addEventListener("drop",noPaste);tx.addEventListener("dragover",e=>e.preventDefault());
+  tx.addEventListener("beforeinput",e=>{if(/^insertFrom(Paste|Drop|Yank)/.test(e.inputType))noPaste(e)});
   ["keyup","click","select"].forEach(ev=>tx.addEventListener(ev,paint));tx.addEventListener("scroll",()=>{bd.scrollTop=tx.scrollTop});
   new ResizeObserver(paint).observe(tx);upd();paint();
   $("doneC").onclick=()=>{setTx(p.id,curC,tx.value);if(!p.done.includes(curC))p.done.push(curC);p.done.sort((a,b)=>a-b);save();
     const d2=p.done.length;toast(d2===N?`🎉 ${BOOKS[p.b][0]}를 다 썼어요! 나무에 열매가 맺혔어요`:`🌱 ${curC}장 완료! 나무가 자랐어요 (${d2}/${N})`,3000);openP(i,nextChap(p),true)}}
 home();
 </script>
-<script src="../assets/scene.js?v=20261116d"></script><script src="../assets/home.js"></script>
+<script src="../assets/scene.js?v=20261116d"></script><script src="../assets/home.js?v=20261118"></script>
 </body></html>
