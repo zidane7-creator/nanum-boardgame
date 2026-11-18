@@ -113,6 +113,13 @@ table.tt td.cont{border-top-color:transparent}
 /* venue */
 .vrank td.r1{background:#fff3c4;font-weight:700}
 .dens{font-size:12px;border-radius:6px;padding:0 5px}
+.rbox{border:1.5px solid var(--line);border-radius:12px;padding:8px;background:#fffdf7}
+table.rt td{border:0;padding:2px 3px;white-space:nowrap}table.rt td.hint{width:1%}table.rt td input{width:100%;min-width:70px}
+.stars{white-space:nowrap}
+.sv{color:var(--gold);letter-spacing:-1px;white-space:nowrap}.sv i{font-style:normal;color:#e2d6c0}
+.box .sec{border-top:1px dashed var(--line);margin-top:8px;padding-top:6px}
+.sline{font-size:14px;margin:3px 0}
+.room-r{gap:4px;margin:3px 0;font-size:13px;flex-wrap:wrap;border-bottom:1px dotted var(--line);padding-bottom:3px}.room-r input{padding:3px 5px}.room-r span{white-space:nowrap}
 /* supplies */
 .steps{display:flex;flex-wrap:wrap;gap:2px}
 .steps button{font-size:12px;padding:1px 6px;border-radius:7px;background:#fff;border-color:#cdbda6;color:var(--muted)}
@@ -221,6 +228,10 @@ function fill(R){
   d('theme',{});const t=R.theme;['hearts','verses','cands'].forEach(k=>{if(!t[k])t[k]=[]});
   d('venue',{});const v=R.venue;if(v.expected==null)v.expected=null;if(!v.list)v.list=[];if(!v.crit)v.crit=[{id:'c_snd',name:'음향'},{id:'c_use',name:'용도(프로그램 공간)'}];
   if(!v.w){v.w={fixed:20,var:25,cap:20,loc:15};const r=20/v.crit.length;v.crit.forEach(x=>v.w[x.id]=Math.round(r))}
+  if(!v.rules){v.rules={};RULE_KEYS.forEach(k=>v.rules[k]=RULE_DEF[k].rows.map(([f,t,sc])=>({id:uid(),from:f,to:t,s:sc})));
+    const w={fixed:15,loc:15,lodge:15,meal:15,dens:15},rest=100-75,n=v.crit.length;v.crit.forEach((x,i)=>w[x.id]=Math.floor(rest/n)+(i<rest%n?1:0));if(!n)w.fixed+=25;v.w=w;
+    v.list.forEach(x=>{if(x.mealPrice==null&&x.meal!=null)x.mealPrice=x.meal;if(!x.rooms)x.rooms=[]})}
+  v.list.forEach(x=>{if(!x.rooms)x.rooms=[]});
   d('speakers',[]);d('programs',[]);
   d('tt',{});if(!R.tt.from)R.tt.from='07:00';if(!R.tt.to)R.tt.to='24:00';if(!R.tt.cells)R.tt.cells={};
   d('conf',{});CONF.forEach(([k])=>{if(!R.conf[k])R.conf[k]={v:'',ok:false}});
@@ -235,7 +246,7 @@ function fill(R){
 /* 경로로 객체 찾기: "venue.list#ID>sc" */
 function objOf(spec){if(spec==null)return null;if(spec==='.')return R;const[main,post]=spec.split('>');const[path,id]=main.split('#');let o=R;for(const p of path.split('.'))o=o==null?o:o[p];
   if(id!==undefined)o=Array.isArray(o)?o.find(x=>x.id===id):o&&o[id];
-  if(post&&o){for(const p of post.split('.')){if(o[p]==null)o[p]={};o=o[p]}}return o}
+  if(post&&o){for(const q of post.split('.')){const[k,pid]=q.split('#');if(o[k]==null)o[k]=pid!==undefined?[]:{};o=o[k];if(pid!==undefined)o=o.find(x=>x.id===pid);if(!o)return null}}return o}
 
 const P=id=>R.people.find(p=>p.id===id);
 const pn=id=>{const p=P(id);return p?p.name||'(이름 없음)':'(삭제된 사람)'};
@@ -298,6 +309,7 @@ function afterRender(){
   if(TAB==='minutes')updPrev();
   if(TAB==='files'||TAB==='acc')$$('img[data-fid]').forEach(async im=>{try{const f=await idb.get('files',im.dataset.fid);if(f)im.src=URL.createObjectURL(f.blob||f)}catch(e){}});
   if(TAB==='rooms')bindRooms();
+  const rd=$('#rulesD');if(rd)rd.ontoggle=()=>{R.venue.rulesOpen=rd.open;save()};
   if(TAB==='people'){const q=$('#pq');if(q)filterPeople(q.value)}
   const pq=$('#poolQ');if(pq)filterPool(pq.value);
 }
@@ -385,41 +397,68 @@ function vTheme(){const t=R.theme,names=R.people.map(p=>p.name);
 
 /* ---------- 장소탐색 (ICE) ---------- */
 function densInfo(d){if(d==null||!isFinite(d))return['-',null,''];if(d<=1.2)return['매우 쾌적',5,'b-ok'];if(d<=1.5)return['추천',5,'b-ok'];if(d<=2)return['적정',4,'b-mid'];if(d<=2.5)return['가능하지만 불편',2,'b-mid'];if(d<=3)return['비추천',1,'b-no'];return['너무 좁아요',0,'b-no']}
-function vCalc(v){const N=+R.venue.expected||0,varc=((+v.lodge||0)+(+v.meal||0))*N,tot=(+v.fixed||0)+varc;const dens=v.area>0&&N?N/v.area:null;return{N,varc,tot,per:N?tot/N:0,dens}}
-function critList(){return[{id:'fixed',name:'고정비',auto:1},{id:'var',name:'변동비',auto:1},{id:'cap',name:'수용(평당 인원)',auto:1},{id:'loc',name:'위치(이동시간)',auto:1},...R.venue.crit]}
-function scores(){const L=R.venue.list,C=critList();const rel=(vals,v)=>{const xs=vals.filter(x=>x!=null&&x!==''&&!isNaN(x)).map(Number);if(v==null||v===''||isNaN(v)||!xs.length)return null;const mx=Math.max(...xs),mn=Math.min(...xs);return mx===mn?5:Math.round((1+4*(mx-v)/(mx-mn))*10)/10};
-  const fx=L.map(v=>v.fixed),vr=L.map(v=>(v.lodge!=null||v.meal!=null)?vCalc(v).varc:null),lc=L.map(v=>v.travel);
-  const out=L.map((v,i)=>{const c=vCalc(v);const auto={fixed:rel(fx,v.fixed),var:rel(vr,vr[i]),cap:(()=>{let s=densInfo(c.dens)[1];if(s!=null&&v.cap&&c.N&&+v.cap<c.N)s=Math.min(s,1);return s})(),loc:rel(lc,v.travel)};
-    const sc={};C.forEach(k=>{const m=(v.sc||{})[k.id];sc[k.id]={auto:auto[k.id]??null,v:(m!==undefined&&m!==null&&m!=='')?+m:(auto[k.id]??null),manual:m!==undefined&&m!==null&&m!==''}});
+/* 📏 점수 기준: 구간(부터~까지)마다 별 몇 개 */
+const RULE_DEF={
+  fixed:{name:'고정비',sub:'예배당·다목적실 등 공용공간 대여비 총합',unit:'원',rows:[[0,300000,5],[300000,600000,4],[600000,1000000,3],[1000000,1500000,2],[1500000,null,1]]},
+  loc:{name:'이동시간',sub:'교회 → 장소',unit:'분',rows:[[0,60,5],[60,90,4],[90,120,3],[120,180,2],[180,null,1]]},
+  lodge:{name:'숙소비',sub:'방 금액×개수 총합',unit:'원',rows:[[0,1500000,5],[1500000,2500000,4],[2500000,3500000,3],[3500000,5000000,2],[5000000,null,1]]},
+  meal:{name:'식대',sub:'1인당 식대 × 예상식사인원',unit:'원',rows:[[0,1000000,5],[1000000,1500000,4],[1500000,2000000,3],[2000000,3000000,2],[3000000,null,1]]},
+  dens:{name:'예배당 평당인원',sub:'예상참석인원 ÷ 예배당 면적(평)',unit:'명',rows:[[0,1.2,5],[1.2,1.5,5],[1.5,2,4],[2,2.5,2],[2.5,3,1],[3,null,0]]}};
+const RULE_KEYS=Object.keys(RULE_DEF);
+function ruleScore(key,x){if(x==null||x===''||!isFinite(x))return null;const L=(R.venue.rules[key]||[]).filter(r=>r.from!=null||r.to!=null);
+  const hit=L.find(r=>(r.from==null||x>=r.from)&&(r.to==null||x<=r.to));if(hit)return +hit.s||0;
+  const below=L.filter(r=>r.from!=null&&x>=r.from).sort((a,b)=>b.from-a.from)[0];return below?+below.s||0:null}
+const nz=v=>v===''||v==null?null:+v;
+function expN(){const V=R.venue,N=nz(V.expected);return{N,NL:nz(V.expLodge)??N,NM:nz(V.expMeal)??N}}
+function vCalc(v){const{N,NL,NM}=expN(),rooms=(v.rooms||[]).filter(r=>r.price||r.count||r.size);
+  const lodge=rooms.length?rooms.reduce((s,r)=>s+(+r.price||0)*(+r.count||0),0):null,cap=rooms.reduce((s,r)=>s+(+r.size||0)*(+r.count||0),0),nrooms=rooms.reduce((s,r)=>s+(+r.count||0),0);
+  const meal=v.mealPrice!=null&&v.mealPrice!==''&&NM!=null?(+v.mealPrice)*NM:null;
+  const dens=v.area>0&&N?N/v.area:null,tot=(+v.fixed||0)+(lodge||0)+(meal||0);
+  let fit=null;if(cap&&NL){const r=cap/NL;fit=r<1?['부족',`${NL-cap}명 모자라요`,'b-no']:r<=1.15?['적당',`${cap-NL}명 남아요`,'b-ok']:['여유',`${cap-NL}명 남아요`,'b-mid']}
+  return{N,NL,NM,lodge,cap,nrooms,meal,dens,tot,per:N?tot/N:0,fit}}
+function critList(){return[...RULE_KEYS.map(k=>({id:k,name:RULE_DEF[k].name,rule:1})),...R.venue.crit]}
+function scores(){const C=critList();const out=R.venue.list.map(v=>{const c=vCalc(v);
+    const raw={fixed:nz(v.fixed),loc:nz(v.travel),lodge:c.lodge,meal:c.meal,dens:c.dens};const sc={};
+    C.forEach(k=>{sc[k.id]=k.rule?ruleScore(k.id,raw[k.id]):((v.sc||{})[k.id]!=null&&(v.sc||{})[k.id]!==''?+v.sc[k.id]:null)});
     const wsum=C.reduce((s,k)=>s+(+R.venue.w[k.id]||0),0)||1;
-    const ice=C.reduce((s,k)=>s+(sc[k.id].v||0),0),plus=C.reduce((s,k)=>s+(sc[k.id].v||0)*(+R.venue.w[k.id]||0),0)/wsum;return{v,sc,ice,plus,c}});
-  const rank=(key)=>{const s=out.map(o=>o[key]).sort((a,b)=>b-a);out.forEach(o=>o[key+'R']=s.indexOf(o[key])+1)};rank('ice');rank('plus');return out}
-function vVenue(){const V=R.venue,C=critList(),S=scores(),wsum=C.reduce((s,k)=>s+(+V.w[k.id]||0),0);
-  const card=v=>{const c=vCalc(v),d=densInfo(c.dens),s='venue.list#'+v.id;return `<div class="box"><div class="bh">${inp(s,'name',{ph:'장소 이름',rr:1,st:'font-weight:600'})}<button class="x" data-act="del" data-c="venue.list" data-v="${v.id}">🗑</button></div>
-   <div class="f2 two">
-    <label class="fld">고정비 (대여비, 원)${inp(s,'fixed',{n:1,rr:1,ph:'예배당 등 대여비'})}</label>
-    <label class="fld">이동시간 (분)${inp(s,'travel',{n:1,rr:1,ph:'교회→장소'})}</label>
-    <label class="fld">숙소비 (1인, 원)${inp(s,'lodge',{n:1,rr:1})}</label>
-    <label class="fld">식대 (1인 전체, 원)${inp(s,'meal',{n:1,rr:1})}</label>
-    <label class="fld">숙소 수용인원 (명)${inp(s,'cap',{n:1,rr:1})}</label>
-    <label class="fld">예배당 면적 (평)${inp(s,'area',{n:1,rr:1})}</label></div>
-   <div style="margin-top:6px;font-size:14px">변동비 <b>${won(c.varc)}</b>원 <span class="hint">(숙소비+식대)×${c.N}명</span><br>총비용 <b>${won(c.tot)}</b>원 · 1인당 <b>${won(c.per)}</b>원<br>
-   예배당 평당 <b>${c.dens==null?'-':c.dens.toFixed(2)}</b>명 ${c.dens!=null?`<span class="dens badge ${d[2]}">${d[0]}</span>`:''}${v.cap&&c.N&&+v.cap<c.N?` <span class="badge b-no">숙소 ${c.N-v.cap}명 부족</span>`:''}</div>
+    const ice=C.reduce((s,k)=>s+(sc[k.id]||0),0),plus=C.reduce((s,k)=>s+(sc[k.id]||0)*(+R.venue.w[k.id]||0),0)/wsum;return{v,sc,ice,plus,c,max:C.length*5}});
+  const rank=key=>{const s=out.map(o=>o[key]).sort((a,b)=>b-a);out.forEach(o=>o[key+'R']=s.indexOf(o[key])+1)};rank('ice');rank('plus');return out}
+const starTxt=n=>n==null?'<span class="hint">-</span>':`<span class="sv" title="${n}점">${'★'.repeat(Math.round(n))}<i>${'★'.repeat(5-Math.round(n))}</i></span>`;
+const fmtN=(x,u)=>x==null||x===''?'∞':u==='원'?won(x):String(x);
+function vVenue(){const V=R.venue,C=critList(),S=scores(),wsum=C.reduce((s,k)=>s+(+V.w[k.id]||0),0),E=expN(),SC={};S.forEach(o=>SC[o.v.id]=o);
+  const ruleBox=k=>{const D=RULE_DEF[k],L=V.rules[k];return `<div class="rbox"><div class="row"><b class="j" style="font-size:16px">${D.name}</b><span class="hint">${D.sub} · 단위 ${D.unit}</span></div>
+    <table class="t rt">${L.map(r=>{const s='venue.rules.'+k+'#'+r.id;return `<tr><td>${inp(s,'from',{n:1,rr:1,ph:'0'})}</td><td class="hint">부터</td><td>${inp(s,'to',{n:1,rr:1,ph:'끝없음'})}</td><td class="hint">까지</td><td class="stars">${[1,2,3,4,5].map(n=>`<button data-act="ruleStar" data-k="${k}" data-v="${r.id}" data-n="${n}" class="${n<=(+r.s||0)?'on':''}">★</button>`).join('')}</td><td><button class="x" data-act="ruleDel" data-k="${k}" data-v="${r.id}" title="구간 빼기">×</button></td></tr>`}).join('')}</table>
+    <div class="row"><button class="sm" data-act="ruleAdd" data-k="${k}">+ 구간</button><span class="hint">${D.unit==='원'?'예) 300000 부터 600000 까지 ★★★★':'예) 60 부터 90 까지 ★★★★'} · 칸을 비우면 ‘처음부터/끝없음’</span></div></div>`};
+  const card=v=>{const c=vCalc(v),d=densInfo(c.dens),s='venue.list#'+v.id,o=SC[v.id]||{sc:{}},sc=o.sc;const line=(k,txt)=>`<div class="row sline"><span>${txt}</span><span class="sp"></span>${starTxt(sc[k])}</div>`;
+   return `<div class="box"><div class="bh">${inp(s,'name',{ph:'장소 이름',rr:1,st:'font-weight:600'})}<span class="bt"><span class="badge ${o.iceR===1?'b-ok':''}" style="font-size:14px">ICE <b>${o.ice??0}</b>/${o.max} · ${o.iceR||'-'}위</span><button class="x" data-act="del" data-c="venue.list" data-v="${v.id}">🗑</button></span></div>
+   <div class="f2 two"><label class="fld">고정비 (공용공간 총합, 원)${inp(s,'fixed',{n:1,rr:1,ph:'예배당·다목적실 등'})}</label><label class="fld">이동시간 (분)${inp(s,'travel',{n:1,rr:1,ph:'교회→장소'})}</label></div>
+   ${line('fixed',`고정비 <b>${v.fixed!=null&&v.fixed!==''?won(v.fixed)+'원':'-'}</b>`)}${line('loc',`이동시간 <b>${v.travel!=null&&v.travel!==''?v.travel+'분':'-'}</b>`)}
+   <div class="sec"><b>🛏️ 숙소 방</b><span class="hint"> 몇 인용 방, 1실 금액, 개수</span>
+    ${(v.rooms||[]).map(r=>{const rs=`venue.list#${v.id}>rooms#${r.id}`;return `<div class="row room-r">${inp(rs,'size',{n:1,rr:1,st:'width:50px;flex:none',ph:'인원'})}<span>인용</span>${inp(rs,'price',{n:1,rr:1,st:'flex:1 1 90px;min-width:90px',ph:'1실 금액'})}<span>원 ×</span>${inp(rs,'count',{n:1,rr:1,st:'width:46px;flex:none',ph:'개'})}<span>개</span><span class="hint" style="margin-left:auto">=${won((+r.price||0)*(+r.count||0))}</span><button class="x" data-act="vroomDel" data-v="${v.id}" data-r="${r.id}">×</button></div>`}).join('')}
+    <button class="sm" data-act="vroomAdd" data-v="${v.id}">+ 방 종류 추가</button>
+    ${line('lodge',`총 숙소비 <b>${c.lodge!=null?won(c.lodge)+'원':'-'}</b>${c.nrooms?` <span class="hint">(방 ${c.nrooms}개)</span>`:''}`)}
+    <div class="hint" style="font-size:14px">숙소 수용 <b>${c.cap||0}</b>명 / 예상숙박 <b>${c.NL??'?'}</b>명 ${c.fit?`<span class="badge ${c.fit[2]}">${c.fit[0]}</span> ${c.fit[1]}`:''}</div></div>
+   <div class="sec"><div class="row"><b>🍚 식대</b>${inp(s,'mealPrice',{n:1,rr:1,st:'width:110px',ph:'1인당 금액'})}<span>원 × ${c.NM??'?'}명</span></div><span class="hint">1인당 수련회 전체 끼니 합계</span>${line('meal',`총 식대 <b>${c.meal!=null?won(c.meal)+'원':'-'}</b>`)}</div>
+   <div class="sec"><div class="row"><b>⛪ 예배당</b>${inp(s,'area',{n:1,rr:1,st:'width:80px',ph:'면적'})}<span>평</span></div>${line('dens',`평당 <b>${c.dens==null?'-':c.dens.toFixed(2)}</b>명 ${c.dens!=null?`<span class="badge ${d[2]}">${d[0]}</span>`:''}`)}</div>
+   ${V.crit.length?`<div class="sec">${V.crit.map(k=>{const x=+((v.sc||{})[k.id]||0);return `<div class="row sline"><span>${esc(k.name)}</span><span class="sp"></span><span class="stars">${[1,2,3,4,5].map(n=>`<button data-act="star" data-v="${v.id}" data-c="${k.id}" data-n="${n}" class="${n<=x?'on':''}">★</button>`).join('')}</span></div>`}).join('')}</div>`:''}
+   <div class="sec" style="font-size:14px">총비용 <b>${won(c.tot)}</b>원${c.N?` · 참석 1인당 <b>${won(c.per)}</b>원`:''}</div>
    <label class="fld" style="margin-top:6px">위치·주소${inp(s,'addr',{ph:'주소 또는 지역'})}</label>
    <label class="fld">링크·연락처${inp(s,'link',{ph:'홈페이지, 전화번호'})}</label>
-   ${V.crit.length?`<div style="margin-top:6px">${V.crit.map(k=>{const x=+((v.sc||{})[k.id]||0);return `<div class="row" style="gap:4px"><span style="min-width:110px;font-size:13px">${esc(k.name)}</span><span class="stars">${[1,2,3,4,5].map(n=>`<button data-act="star" data-v="${v.id}" data-c="${k.id}" data-n="${n}" class="${n<=x?'on':''}">★</button>`).join('')}</span></div>`}).join('')}</div>`:''}
-   <label class="fld" style="margin-top:4px">메모${inp(s,'memo')}</label></div>`};
+   <label class="fld">메모${inp(s,'memo')}</label></div>`};
   return `<div class="card"><div class="row"><h2 style="margin:0">🏕️ 장소탐색</h2><span class="sp"></span><a class="btn pri" href="../retreat/" target="_blank">🔎 수련회 장소찾기 ↗</a></div>
-  <div class="row" style="margin-top:8px"><b class="j" style="font-size:17px">예상 참석인원</b>${inp('venue','expected',{n:1,rr:1,st:'width:100px',ph:'명'})}<span>명</span><span class="hint">변동비와 평당 인원 계산에 쓰여요 · 참석인원에 ${R.people.length}명 등록됨</span></div>
-  <p class="hint" style="margin:6px 0 0">평당 인원: 1~1.2 매우 쾌적 · 1.3~1.5 추천 · 1.5~2 적정 · 2~2.5 가능하지만 불편 · 2.5~3 비추천</p></div>
-  <div class="row" style="margin-bottom:8px"><button class="pri" data-act="add" data-c="venue.list">+ 장소 후보 추가</button></div>
-  ${V.list.length?`<div class="grid">${V.list.map(card).join('')}</div>`:'<div class="card"><div class="empty">장소 후보를 추가해 비교해 보세요</div></div>'}
-  <div class="card"><h2>⭐ 적합도 항목</h2><p class="hint">음향, 용도, 식사 질, 주차, 화장실 등 비교하고 싶은 항목을 하나씩 추가해요. 각 장소 카드에서 별점(1~5)을 매겨요.</p>
-   <div class="row">${V.crit.map(k=>`<span class="chip"><span data-act="critRen" data-v="${k.id}" style="cursor:pointer">${esc(k.name)}</span><button class="x" data-act="critDel" data-v="${k.id}">×</button></span>`).join('')}<input id="critNew" placeholder="+ 적합도 항목 추가 후 Enter" style="width:200px"></div></div>
+  <div class="f2" style="margin-top:8px;max-width:640px"><label class="fld">🙋 예상참석인원 (명)${inp('venue','expected',{n:1,rr:1,ph:'예배당 평당인원에 쓰여요'})}</label><label class="fld">🛏️ 예상숙박인원 (명)${inp('venue','expLodge',{n:1,rr:1,ph:E.N!=null?'비우면 '+E.N+'명':'숙소 수용과 비교'})}</label><label class="fld">🍚 예상식사인원 (명)${inp('venue','expMeal',{n:1,rr:1,ph:E.N!=null?'비우면 '+E.N+'명':'식대 계산'})}</label></div>
+  <p class="hint" style="margin:6px 0 0">참석인원에 ${R.people.length}명 등록됨 · 예상참석 → 예배당 평당인원, 예상숙박 → 숙소 수용(부족·적당·여유), 예상식사 → 식대</p></div>
+  <details class="card" id="rulesD" ${V.rulesOpen===false?'':'open'}><summary class="j" style="font-size:21px;cursor:pointer">📏 점수 기준 세우기 <span class="hint" style="font-family:inherit">구간마다 별 몇 개인지 정해요 · 장소 데이터를 넣으면 ICE 총점이 바로 계산돼요</span></summary>
+   <div class="grid" style="margin-top:10px;grid-template-columns:repeat(auto-fill,minmax(330px,1fr))">${RULE_KEYS.map(ruleBox).join('')}
+   <div class="rbox"><div class="row"><b class="j" style="font-size:16px">⭐ 적합도 항목</b><span class="hint">장소마다 별 1~5개를 직접 매겨요</span></div>
+    <div class="row" style="margin-top:6px">${V.crit.map(k=>`<span class="chip"><span data-act="critRen" data-v="${k.id}" style="cursor:pointer" title="눌러서 이름 바꾸기">${esc(k.name)}</span><button class="x" data-act="critDel" data-v="${k.id}">×</button></span>`).join('')}</div><input id="critNew" placeholder="+ 항목 추가 (예: 주차) 후 Enter" style="width:100%;margin-top:6px"></div></div>
+   <div class="row" style="margin-top:8px"><button class="sm" data-act="rulesReset">기본 기준으로 되돌리기</button></div></details>
+  <div class="row" style="margin-bottom:8px"><button class="pri" data-act="vAdd">+ 장소 후보 추가</button></div>
+  ${V.list.length?`<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(320px,1fr))">${V.list.map(card).join('')}</div>`:'<div class="card"><div class="empty">장소 후보를 추가해 비교해 보세요</div></div>'}
   ${V.list.length?`<div class="card"><h2>🏆 의사결정 (ICE / ICE+)</h2>
-   <p class="hint">점수는 1~5점. 고정비·변동비·이동시간은 장소끼리 비교해 싼/가까운 곳이 5점, 수용은 평당 인원으로 자동 계산돼요. 칸에 숫자를 직접 적으면 그 점수로 바뀌어요(지우면 자동). <b>ICE</b> = 항목 점수 합계 순위, <b>ICE+</b> = 가중치를 곱한 점수 순위.</p>
-   <div class="hs" data-keep="ice"><table class="t vrank"><tr><th>장소</th>${C.map(k=>`<th class="num">${esc(k.name)}<br><span style="font-weight:400">가중치 <input data-o="venue.w" data-k="${k.id}" data-t="n" type="number" data-rr value="${esc(V.w[k.id]??0)}" style="width:52px">%</span></th>`).join('')}<th class="num">ICE<br>합계</th><th class="num">ICE<br>순위</th><th class="num">ICE+<br>점수</th><th class="num">ICE+<br>순위</th></tr>
-   ${S.map(o=>`<tr><td><b>${esc(o.v.name||'(이름 없음)')}</b></td>${C.map(k=>{const x=o.sc[k.id];return `<td class="num"><input data-o="venue.list#${o.v.id}>sc" data-k="${k.id}" data-t="n" type="number" step="0.5" min="0" max="5" data-rr value="${x.manual?esc(x.v):''}" placeholder="${x.auto==null?'-':x.auto}" style="width:58px;${x.manual?'background:#fff6d8':''}"></td>`}).join('')}<td class="num">${o.ice.toFixed(1)}</td><td class="num ${o.iceR===1?'r1':''}">${o.iceR}위</td><td class="num">${o.plus.toFixed(2)}</td><td class="num ${o.plusR===1?'r1':''}">${o.plusR}위</td></tr>`).join('')}</table></div>
+   <p class="hint">점수는 위 📏 점수 기준으로 자동 계산돼요(별 0~5개). <b>ICE</b> = 항목 별점 합계 순위, <b>ICE+</b> = 항목별 가중치(합계 100%)를 곱한 점수 순위예요.</p>
+   <div class="hs" data-keep="ice"><table class="t vrank"><tr><th>장소</th>${C.map(k=>`<th class="num">${esc(k.name)}<br><span style="font-weight:400">가중치 <input data-o="venue.w" data-k="${k.id}" data-t="n" type="number" data-rr value="${esc(V.w[k.id]??0)}" style="width:52px">%</span></th>`).join('')}<th class="num">ICE<br>총점</th><th class="num">ICE<br>순위</th><th class="num">ICE+<br>점수</th><th class="num">ICE+<br>순위</th></tr>
+   ${S.map(o=>`<tr><td><b>${esc(o.v.name||'(이름 없음)')}</b></td>${C.map(k=>`<td class="num">${starTxt(o.sc[k.id])}</td>`).join('')}<td class="num"><b>${o.ice}</b>/${o.max}</td><td class="num ${o.iceR===1?'r1':''}">${o.iceR}위</td><td class="num">${o.plus.toFixed(2)}</td><td class="num ${o.plusR===1?'r1':''}">${o.plusR}위</td></tr>`).join('')}</table></div>
    <div class="row" style="margin-top:6px"><span class="${wsum===100?'badge b-ok':'badge b-no'}">가중치 합계 ${wsum}%${wsum===100?' ✔':' (100%로 맞춰 주세요)'}</span><button class="sm" data-act="wEven">균등하게 나누기</button></div></div>`:''}`}
 
 /* ---------- 강사탐색 ---------- */
@@ -652,6 +691,13 @@ const ACT={
   vote:t=>{const c=R.theme.cands.find(x=>x.id===t.dataset.v);c.votes=(c.votes||0)+1;save();render()},
   useCand:t=>{const c=R.theme.cands.find(x=>x.id===t.dataset.v);R.theme.title=c.title||'';if(c.verse)R.theme.verse=c.verse;save();render();scrollTo(0,0);toast('주제로 정했어요')},
   /* 장소 */
+  ruleStar:t=>{const r=R.venue.rules[t.dataset.k].find(x=>x.id===t.dataset.v);const n=+t.dataset.n;r.s=+r.s===n?n-1:n;save();render()},
+  ruleAdd:t=>{const L=R.venue.rules[t.dataset.k],last=L[L.length-1];L.push({id:uid(),from:last&&last.to!=null?last.to:null,to:null,s:1});save();render()},
+  ruleDel:t=>{const k=t.dataset.k;R.venue.rules[k]=R.venue.rules[k].filter(x=>x.id!==t.dataset.v);save();render()},
+  rulesReset:()=>{if(!confirm('점수 기준(구간·별점)을 처음 기본값으로 되돌릴까요?'))return;RULE_KEYS.forEach(k=>R.venue.rules[k]=RULE_DEF[k].rows.map(([f,t,sc])=>({id:uid(),from:f,to:t,s:sc})));save();render()},
+  vAdd:()=>{const it={id:uid(),sc:{},rooms:[{id:uid(),size:null,price:null,count:null}]};R.venue.list.push(it);save();render();setTimeout(()=>{const el=$(`[data-o="venue.list#${it.id}"][data-k="name"]`);if(el){el.focus();el.scrollIntoView({block:'center'})}},30)},
+  vroomAdd:t=>{const v=R.venue.list.find(x=>x.id===t.dataset.v);(v.rooms=v.rooms||[]).push({id:uid(),size:null,price:null,count:null});save();render()},
+  vroomDel:t=>{const v=R.venue.list.find(x=>x.id===t.dataset.v);v.rooms=v.rooms.filter(r=>r.id!==t.dataset.r);save();render()},
   star:t=>{const v=R.venue.list.find(x=>x.id===t.dataset.v);v.sc=v.sc||{};const n=+t.dataset.n;v.sc[t.dataset.c]=+v.sc[t.dataset.c]===n?null:n;save();render()},
   critDel:t=>{const c=R.venue.crit.find(x=>x.id===t.dataset.v);if(!confirm(`‘${c.name}’ 항목을 뺄까요?`))return;R.venue.crit=R.venue.crit.filter(x=>x.id!==c.id);delete R.venue.w[c.id];save();render()},
   critRen:t=>{const c=R.venue.crit.find(x=>x.id===t.dataset.v);const n=(prompt('새 이름',c.name)||'').trim();if(n){c.name=n;save();render()}},
