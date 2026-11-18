@@ -154,6 +154,19 @@ select.pm{font-size:12px;padding:1px 3px;margin-top:3px;width:100%}
 .chip[data-pid]{cursor:pointer}
 table.pinfo th{width:96px;background:var(--soft);position:static}
 .snk{display:flex;flex-direction:column;gap:4px}.snk label{gap:6px}
+.wrap.wide{max-width:none}
+.ptw{border:1.5px solid var(--line);border-radius:12px;background:#fff}
+table.ptab{width:max-content;min-width:100%}
+table.ptab th,table.ptab td{white-space:nowrap;padding:4px 4px;vertical-align:middle}
+table.ptab td input,table.ptab td select{width:auto}
+table.ptab tbody tr:nth-child(even) td{background:#fffaf0}
+table.ptab .s0,table.ptab .s1,table.ptab .s2{position:sticky;z-index:2;background:#fff}
+table.ptab th.s0,table.ptab th.s1,table.ptab th.s2{background:var(--soft);z-index:3}
+table.ptab .s0{left:0;min-width:30px;max-width:30px}table.ptab .s1{left:30px;min-width:84px}table.ptab .s2{left:114px;min-width:104px;box-shadow:2px 0 0 var(--line)}
+table.ptab tbody tr:nth-child(even) td.s0,table.ptab tbody tr:nth-child(even) td.s1,table.ptab tbody tr:nth-child(even) td.s2{background:#fffaf0}
+table.ptab tr.phi td{background:#fff1cc!important}
+table.ptab .mv{background:none;padding:0;border-radius:0}table.ptab .mvr{flex-wrap:nowrap}
+table.ptab .mvr select,table.ptab .mvr input{width:auto;font-size:13px;padding:3px 4px}
 /* supplies */
 .steps{display:flex;flex-wrap:wrap;gap:2px}
 .steps button{font-size:12px;padding:1px 6px;border-radius:7px;background:#fff;border-color:#cdbda6;color:var(--muted)}
@@ -324,12 +337,12 @@ function personInfo(pid){const p=P(pid);if(!p)return;const fe=feeOf(p);
   const car=dir=>{const c=R.cars.list.find(c=>c.dir===dir&&(c.members||[]).includes(pid));return c?`${c.type||'차'}${c.name?' · '+c.name:''}${c.day!=null&&c.day!==''&&c.time?` (${+c.day+1}일차 ${apTxt((+c.time.split(':')[0])*60+(+c.time.split(':')[1]))})`:''}${c.driver===pid?' · 운전':''}`:'없음'};
   const g=R.grp.list.find(g=>(g.members||[]).includes(pid)),rm=R.rooms.find(r=>(r.members||[]).includes(pid));
   const mv=d=>{const m=p[d+'Move'],pl=p[d+'Place'];return `${esc(whenText(p,d)||'시간 미정')}${m?' · '+esc(m):''}${pl?' · 📍'+esc(pl):''}`};
-  const rows=[['성별',p.gender],['나이',p.age],['소속',p.org],['사는 곳',p.addr],['핸드폰번호',p.phone?`<a href="tel:${esc(p.phone)}">${esc(p.phone)}</a>`:''],['보험',p.ins],
+  const rows=[['풀참여부',p.full],['성별',p.gender],['나이',p.age],['소속',p.org],['사는 곳',p.addr],['핸드폰번호',p.phone?`<a href="tel:${esc(p.phone)}">${esc(p.phone)}</a>`:''],['보험',p.ins],
     ['들어올 때',mv('in')],['나갈 때',mv('out')],['구분',p.prep?esc(roleOf(p)):'일반'],['찬양팀',p.praise?'🎸 '+esc((p.parts||[]).join(', ')||'찬양팀'):''],['맡은 역할',p.duty],
     ['회비',fe.amt!=null?won(fe.amt)+'원 <span class="hint">('+esc(fe.why)+')</span>':''],['입금',p.paid?`✔ 입금 ${esc(p.payMethod||'')} ${esc(p.paidDate||'')}`:'미입금'],
     ['들어오는 차',esc(car('in'))],['나가는 차',esc(car('out'))],['조',g?esc(g.name)+(g.leader===pid?' 👑 조장':'')+((g.roles||{})[pid]?' · '+esc(g.roles[pid]):''):'없음'],['방',rm?esc([rm.building,rm.floor,rm.name].filter(Boolean).join(' '))+(rm.captain===pid?' 🔑 방장':''):'없음']];
   const raw=k=>['gender','age','org','addr','ins','duty'].includes(k);
-  const m=modal(`<h2>🙋 ${esc(p.name||'(이름 없음)')} <span class="hint" style="font-size:14px">신청정보</span></h2><table class="t pinfo">${rows.map(([l,v])=>`<tr><th>${l}</th><td>${v===undefined||v===null||v===''?'<span class="hint">-</span>':(typeof v==='string'&&['성별','나이','소속','사는 곳','보험','맡은 역할'].includes(l)?esc(v):v)}</td></tr>`).join('')}</table>
+  const m=modal(`<h2>🙋 ${esc(p.name||'(이름 없음)')} <span class="hint" style="font-size:14px">신청정보</span></h2><table class="t pinfo">${rows.map(([l,v])=>`<tr><th>${l}</th><td>${v===undefined||v===null||v===''?'<span class="hint">-</span>':(typeof v==='string'&&['풀참여부','성별','나이','소속','사는 곳','보험','맡은 역할'].includes(l)?esc(v):v)}</td></tr>`).join('')}</table>
    <div class="row" style="margin-top:10px"><button class="pri" id="piGo">✏️ 참석인원에서 고치기</button><button data-close>닫기</button></div>`);
   m.querySelector('#piGo').onclick=()=>{m.remove();TAB='people';SUB.pf={};SUB.pHi=pid;render();const r=document.getElementById('prow-'+pid);if(r)r.scrollIntoView({block:'center'});setTimeout(()=>{SUB.pHi=null;const r=document.getElementById('prow-'+pid);if(r)r.classList.remove('phi')},2500)}}
 function CHIP(pid,from,extra){const p=P(pid);if(!p)return'';return `<span class="chip p ${p.gender==='여'?'f':p.gender==='남'?'m':''}" draggable="true" data-pid="${pid}" data-from="${from}" title="${esc([p.gender,p.age,p.org].filter(Boolean).join(' · '))}">${esc(p.name||'(이름 없음)')}${extra||''}${from!=='pool'?`<button class="x" data-act="unassign" data-from="${from}" data-pid="${pid}" title="빼기">×</button>`:''}</span>`}
@@ -350,7 +363,7 @@ const TABS=[['people','🙋 참석인원'],['staff','👥 준비인원'],['prais
 function render(){
   const ae=document.activeElement,key=ae&&(ae.dataset&&ae.dataset.o!=null?'o:'+ae.dataset.o+'|'+ae.dataset.k:ae.id?'#'+ae.id:null),selS=ae&&ae.selectionStart,keep={};
   $$('[data-keep]').forEach(e=>keep[e.dataset.keep]=[e.scrollLeft,e.scrollTop]);
-  const app=$('#app');
+  const app=$('#app');app.classList.toggle('wide',!!R&&TAB==='people');
   if(!R){app.innerHTML=vHome();return}
   const dd=R.start?diffD(todayStr(),R.start):null;
   if(TAB==='cars'){let n=0;while(n<3&&syncCars())n++;if(n)save()}
@@ -704,8 +717,8 @@ function vNotice(){
   <p class="hint" style="margin:6px 0">공지문을 써서 보관해요. 카톡용으로 복사하거나 인쇄(PDF)할 수 있어요. 확정사항·시간표·준비물·회비 안내를 버튼 하나로 넣을 수 있어요.</p>
   ${L.length?L.map(n=>`<div class="box" style="margin-bottom:8px;cursor:pointer;${n.pin?'border-color:var(--accent)':''}" data-act="ntcOpen" data-v="${n.id}"><div class="row">${n.pin?'<span>📌</span>':''}<b class="j" style="font-size:17px">${esc(n.title||'(제목 없음)')}</b><span class="badge">${esc(n.date||'')}</span>${n.to?`<span class="badge b-mid">${esc(n.to)}</span>`:''}<span class="sp"></span><span class="hint">${(n.body||'').length}자</span></div><div class="hint" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc((n.body||'').replace(/\s+/g,' ').slice(0,120))}</div></div>`).join(''):'<div class="empty">공지문이 없어요. ‘+ 새 공지문’으로 시작해요</div>'}</div>`}
 /* 참석인원 정렬·필터 */
-const PSORT=[['','등록순'],['name','이름'],['gender','성별'],['age','나이'],['org','소속'],['addr','사는 곳'],['phone','핸드폰번호'],['ins','보험'],['in','들어올 때'],['inMove','들어올 때 이동방법'],['out','나갈 때'],['outMove','나갈 때 이동방법'],['prep','구분'],['role','직책'],['praise','찬양팀'],['fee','회비'],['paid','입금확인']];
-const PFIL=[['gender','성별'],['ins','보험'],['org','소속'],['inDay','들어오는 날'],['inMove','들어올 때 이동'],['outDay','나가는 날'],['outMove','나갈 때 이동'],['prep','구분'],['praise','찬양팀'],['paid','입금']];
+const PSORT=[['','등록순'],['full','풀참여부'],['name','이름'],['gender','성별'],['age','나이'],['org','소속'],['addr','사는 곳'],['phone','핸드폰번호'],['ins','보험'],['in','들어올 때'],['inMove','들어올 때 이동방법'],['out','나갈 때'],['outMove','나갈 때 이동방법'],['prep','구분'],['role','직책'],['praise','찬양팀'],['fee','회비'],['paid','입금확인']];
+const PFIL=[['full','풀참여부'],['gender','성별'],['ins','보험'],['org','소속'],['inDay','들어오는 날'],['inMove','들어올 때 이동'],['outDay','나가는 날'],['outMove','나갈 때 이동'],['prep','구분'],['praise','찬양팀'],['paid','입금']];
 function pfVal(p,k){switch(k){case'prep':return p.prep==='min'?'사역자':p.prep==='staff'?'준비인원':'일반';case'praise':return p.praise?'찬양팀':'아님';
   case'paid':return p.paid?(p.payMethod?'입금 · '+p.payMethod:'입금'):'미입금';case'inDay':case'outDay':{const w=pWhen(p,k==='inDay'?'in':'out');return w&&w.m!=null?(w.d+1)+'일차':'미정'}
   default:return String(p[k]||'').trim()||'(비어 있음)'}}
@@ -720,21 +733,23 @@ function peopleView(){const F=SUB.pf||{};let L=R.people.filter(p=>Object.keys(F)
 function pTools(){const F=SUB.pf||{},on=Object.keys(F).filter(k=>F[k]);
   return `<div class="ptools"><div class="row"><b>↕️ 정렬</b><select id="pSortK">${PSORT.map(([k,l])=>`<option value="${k}"${(SUB.ps||'')===k?' selected':''}>${l}</option>`).join('')}</select>${SUB.ps?`<button class="sm" data-act="pSortDir">${SUB.pd==='desc'?'⬇️ 내림차순':'⬆️ 오름차순'}</button>`:''}<span class="hint">머리글 이름을 눌러도 정렬돼요</span></div>
    <div class="row" style="margin-top:6px"><b>🔎 필터</b>${PFIL.map(([k,l])=>{const vals=[...new Set(R.people.map(p=>pfVal(p,k)))].sort((a,b)=>a.localeCompare(b,'ko',{numeric:true}));return `<select data-pf="${k}" class="${F[k]?'pfon':''}"><option value="">${l}: 전체</option>${vals.map(v=>`<option value="${esc(v)}"${F[k]===v?' selected':''}>${l}: ${esc(v)} (${R.people.filter(p=>pfVal(p,k)===v).length})</option>`).join('')}</select>`}).join('')}${on.length?'<button class="sm" data-act="pfClear">필터 모두 풀기</button>':''}</div></div>`}
+const sortSpan=(k,l)=>`<span class="sortk ${SUB.ps===k?'on':''}" data-act="pSort" data-v="${k}" title="눌러서 정렬">${l}${SUB.ps===k?(SUB.pd==='desc'?' ▼':' ▲'):''}</span>`;
+const th=(k,l,cls)=>`<th${cls?` class="${cls}"`:''}>${sortSpan(k,l)}</th>`;
 const sh=(k,l,cls)=>`<div${cls?` class="${cls}"`:''}><span class="sortk ${SUB.ps===k?'on':''}" data-act="pSort" data-v="${k}" title="눌러서 정렬">${l}${SUB.ps===k?(SUB.pd==='desc'?' ▼':' ▲'):''}</span></div>`;
 function vPeople(){const L=R.people,PV=peopleView(),m=L.filter(p=>p.gender==='남').length,f=L.filter(p=>p.gender==='여').length;
   return `${vFee()}<div class="card"><div class="row"><h2 style="margin:0">🙋 참석인원 (${L.length})</h2><span class="sp"></span><input id="pq" placeholder="🔍 이름·소속 찾기" style="width:150px"><button data-act="xls">📊 엑셀·CSV 불러오기</button><button data-act="pExport">⬇️ CSV 내보내기</button><button class="pri" data-act="pAdd">+ 한 명 추가</button></div>
   <div class="row hint" style="margin:6px 0">남 ${m} · 여 ${f} · 보험 미가입 ${L.filter(p=>p.ins==='미가입').length} · 사역자 ${L.filter(p=>p.prep==='min').length} · 준비인원 ${L.filter(p=>p.prep==='staff').length} · 찬양팀 ${L.filter(p=>p.praise).length}</div>
   ${L.length?pTools():''}${PV.length!==L.length?`<div class="badge b-mid" style="margin:6px 0;font-size:14px">🔎 ${L.length}명 중 ${PV.length}명 보는 중</div>`:''}
   <p class="hint" style="margin:0 0 6px">구글폼·네이버폼 응답을 엑셀(.xlsx)이나 CSV로 받아서 ‘📊 엑셀·CSV 불러오기’로 올리면 한 번에 추가돼요. 오른쪽 <b>구분</b>에서 사역자·준비인원을, <b>찬양팀</b> 칸으로 찬양팀을 지정해요.</p>
-  ${L.length?`<div id="ptbl" class="plist"><div class="prow phead"><div>#</div>${sh('name','이름')}${sh('gender','성별')}${sh('age','나이')}${sh('org','소속')}${sh('addr','사는 곳')}${sh('phone','핸드폰번호','w2')}${sh('ins','보험')}
-   <div></div><div class="w4">${sh('in','들어올 때')} · ${sh('inMove','이동방법')} <span class="hint">(카풀가능·자차필요는 출발장소)</span></div><div class="w4">${sh('out','나갈 때')} · ${sh('outMove','이동방법')} <span class="hint">(카풀가능·자차필요는 도착장소)</span></div>${sh('prep','구분')}${sh('role','직책')}${sh('praise','찬양팀')}${sh('fee','회비')}${sh('paid','입금확인')}<div></div></div>
-  ${PV.length?'':'<div class="empty">조건에 맞는 사람이 없어요</div>'}${PV.map((p,i)=>{const k='people#'+p.id,fe=feeOf(p),bk=feeBooked(p.id);return `<div class="prow ${SUB.pHi===p.id?'phi':''}" id="prow-${p.id}" data-s="${esc((p.name||'')+' '+(p.org||'')+' '+(p.phone||''))}"><div class="no">${i+1}</div>
-   <div class="c" data-l="이름">${inp(k,'name',{ph:'이름'})}</div><div class="c" data-l="성별">${sel(k,'gender',['남','여'],{blank:'-'})}</div><div class="c" data-l="나이">${inp(k,'age')}</div><div class="c" data-l="소속">${inp(k,'org')}</div><div class="c" data-l="사는 곳">${inp(k,'addr')}</div><div class="c w2" data-l="핸드폰번호">${inp(k,'phone',{type:'tel'})}</div><div class="c" data-l="보험">${sel(k,'ins',['가입','미가입'],{blank:'-'})}</div>
-   <div class="no2"></div>${mvBlock(p,k,'in')}${mvBlock(p,k,'out')}<div class="c" data-l="구분">${sel(k,'prep',[['min','사역자'],['staff','준비인원']],{blank:'일반',rr:1})}</div><div class="c" data-l="직책">${p.prep?sel(k,'role',R.cfg[p.prep==='min'?'minRoles':'staffRoles'],{blank:'—'}):'<span class="hint">—</span>'}</div>
-   <div class="c" data-l="찬양팀"><label class="chip tog ${p.praise?'on':''}" style="margin:0"><input type="checkbox" data-o="${k}" data-k="praise" data-rr ${p.praise?'checked':''} style="display:none">🎸 ${p.praise?'찬양팀':'아니요'}</label></div>
-   <div class="c" data-l="회비">${inp(k,'fee',{n:1,rr:1,ph:fe.amt!=null&&!(p.fee!=null&&p.fee!=='')?won(fe.amt):'금액',st:'text-align:right'})}<div class="hint" style="font-size:11px">${esc(fe.why)}</div></div>
-   <div class="c" data-l="입금확인"><label class="paid ${p.paid?'on':''}"><input type="checkbox" data-o="${k}" data-k="paid" data-rr ${p.paid?'checked':''}> ${p.paid?'입금':'미입금'}</label>${p.paid?`<select data-o="${k}" data-k="payMethod" data-rr class="pm"><option value="">입금방법</option>${PAYM.in.map(m=>`<option${p.payMethod===m?' selected':''}>${m}</option>`).join('')}</select>`:''}${p.paid&&p.paidDate?`<div class="hint" style="font-size:11px">${esc(p.paidDate.slice(5).replace('-','/'))}${bk?' · 수입 ✔':' · 회계 대기'}</div>`:''}</div>
-   <div class="c del"><button class="x" data-act="pDel" data-v="${p.id}" title="지우기">🗑</button></div></div>`}).join('')}</div>`:'<div class="empty">참석인원을 추가하거나 엑셀로 불러와요</div>'}</div>`}
+  ${L.length?`<div class="hs ptw" data-keep="people"><table class="t ptab" id="ptbl"><thead><tr><th class="s0">#</th>${th('full','풀참여부','s1')}${th('name','이름','s2')}${th('gender','성별')}${th('age','나이')}${th('org','소속')}${th('addr','사는 곳')}${th('phone','핸드폰번호')}${th('ins','보험')}
+   <th>${sortSpan('in','들어올 때')} · ${sortSpan('inMove','이동방법')} <span class="hint">(카풀가능·자차필요 → 출발장소)</span></th><th>${sortSpan('out','나갈 때')} · ${sortSpan('outMove','이동방법')} <span class="hint">(카풀가능·자차필요 → 도착장소)</span></th>${th('prep','구분')}${th('role','직책')}${th('praise','찬양팀')}${th('fee','회비')}${th('paid','입금확인')}<th></th></tr></thead><tbody>
+  ${PV.length?'':'<tr><td colspan="17"><div class="empty">조건에 맞는 사람이 없어요</div></td></tr>'}${PV.map((p,i)=>{const k='people#'+p.id,fe=feeOf(p),bk=feeBooked(p.id);return `<tr class="${SUB.pHi===p.id?'phi':''}" id="prow-${p.id}" data-s="${esc((p.name||'')+' '+(p.org||'')+' '+(p.phone||''))}"><td class="s0 hint">${i+1}</td>
+   <td class="s1">${sel(k,'full',['풀참','부분참'],{blank:'-',st:'width:76px'})}</td><td class="s2">${inp(k,'name',{ph:'이름',st:'width:96px;font-weight:600'})}</td><td>${sel(k,'gender',['남','여'],{blank:'-',st:'width:52px'})}</td><td>${inp(k,'age',{st:'width:48px'})}</td><td>${inp(k,'org',{st:'width:96px'})}</td><td>${inp(k,'addr',{st:'width:96px'})}</td><td>${inp(k,'phone',{type:'tel',st:'width:122px'})}</td><td>${sel(k,'ins',['가입','미가입'],{blank:'-',st:'width:72px'})}</td>
+   <td>${mvBlock(p,k,'in')}</td><td>${mvBlock(p,k,'out')}</td><td>${sel(k,'prep',[['min','사역자'],['staff','준비인원']],{blank:'일반',rr:1,st:'width:84px'})}</td><td>${p.prep?sel(k,'role',R.cfg[p.prep==='min'?'minRoles':'staffRoles'],{blank:'—',st:'width:76px'}):'<span class="hint">—</span>'}</td>
+   <td><label class="chip tog ${p.praise?'on':''}" style="margin:0"><input type="checkbox" data-o="${k}" data-k="praise" data-rr ${p.praise?'checked':''} style="display:none">🎸 ${p.praise?'찬양팀':'아니요'}</label></td>
+   <td title="${esc('회비 기준: '+fe.why)}">${inp(k,'fee',{n:1,rr:1,ph:fe.amt!=null&&!(p.fee!=null&&p.fee!=='')?won(fe.amt):'금액',st:'width:86px;text-align:right'})}</td>
+   <td><span class="row" style="gap:3px;flex-wrap:nowrap"><label class="paid ${p.paid?'on':''}"><input type="checkbox" data-o="${k}" data-k="paid" data-rr ${p.paid?'checked':''}> ${p.paid?'입금':'미입금'}</label>${p.paid?`<select data-o="${k}" data-k="payMethod" data-rr class="pm" style="width:auto;margin:0"><option value="">방법</option>${PAYM.in.map(m=>`<option${p.payMethod===m?' selected':''}>${m}</option>`).join('')}</select>`:''}${p.paid&&p.paidDate?`<span class="hint" style="font-size:11px">${esc(p.paidDate.slice(5).replace('-','/'))}${bk?' ✔':''}</span>`:''}</span></td>
+   <td><button class="x" data-act="pDel" data-v="${p.id}" title="지우기">🗑</button></td></tr>`}).join('')}</tbody></table></div>`:'<div class="empty">참석인원을 추가하거나 엑셀로 불러와요</div>'}</div>`}
 function filterPeople(q){q=(q||'').trim();$$('#ptbl [data-s]').forEach(tr=>tr.style.display=!q||tr.dataset.s.includes(q)?'':'none')}
 function filterPool(q){q=(q||'').trim();SUB.poolQ=q;$$('.pool .chip').forEach(c=>c.style.display=!q||c.textContent.includes(q)?'':'none')}
 
@@ -986,8 +1001,8 @@ const ACT={
   pAdd:()=>{const p={id:uid(),name:''};R.people.unshift(p);save();render();setTimeout(()=>{const el=$(`[data-o="people#${p.id}"][data-k="name"]`);if(el)el.focus()},30)},
   pDel:t=>{const p=P(t.dataset.v);if(p.name&&!confirm(`${p.name}님을 참석인원에서 지울까요? 차량·조·방 배정과 담당에서도 빠져요.`))return;purge(p.id);save();render()},
   xls:()=>{$('#xlsUp').value='';$('#xlsUp').click()},
-  pExport:()=>{const H=[...PF.map(x=>x[1]),'들어올 때 이동','출발장소','나갈 때 이동','도착장소','구분','직책','맡은 역할','찬양팀','찬양 파트','회비','입금확인','입금방법'];const q=v=>{v=String(v??'');return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
-    const rows=R.people.map(p=>[...PF.map(([k])=>k==='inT'?whenText(p,'in'):k==='outT'?whenText(p,'out'):p[k]||''),p.inMove||'',p.inPlace||'',p.outMove||'',p.outPlace||'',p.prep==='min'?'사역자':p.prep==='staff'?'준비인원':'',p.role||'',p.duty||'',p.praise?'O':'',(p.parts||[]).join('/'),feeOf(p).amt??'',p.paid?'O':'',p.paid?p.payMethod||'':'']);
+  pExport:()=>{const H=['풀참여부',...PF.map(x=>x[1]),'들어올 때 이동','출발장소','나갈 때 이동','도착장소','구분','직책','맡은 역할','찬양팀','찬양 파트','회비','입금확인','입금방법'];const q=v=>{v=String(v??'');return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+    const rows=R.people.map(p=>[p.full||'',...PF.map(([k])=>k==='inT'?whenText(p,'in'):k==='outT'?whenText(p,'out'):p[k]||''),p.inMove||'',p.inPlace||'',p.outMove||'',p.outPlace||'',p.prep==='min'?'사역자':p.prep==='staff'?'준비인원':'',p.role||'',p.duty||'',p.praise?'O':'',(p.parts||[]).join('/'),feeOf(p).amt??'',p.paid?'O':'',p.paid?p.payMethod||'':'']);
     dl(new Blob(['﻿'+[H,...rows].map(r=>r.map(q).join(',')).join('\r\n')],{type:'text/csv'}),R.name+'_참석인원.csv')},
   /* 배정 */
   dir:t=>{SUB.dir=t.dataset.v;render()},
