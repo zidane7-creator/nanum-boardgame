@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://js.tosspayments.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' data: blob: https://api.github.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://api.open-meteo.com https://api.met.no https://wttr.in https://api.mymemory.translated.net https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.doubleclick.net https://www.google.com https://*.tosspayments.com https://0.peerjs.com wss://0.peerjs.com wss://broker.emqx.io:8084 wss://broker.hivemq.com:8884 https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self' blob:; frame-src 'self' https://www.bskorea.or.kr https://*.tosspayments.com; object-src 'none'; base-uri 'self'; form-action 'self' https://*.tosspayments.com">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>수련회 준비 패키지 | 치영의 교회 생활 즐기기 · 스탭·일정·장소·회계·조배정·방배정</title>
-<meta name="description" content="수련회 준비를 한곳에서: 스탭·찬양팀·회의록·간트차트 일정·주제·장소 비교(ICE)·강사·프로그램·시간표·확정사항·준비물·체크리스트·자료실·회계·참석인원·차량·조·방 배정.">
+<title>수련회 준비 패키지 | 치영의 교회 생활 즐기기 · 참석인원·준비인원·일정·장소·회계·조배정·방배정</title>
+<meta name="description" content="수련회 준비를 한곳에서: 참석인원·준비인원·찬양팀·회의록·간트차트 일정·주제·장소 비교(ICE)·강사·프로그램·시간표·확정사항·준비물·체크리스트·자료실·회계·참석인원·차량·조·방 배정.">
 <link rel="canonical" href="https://zidane7-creator.github.io/nanum-boardgame/camp/">
 <meta property="og:title" content="수련회 준비 패키지 — 치영의 교회 생활 즐기기">
 <meta property="og:description" content="수련회 준비를 처음부터 끝까지 한곳에서">
@@ -297,7 +297,7 @@ function addSel(to,cands){return `<select data-act="assign" data-to="${to}" styl
 function poolHTML(cands,label){return `<div class="pool" data-drop="pool"><div class="row" style="margin-bottom:4px"><b class="j">🙋 ${esc(label)} (${cands.length})</b><span class="hint">이름을 끌어다 놓거나, 각 칸의 ‘+ 추가’로 넣어요</span><input id="poolQ" placeholder="이름 찾기" style="margin-left:auto;width:120px" value="${esc(SUB.poolQ||'')}"></div>${cands.length?cands.slice().sort(byName).map(p=>CHIP(p.id,'pool')).join(''):'<span class="hint">모두 배정했어요 👏</span>'}</div>`}
 
 /* ============ 메뉴 ============ */
-const TABS=[['staff','👥 스탭'],['praise','🎸 찬양팀'],['minutes','📝 회의록'],['sched','📅 일정'],['theme','💡 주제정하기'],['venue','🏕️ 장소탐색'],['speaker','🎤 강사탐색'],['program','🎲 프로그램'],['tt','⏰ 시간표'],['confirm','✅ 확정사항'],['sup','📦 준비물'],['chk','☑️ 체크리스트'],['files','📁 자료실'],['acc','💰 회계'],['people','🙋 참석인원'],['cars','🚌 차량배정'],['grp','🧩 조배정'],['rooms','🛏️ 방배정']];
+const TABS=[['people','🙋 참석인원'],['staff','👥 준비인원'],['praise','🎸 찬양팀'],['minutes','📝 회의록'],['sched','📅 일정'],['theme','💡 주제정하기'],['venue','🏕️ 장소탐색'],['speaker','🎤 강사탐색'],['program','🎲 프로그램'],['tt','⏰ 시간표'],['confirm','✅ 확정사항'],['sup','📦 준비물'],['chk','☑️ 체크리스트'],['files','📁 자료실'],['acc','💰 회계'],['cars','🚌 차량배정'],['grp','🧩 조배정'],['rooms','🛏️ 방배정']];
 
 function render(){
   const ae=document.activeElement,key=ae&&(ae.dataset&&ae.dataset.o!=null?'o:'+ae.dataset.o+'|'+ae.dataset.k:ae.id?'#'+ae.id:null),selS=ae&&ae.selectionStart,keep={};
@@ -305,7 +305,7 @@ function render(){
   const app=$('#app');
   if(!R){app.innerHTML=vHome();return}
   const dd=R.start?diffD(todayStr(),R.start):null;
-  const V={staff:vStaff,praise:vPraise,minutes:vMinutes,sched:vSched,theme:vTheme,venue:vVenue,speaker:vSpeaker,program:vProgram,tt:vTT,confirm:vConfirm,sup:vSup,chk:vChk,files:vFiles,acc:vAcc,people:vPeople,cars:vCars,grp:vGrp,rooms:vRooms}[TAB]||vStaff;
+  const V={staff:vStaff,praise:vPraise,minutes:vMinutes,sched:vSched,theme:vTheme,venue:vVenue,speaker:vSpeaker,program:vProgram,tt:vTT,confirm:vConfirm,sup:vSup,chk:vChk,files:vFiles,acc:vAcc,people:vPeople,cars:vCars,grp:vGrp,rooms:vRooms}[TAB]||vPeople;
   app.innerHTML=`<div class="head no-print"><a class="btn" href="./">☰ 수련회 목록</a><h1 class="j">${esc(R.name)}</h1>${dd!=null?`<span class="dday">${dd>0?'D-'+dd:dd===0?'D-DAY':dd>=-(+R.nights)?'수련회 중':'끝났어요'}</span>`:''}<span class="hint">${esc(campRange()||'날짜 미정')}</span><button class="sm" data-act="campSet">⚙️ 설정·백업</button><span class="sync" id="sync">✔ 이 기기에 저장됨</span></div>
   <nav class="tabs">${TABS.map(([k,l])=>`<button data-act="tab" data-v="${k}" class="${k===TAB?'on':''}">${l}</button>`).join('')}</nav>
   <div id="view">${V()}</div>`;
@@ -341,7 +341,7 @@ function vStaff(){
   const L=prepList(),mins=L.filter(p=>p.prep==='min'),st=L.filter(p=>p.prep==='staff');
   const tbl=(arr,type)=>arr.length?`<div class="hs"><table class="t"><tr><th>이름</th><th>직책</th><th style="min-width:220px">맡은 역할</th><th>연락처</th><th>소속</th><th></th></tr>${arr.sort((a,b)=>{const r=R.cfg[type==='min'?'minRoles':'staffRoles'];return (r.indexOf(a.role)-r.indexOf(b.role))||byName(a,b)}).map(p=>`<tr><td><b>${esc(p.name)}</b></td><td>${sel('people#'+p.id,'role',R.cfg[type==='min'?'minRoles':'staffRoles'],{blank:'—',st:'min-width:90px'})}</td><td>${inp('people#'+p.id,'duty',{ph:'예) 프로그램 총괄, 간식, 사진'})}</td><td>${esc(p.phone||'')}</td><td>${esc(p.org||'')}</td><td><button class="sm" data-act="unprep" data-v="${p.id}" title="준비인원에서 빼기 (참석인원에는 남아요)">해제</button></td></tr>`).join('')}</table></div>`:'<div class="empty">아직 없어요</div>';
   const others=R.people.filter(p=>!p.prep);
-  return `<div class="card"><div class="row"><h2 style="margin:0">👥 스탭 (준비인원)</h2><span class="sp"></span><span class="hint">[참석인원]에서 사역자·준비인원으로 지정한 사람만 여기에 나와요</span></div>
+  return `<div class="card"><div class="row"><h2 style="margin:0">👥 준비인원</h2><span class="sp"></span><span class="hint">[참석인원]에서 사역자·준비인원으로 지정한 사람만 여기에 나와요</span></div>
   <div class="row" style="margin:10px 0"><select id="mkPrepP"><option value="">참석인원에서 고르기</option>${others.sort(byName).map(p=>`<option value="${p.id}">${esc(p.name)}${p.org?' · '+esc(p.org):''}</option>`).join('')}</select>
    <select id="mkPrepT"><option value="staff">준비인원으로</option><option value="min">사역자로</option></select><button class="pri" data-act="mkPrep">지정</button>
    <button data-act="tab" data-v="people">🙋 참석인원 먼저 등록하기</button></div>
@@ -369,7 +369,7 @@ function vMinutes(){
   if(SUB.min){const m=R.minutes.find(x=>x.id===SUB.min);if(m){const s='minutes#'+m.id,pl=prepList();
     return `<div class="card"><div class="row"><button data-act="minBack">← 회의록 목록</button><span class="sp"></span><button data-act="minCopy">📋 카톡용 복사</button><button data-act="minPrint">🖨️ 인쇄·PDF</button><button class="danger" data-act="minDel">지우기</button></div>
     <div class="f2" style="margin-top:10px"><label class="fld">회의 날짜${inp(s,'date',{type:'date'})}</label><label class="fld" style="grid-column:span 2">회의 제목${inp(s,'title',{ph:'예) 3차 준비 회의'})}</label><label class="fld">장소${inp(s,'place',{ph:'예) 교육관 2층'})}</label></div>
-    <h3>🙋 참석 (스탭에서 고르기)</h3>${pl.length?pl.sort(byName).map(p=>`<span class="chip tog ${(m.att||[]).includes(p.id)?'on':''}" data-act="togArr" data-o="${s}" data-k="att" data-v="${p.id}">${esc(p.name)}</span>`).join(''):'<span class="hint">[스탭]에 준비인원을 먼저 지정해 주세요.</span>'}
+    <h3>🙋 참석 (준비인원에서 고르기)</h3>${pl.length?pl.sort(byName).map(p=>`<span class="chip tog ${(m.att||[]).includes(p.id)?'on':''}" data-act="togArr" data-o="${s}" data-k="att" data-v="${p.id}">${esc(p.name)}</span>`).join(''):'<span class="hint">[준비인원] 메뉴에 사람을 먼저 지정해 주세요.</span>'}
     <div class="row" style="margin-top:4px"><span class="hint">그 밖의 참석자</span>${inp(s,'etc',{ph:'예) 담임목사님',st:'flex:1'})}</div>
     <h3>📋 회의 내용</h3><p class="hint" style="margin:0 0 4px">한 줄에 한 항목. <b>Tab</b>(또는 → 버튼)을 누르면 한 칸 들어가 아래 항목이 돼요: <b>1.</b> → <b>(1)</b> → <b>1)</b> → <b>-</b>. 번호는 저절로 매겨져요.</p>
     <div class="row no-print" style="margin-bottom:4px"><button class="sm" data-act="ind" data-v="1">→ 들여쓰기</button><button class="sm" data-act="ind" data-v="-1">← 내어쓰기</button></div>
@@ -737,7 +737,7 @@ const ACT={
   /* 스탭·찬양 */
   mkPrep:()=>{const id=$('#mkPrepP').value;if(!id){toast('사람을 골라 주세요');return}const p=P(id);p.prep=$('#mkPrepT').value;p.role='';save();render()},
   unprep:t=>{const p=P(t.dataset.v);if(p){p.prep='';p.role='';save();render()}},
-  copyStaff:()=>copy(`🛠️ ${R.name} 스탭 역할\n`+prepList().map(p=>`• ${p.name} (${roleOf(p)})${p.duty?' - '+p.duty:''}`).join('\n')),
+  copyStaff:()=>copy(`🛠️ ${R.name} 준비인원 역할\n`+prepList().map(p=>`• ${p.name} (${roleOf(p)})${p.duty?' - '+p.duty:''}`).join('\n')),
   mkPraise:()=>{const id=$('#mkPr').value;if(!id){toast('사람을 골라 주세요');return}P(id).praise=true;save();render()},
   unpraise:t=>{const p=P(t.dataset.v);if(p){p.praise=false;save();render()}},
   /* 회의록 */
@@ -913,7 +913,7 @@ $('#rcpUp').onchange=e=>{const f=e.target.files[0];if(f){SUB.rcpFile=f;const n=$
 
 /* ============ 시작 ============ */
 (async()=>{try{await idb.open()}catch(e){$('#app').innerHTML='<div class="card"><div class="empty">이 브라우저에서는 저장소를 쓸 수 없어요. (시크릿 창이면 일반 창에서 열어 주세요)</div></div>';return}
-  try{TAB=localStorage.getItem('camp-tab')||'staff';SUB.carView=localStorage.getItem('camp-carview')||'card'}catch(_){}if(!TABS.some(x=>x[0]===TAB))TAB='staff';
+  try{TAB=localStorage.getItem('camp-tab')||'people';SUB.carView=localStorage.getItem('camp-carview')||'card'}catch(_){}if(!TABS.some(x=>x[0]===TAB))TAB='people';
   const cid=new URLSearchParams(location.search).get('c');
   if(cid){const c=await idb.get('camps',cid);if(!c){location.replace('./');return}R=fill(c);document.title=R.name+' | 수련회 준비 패키지'}
   else CAMPS=(await idb.all('camps'))||[];
