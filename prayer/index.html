@@ -2,11 +2,11 @@
 <html lang="ko"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://js.tosspayments.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' data: blob: https://api.github.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://api.open-meteo.com https://api.met.no https://wttr.in https://api.mymemory.translated.net https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.doubleclick.net https://www.google.com https://*.tosspayments.com https://0.peerjs.com wss://0.peerjs.com wss://broker.emqx.io:8084 wss://broker.hivemq.com:8884 https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self' blob:; frame-src 'self' https://www.bskorea.or.kr https://*.tosspayments.com; object-src 'none'; base-uri 'self'; form-action 'self' https://*.tosspayments.com">
 <meta name="referrer" content="strict-origin-when-cross-origin"><script async src="https://www.googletagmanager.com/gtag/js?id=G-0WTWY3TPES"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-0WTWY3TPES");</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>기도 모으기 | 치영의 교회 생활 즐기기 · 21일·30일·40일 기도 포도송이</title>
+<title>작정기도 | 치영의 교회 생활 즐기기 · 21일·30일·40일 작정기도 포도송이</title>
 <meta name="description" content="21일, 30일, 40일 기도를 정하고 매일 기도하면 포도알이 하나씩 채워지는 기도 체크. 기도 제목마다 포도송이를 만들어 보세요.">
 <meta name="keywords" content="기도 체크, 21일 기도, 40일 기도, 작정 기도, 포도송이, 기도 습관, 기도 달력">
 <link rel="canonical" href="https://zidane7-creator.github.io/nanum-boardgame/prayer/">
-<meta property="og:title" content="기도 모으기 — 치영의 교회 생활 즐기기">
+<meta property="og:title" content="작정기도 — 치영의 교회 생활 즐기기">
 <meta property="og:description" content="기도할 때마다 포도알이 하나씩 채워져요">
 <meta property="og:url" content="https://zidane7-creator.github.io/nanum-boardgame/prayer/">
 <meta property="og:image" content="https://zidane7-creator.github.io/nanum-boardgame/assets/og.jpg">
@@ -58,9 +58,14 @@ h2{font-weight:normal;margin:0 0 10px;font-size:22px}
 .done-msg{text-align:center;font-size:20px;color:var(--grape);margin:8px 0}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) scale(.9);background:var(--ink);color:#fff;padding:10px 18px;border-radius:16px;font-size:17px;opacity:0;transition:.25s;z-index:90;pointer-events:none;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) scale(1)}
+.memo-box{margin:14px auto 6px;max-width:620px;background:#fffdf6;border:2px solid #e8dcc6;border-radius:16px;padding:12px}
+.memo-box textarea{width:100%;box-sizing:border-box;margin:8px 0 4px;font:17px/1.7 "Gowun Batang",serif;border:2px solid #d9c7a8;border-radius:12px;padding:10px;resize:vertical;background:#fff;color:inherit}
+.mlist{max-width:620px;margin:14px auto 4px}.mlist h3{font-weight:normal;margin:0 0 8px;font-size:18px}
+.mlist button{display:block;width:100%;text-align:left;margin:0 0 8px;padding:10px 12px;border:2px solid #e8dcc6;border-radius:14px;background:#fff;box-shadow:none;font:inherit;color:inherit;cursor:pointer}
+.mlist .d{display:block;font-size:13px;color:#7b4bb7;margin-bottom:2px}.mlist .m{display:block;white-space:pre-wrap;font-family:"Gowun Batang",serif;line-height:1.6}
 </style>
 </head><body>
-<div class="top"><a href="../">← 목장</a><span class="ttl">🍇 기도 모으기</span></div>
+<div class="top"><a href="../">← 목장</a><span class="ttl">🍇 작정기도</span></div>
 <main id="app"></main>
 <div class="toast" id="toast"></div>
 <script>
@@ -91,24 +96,36 @@ function grapeSVG(p,big){const n=p.days,R=rows(n),SH=rowShift(R),RAD=26,DX=50,DY
   h+=`<path d="M${W/2-6} 58 C ${W/2-44} 30, ${W/2-88} 44, ${W/2-96} 66 C ${W/2-64} 80, ${W/2-28} 76, ${W/2-6} 58 Z" fill="#8fd16a" stroke="#3b6b2a" stroke-width="3"/>`;
   R.forEach((cnt,ri)=>{const y=top+ri*DY,x0=W/2-(cnt-1)*DX/2+SH[ri]*DX/2;for(let j=0;j<cnt;j++){k++;const x=x0+j*DX,f=done.has(k),isT=big&&k===today&&k<=n&&!f&&today>=1;
     const past=k<today&&!f;
-    h+=`<g class="g${isT?" today":""}${big&&p.justDid===k?" pop":""}" data-k="${k}"><circle class="b" cx="${x}" cy="${y}" r="${RAD}" fill="${f?"url(#gr)":past?"#f1ecf6":"#ffffff"}"/>${f?`<ellipse cx="${x-8}" cy="${y-9}" rx="7" ry="4.5" fill="#fff" opacity=".55"/>`:""}<text x="${x}" y="${y+1}" font-size="${k>=10?19:21}" fill="${f?"#fff":past?"#c9b9dc":"#7b4bb7"}">${k}</text></g>`}});
+    h+=`<g class="g${isT?" today":""}${big&&p.justDid===k?" pop":""}" data-k="${k}"><circle class="b" cx="${x}" cy="${y}" r="${RAD}" fill="${f?"url(#gr)":past?"#f1ecf6":"#ffffff"}"/>${f?`<ellipse cx="${x-8}" cy="${y-9}" rx="7" ry="4.5" fill="#fff" opacity=".55"/>`:""}${p.memos&&p.memos[k]?`<circle cx="${x+18}" cy="${y-18}" r="8" fill="#f5b82e" stroke="#fff" stroke-width="2"/><text x="${x+18}" y="${y-17}" font-size="10" fill="#fff">✎</text>`:""}${big&&k===p.sel?`<circle cx="${x}" cy="${y}" r="${RAD+4}" fill="none" stroke="#f5b82e" stroke-width="3" stroke-dasharray="5 4"/>`:""}<text x="${x}" y="${y+1}" font-size="${k>=10?19:21}" fill="${f?"#fff":past?"#c9b9dc":"#7b4bb7"}">${k}</text></g>`}});
   return`<svg id="${big?"grape":""}" class="${big?"":"mini"}" viewBox="0 0 ${W} ${H}" aria-label="포도송이 ${n}알"><defs><radialGradient id="gr" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#b98be6"/><stop offset=".55" stop-color="#7b4bb7"/><stop offset="1" stop-color="#4b2a6e"/></radialGradient></defs>${h}</svg>`}
 
 /* ---------- 화면 ---------- */
 let cur=null,pickN=21;
 function home(){cur=null;const L=DB.list;
-  $("app").innerHTML=`<h1 class="sc-sky">기도 모으기</h1><p class="sub sc-sky">기도 제목을 정하고 매일 기도하면 포도알이 하나씩 채워져요</p>
-  <div class="card"><h2>🍇 새 포도송이 만들기</h2>
+  $("app").innerHTML=`<h1 class="sc-sky">작정기도</h1><p class="sub sc-sky">기도 제목과 기간을 작정하고, 매일 기도하면 포도알이 하나씩 채워져요</p>
+  <div class="card"><h2>🍇 새 작정기도 시작하기</h2>
     <div class="row"><input id="ttl" maxlength="30" placeholder="기도 제목 (예: 가정을 위한 기도)" style="flex:1;font-size:18px"></div>
     <div class="pick">${[21,30,40].map(n=>`<button data-n="${n}" class="${n===pickN?"on":""}"><b>${n}일</b><span class="hint">포도 ${n}알</span></button>`).join("")}</div>
     <div class="row"><span>시작하는 날</span><input type="date" id="sd" value="${dkey(new Date())}"><span class="hint">시작한 날이 1일차예요</span></div>
-    <div class="row" style="justify-content:center;margin-top:12px"><button class="go" id="mk" style="font-size:20px;padding:10px 26px">🍇 포도송이 만들기</button></div></div>
-  ${L.length?`<div class="card"><h2>📒 내 포도송이 (${L.length})</h2><div class="list">${L.map((p,i)=>{const d=(p.done||[]).length,t=Math.min(Math.max(dayNo(p.start),0),p.days);
+    <div class="row" style="justify-content:center;margin-top:12px"><button class="go" id="mk" style="font-size:20px;padding:10px 26px">🍇 작정기도 시작</button></div></div>
+  ${L.length?`<div class="card"><h2>📒 나의 작정기도 (${L.length})</h2><div class="list">${L.map((p,i)=>{const d=(p.done||[]).length,t=Math.min(Math.max(dayNo(p.start),0),p.days);
     return`<div class="item" data-i="${i}">${grapeSVG(p,false)}<div style="flex:1;min-width:0"><div class="t">${esc(p.title||"기도")}</div><div class="s">${p.days}일 · ${fmt(p.start)} 시작 · ${dayNo(p.start)>p.days?"끝남":dayNo(p.start)<1?"아직 시작 전":t+"일차"}</div>
-      <div class="bar"><i style="width:${Math.round(d/p.days*100)}%"></i></div><div class="s">포도 ${d}/${p.days}알</div></div></div>`}).join("")}</div></div>`:""}`;
+      <div class="bar"><i style="width:${Math.round(d/p.days*100)}%"></i></div><div class="s">포도 ${d}/${p.days}알${Object.keys(p.memos||{}).length?` · 💭 받은 마음 ${Object.keys(p.memos).length}개`:""}</div></div></div>`}).join("")}</div></div>`:""}`;
   document.querySelectorAll(".pick [data-n]").forEach(b=>b.onclick=()=>{pickN=+b.dataset.n;document.querySelectorAll(".pick [data-n]").forEach(x=>x.classList.toggle("on",x===b))});
   $("mk").onclick=()=>{const title=$("ttl").value.trim()||"나의 기도";const st=$("sd").value||dkey(new Date());DB.list.unshift({id:Date.now().toString(36),title,days:pickN,start:st,done:[]});save();open(0)};
   document.querySelectorAll(".item").forEach(el=>el.onclick=()=>open(+el.dataset.i))}
+/* 💭 기도하며 받은 마음: 날마다(포도알마다) 메모를 남겨요. 쓰는 대로 자동 저장 */
+function memoBox(p,t){const n=p.days;if(t<1)return"";const last=Math.min(t,n);let k=p.sel&&p.sel>=1&&p.sel<=last?p.sel:last;p.sel=k;
+  const did=(p.done||[]).includes(k),dt=fmt(addDays(p.start,k-1));
+  return`<div class="memo-box"><div class="row" style="justify-content:space-between"><b>💭 ${k}일차 · ${dt}${k===t?" (오늘)":""} 기도하며 받은 마음</b><span class="hint">${did?"🍇 기도함":"아직 체크 전"}</span></div>
+    <textarea id="memo" rows="4" maxlength="2000" placeholder="기도하면서 떠오른 말씀, 깨달음, 감사, 응답을 적어 보세요">${esc((p.memos||{})[k]||"")}</textarea>
+    <div class="row" style="justify-content:space-between"><span class="hint" id="msv">${(p.memos||{})[k]?"✔ 저장되어 있어요":"쓰는 대로 자동 저장돼요"}</span>${!did&&k<t?`<button class="sm" id="lateChk">이날도 기도했어요 ✔</button>`:""}</div></div>`}
+function memoList(p){const M=p.memos||{},ks=Object.keys(M).map(Number).filter(k=>M[k]&&M[k].trim()).sort((a,b)=>b-a);if(!ks.length)return"";
+  return`<div class="mlist"><h3>📖 받은 마음 모아보기 (${ks.length})</h3>${ks.map(k=>`<button data-k="${k}"><span class="d">${k}일차 · ${fmt(addDays(p.start,k-1))}</span><span class="m">${esc(M[k])}</span></button>`).join("")}</div>`}
+function bindMemo(p,i,t){const m=$("memo");if(!m)return;const k=p.sel;let tm;
+  m.oninput=()=>{p.memos=p.memos||{};const v=m.value;if(v.trim())p.memos[k]=v;else delete p.memos[k];clearTimeout(tm);tm=setTimeout(()=>{save();$("msv").textContent="✔ 자동 저장됨 "+new Date().toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"})},300)};
+  m.onblur=()=>save();
+  const lc=$("lateChk");if(lc)lc.onclick=()=>{p.done=[...new Set([...(p.done||[]),k])].sort((a,b)=>a-b);p.justDid=k;save();toast(`🍇 ${k}번 포도알을 채웠어요`);open(i)}}
 function open(i){cur=i;const p=DB.list[i];if(!p){home();return}const n=p.days,t=dayNo(p.start),done=(p.done||[]).length,ended=t>n,before=t<1,todayDone=(p.done||[]).includes(t);
   let streak=0;for(let k=Math.min(t,n);k>=1;k--){if(p.done.includes(k))streak++;else if(k===t)continue;else break}
   $("app").innerHTML=`<div class="card">
@@ -120,16 +137,20 @@ function open(i){cur=i;const p=DB.list[i];if(!p){home();return}const n=p.days,t=
       :before?`<div class="hint">${fmt(p.start)}부터 1번 포도알을 채울 수 있어요</div>`
       :todayDone?`<div class="done-msg">✅ 오늘(${t}번) 포도알을 채웠어요!</div><button class="sm" id="undo">오늘 체크 취소</button>`
       :`<button class="go" id="pray">🙏 오늘 기도했어요 (${t}번 알)</button><div class="hint" style="margin-top:6px">반짝이는 ${t}번 포도알을 눌러도 돼요</div>`}</div>
-    <p class="hint" style="text-align:center">포도알 번호는 날짜예요. 기도한 날의 알만 채워지고, 지나간 날은 빈 채로 남아요.</p>
+    ${memoBox(p,t)}
+    <p class="hint" style="text-align:center">포도알 번호는 날짜예요. 기도한 날의 알만 채워지고, 지나간 날은 빈 채로 남아요. 지난 포도알을 누르면 그날의 메모를 보고 고칠 수 있어요.</p>
+    ${memoList(p)}
     <div class="row" style="justify-content:center"><button class="sm" id="ren">이름 바꾸기</button><button class="sm" id="del">지우기</button></div></div>`;
   delete p.justDid;
   $("back").onclick=home;
+  bindMemo(p,i,t);
   const check=()=>{if(ended||before||todayDone)return;p.done=[...new Set([...(p.done||[]),t])].sort((a,b)=>a-b);p.justDid=t;save();toast(`🍇 ${t}번 포도알이 채워졌어요!`);open(i)};
   if($("pray"))$("pray").onclick=check;
-  const g=document.querySelector(`#grape .g.today`);if(g)g.onclick=check;
+  document.querySelectorAll("#grape .g").forEach(g=>{const k=+g.dataset.k;g.style.cursor=k<=t?"pointer":"default";g.onclick=()=>{if(g.classList.contains("today")){p.sel=k;check();return}if(k<=Math.min(t,n)){p.sel=k;open(i);setTimeout(()=>{const m=$("memo");if(m){m.focus();m.scrollIntoView({block:"center",behavior:"smooth"})}},50)}}});
+  document.querySelectorAll(".mlist [data-k]").forEach(b=>b.onclick=()=>{p.sel=+b.dataset.k;open(i);setTimeout(()=>{const m=$("memo");if(m)m.scrollIntoView({block:"center"})},50)});
   if($("undo"))$("undo").onclick=()=>{p.done=p.done.filter(k=>k!==t);save();open(i)};
   $("ren").onclick=()=>{const v=(prompt("기도 제목",p.title)||"").trim();if(v){p.title=v.slice(0,30);save();open(i)}};
-  $("del").onclick=()=>{if(confirm(`‘${p.title}’ 포도송이를 지울까요?`)){DB.list.splice(i,1);save();home()}}}
+  $("del").onclick=()=>{if(confirm(`‘${p.title}’ 작정기도를 지울까요? 받은 마음 메모도 함께 지워져요.`)){DB.list.splice(i,1);save();home()}}}
 home();
 </script>
 <script src="../assets/scene.js?v=20261116d"></script><script src="../assets/home.js?v=20261118"></script>
