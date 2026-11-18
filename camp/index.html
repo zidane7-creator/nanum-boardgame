@@ -366,7 +366,7 @@ function render(){
   const app=$('#app');app.classList.toggle('wide',!!R&&TAB==='people');
   if(!R){app.innerHTML=vHome();return}
   const dd=R.start?diffD(todayStr(),R.start):null;
-  if(TAB==='cars'){let n=0;while(n<3&&syncCars())n++;if(n)save()}
+  if(TAB==='cars'||TAB==='people'){let n=0;while(n<3&&syncCars())n++;if(n)save()}
   const V={staff:vStaff,praise:vPraise,minutes:vMinutes,sched:vSched,theme:vTheme,venue:vVenue,speaker:vSpeaker,program:vProgram,tt:vTT,confirm:vConfirm,sup:vSup,chk:vChk,files:vFiles,acc:vAcc,people:vPeople,cars:vCars,grp:vGrp,rooms:vRooms,notice:vNotice}[TAB]||vPeople;
   app.innerHTML=`<div class="head no-print"><a class="btn" href="./">☰ 수련회 목록</a><h1 class="j">${esc(R.name)}</h1>${dd!=null?`<span class="dday">${dd>0?'D-'+dd:dd===0?'D-DAY':dd>=-(+R.nights)?'수련회 중':'끝났어요'}</span>`:''}<span class="hint">${esc(campRange()||'날짜 미정')}</span><button class="sm" data-act="campSet">⚙️ 설정·백업</button><span class="sync" id="sync">✔ 이 기기에 저장됨</span></div>
   <nav class="tabs">${TABS.map(([k,l])=>`<button data-act="tab" data-v="${k}" class="${k===TAB?'on':''}">${l}</button>`).join('')}</nav>
@@ -802,6 +802,10 @@ function syncCars(){const C=R.cars;let ch=false;const last=+R.nights||0;
       if(w&&w.m!=null){set('day',w.d);set('time',hm(w.m))}
       if(pool&&p[dir+'Place'])set('place',p[dir+'Place']);
       if(!(c.members||[]).includes(p.id)){C.list.forEach(x=>{if(x.dir===dir)x.members=(x.members||[]).filter(i=>i!==p.id)});c.members.unshift(p.id);ch=true}});
+    /* 카풀로 타는 사람은 운전자(차)와 같은 시각으로 */
+    C.list.filter(c=>c.dir===dir&&c.autoPid&&c.time&&c.day!=null&&c.day!=='').forEach(c=>(c.members||[]).forEach(pid=>{if(pid===c.autoPid)return;const q=P(pid);if(!q)return;
+      const[h,mi]=c.time.split(':').map(Number),vals={[dir+'Day']:String(c.day),[dir+'AP']:h<12?'오전':'오후',[dir+'H']:String(h%12||12),[dir+'M']:String(mi)};
+      for(const k in vals)if(String(q[k]??'')!==vals[k]){q[k]=vals[k];ch=true}}));
     const n=C.list.length;C.list=C.list.filter(c=>{if(!c.autoPid||c.dir!==dir)return true;const p=P(c.autoPid);return p&&/^자차\(카풀/.test(p[dir+'Move']||'')});if(C.list.length!==n)ch=true});
   return ch}
 function suggHTML(c){const toMin=t=>{const[h,m]=String(t).split(':').map(Number);return h*60+(m||0)};const t0=c.time?(+c.day||0)*1440+toMin(c.time):null;
@@ -812,7 +816,7 @@ function needCard(dir){const L=needList(dir).map(p=>({p,w:pWhen(p,dir)})).sort((
   return `<div class="card" style="border-color:#d9822b"><b class="j" style="font-size:17px">🚗 차가 필요한 사람 (${L.length})</b> <span class="hint">[참석인원]에서 ‘자차필요’로 고른 사람이에요. 카풀가능 차 카드에 시간이 가까운 순서로 떠요. 끌어다 놓아도 돼요.</span>
    <div style="margin-top:6px">${L.map(x=>CHIP(x.p.id,'pool',` <span class="hint">${whenShort(x.w)}${x.p[dir+'Place']?' · 📍'+esc(x.p[dir+'Place']):''}</span>`)).join('')}</div></div>`}
 function mvBlock(p,k,dir){const days=(+R.nights||0)+1,mv=p[dir+'Move'],legacy=!(p[dir+'H']!=null&&p[dir+'H']!=='')&&p[dir+'T'];
-  return `<div class="c mv" data-l="${dir==='in'?'들어올 때':'나갈 때'}"><div class="mvr">${sel(k,dir+'Day',Array.from({length:days},(_,d)=>[d,(d+1)+'일차']),{blank:'일차',rr:1})}${sel(k,dir+'AP',['오전','오후'],{blank:'오전/오후',rr:1})}${sel(k,dir+'H',Array.from({length:12},(_,i)=>[i+1,(i+1)+'시']),{blank:'시',rr:1})}${sel(k,dir+'M',[0,10,20,30,40,50].map(m=>[m,pad(m)+'분']),{blank:'분',rr:1})}${sel(k,dir+'Move',MOVES,{blank:'이동방법',rr:1})}${mv==='자차(카풀가능)'||mv==='자차필요'?inp(k,dir+'Place',{ph:dir==='in'?'출발장소':'도착장소',st:'flex:1 1 110px'}):''}</div>${legacy?`<div class="hint" style="font-size:11px">적어 둔 글: ${esc(p[dir+'T'])}</div>`:''}</div>`}
+  return `<div class="c mv" data-l="${dir==='in'?'들어올 때':'나갈 때'}"><div class="mvr">${sel(k,dir+'Day',Array.from({length:days},(_,d)=>[d,(d+1)+'일차']),{blank:'일차',rr:1})}${sel(k,dir+'AP',['오전','오후'],{blank:'오전/오후',rr:1})}${sel(k,dir+'H',Array.from({length:12},(_,i)=>[i+1,(i+1)+'시']),{blank:'시',rr:1})}${sel(k,dir+'M',[0,10,20,30,40,50].map(m=>[m,pad(m)+'분']),{blank:'분',rr:1})}${sel(k,dir+'Move',MOVES,{blank:'이동방법',rr:1})}${mv==='자차(카풀가능)'||mv==='자차필요'?inp(k,dir+'Place',{ph:dir==='in'?'출발장소':'도착장소',st:'flex:1 1 110px'}):''}</div>${(()=>{const c=R.cars.list.find(c=>c.dir===dir&&c.autoPid&&c.autoPid!==p.id&&(c.members||[]).includes(p.id));return c?`<div class="hint" style="font-size:11px">🚗 ${esc(pn(c.autoPid))}님 차로 ${dir==='in'?'와요':'가요'} · 시각은 운전자와 같아요</div>`:''})()}${legacy?`<div class="hint" style="font-size:11px">적어 둔 글: ${esc(p[dir+'T'])}</div>`:''}</div>`}
 function peopleMoves(){const L=[];R.people.forEach(p=>{[['in','inT'],['out','outT']].forEach(([k,f])=>{let w=pWhen(p,k),src='';
     if(!w||w.m==null){const car=R.cars.list.find(c=>c.dir===k&&(c.members||[]).includes(p.id)&&c.day!=null&&c.day!==''&&c.time);if(car){const[h,mi]=car.time.split(':').map(Number);w={d:+car.day,m:h*60+mi};src=car}}
     L.push({p,k,w,src,raw:p[f]||''})})});return L}
