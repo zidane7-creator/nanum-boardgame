@@ -172,6 +172,8 @@ table.ptab .mvr select,table.ptab .mvr input{width:auto;font-size:13px;padding:3
 .slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;margin-top:8px}
 .slot{border:1.5px solid var(--line);border-radius:12px;padding:8px;background:#fffdf7}.slot select{margin-top:4px}
 table.spk{width:max-content;min-width:100%}table.spk td input,table.spk td select{width:auto}
+.fsg{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}.fsg>div{background:var(--soft);border-radius:10px;padding:6px 8px}.fsg b{display:block;margin-bottom:4px}
+.fsg .mv{background:none;padding:0}.fsg .mvr{flex-wrap:nowrap}.fsg .mvr select,.fsg .mvr input{width:auto;font-size:13px;padding:3px 4px}
 /* supplies */
 .steps{display:flex;flex-wrap:wrap;gap:2px}
 .steps button{font-size:12px;padding:1px 6px;border-radius:7px;background:#fff;border-color:#cdbda6;color:var(--muted)}
@@ -306,7 +308,7 @@ function fill(R){
   d('acc',{});if(!R.acc.cats)R.acc.cats={in:['수련회비','후원','지원금','기타'],out:['준비(데코)','준비(간식)','준비(프로그램)','장소비','강사비','식사','간식','기타']};if(!R.acc.items)R.acc.items=[];
   d('cars',{});if(!R.cars.types)R.cars.types={in:['버스 본대','버스 후발대','자차 본대','자차 후발대','스탭차'],out:['버스 본대','버스 후발대','자차 본대','자차 후발대','스탭차']};if(!R.cars.list)R.cars.list=[];
   d('grp',{});const g=R.grp;if(!g.roles)g.roles=['부조장','서기'];if(g.useLeader==null)g.useLeader=true;if(g.useStaff==null)g.useStaff=true;if(!g.list)g.list=[];
-  d('rooms',[]);d('notices',[]);
+  d('rooms',[]);d('notices',[]);d('fullStd',{});
   d('fee',{});if(R.fee.base===undefined)R.fee.base=null;if(!R.fee.rules)R.fee.rules=[];
   R.cars.list.forEach(c=>{if(c.time&&!/^\d{2}:\d{2}$/.test(c.time)){const dm=String(c.time).match(/(\d+)\s*일차/),tm=String(c.time).match(/(\d{1,2})\s*[:시]\s*(\d{2})?/);if(dm&&c.day==null)c.day=+dm[1]-1;c.time=tm?pad(+tm[1])+':'+pad(+(tm[2]||0)):''}});
   return R}
@@ -391,6 +393,7 @@ function afterRender(){
   if(TAB==='minutes')updPrev();
   if(TAB==='files'||TAB==='acc')$$('img[data-fid]').forEach(async im=>{try{const f=await idb.get('files',im.dataset.fid);if(f)im.src=URL.createObjectURL(f.blob||f)}catch(e){}});
   if(TAB==='rooms')bindRooms();
+  const fs=$('#fsD');if(fs)fs.ontoggle=()=>{SUB.fsOpen=fs.open};
   const fd=$('#feeD');if(fd)fd.ontoggle=()=>{SUB.feeOpen=fd.open};
   const rd=$('#rulesD');if(rd)rd.ontoggle=()=>{R.venue.rulesOpen=rd.open;save()};
   if(TAB==='people'){const q=$('#pq');if(q)filterPeople(q.value)}
@@ -752,15 +755,22 @@ function pTools(){const F=SUB.pf||{},on=Object.keys(F).filter(k=>F[k]);
 const sortSpan=(k,l)=>`<span class="sortk ${SUB.ps===k?'on':''}" data-act="pSort" data-v="${k}" title="눌러서 정렬">${l}${SUB.ps===k?(SUB.pd==='desc'?' ▼':' ▲'):''}</span>`;
 const th=(k,l,cls)=>`<th${cls?` class="${cls}"`:''}>${sortSpan(k,l)}</th>`;
 const sh=(k,l,cls)=>`<div${cls?` class="${cls}"`:''}><span class="sortk ${SUB.ps===k?'on':''}" data-act="pSort" data-v="${k}" title="눌러서 정렬">${l}${SUB.ps===k?(SUB.pd==='desc'?' ▼':' ▲'):''}</span></div>`;
+/* ✅ 풀참 기준: 풀참에 체크하면 이 시각·이동방법이 저절로 들어가요 */
+const FS_F=['Day','AP','H','M','Move','Place'];
+function applyFull(p){const S=R.fullStd||{};['in','out'].forEach(d=>FS_F.forEach(f=>{const v=S[d+f];if(v!==undefined&&v!==null&&v!=='')p[d+f]=v}))}
+function vFullStd(){const S=R.fullStd,open=SUB.fsOpen!==false,set=['in','out'].some(d=>S[d+'H']!=null&&S[d+'H']!==''||S[d+'Move']);
+  return `<details class="card" id="fsD" ${open?'open':''}><summary class="j" style="font-size:20px;cursor:pointer">✅ 풀참 기준 <span class="hint" style="font-family:inherit">${set?`들어올 때 ${esc(whenText(S,'in')||'-')}${S.inMove?' · '+esc(S.inMove):''} / 나갈 때 ${esc(whenText(S,'out')||'-')}${S.outMove?' · '+esc(S.outMove):''}`:'풀참으로 오는 사람의 기본 시각·이동방법을 정해요'}</span></summary>
+   <div class="fsg"><div><b>⬇️ 들어올 때</b>${mvBlock(S,'fullStd','in')}</div><div><b>⬆️ 나갈 때</b>${mvBlock(S,'fullStd','out')}</div></div>
+   <div class="row" style="margin-top:8px"><span class="hint">참석인원에서 <b>풀참</b>에 체크하면 위 시각·이동방법이 그 사람에게 저절로 들어가요.</span><span class="sp"></span><button class="sm" data-act="fullAll">풀참인 사람 모두에게 다시 적용 (${R.people.filter(p=>p.full==='풀참').length}명)</button></div></details>`}
 function vPeople(){const L=R.people,PV=peopleView(),m=L.filter(p=>p.gender==='남').length,f=L.filter(p=>p.gender==='여').length;
-  return `${vFee()}<div class="card"><div class="row"><h2 style="margin:0">🙋 참석인원 (${L.length})</h2><span class="sp"></span><input id="pq" placeholder="🔍 이름·소속 찾기" style="width:150px"><button data-act="xls">📊 엑셀·CSV 불러오기</button><button data-act="pExport">⬇️ CSV 내보내기</button><button class="pri" data-act="pAdd">+ 한 명 추가</button></div>
+  return `${vFee()}${vFullStd()}<div class="card"><div class="row"><h2 style="margin:0">🙋 참석인원 (${L.length})</h2><span class="sp"></span><input id="pq" placeholder="🔍 이름·소속 찾기" style="width:150px"><button data-act="xls">📊 엑셀·CSV 불러오기</button><button data-act="pExport">⬇️ CSV 내보내기</button><button class="pri" data-act="pAdd">+ 한 명 추가</button></div>
   <div class="row hint" style="margin:6px 0">남 ${m} · 여 ${f} · 보험 미가입 ${L.filter(p=>p.ins!=='가입').length} · 사역자 ${L.filter(p=>p.prep==='min').length} · 준비인원 ${L.filter(p=>p.prep==='staff').length} · 찬양팀 ${L.filter(p=>p.praise).length}</div>
   ${L.length?pTools():''}${PV.length!==L.length?`<div class="badge b-mid" style="margin:6px 0;font-size:14px">🔎 ${L.length}명 중 ${PV.length}명 보는 중</div>`:''}
   <p class="hint" style="margin:0 0 6px">구글폼·네이버폼 응답을 엑셀(.xlsx)이나 CSV로 받아서 ‘📊 엑셀·CSV 불러오기’로 올리면 한 번에 추가돼요. 오른쪽 <b>구분</b>에서 사역자·준비인원을, <b>찬양팀</b> 칸으로 찬양팀을 지정해요.</p>
   ${L.length?`<div class="hs ptw" data-keep="people"><table class="t ptab" id="ptbl"><thead><tr><th class="s0">#</th>${th('full','풀참','s1 ck')}${th('name','이름','s2')}${th('gender','성별')}${th('age','나이')}${th('org','소속')}${th('addr','사는 곳')}${th('phone','핸드폰번호')}${th('ins','보험','ck')}
    <th>${sortSpan('in','들어올 때')} · ${sortSpan('inMove','이동방법')} <span class="hint">(→출발장소)</span></th><th>${sortSpan('out','나갈 때')} · ${sortSpan('outMove','이동방법')} <span class="hint">(→도착장소)</span></th>${th('prep','구분')}${th('role','직책')}${th('praise','찬양팀','ck')}${th('fee','회비')}${th('paid','입금확인')}<th></th></tr></thead><tbody>
   ${PV.length?'':'<tr><td colspan="17"><div class="empty">조건에 맞는 사람이 없어요</div></td></tr>'}${PV.map((p,i)=>{const k='people#'+p.id,fe=feeOf(p),bk=feeBooked(p.id);return `<tr class="${SUB.pHi===p.id?'phi':''}" id="prow-${p.id}" data-s="${esc((p.name||'')+' '+(p.org||'')+' '+(p.phone||''))}"><td class="s0 hint">${i+1}</td>
-   <td class="s1 ck"><input type="checkbox" data-o="${k}" data-k="full" data-on="풀참" data-off="부분참" ${p.full==='풀참'?'checked':''} title="풀참여"></td><td class="s2">${inp(k,'name',{ph:'이름',st:'width:70px;font-weight:600'})}</td><td>${sel(k,'gender',['남','여'],{blank:'-',st:'width:52px'})}</td><td>${inp(k,'age',{st:'width:38px'})}</td><td>${inp(k,'org',{st:'width:48px'})}</td><td>${inp(k,'addr',{st:'width:58px'})}</td><td>${inp(k,'phone',{type:'tel',st:'width:104px'})}</td><td class="ck"><input type="checkbox" data-o="${k}" data-k="ins" data-on="가입" data-off="미가입" ${p.ins==='가입'?'checked':''} title="보험 가입"></td>
+   <td class="s1 ck"><input type="checkbox" data-o="${k}" data-k="full" data-on="풀참" data-off="부분참" data-rr ${p.full==='풀참'?'checked':''} title="풀참여"></td><td class="s2">${inp(k,'name',{ph:'이름',st:'width:70px;font-weight:600'})}</td><td>${sel(k,'gender',['남','여'],{blank:'-',st:'width:52px'})}</td><td>${inp(k,'age',{st:'width:38px'})}</td><td>${inp(k,'org',{st:'width:48px'})}</td><td>${inp(k,'addr',{st:'width:58px'})}</td><td>${inp(k,'phone',{type:'tel',st:'width:104px'})}</td><td class="ck"><input type="checkbox" data-o="${k}" data-k="ins" data-on="가입" data-off="미가입" ${p.ins==='가입'?'checked':''} title="보험 가입"></td>
    <td>${mvBlock(p,k,'in')}</td><td>${mvBlock(p,k,'out')}</td><td>${sel(k,'prep',[['min','사역자'],['staff','준비인원']],{blank:'일반',rr:1,st:'width:80px'})}</td><td>${p.prep?sel(k,'role',R.cfg[p.prep==='min'?'minRoles':'staffRoles'],{blank:'—',st:'width:68px'}):'<span class="hint">—</span>'}</td>
    <td class="ck"><input type="checkbox" data-o="${k}" data-k="praise" data-rr ${p.praise?'checked':''} title="찬양팀"></td>
    <td title="${esc('회비 기준: '+fe.why)}">${inp(k,'fee',{n:1,rr:1,ph:fe.amt!=null&&!(p.fee!=null&&p.fee!=='')?won(fe.amt):'금액',st:'width:74px;text-align:right'})}</td>
@@ -1033,6 +1043,7 @@ const ACT={
   slotRen:t=>{const x=R.spkSlots.find(y=>y.id===t.dataset.v);const n=(prompt('새 이름',x.name)||'').trim();if(n){x.name=n;save();render()}},
   slotDel:t=>{const x=R.spkSlots.find(y=>y.id===t.dataset.v);if(!confirm(`‘${x.name}’ 자리를 뺄까요? 확정사항의 ${x.name} 칸도 빠져요.`))return;R.spkSlots=R.spkSlots.filter(y=>y!==x);delete R.spkFinal[x.id];delete R.conf['slot_'+x.id];R.speakers.forEach(sp=>{if(sp.role===x.id)sp.role=''});save();render()},
   spkF:t=>{SUB.spkF=t.dataset.v;render()},
+  fullAll:()=>{const L=R.people.filter(p=>p.full==='풀참');if(!L.length){toast('풀참에 체크된 사람이 없어요');return}if(!confirm(`풀참인 ${L.length}명의 들어올 때·나갈 때를 풀참 기준으로 바꿀까요?`))return;L.forEach(applyFull);save();render();toast(`${L.length}명에게 적용했어요`)},
   pSort:t=>{const k=t.dataset.v;if(SUB.ps===k){if(SUB.pd==='desc'){SUB.ps='';SUB.pd=''}else SUB.pd='desc'}else{SUB.ps=k;SUB.pd='asc'}render()},
   pSortDir:()=>{SUB.pd=SUB.pd==='desc'?'asc':'desc';render()},
   pfClear:()=>{SUB.pf={};render()},
@@ -1112,6 +1123,7 @@ document.addEventListener('change',e=>{const t=e.target;
   if(t.tagName==='SELECT'&&t.dataset.act==='gRole'){const g=R.grp.list.find(x=>x.id===t.dataset.g);g.roles=g.roles||{};if(t.value)g.roles[t.dataset.pid]=t.value;else delete g.roles[t.dataset.pid];save();return}
   if(t.dataset.o==null)return;if(t.tagName==='SELECT'||t.type==='checkbox')apply(t);
   if(t.dataset.o==='spkFinal'&&t.value){const sp=R.speakers.find(x=>x.id===t.value);if(sp){sp.status='확정';sp.role=t.dataset.k;save()}}
+  if(t.dataset.o.startsWith('people#')&&t.dataset.k==='full'&&t.checked){const p=objOf(t.dataset.o);const S=R.fullStd;if(['in','out'].some(d=>FS_F.some(f=>S[d+f]!=null&&S[d+f]!==''))){applyFull(p);save();toast(`✅ ${p.name||''} 풀참 기준 시각·이동방법을 넣었어요`)}}
   if(t.dataset.o.startsWith('people#')&&t.dataset.k==='prep'){const p=objOf(t.dataset.o);p.role=''}
   if(t.dataset.o.startsWith('people#')&&t.dataset.k==='payMethod'){const p=objOf(t.dataset.o),b=feeBooked(p.id);if(b)b.method=p.payMethod}
   if(t.dataset.o.startsWith('people#')&&t.dataset.k==='paid'){const p=objOf(t.dataset.o);p.paidDate=p.paid?todayStr():'';if(p.paid&&!p.payMethod)p.payMethod='계좌이체';if(p.paid&&feeOf(p).amt)toast(`💰 ${p.name||''} 입금확인 · [회계]에서 수입으로 넣을 수 있어요`)}
