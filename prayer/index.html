@@ -79,13 +79,17 @@ const fmt=k=>{const d=parse(k);return`${d.getMonth()+1}월 ${d.getDate()}일`};
 const addDays=(k,n)=>{const d=parse(k);d.setDate(d.getDate()+n);return dkey(d)};
 
 /* ---------- 포도송이 모양: 위가 넓고 아래로 갈수록 좁아져요 ---------- */
-function rows(n){let w=1;while(w*(w+1)/2<n)w++;const r=[];let left=n;for(let k=w;k>0&&left>0;k--){const t=Math.min(k,left);r.push(t);left-=t}return r}
-function grapeSVG(p,big){const n=p.days,R=rows(n),RAD=26,DX=50,DY=43,W=R[0]*DX+40,top=96,H=top+R.length*DY+RAD+16;
+/* 포도송이 모양(줄마다 알 수): 위는 둥근 어깨, 아래로 갈수록 좁아져 끝이 뾰족한 역삼각형 */
+const SHAPES={21:[5,6,5,4,1],30:[5,6,7,6,3,2,1],40:[6,7,8,7,6,3,2,1]};
+function rows(n){if(SHAPES[n])return SHAPES[n];let w=1;while(w*(w+1)/2<n)w++;const r=[];let left=n;for(let k=w;k>0&&left>0;k--){const t=Math.min(k,left);r.push(t);left-=t}return r}
+/* 벌집처럼 엇갈려 쌓기: 윗줄과 알 수 차이가 짝수면 반 칸 옮겨서 알이 서로 사이에 끼이게 */
+function rowShift(R){const o=[0];for(let i=1;i<R.length;i++){const d=Math.abs(R[i]-R[i-1]);o.push(d%2?o[i-1]:(o[i-1]>0?o[i-1]-1:o[i-1]+1))}const avg=o.reduce((a,b)=>a+b,0)/o.length;return o.map(v=>v-Math.round(avg))}
+function grapeSVG(p,big){const n=p.days,R=rows(n),SH=rowShift(R),RAD=26,DX=50,DY=43,W=(Math.max(...R)+1)*DX+40,top=96,H=top+R.length*DY+RAD+16;
   const today=dayNo(p.start),done=new Set(p.done||[]);let h="",k=0;
   h+=`<path d="M${W/2} 70 C ${W/2-6} 40, ${W/2+8} 26, ${W/2+22} 12" fill="none" stroke="#6b4423" stroke-width="7" stroke-linecap="round"/>`;
   h+=`<path d="M${W/2+4} 52 C ${W/2+40} 22, ${W/2+86} 30, ${W/2+100} 54 C ${W/2+70} 70, ${W/2+30} 70, ${W/2+4} 52 Z" fill="#7cc35a" stroke="#3b6b2a" stroke-width="3"/><path d="M${W/2+12} 54 Q ${W/2+56} 48 ${W/2+92} 54" fill="none" stroke="#3b6b2a" stroke-width="2"/>`;
   h+=`<path d="M${W/2-6} 58 C ${W/2-44} 30, ${W/2-88} 44, ${W/2-96} 66 C ${W/2-64} 80, ${W/2-28} 76, ${W/2-6} 58 Z" fill="#8fd16a" stroke="#3b6b2a" stroke-width="3"/>`;
-  R.forEach((cnt,ri)=>{const y=top+ri*DY,x0=W/2-(cnt-1)*DX/2;for(let j=0;j<cnt;j++){k++;const x=x0+j*DX,f=done.has(k),isT=big&&k===today&&k<=n&&!f&&today>=1;
+  R.forEach((cnt,ri)=>{const y=top+ri*DY,x0=W/2-(cnt-1)*DX/2+SH[ri]*DX/2;for(let j=0;j<cnt;j++){k++;const x=x0+j*DX,f=done.has(k),isT=big&&k===today&&k<=n&&!f&&today>=1;
     const past=k<today&&!f;
     h+=`<g class="g${isT?" today":""}${big&&p.justDid===k?" pop":""}" data-k="${k}"><circle class="b" cx="${x}" cy="${y}" r="${RAD}" fill="${f?"url(#gr)":past?"#f1ecf6":"#ffffff"}"/>${f?`<ellipse cx="${x-8}" cy="${y-9}" rx="7" ry="4.5" fill="#fff" opacity=".55"/>`:""}<text x="${x}" y="${y+1}" font-size="${k>=10?19:21}" fill="${f?"#fff":past?"#c9b9dc":"#7b4bb7"}">${k}</text></g>`}});
   return`<svg id="${big?"grape":""}" class="${big?"":"mini"}" viewBox="0 0 ${W} ${H}" aria-label="포도송이 ${n}알"><defs><radialGradient id="gr" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#b98be6"/><stop offset=".55" stop-color="#7b4bb7"/><stop offset="1" stop-color="#4b2a6e"/></radialGradient></defs>${h}</svg>`}
