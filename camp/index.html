@@ -373,7 +373,7 @@ const TABS=[['people','🙋 참석인원'],['staff','👥 준비인원'],['prais
 function render(){
   const ae=document.activeElement,key=ae&&(ae.dataset&&ae.dataset.o!=null?'o:'+ae.dataset.o+'|'+ae.dataset.k:ae.id?'#'+ae.id:null),selS=ae&&ae.selectionStart,keep={};
   $$('[data-keep]').forEach(e=>keep[e.dataset.keep]=[e.scrollLeft,e.scrollTop]);
-  const app=$('#app');app.classList.toggle('wide',!!R&&TAB==='people');
+  const app=$('#app');app.classList.toggle('wide',!!R&&(TAB==='people'||TAB==='speaker'));
   if(!R){app.innerHTML=vHome();return}
   const dd=R.start?diffD(todayStr(),R.start):null;
   if(TAB==='cars'||TAB==='people'){let n=0;while(n<3&&syncCars())n++;if(n)save()}
@@ -560,8 +560,9 @@ function vSpeaker(){const L=R.speakers,cnt={};L.forEach(s=>cnt[s.status||'후보
    <div class="slots">${SL.map(x=>`<div class="slot"><div class="row" style="gap:4px"><b class="j" style="font-size:16px">${x.kind==='집회'?'⛪':'🎤'} ${esc(x.name)}</b><span class="sp"></span><button class="x" data-act="slotRen" data-v="${x.id}" title="이름 바꾸기">✎</button><button class="x" data-act="slotDel" data-v="${x.id}" title="빼기">×</button></div>
      <select data-o="spkFinal" data-k="${x.id}" data-rr style="width:100%"><option value="">— 아직 정하지 않았어요 —</option>${L.filter(s=>s.status!=='거절'||F[x.id]===s.id).map(s=>`<option value="${s.id}"${F[x.id]===s.id?' selected':''}>${esc(s.name||'(이름 없음)')}${s.org?' · '+esc(s.org):''} (${esc(s.status||'후보')})</option>`).join('')}</select></div>`).join('')||'<div class="hint">‘+ 집회 추가’, ‘+ 강사 추가’로 자리를 만들어요</div>'}</div>
    <p class="hint" style="margin:6px 0 0">자리마다 강사를 고르면 그 강사는 ‘확정’이 되고 맡을 순서도 그 자리로 바뀌어요. [확정사항]에도 집회1 설교자·강사1처럼 자리별로 들어가요. 아래 표에 후보를 먼저 추가해 주세요.</p></div>
-  <div class="card"><div class="row"><h2 style="margin:0">🎤 강사 섭외 현황</h2><span class="sp"></span>${SPK_ST.filter(s=>cnt[s]).map(s=>`<span class="badge ${cls(s)}">${s} ${cnt[s]}</span>`).join(' ')}<button class="pri" data-act="add" data-c="speakers">+ 강사 후보</button></div>
-  ${L.length?`<div class="hs" style="margin-top:10px"><table class="t spk"><tr><th>이름</th><th>맡을 순서</th><th>소속</th><th>연락처</th><th>주제·분야</th><th>사례비</th><th>상태</th><th>가능 일정</th><th style="min-width:160px">메모</th><th></th></tr>${L.map(s=>{const k='speakers#'+s.id;return `<tr><td>${inp(k,'name',{st:'min-width:100px'})}</td><td>${(()=>{const opts=R.spkSlots.map(x=>[x.id,(x.kind==='집회'?'⛪ ':'🎤 ')+x.name]);if(s.role&&!R.spkSlots.some(x=>x.id===s.role))opts.push([s.role,s.role]);return sel(k,'role',opts,{blank:'— 맡을 순서 —',st:'min-width:150px'})})()}</td><td>${inp(k,'org',{st:'width:110px'})}</td><td>${inp(k,'phone',{st:'width:125px'})}</td><td>${inp(k,'topic',{st:'width:140px'})}</td><td>${inp(k,'fee',{n:1,st:'width:100px'})}</td><td>${sel(k,'status',SPK_ST,{rr:1,st:'min-width:110px'})}</td><td>${inp(k,'avail',{st:'width:120px'})}</td><td>${inp(k,'memo',{st:'width:200px'})}</td><td><button class="x" data-act="del" data-c="speakers" data-v="${s.id}">🗑</button></td></tr>`}).join('')}</table></div>`:'<div class="empty" style="margin-top:10px">강사 후보를 추가해서 섭외 상황을 정리해요</div>'}</div>`}
+  <div class="card"><div class="row"><h2 style="margin:0">🎤 강사 섭외 현황</h2><span class="sp"></span><button class="pri" data-act="add" data-c="speakers">+ 강사 후보</button></div>
+  <div class="row" style="margin-top:8px;gap:4px"><b>🔎 상태</b><span class="chip tog ${!SUB.spkF?'on':''}" data-act="spkF" data-v="">전체 ${L.length}</span>${SPK_ST.map(s=>`<span class="chip tog ${SUB.spkF===s?'on':''}" data-act="spkF" data-v="${s}" style="${cnt[s]?'':'opacity:.45'}">${s} ${cnt[s]||0}</span>`).join('')}</div>
+  ${L.length?`<div class="hs" style="margin-top:10px"><table class="t spk"><tr><th>이름</th><th>맡을 순서</th><th>소속</th><th>연락처</th><th>주제·분야</th><th>사례비</th><th>상태</th><th>가능 일정</th><th style="min-width:160px">메모</th><th></th></tr>${L.filter(s=>!SUB.spkF||(s.status||'후보')===SUB.spkF).map(s=>{const k='speakers#'+s.id;return `<tr><td>${inp(k,'name',{st:'min-width:100px'})}</td><td>${(()=>{const opts=R.spkSlots.map(x=>[x.id,(x.kind==='집회'?'⛪ ':'🎤 ')+x.name]);if(s.role&&!R.spkSlots.some(x=>x.id===s.role))opts.push([s.role,s.role]);return sel(k,'role',opts,{blank:'— 맡을 순서 —',st:'min-width:150px'})})()}</td><td>${inp(k,'org',{st:'width:110px'})}</td><td>${inp(k,'phone',{st:'width:125px'})}</td><td>${inp(k,'topic',{st:'width:140px'})}</td><td>${inp(k,'fee',{n:1,st:'width:100px'})}</td><td>${sel(k,'status',SPK_ST,{rr:1,st:'min-width:110px'})}</td><td>${inp(k,'avail',{st:'width:120px'})}</td><td>${inp(k,'memo',{st:'width:200px'})}</td><td><button class="x" data-act="del" data-c="speakers" data-v="${s.id}">🗑</button></td></tr>`}).join('')}</table></div>`:'<div class="empty" style="margin-top:10px">강사 후보를 추가해서 섭외 상황을 정리해요</div>'}</div>`}
 
 /* ---------- 프로그램 ---------- */
 function vProgram(){const cands=prepList().length?prepList():R.people;
@@ -1031,6 +1032,7 @@ const ACT={
     const x={id:uid(),name,kind};const i=kind==='집회'?R.spkSlots.filter(y=>y.kind==='집회').length:R.spkSlots.length;R.spkSlots.splice(i,0,x);R.conf['slot_'+x.id]={v:'',ok:false};save();render()},
   slotRen:t=>{const x=R.spkSlots.find(y=>y.id===t.dataset.v);const n=(prompt('새 이름',x.name)||'').trim();if(n){x.name=n;save();render()}},
   slotDel:t=>{const x=R.spkSlots.find(y=>y.id===t.dataset.v);if(!confirm(`‘${x.name}’ 자리를 뺄까요? 확정사항의 ${x.name} 칸도 빠져요.`))return;R.spkSlots=R.spkSlots.filter(y=>y!==x);delete R.spkFinal[x.id];delete R.conf['slot_'+x.id];R.speakers.forEach(sp=>{if(sp.role===x.id)sp.role=''});save();render()},
+  spkF:t=>{SUB.spkF=t.dataset.v;render()},
   pSort:t=>{const k=t.dataset.v;if(SUB.ps===k){if(SUB.pd==='desc'){SUB.ps='';SUB.pd=''}else SUB.pd='desc'}else{SUB.ps=k;SUB.pd='asc'}render()},
   pSortDir:()=>{SUB.pd=SUB.pd==='desc'?'asc':'desc';render()},
   pfClear:()=>{SUB.pf={};render()},
