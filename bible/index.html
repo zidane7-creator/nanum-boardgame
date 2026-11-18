@@ -44,6 +44,20 @@ main{max-width:1500px;margin:0 auto;padding:16px 10px 70px}
 .vers button.on{background:var(--gold)}
 .rframe{flex:1;min-height:0;border:2px solid var(--ink);border-radius:14px;overflow-x:hidden;overflow-y:auto;background:#fff;position:relative;overscroll-behavior:contain}
 .rframe iframe{position:absolute;left:0;top:0;width:1024px;border:0;display:block;transform-origin:0 0}
+#rMark{position:absolute;left:0;top:0;width:1024px;transform-origin:0 0;pointer-events:none;overflow:visible;z-index:2}
+#rMark.on{pointer-events:auto;touch-action:none;cursor:crosshair}#rMark.erase{cursor:pointer}
+#rMark .ln{pointer-events:none}#rMark.erase .ln{pointer-events:stroke;cursor:pointer}#rMark.erase .ln:hover{opacity:.45}
+#rMark .note{pointer-events:auto;cursor:pointer}
+.mtools{gap:5px}.mtools button[aria-pressed=true]{background:var(--gold)}
+.mcol{display:inline-flex;gap:3px;align-items:center}.mcol button{width:22px;height:22px;padding:0;border-radius:50%;background:var(--c);box-shadow:none;border:2px solid #fff;outline:2px solid #c9b79e}
+.mcol button.on{outline:3px solid var(--ink)}
+.mhint{position:sticky;top:6px;left:0;margin:6px auto 0;width:max-content;max-width:92%;z-index:3;background:var(--ink);color:#fff;border-radius:12px;padding:4px 12px;font-size:13px;pointer-events:none}
+.mpop{position:fixed;z-index:80;background:#fffdf3;border:2.5px solid var(--ink);border-radius:14px;box-shadow:0 6px 18px rgba(0,0,0,.25);padding:10px;width:min(300px,90vw)}
+.mpop textarea{width:100%;height:90px;font:inherit;border:2px solid var(--ink);border-radius:10px;padding:6px;resize:vertical}
+.mpop .row2{display:flex;gap:6px;justify-content:flex-end;margin-top:6px}
+.mlist{max-height:60vh;overflow:auto;display:flex;flex-direction:column;gap:6px;text-align:left}
+.mlist .mi{background:#fff;border:2px solid #e6d6b8;border-radius:12px;padding:6px 10px;cursor:pointer}.mlist .mi:hover{border-color:var(--ink)}
+.mlist .mi small{opacity:.7}
 .rframe .rsz{width:1px}
 .rfoot{display:flex;gap:8px;justify-content:space-between;align-items:center;flex-wrap:wrap}
 .rfoot .go{flex:1;min-width:150px}
@@ -142,13 +156,20 @@ html.sc-night .pen::before{filter:brightness(.6)}html.sc-night .pen::after{opaci
       <button type="button" class="sm" id="rSearchBtn" aria-pressed="false">🔍 단어 검색</button>
       <button type="button" class="sm" id="rParBtn" aria-pressed="false">📚 평행본문</button>
     </div>
+    <div class="rtools mtools" id="mTools">
+      <button type="button" class="sm" data-m="line" aria-pressed="false" title="본문 위를 옆으로 그으면 밑줄이 그어져요">✏️ 밑줄</button>
+      <span class="mcol" id="mCol"><button type="button" data-c="r" title="빨간 밑줄" style="--c:#e0504a"></button><button type="button" data-c="b" title="파란 밑줄" style="--c:#3b82c4"></button><button type="button" data-c="y" title="노란 형광펜" style="--c:#ffd84d"></button><button type="button" data-c="g" title="연두 형광펜" style="--c:#9be37a"></button></span>
+      <button type="button" class="sm" data-m="memo" aria-pressed="false" title="원하는 곳을 누르면 메모를 붙여요">📝 메모</button>
+      <button type="button" class="sm" data-m="erase" aria-pressed="false" title="지울 밑줄을 누르세요">🧽 지우기</button>
+      <button type="button" class="sm" id="mList">📋 내 메모 모아보기</button>
+    </div>
     <div class="rpanel" id="rPanel" hidden>
       <form class="rsf" id="rSearchForm"><input id="rKw" type="search" placeholder="찾을 단어 (예: 사랑, 목자)" aria-label="찾을 단어"><button type="submit" class="sm go">검색</button></form>
       <div class="rptitle" id="rPTitle"></div>
       <div class="rpwrap" id="rPWrap"><iframe id="rPFrame" title="검색·평행본문 결과" referrerpolicy="no-referrer"></iframe></div>
       <button type="button" class="sm rpclose" id="rPClose" aria-label="닫기">✕</button>
     </div>
-    <div class="rframe" id="rWrap"><iframe id="rFrame" title="성경 본문" referrerpolicy="no-referrer" scrolling="no"></iframe></div>
+    <div class="rframe" id="rWrap"><iframe id="rFrame" title="성경 본문" referrerpolicy="no-referrer" scrolling="no"></iframe><svg id="rMark" aria-label="밑줄과 메모" xmlns="http://www.w3.org/2000/svg"></svg><div class="mhint" id="mHint" hidden></div></div>
     <div class="rfoot">
       <button type="button" class="sm" id="rPrev">◀ 이전 장</button>
       <button type="button" class="go" id="rDone">✅ 이 장 다 읽었어요</button>
@@ -314,10 +335,11 @@ function rChaps(){const n=BOOKS[R.b][1];$("rChap").innerHTML=Array.from({length:
 function rFit(){const w=$("rWrap").clientWidth||600,f=$("rFrame"),H=BTOP+rVerses()*110+900;
   const sc=rMenuOpen?w/BFULL:w/BW,ox=rMenuOpen?0:BX,oy=rMenuOpen?0:BTOP;
   f.style.height=H+"px";f.style.transform="translate("+(-ox*sc)+"px,"+(-oy*sc)+"px) scale("+sc+")";
+  const mk=$("rMark");if(mk){mk.style.height=H+"px";mk.style.transform=f.style.transform;mk.setAttribute("viewBox","0 0 1024 "+H)}
   let z=$("rWrap").querySelector(".rsz");if(!z){z=document.createElement("div");z.className="rsz";$("rWrap").appendChild(z)}
   z.style.height=Math.max(0,(H-oy)*sc)+"px";return sc}
 function rShow(){if(R.c>BOOKS[R.b][1])R.c=BOOKS[R.b][1];$("rBook").value=R.b;$("rChap").value=R.c;$("rVerse").max=rVerses();const u=rURL();
-  if($("rFrame").dataset.u!==u){$("rFrame").src=u;$("rFrame").dataset.u=u;$("rWrap").scrollTop=0}rFit();$("rOpen").href=u+"#bible_content";
+  if($("rFrame").dataset.u!==u){$("rFrame").src=u;$("rFrame").dataset.u=u;$("rWrap").scrollTop=0}rFit();drawMarks();$("rOpen").href=u+"#bible_content";
   document.querySelectorAll(".vers [data-v]").forEach(x=>x.classList.toggle("on",x.dataset.v===R.v));
   const idx=BOOKS[R.b][3]+R.c-1,done=!!CH[idx];$("rDone").classList.toggle("did",done);$("rDone").textContent=done?"✔ 읽음 표시됨 (다시 누르면 취소)":"✅ 이 장 다 읽었어요";
   if(!$("rPanel").hidden&&$("rPanel").classList.contains("par"))rPar();
@@ -350,6 +372,49 @@ $("rPClose").onclick=rClosePanel;
 $("rSearchForm").onsubmit=e=>{e.preventDefault();const k=$("rKw").value.trim();if(!k)return;$("rPTitle").textContent="🔍 ‘"+k+"’ 검색 결과 ("+(R.v==="GAE"?"개역개정":"새번역")+", 성경 전체)";
   const u="https://www.bskorea.or.kr/bible/korbibSearchlist.php?version="+R.v+"&range=all&keyword1="+encodeURIComponent(k);$("rPFrame").src=u;$("rPFrame").dataset.u=u};
 if(window.ResizeObserver){new ResizeObserver(()=>{rFit();if(!$("rPanel").hidden)rPanelFit()}).observe($("reader"))}
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+/* ---------- 밑줄 · 메모: 본문 위에 투명한 층을 겹쳐 그 장에 맞춰 저장 (이 기기에만) ---------- */
+let MK={};try{MK=JSON.parse(localStorage.getItem("bible-marks")||"{}")||{}}catch(e){}
+const mkKey=()=>R.v+"|"+R.b+"|"+R.c,mkCur=()=>MK[mkKey()]||(MK[mkKey()]={lines:[],notes:[]}),mkSave=()=>{for(const k in MK)if(!MK[k].lines.length&&!MK[k].notes.length)delete MK[k];try{localStorage.setItem("bible-marks",JSON.stringify(MK))}catch(e){}};
+let mMode="",mColor="r";try{mColor=localStorage.getItem("bible-mcolor")||"r"}catch(e){}
+const MCOL={r:"#e0504a",b:"#3b82c4",y:"#ffd84d",g:"#9be37a"},HL=c=>c==="y"||c==="g";
+const svgEsc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function lineSVG(l,i){const hl=HL(l.c);return`<line class="ln" data-i="${i}" x1="${l.x1}" x2="${l.x2}" y1="${hl?l.y-8:l.y+3}" y2="${hl?l.y-8:l.y+3}" stroke="${MCOL[l.c]||"#e0504a"}" stroke-width="${hl?22:3.5}" stroke-linecap="round" opacity="${hl?.42:.95}"/>`}
+function drawMarks(){const m=MK[mkKey()]||{lines:[],notes:[]},svg=$("rMark");if(!svg)return;
+  svg.innerHTML=m.lines.map(lineSVG).join("")+m.notes.map((n,i)=>`<g class="note" data-n="${i}" transform="translate(${n.x} ${n.y})"><circle r="15" fill="#ffd84d" stroke="#3b2a20" stroke-width="2.5"/><text text-anchor="middle" dominant-baseline="central" font-size="17">📝</text>
+    <text x="22" y="0" dominant-baseline="central" font-size="17" fill="#3b2a20" style="font-family:Jua,sans-serif;paint-order:stroke" stroke="#fff" stroke-width="5">${svgEsc(n.t.length>14?n.t.slice(0,14)+"…":n.t)}</text></g>`).join("");
+  svg.querySelectorAll(".note").forEach(g=>g.addEventListener("click",e=>{e.stopPropagation();notePop(+g.dataset.n,e.clientX,e.clientY)}))}
+function setMode(m){mMode=mMode===m?"":m;const svg=$("rMark");svg.classList.toggle("on",!!mMode);svg.classList.toggle("erase",mMode==="erase");
+  document.querySelectorAll("#mTools [data-m]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===mMode));
+  const h=$("mHint");h.hidden=!mMode;h.textContent=mMode==="line"?"✏️ 본문 위를 옆으로 그으면 밑줄 (다시 누르면 끄기)":mMode==="memo"?"📝 메모를 붙일 곳을 누르세요":mMode==="erase"?"🧽 지울 밑줄을 누르세요":""}
+document.querySelectorAll("#mTools [data-m]").forEach(b=>b.onclick=()=>setMode(b.dataset.m));
+function drawCol(){document.querySelectorAll("#mCol [data-c]").forEach(b=>b.classList.toggle("on",b.dataset.c===mColor))}drawCol();
+document.querySelectorAll("#mCol [data-c]").forEach(b=>b.onclick=()=>{mColor=b.dataset.c;try{localStorage.setItem("bible-mcolor",mColor)}catch(e){}drawCol();if(mMode!=="line")setMode("line")});
+/* 화면 좌표 → 본문(1024px 기준) 좌표 */
+function toPage(e){const r=$("rMark").getBoundingClientRect(),sc=r.width/1024;return{x:Math.round((e.clientX-r.left)/sc),y:Math.round((e.clientY-r.top)/sc)}}
+let drag=null;
+$("rMark").addEventListener("pointerdown",e=>{if(!mMode)return;if(e.target.closest(".note"))return;
+  if(mMode==="erase"){const ln=e.target.closest(".ln");if(ln){mkCur().lines.splice(+ln.dataset.i,1);mkSave();drawMarks()}return}
+  const pt=toPage(e);if(mMode==="memo"){e.preventDefault();notePop(-1,e.clientX,e.clientY,pt);return}
+  e.preventDefault();$("rMark").setPointerCapture(e.pointerId);drag={x0:pt.x,y:pt.y,el:null}});
+$("rMark").addEventListener("pointermove",e=>{if(!drag)return;const pt=toPage(e),l={x1:Math.min(drag.x0,pt.x),x2:Math.max(drag.x0,pt.x),y:drag.y,c:mColor};
+  if(!drag.el){drag.el=document.createElementNS("http://www.w3.org/2000/svg","g");$("rMark").appendChild(drag.el)}drag.el.innerHTML=lineSVG(l,-1)});
+$("rMark").addEventListener("pointerup",e=>{if(!drag)return;const pt=toPage(e),d=drag;drag=null;if(Math.abs(pt.x-d.x0)>8){mkCur().lines.push({x1:Math.min(d.x0,pt.x),x2:Math.max(d.x0,pt.x),y:d.y,c:mColor});mkSave()}drawMarks()});
+/* 메모 붙이기 · 고치기 */
+function notePop(i,cx,cy,pt){document.querySelectorAll(".mpop").forEach(x=>x.remove());const m=mkCur(),n=i>=0?m.notes[i]:null;
+  const d=document.createElement("div");d.className="mpop";d.style.left=Math.min(cx,innerWidth-310)+"px";d.style.top=Math.min(cy+10,innerHeight-200)+"px";
+  d.innerHTML=`<b>📝 ${esc(BOOKS[R.b][0])} ${R.c}장 메모</b><textarea maxlength="500" placeholder="묵상한 내용, 기도 제목을 적어 보세요">${esc(n?n.t:"")}</textarea><div class="row2">${n?'<button type="button" class="sm" data-a="del">삭제</button>':""}<button type="button" class="sm" data-a="x">닫기</button><button type="button" class="sm go" data-a="ok">저장</button></div>`;
+  document.body.appendChild(d);const ta=d.querySelector("textarea");ta.focus();
+  d.onclick=e=>{const a=e.target.dataset&&e.target.dataset.a;if(!a)return;
+    if(a==="ok"){const t=ta.value.trim();if(!t){ta.focus();return}if(n)n.t=t;else m.notes.push({x:pt.x,y:pt.y,t,at:Date.now()});mkSave();drawMarks();d.remove();if(mMode==="memo")setMode("memo")}
+    else if(a==="del"){m.notes.splice(i,1);mkSave();drawMarks();d.remove()}else d.remove()}}
+/* 내 메모 모아보기: 모든 장의 메모와 밑줄 수 */
+$("mList").onclick=()=>{const keys=Object.keys(MK).filter(k=>MK[k].notes.length||MK[k].lines.length).sort((a,b)=>{const[,ba,ca]=a.split("|").map(Number),[,bb,cb]=b.split("|").map(Number);return ba-bb||ca-cb});
+  document.querySelectorAll(".mpop").forEach(x=>x.remove());const d=document.createElement("div");d.className="mpop";d.style.cssText+="left:50%;top:50%;transform:translate(-50%,-50%);width:min(440px,92vw)";
+  d.innerHTML=`<b>📋 내 밑줄과 메모</b><div class="mlist" style="margin-top:8px">${keys.length?keys.map(k=>{const[v,b,c]=k.split("|"),m=MK[k];return`<div class="mi" data-k="${esc(k)}"><b>${esc(BOOKS[+b][0])} ${c}장</b> <small>${v==="GAE"?"개역개정":"새번역"} · 밑줄 ${m.lines.length}개 · 메모 ${m.notes.length}개</small>${m.notes.map(n=>`<div>📝 ${esc(n.t)}</div>`).join("")}</div>`}).join(""):'<p class="hint">아직 밑줄이나 메모가 없어요. ✏️ 밑줄, 📝 메모를 눌러 시작해 보세요.</p>'}</div><div class="row2"><button type="button" class="sm" data-a="x">닫기</button></div>`;
+  document.body.appendChild(d);d.querySelector("[data-a=x]").onclick=()=>d.remove();
+  d.querySelectorAll(".mi").forEach(x=>x.onclick=()=>{const[v,b,c]=x.dataset.k.split("|");R.v=v;const nb=+b!==R.b;R.b=+b;R.c=+c;if(nb)rChaps();rShow();d.remove()})};
+addEventListener("keydown",e=>{if(e.key==="Escape"){document.querySelectorAll(".mpop").forEach(x=>x.remove());if(mMode)setMode(mMode)}});
 rFill();rShow();
 addEventListener("resize",()=>{if(Math.abs(pen.clientWidth-lastW)<4)return;lastW=pen.clientWidth;lambResize();flock.forEach(f=>f.setSize(adultPx()))});
 
