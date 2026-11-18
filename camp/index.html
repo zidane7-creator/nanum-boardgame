@@ -111,7 +111,7 @@ table.tt td.cont input{color:transparent}
 table.tt td.cont input:focus{color:var(--ink)}
 table.tt td.cont{border-top-color:transparent}
 /* venue */
-.vrank td.r1{background:#fff3c4;font-weight:700}
+.vrank td.r1{background:#fff3c4;font-weight:700}.vrank td:first-child{white-space:nowrap}
 .dens{font-size:12px;border-radius:6px;padding:0 5px}
 .rbox{border:1.5px solid var(--line);border-radius:12px;padding:8px;background:#fffdf7}
 table.rt td{border:0;padding:2px 3px;white-space:nowrap}table.rt td.hint{width:1%}table.rt td input{width:100%;min-width:70px}
@@ -426,6 +426,7 @@ function scores(){const C=critList();const out=R.venue.list.map(v=>{const c=vCal
   const rank=key=>{const s=out.map(o=>o[key]).sort((a,b)=>b-a);out.forEach(o=>o[key+'R']=s.indexOf(o[key])+1)};rank('ice');rank('plus');return out}
 const starTxt=n=>n==null?'<span class="hint">-</span>':`<span class="sv" title="${n}점">${'★'.repeat(Math.round(n))}<i>${'★'.repeat(5-Math.round(n))}</i></span>`;
 const fmtN=(x,u)=>x==null||x===''?'∞':u==='원'?won(x):String(x);
+const wBadge=w=>`<span class="wsum badge ${w===100?'b-ok':'b-no'}" style="font-size:15px;padding:3px 10px">${w===100?'✔ 가중치 합계 100%':`⚠️ 가중치 합계 ${w}% · ${w<100?(100-w)+'% 모자라요':(w-100)+'% 넘어요'}`}</span>`;
 function vVenue(){const V=R.venue,C=critList(),S=scores(),wsum=C.reduce((s,k)=>s+(+V.w[k.id]||0),0),E=expN(),SC={};S.forEach(o=>SC[o.v.id]=o);
   const ruleBox=k=>{const D=RULE_DEF[k],L=V.rules[k];return `<div class="rbox"><div class="row"><b class="j" style="font-size:16px">${D.name}</b><span class="hint">${D.sub} · 단위 ${D.unit}</span></div>
     <table class="t rt">${L.map(r=>{const s='venue.rules.'+k+'#'+r.id;return `<tr><td>${inp(s,'from',{n:1,rr:1,ph:'0'})}</td><td class="hint">부터</td><td>${inp(s,'to',{n:1,rr:1,ph:'끝없음'})}</td><td class="hint">까지</td><td class="stars">${[1,2,3,4,5].map(n=>`<button data-act="ruleStar" data-k="${k}" data-v="${r.id}" data-n="${n}" class="${n<=(+r.s||0)?'on':''}">★</button>`).join('')}</td><td><button class="x" data-act="ruleDel" data-k="${k}" data-v="${r.id}" title="구간 빼기">×</button></td></tr>`}).join('')}</table>
@@ -456,11 +457,11 @@ function vVenue(){const V=R.venue,C=critList(),S=scores(),wsum=C.reduce((s,k)=>s
    <div class="row" style="margin-top:8px"><button class="sm" data-act="rulesReset">기본 기준으로 되돌리기</button></div></details>
   <div class="row" style="margin-bottom:8px"><button class="pri" data-act="vAdd">+ 장소 후보 추가</button></div>
   ${V.list.length?`<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(320px,1fr))">${V.list.map(card).join('')}</div>`:'<div class="card"><div class="empty">장소 후보를 추가해 비교해 보세요</div></div>'}
-  ${V.list.length?`<div class="card"><h2>🏆 의사결정 (ICE / ICE+)</h2>
+  ${V.list.length?`<div class="card"><div class="row"><h2 style="margin:0">🏆 의사결정 (ICE / ICE+)</h2><span class="sp"></span>${wBadge(wsum)}</div>
    <p class="hint">점수는 위 📏 점수 기준으로 자동 계산돼요(별 0~5개). <b>ICE</b> = 항목 별점 합계 순위, <b>ICE+</b> = 항목별 가중치(합계 100%)를 곱한 점수 순위예요.</p>
    <div class="hs" data-keep="ice"><table class="t vrank"><tr><th>장소</th>${C.map(k=>`<th class="num">${esc(k.name)}<br><span style="font-weight:400">가중치 <input data-o="venue.w" data-k="${k.id}" data-t="n" type="number" data-rr value="${esc(V.w[k.id]??0)}" style="width:52px">%</span></th>`).join('')}<th class="num">ICE<br>총점</th><th class="num">ICE<br>순위</th><th class="num">ICE+<br>점수</th><th class="num">ICE+<br>순위</th></tr>
    ${S.map(o=>`<tr><td><b>${esc(o.v.name||'(이름 없음)')}</b></td>${C.map(k=>`<td class="num">${starTxt(o.sc[k.id])}</td>`).join('')}<td class="num"><b>${o.ice}</b>/${o.max}</td><td class="num ${o.iceR===1?'r1':''}">${o.iceR}위</td><td class="num">${o.plus.toFixed(2)}</td><td class="num ${o.plusR===1?'r1':''}">${o.plusR}위</td></tr>`).join('')}</table></div>
-   <div class="row" style="margin-top:6px"><span class="${wsum===100?'badge b-ok':'badge b-no'}">가중치 합계 ${wsum}%${wsum===100?' ✔':' (100%로 맞춰 주세요)'}</span><button class="sm" data-act="wEven">균등하게 나누기</button></div></div>`:''}`}
+   <div class="row" style="margin-top:6px">${wBadge(wsum)}<button class="sm" data-act="wEven">균등하게 나누기</button></div></div>`:''}`}
 
 /* ---------- 강사탐색 ---------- */
 function vSpeaker(){const L=R.speakers,cnt={};L.forEach(s=>cnt[s.status||'후보']=(cnt[s.status||'후보']||0)+1);
@@ -814,7 +815,8 @@ function apply(t){const o=objOf(t.dataset.o);if(!o)return;const k=t.dataset.k;le
 document.addEventListener('input',e=>{const t=e.target;
   if(t.id==='mq'){SUB.mq=t.value;clearTimeout(t._t);t._t=setTimeout(render,250);return}
   if(t.id==='pq'){filterPeople(t.value);return}if(t.id==='poolQ'){filterPool(t.value);return}
-  if(t.dataset.o==null||t.tagName==='SELECT'||t.type==='checkbox')return;apply(t);if(t.id==='mbody')updPrev()});
+  if(t.dataset.o==null||t.tagName==='SELECT'||t.type==='checkbox')return;apply(t);if(t.id==='mbody')updPrev();
+  if(t.dataset.o==='venue.w'){const w=critList().reduce((s,k)=>s+(+R.venue.w[k.id]||0),0);$$('.wsum').forEach(b=>b.outerHTML=wBadge(w))}});
 document.addEventListener('change',e=>{const t=e.target;
   if(t.tagName==='SELECT'&&t.dataset.act==='addTo'){if(!t.value)return;const o=objOf(t.dataset.o);(o[t.dataset.k]=o[t.dataset.k]||[]).push(t.value);save();render();return}
   if(t.tagName==='SELECT'&&t.dataset.act==='assign'){if(t.value)assign(t.value,t.dataset.to,null);return}
