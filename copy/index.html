@@ -61,7 +61,7 @@ h2{font-weight:normal;margin:0 0 10px;font-size:21px}
 .chaps button.done{background:#cfeec0;border-color:var(--green)}
 .chaps button.cur{outline:3px solid var(--gold)}
 .ref{position:relative;height:330px;overflow-x:hidden;overflow-y:auto;border:2px solid var(--ink);border-radius:14px;background:#fff}
-.ref iframe{position:absolute;left:0;top:0;width:1024px;border:0;transform-origin:0 0}
+.ref iframe{position:absolute;left:0;top:0;width:1009px;border:0;transform-origin:0 0}
 .vers{display:inline-flex;border:2px solid var(--ink);border-radius:12px;overflow:hidden}
 .vers button{border:0;border-radius:0;box-shadow:none;padding:4px 10px;background:#fff;font-size:14px}.vers button.on{background:var(--gold)}
 .ed{position:relative;border:2px solid var(--ink);border-radius:12px;background:#fff;overflow:hidden}
@@ -215,7 +215,7 @@ function openP(i,c,grew){cur=i;const p=DB.list[i];if(!p){home();return}const N=B
       <div class="ref" id="ref"><iframe id="rf" title="성경 본문" referrerpolicy="no-referrer" scrolling="no"></iframe></div>
       <div class="vnow"><span>✍️ 지금 <b id="vNow">1</b>절 쓰는 중 <span class="hint" id="vTot"></span></span><span class="hint">한 절을 다 쓰면 Enter로 줄을 바꿔요</span></div>
       <div class="ed"><div class="bd" id="bd" aria-hidden="true"></div><textarea id="tx" spellcheck="false" placeholder="1절부터 말씀을 적어 보세요. 한 절이 끝나면 Enter를 눌러요"></textarea></div>
-      <div class="prog"><i id="pg"></i></div><div class="row" style="justify-content:space-between"><span class="hint" id="cnt"></span>
+      <div class="prog"><i id="pg"></i></div><div class="row" style="justify-content:space-between"><span class="hint"><span id="cnt"></span> · <span id="sv" style="color:#3f8a3a">✔ 자동 저장 중</span></span>
       <div class="row"><button class="sm" id="prevC">◀ 이전 장</button><button class="go" id="doneC"></button><button class="sm" id="nextC">다음 장 ▶</button></div></div></div>
   </div></div>`;
   $("back").onclick=home;
@@ -225,7 +225,7 @@ function openP(i,c,grew){cur=i;const p=DB.list[i];if(!p){home();return}const N=B
   $("prevC").disabled=curC<=1;$("nextC").disabled=curC>=N;$("prevC").onclick=()=>openP(i,curC-1);$("nextC").onclick=()=>openP(i,curC+1);
   /* 본문: 대한성서공회 성경 읽기 페이지에서 본문 칸만 잘라 보여 줘요 */
   const rf=$("rf"),ref=$("ref"),vn=(VERSES[p.b]&&VERSES[p.b][curC-1])||30,HH=337+vn*110+900;
-  const fit=()=>{const sc=ref.clientWidth/647;rf.style.height=HH+"px";rf.style.transform=`translate(${-30*sc}px,${-337*sc}px) scale(${sc})`;let z=ref.querySelector(".sz");if(!z){z=document.createElement("div");z.className="sz";ref.appendChild(z)}z.style.height=(HH-337)*sc+"px"};
+  const fit=()=>{const sc=ref.clientWidth/659;rf.style.height=HH+"px";rf.style.transform=`translate(${-24*sc}px,${-337*sc}px) scale(${sc})`;let z=ref.querySelector(".sz");if(!z){z=document.createElement("div");z.className="sz";ref.appendChild(z)}z.style.height=(HH-337)*sc+"px"};
   rf.src=`https://www.bskorea.or.kr/bible/korbibReadpage.php?version=${ver}&book=${BSK[p.b]}&chap=${curC}`;fit();addEventListener("resize",fit);
   const tx=$("tx"),nd=need(p.b,curC);tx.value=getTx(p.id,curC);
   const upd=()=>{/* 장·절 번호는 빼고 글자만 세요 */const n=tx.value.replace(/[0-9\s.,:;'"“”‘’!?·\-()]/g,"").length,r=Math.min(1,n/nd);$("pg").style.width=r*100+"%";
@@ -242,14 +242,17 @@ function openP(i,c,grew){cur=i;const p=DB.list[i];if(!p){home();return}const N=B
   const linesOf=(t,k)=>t&&t.trim()?Math.max(1,Math.ceil((units(t.trim())+String(k).length*.55+1.1)/42)):2;
   /* 공식 페이지에서 미리 재 둔 절 위치표(lines.json, 글 없이 위치만)가 있으면 그걸로 정확히, 없으면 어림으로 */
   const posOf=v=>{const t=LPOS&&LPOS[ver]&&LPOS[ver][p.b]&&LPOS[ver][p.b][curC-1];if(!t)return null;const n=Math.min(v,(t.length-1));let y=parseInt(t.slice(0,2),36)*16;for(let k=2;k<=n;k++)y+=parseInt(t[k],36)*16;return y};
-  const scrollRef=v=>{const sc=ref.clientWidth/647,L=tx.value.split("\n");let y=posOf(v);if(y==null){y=538;for(let k=1;k<Math.min(v,vn);k++)y+=linesOf(L[k-1],k)*32}
+  const scrollRef=v=>{const sc=ref.clientWidth/659,L=tx.value.split("\n");let y=posOf(v);if(y==null){y=538;for(let k=1;k<Math.min(v,vn);k++)y+=linesOf(L[k-1],k)*32}
     const top=(y-337)*sc;
     ref.scrollTop=Math.max(0,top-84*sc)};
   if(!LPOS)loadPos().then(()=>{lastV=0;paint()});
   const paint=()=>{const lines=tx.value.split("\n"),cv=curLine();
     bd.innerHTML=lines.map((l,k)=>`<div class="vl${k+1===cv?" cur":k+1<cv&&l.trim()?" dn":""}${k+1>vn?" over":""}"><span class="vn">${k+1<cv&&l.trim()?"✓":""}${k+1}</span>${esc(l)||"&#8203;"}</div>`).join("");
     bd.scrollTop=tx.scrollTop;const v=Math.min(cv,vn);$("vNow").textContent=cv>vn?`${vn}절 다음`:cv;if(v!==lastV){lastV=v;scrollRef(v)}else{clearTimeout(paint.t);paint.t=setTimeout(()=>scrollRef(v),600)}};
-  let st;tx.oninput=()=>{upd();paint();clearTimeout(st);st=setTimeout(()=>setTx(p.id,curC,tx.value),400)};
+  /* 자동 저장: 글자를 칠 때마다 바로 이 기기에 저장하고, 페이지를 떠날 때도 한 번 더 저장해요 */
+  const saveNow=()=>{setTx(p.id,curC,tx.value);const sv=$("sv");if(sv){sv.textContent="✔ 자동 저장됨 "+new Date().toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"})}};
+  tx.oninput=()=>{upd();paint();saveNow()};
+  window.__cpSave=saveNow;
   /* 필사는 직접 쳐서 써요: 붙여넣기·끌어다 놓기는 막아요 */
   const noPaste=e=>{e.preventDefault();toast("필사는 한 글자씩 직접 쳐서 써요 ✍️ (붙여넣기는 안 돼요)",2600)};
   tx.addEventListener("paste",noPaste);tx.addEventListener("drop",noPaste);tx.addEventListener("dragover",e=>e.preventDefault());
@@ -258,6 +261,8 @@ function openP(i,c,grew){cur=i;const p=DB.list[i];if(!p){home();return}const N=B
   new ResizeObserver(paint).observe(tx);upd();paint();
   $("doneC").onclick=()=>{setTx(p.id,curC,tx.value);if(!p.done.includes(curC))p.done.push(curC);p.done.sort((a,b)=>a-b);save();
     const d2=p.done.length;toast(d2===N?`🎉 ${BOOKS[p.b][0]}를 다 썼어요! 나무에 열매가 맺혔어요`:`🌱 ${curC}장 완료! 나무가 자랐어요 (${d2}/${N})`,3000);openP(i,nextChap(p),true)}}
+addEventListener("pagehide",()=>{try{window.__cpSave&&document.getElementById("tx")&&window.__cpSave()}catch(e){}});
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")try{window.__cpSave&&document.getElementById("tx")&&window.__cpSave()}catch(e){}});
 home();
 </script>
 <script src="../assets/scene.js?v=20261116d"></script><script src="../assets/home.js?v=20261118"></script>
