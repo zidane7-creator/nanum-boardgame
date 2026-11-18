@@ -164,7 +164,9 @@ table.ptab .s0,table.ptab .s1,table.ptab .s2{position:sticky;z-index:2;backgroun
 table.ptab th.s0,table.ptab th.s1,table.ptab th.s2{background:var(--soft);z-index:3}
 table.ptab .s0{left:0;min-width:28px;max-width:28px}table.ptab .s1{left:28px;min-width:40px;max-width:40px}table.ptab .s2{left:68px;min-width:80px;box-shadow:2px 0 0 var(--line)}
 table.ptab td.ck,table.ptab th.ck{text-align:center}table.ptab td.ck input{width:18px;height:18px;cursor:pointer}
-table.ptab th{font-size:13px}table.ptab td{padding:3px 3px}table.ptab .mvr{gap:3px}
+table.ptab th{font-size:13px;padding:3px 2px}table.ptab td{padding:2px 2px}table.ptab .mvr{gap:2px}
+table.ptab td input,table.ptab td select{padding:2px 3px;font-size:13px}table.ptab .mvr select,table.ptab .mvr input{padding:2px 2px}
+table.ptab .seat{display:inline-flex}
 table.ptab tbody tr:nth-child(even) td.s0,table.ptab tbody tr:nth-child(even) td.s1,table.ptab tbody tr:nth-child(even) td.s2{background:#fffaf0}
 table.ptab tr.phi td{background:#fff1cc!important}
 table.ptab .mv{background:none;padding:0;border-radius:0}table.ptab .mvr{flex-wrap:nowrap}
@@ -396,7 +398,7 @@ function afterRender(){
   const fs=$('#fsD');if(fs)fs.ontoggle=()=>{SUB.fsOpen=fs.open};
   const fd=$('#feeD');if(fd)fd.ontoggle=()=>{SUB.feeOpen=fd.open};
   const rd=$('#rulesD');if(rd)rd.ontoggle=()=>{R.venue.rulesOpen=rd.open;save()};
-  if(TAB==='people'){const q=$('#pq');if(q)filterPeople(q.value)}
+  if(TAB==='people'){const q=$('#pq');if(q)filterPeople(q.value);fitPeople()}
   const pq=$('#poolQ');if(pq)filterPool(pq.value);
 }
 
@@ -770,7 +772,7 @@ function fmtPhone(v){const d=String(v||'').replace(/\D/g,'');if(!d)return String
 function vPeople(){const L=R.people,PV=peopleView(),m=L.filter(p=>p.gender==='남').length,f=L.filter(p=>p.gender==='여').length;
   return `${vFee()}${vFullStd()}<div class="card"><div class="row"><h2 style="margin:0">🙋 참석인원 (${L.length})</h2><span class="sp"></span><input id="pq" placeholder="🔍 이름·소속 찾기" style="width:150px"><button data-act="xls">📊 엑셀·CSV 불러오기</button><button data-act="pExport">⬇️ CSV 내보내기</button><button class="pri" data-act="pAdd">+ 한 명 추가</button></div>
   <div class="row hint" style="margin:6px 0">남 ${m} · 여 ${f} · 보험 미가입 ${L.filter(p=>p.ins!=='가입').length} · 사역자 ${L.filter(p=>p.prep==='min').length} · 준비인원 ${L.filter(p=>p.prep==='staff').length} · 찬양팀 ${L.filter(p=>p.praise).length}</div>
-  ${L.length?pTools():''}${PV.length!==L.length?`<div class="badge b-mid" style="margin:6px 0;font-size:14px">🔎 ${L.length}명 중 ${PV.length}명 보는 중</div>`:''}
+  ${L.length?pTools():''}${L.length?`<div class="row" style="margin:4px 0;gap:4px"><span class="chip tog ${SUB.pFit!==false?'on':''}" data-act="pFit" data-v="1">🔍 한눈에 보기 (화면에 맞춤)</span><span class="chip tog ${SUB.pFit===false?'on':''}" data-act="pFit" data-v="0">원래 크기</span><span class="hint" id="pFitInfo"></span></div>`:''}${PV.length!==L.length?`<div class="badge b-mid" style="margin:6px 0;font-size:14px">🔎 ${L.length}명 중 ${PV.length}명 보는 중</div>`:''}
   <p class="hint" style="margin:0 0 6px">구글폼·네이버폼 응답을 엑셀(.xlsx)이나 CSV로 받아서 ‘📊 엑셀·CSV 불러오기’로 올리면 한 번에 추가돼요. 오른쪽 <b>구분</b>에서 사역자·준비인원을, <b>찬양팀</b> 칸으로 찬양팀을 지정해요.</p>
   ${L.length?`<div class="hs ptw" data-keep="people"><table class="t ptab" id="ptbl"><thead><tr><th class="s0">#</th>${th('full','풀참','s1 ck')}${th('name','이름','s2')}${th('advance','선발대','ck')}${th('gender','성별')}${th('age','나이')}${th('org','소속')}${th('addr','사는 곳')}${th('phone','핸드폰번호')}${th('ins','보험','ck')}
    <th>${sortSpan('in','들어올 때')} · ${sortSpan('inMove','이동방법')} <span class="hint">(→출발장소)</span></th><th>${sortSpan('out','나갈 때')} · ${sortSpan('outMove','이동방법')} <span class="hint">(→도착장소)</span></th>${th('prep','구분')}${th('role','직책')}${th('praise','찬양팀','ck')}${th('fee','회비')}${th('paid','입금확인')}<th></th></tr></thead><tbody>
@@ -781,6 +783,13 @@ function vPeople(){const L=R.people,PV=peopleView(),m=L.filter(p=>p.gender==='�
    <td title="${esc('회비 기준: '+fe.why)}">${inp(k,'fee',{n:1,rr:1,ph:fe.amt!=null&&!(p.fee!=null&&p.fee!=='')?won(fe.amt):'금액',st:'width:74px;text-align:right'})}</td>
    <td><span class="row" style="gap:3px;flex-wrap:nowrap"><label class="paid ${p.paid?'on':''}" title="${esc(p.paid&&p.paidDate?'입금확인 '+p.paidDate:'')}"><input type="checkbox" data-o="${k}" data-k="paid" data-rr ${p.paid?'checked':''}> ${p.paid?'입금':'미입금'}</label>${p.paid?`<select data-o="${k}" data-k="payMethod" data-rr class="pm" style="width:76px;margin:0"><option value="">방법</option>${PAYM.in.map(m=>`<option${p.payMethod===m?' selected':''}>${m}</option>`).join('')}</select>`:''}${bk?'<span class="hint" title="회계 수입에 들어갔어요">✔</span>':''}</span></td>
    <td><button class="x" data-act="pDel" data-v="${p.id}" title="지우기">🗑</button></td></tr>`}).join('')}</tbody></table></div>`:'<div class="empty">참석인원을 추가하거나 엑셀로 불러와요</div>'}</div>`}
+/* 🔍 한눈에 보기: 표가 화면보다 넓으면 표 전체를 살짝 줄여서 가로 스크롤 없이 보여 줘요 */
+function fitPeople(){const t=$('#ptbl'),w=$('.ptw'),info=$('#pFitInfo');if(!t||!w)return;t.style.zoom='';
+  if(SUB.pFit===false){if(info)info.textContent='';return}
+  const need=t.scrollWidth,have=w.clientWidth;if(need<=have+3){if(info)info.textContent='';return}
+  const z=Math.max(.6,Math.floor(have/need*1000)/1000);t.style.zoom=z;if(info)info.textContent=`${Math.round(z*100)}% 크기로 보는 중`+(z<=.6?' · 그래도 넓으면 좌우로 밀어 보세요':'')}
+let fitT,fitW=0;const refit=()=>{if(TAB==='people')fitPeople()};addEventListener('resize',refit);
+try{new ResizeObserver(es=>{const w=Math.round(es[0].contentRect.width);if(w!==fitW){fitW=w;refit()}}).observe(document.getElementById('app'))}catch(_){}
 function filterPeople(q){q=(q||'').trim();$$('#ptbl [data-s]').forEach(tr=>tr.style.display=!q||tr.dataset.s.includes(q)?'':'none')}
 function filterPool(q){q=(q||'').trim();SUB.poolQ=q;$$('.pool .chip').forEach(c=>c.style.display=!q||c.textContent.includes(q)?'':'none')}
 
@@ -792,8 +801,8 @@ function vCars(){const dir=SUB.dir,L=R.cars.list.filter(c=>c.dir===dir),used=new
    ${SUB.carView==='tl'?'':`<h3>차편 종류</h3>${LE('cars.types.'+dir,'+ 종류 추가 (예: 승합차)')}`}</div>
   ${SUB.carView==='tl'?carTimeline():`${needCard(dir)}${poolHTML(pool,'아직 차가 없는 사람')}
   ${L.length?`<div class="grid">${R.cars.types[dir].concat(['']).map(t=>L.filter(c=>(c.type||'')===t||(!t&&!R.cars.types[dir].includes(c.type))).map(c=>{const k='cars.list#'+c.id,n=(c.members||[]).length;return `<div class="box" data-drop="car#${c.id}"><div class="bh"><b>${dir==='in'?'🚌':'🏠'}</b>${sel(k,'type',R.cars.types[dir],{blank:'종류',rr:1})}${inp(k,'name',{ph:'차 이름·번호'})}<span class="bt">${seatBadge(c)}<button class="x" data-act="del" data-c="cars.list" data-v="${c.id}" title="지우기">🗑</button></span></div>
-    ${c.autoPid?`<div class="autoc">🚗 <b>${esc(pn(c.autoPid))}</b>님 ${c.carpool?`자차(카풀가능)${P(c.autoPid)&&P(c.autoPid)[c.dir+'Seats']?` · 운전자 빼고 ${P(c.autoPid)[c.dir+'Seats']}명 더 탈 수 있어요`:''}`:'자차(카풀불가능) · 같이 타는 사람을 넣어요'} <span class="hint">· ${c.carpool?'시각·장소는':'시각은'} [참석인원]에서 바꿔요</span></div>`:''}
-    <div class="f2 two"><label class="fld">출발 날짜${sel(k,'day',dayOpts(dir),{blank:'— 일차 —'})}</label><label class="fld">출발시각${inp(k,'time',{type:'time'})}</label><label class="fld">${dir==='in'?'출발장소':'도착장소'}${inp(k,'place',{ph:dir==='in'?'예) 교회 앞':'예) 교회 / 강남역'})}</label>${c.autoPid&&c.carpool&&P(c.autoPid)?`<label class="fld">탑승가능인원 <span class="hint">(운전자 빼고)</span>${sel('people#'+c.autoPid,c.dir+'Seats',[1,2,3,4,5,6,7].map(n=>[n,n+'명']),{blank:'— 고르기 —',rr:1})}</label>`:`<label class="fld">탑승가능인원${inp(k,'cap',{n:1,rr:1})}</label>`}<label class="fld">운전자${sel(k,'driver',peopleOpts(R.people,'—'))}</label></div>
+    ${c.autoPid?`<div class="autoc">🚗 <b>${esc(pn(c.autoPid))}</b>님 ${c.carpool?`자차(카풀가능)${P(c.autoPid)&&P(c.autoPid)[c.dir+'Seats']?` · 운전자 포함 ${P(c.autoPid)[c.dir+'Seats']}명 탈 수 있어요`:''}`:'자차(카풀불가능) · 같이 타는 사람을 넣어요'} <span class="hint">· ${c.carpool?'시각·장소는':'시각은'} [참석인원]에서 바꿔요</span></div>`:''}
+    <div class="f2 two"><label class="fld">출발 날짜${sel(k,'day',dayOpts(dir),{blank:'— 일차 —'})}</label><label class="fld">출발시각${inp(k,'time',{type:'time'})}</label><label class="fld">${dir==='in'?'출발장소':'도착장소'}${inp(k,'place',{ph:dir==='in'?'예) 교회 앞':'예) 교회 / 강남역'})}</label>${c.autoPid&&c.carpool&&P(c.autoPid)?`<label class="fld" title="운전자 포함 총 탑승인원">탑승가능인원 <span class="hint">(운전자 포함)</span>${sel('people#'+c.autoPid,c.dir+'Seats',[1,2,3,4,5,6,7].map(n=>[n,String(n)]),{blank:'탑승',rr:1})}</label>`:`<label class="fld">탑승가능인원${inp(k,'cap',{n:1,rr:1})}</label>`}<label class="fld">운전자${sel(k,'driver',peopleOpts(R.people,'—'))}</label></div>
     <div class="mem">${(c.members||[]).map(pid=>CHIP(pid,'car#'+c.id)).join('')||'<span class="hint">여기로 끌어다 놓아요</span>'}</div>${addSel('car#'+c.id,pool)}${c.carpool?suggHTML(c):''}</div>`}).join('')).join('')}</div>`:'<div class="card"><div class="empty">‘+ 차량’으로 차를 추가해요</div></div>'}`}`}
 const dayOpts=dir=>[...(dir==='in'?[[-1,`0일차 (선발대)${R.start?' · '+fmtD(addD(R.start,-1)):''}`]]:[]),...Array.from({length:(+R.nights||0)+1},(_,d)=>[d,`${d+1}일차${R.start?' · '+fmtD(addD(R.start,d)):''}`])];
 /* 🕒 차량 타임라인: [시간표]의 하루 일정 옆에 어느 차가 언제 출발하는지 */
@@ -819,7 +828,7 @@ function setWhenFromText(o,k){const w=parseWhen(o[k+'T'],k);if(!w||w.m==null)ret
 function needList(dir){const used=new Set(R.cars.list.filter(c=>c.dir===dir).flatMap(c=>c.members||[]));return R.people.filter(p=>p[dir+'Move']==='자차필요'&&!used.has(p.id))}
 /* 차 인원 표시: 카풀 차는 ‘운전자 빼고 탄 사람/탑승가능인원’ */
 function seatBadge(c){const n=(c.members||[]).length,dp=c.autoPid&&c.carpool?P(c.autoPid):null,seats=dp&&dp[c.dir+'Seats']?+dp[c.dir+'Seats']:null;
-  if(dp)return `<span class="cnt ${seats!=null&&n-1>seats?'over':''}" title="운전자 빼고 탄 사람 / 탑승가능인원">🧑‍🤝‍🧑 ${n-1}/${seats??'?'}명</span>`;
+  if(dp)return `<span class="cnt ${seats!=null&&n>seats?'over':''}" title="운전자 포함 탄 사람 / 운전자 포함 총 탑승인원">🧑‍🤝‍🧑 ${n}/${seats??'?'}명</span>`;
   return `<span class="cnt ${c.cap&&n>c.cap?'over':''}">${n}/${c.cap||'?'}</span>`}
 function syncCars(){const C=R.cars;let ch=false;const last=+R.nights||0;
   ['in','out'].forEach(dir=>{const tl=C.types[dir];
@@ -836,7 +845,7 @@ function syncCars(){const C=R.cars;let ch=false;const last=+R.nights||0;
       set('type',mv);set('driver',p.id);set('carpool',pool);if(!c.name)set('name',(p.name||'')+' 차');
       if(w&&w.m!=null){set('day',w.d);set('time',hm(w.m))}
       if(pool&&p[dir+'Place'])set('place',p[dir+'Place']);
-      if(pool&&p[dir+'Seats'])set('cap',+p[dir+'Seats']+1);
+      if(pool&&p[dir+'Seats'])set('cap',+p[dir+'Seats']);
       if(!(c.members||[]).includes(p.id)){C.list.forEach(x=>{if(x.dir===dir)x.members=(x.members||[]).filter(i=>i!==p.id)});c.members.unshift(p.id);ch=true}});
     C.list.filter(c=>c.dir===dir&&c.autoPid).forEach(c=>(c.members||[]).slice().forEach(pid=>{if(pid===c.autoPid)return;const q=P(pid);if(q&&q[dir+'Move']&&q[dir+'Move']!=='자차필요'){c.members=c.members.filter(x=>x!==pid);ch=true}}));
     /* 카풀로 타는 사람은 운전자(차)와 같은 시각으로 */
@@ -847,13 +856,13 @@ function syncCars(){const C=R.cars;let ch=false;const last=+R.nights||0;
   return ch}
 function suggHTML(c){const toMin=t=>{const[h,m]=String(t).split(':').map(Number);return h*60+(m||0)};const t0=c.time?(+c.day||0)*1440+toMin(c.time):null;
   const L=needList(c.dir).map(p=>{const w=pWhen(p,c.dir),t=w&&w.m!=null?w.d*1440+w.m:null;return{p,w,diff:t0!=null&&t!=null?Math.abs(t-t0):1e9}}).sort((a,b)=>a.diff-b.diff);
-  if(!L.length)return'';const dp=c.autoPid?P(c.autoPid):null,free=dp&&dp[c.dir+'Seats']?Math.max(0,+dp[c.dir+'Seats']-((c.members||[]).length-1)):c.cap?Math.max(0,+c.cap-(c.members||[]).length):null;
+  if(!L.length)return'';const dp=c.autoPid?P(c.autoPid):null,free=dp&&dp[c.dir+'Seats']?Math.max(0,+dp[c.dir+'Seats']-(c.members||[]).length):c.cap?Math.max(0,+c.cap-(c.members||[]).length):null;
   return `<div class="sugg"><b>🙋 차가 필요한 사람</b> <span class="hint">가까운 시간순${free!=null?` · 빈자리 ${free}`:''} · ⭐ 1시간 이내</span><div>${L.slice(0,8).map(x=>`<button class="sm" data-act="assignP" data-to="car#${c.id}" data-pid="${x.p.id}" title="이 차에 태우기">＋ ${esc(x.p.name||'')} <span class="hint">${whenShort(x.w)}${x.p[c.dir+'Place']?' · '+esc(x.p[c.dir+'Place']):''}</span>${x.diff<=60?' ⭐':''}</button>`).join('')}${L.length>8?`<span class="hint"> 외 ${L.length-8}명</span>`:''}</div></div>`}
 function needCard(dir){const L=needList(dir).map(p=>({p,w:pWhen(p,dir)})).sort((a,b)=>((a.w&&a.w.m!=null?a.w.d*1440+a.w.m:1e9)-(b.w&&b.w.m!=null?b.w.d*1440+b.w.m:1e9)));if(!L.length)return'';
   return `<div class="card" style="border-color:#d9822b"><b class="j" style="font-size:17px">🚗 차가 필요한 사람 (${L.length})</b> <span class="hint">[참석인원]에서 ‘자차필요’로 고른 사람이에요. 카풀가능 차 카드에 시간이 가까운 순서로 떠요. 끌어다 놓아도 돼요.</span>
    <div style="margin-top:6px">${L.map(x=>CHIP(x.p.id,'pool',` <span class="hint">${whenShort(x.w)}${x.p[dir+'Place']?' · 📍'+esc(x.p[dir+'Place']):''}</span>`)).join('')}</div></div>`}
 function mvBlock(p,k,dir){const days=(+R.nights||0)+1,mv=p[dir+'Move'],legacy=!(p[dir+'H']!=null&&p[dir+'H']!=='')&&p[dir+'T'];
-  return `<div class="c mv" data-l="${dir==='in'?'들어올 때':'나갈 때'}"><div class="mvr">${sel(k,dir+'Day',[...(dir==='in'&&p.advance?[[-1,'0일차']]:[]),...Array.from({length:days},(_,d)=>[d,(d+1)+'일차'])],{blank:'일차',rr:1,st:'width:66px'})}${sel(k,dir+'AP',['오전','오후'],{blank:'-',rr:1,st:'width:62px'})}${sel(k,dir+'H',Array.from({length:12},(_,i)=>[i+1,(i+1)+'시']),{blank:'시',rr:1,st:'width:66px'})}${sel(k,dir+'M',[0,10,20,30,40,50].map(m=>[m,pad(m)+'분']),{blank:'분',rr:1,st:'width:60px'})}${sel(k,dir+'Move',MOVES,{blank:'이동방법',rr:1,st:'width:136px'})}${mv==='자차(카풀가능)'?sel(k,dir+'Seats',[1,2,3,4,5,6,7].map(n=>[n,'탑승 '+n+'명']),{blank:'탑승인원',rr:1,st:'width:88px'}):''}${mv==='자차(카풀가능)'||mv==='자차필요'?inp(k,dir+'Place',{ph:dir==='in'?'출발장소':'도착장소',st:'width:60px'}):''}</div>${(()=>{const c=R.cars.list.find(c=>c.dir===dir&&c.autoPid&&c.autoPid!==p.id&&(c.members||[]).includes(p.id));return c?`<div class="hint" style="font-size:11px">🚗 ${esc(pn(c.autoPid))}님 차로 ${dir==='in'?'와요':'가요'} · 시각은 운전자와 같아요</div>`:''})()}${legacy?`<div class="hint" style="font-size:11px">적어 둔 글: ${esc(p[dir+'T'])}</div>`:''}</div>`}
+  return `<div class="c mv" data-l="${dir==='in'?'들어올 때':'나갈 때'}"><div class="mvr">${sel(k,dir+'Day',[...(dir==='in'&&p.advance?[[-1,'0일차']]:[]),...Array.from({length:days},(_,d)=>[d,(d+1)+'일차'])],{blank:'일차',rr:1,st:'width:66px'})}${sel(k,dir+'AP',['오전','오후'],{blank:'-',rr:1,st:'width:62px'})}${sel(k,dir+'H',Array.from({length:12},(_,i)=>[i+1,(i+1)+'시']),{blank:'시',rr:1,st:'width:66px'})}${sel(k,dir+'M',[0,10,20,30,40,50].map(m=>[m,pad(m)+'분']),{blank:'분',rr:1,st:'width:60px'})}${sel(k,dir+'Move',MOVES,{blank:'이동방법',rr:1,st:'width:136px'})}${mv==='자차(카풀가능)'?`<span title="운전자 포함 총 탑승인원" class="seat">${sel(k,dir+'Seats',[1,2,3,4,5,6,7].map(n=>[n,String(n)]),{blank:'탑승',rr:1,st:'width:56px'})}</span>`:''}${mv==='자차(카풀가능)'||mv==='자차필요'?inp(k,dir+'Place',{ph:dir==='in'?'출발장소':'도착장소',st:'width:60px'}):''}</div>${(()=>{const c=R.cars.list.find(c=>c.dir===dir&&c.autoPid&&c.autoPid!==p.id&&(c.members||[]).includes(p.id));return c?`<div class="hint" style="font-size:11px">🚗 ${esc(pn(c.autoPid))}님 차로 ${dir==='in'?'와요':'가요'} · 시각은 운전자와 같아요</div>`:''})()}${legacy?`<div class="hint" style="font-size:11px">적어 둔 글: ${esc(p[dir+'T'])}</div>`:''}</div>`}
 function peopleMoves(){const L=[];R.people.forEach(p=>{[['in','inT'],['out','outT']].forEach(([k,f])=>{let w=pWhen(p,k),src='';
     if(!w||w.m==null){const car=R.cars.list.find(c=>c.dir===k&&(c.members||[]).includes(p.id)&&c.day!=null&&c.day!==''&&c.time);if(car){const[h,mi]=car.time.split(':').map(Number);w={d:+car.day,m:h*60+mi};src=car}}
     L.push({p,k,w,src,raw:p[f]||''})})});return L}
@@ -1056,6 +1065,7 @@ const ACT={
   slotDel:t=>{const x=R.spkSlots.find(y=>y.id===t.dataset.v);if(!confirm(`‘${x.name}’ 자리를 뺄까요? 확정사항의 ${x.name} 칸도 빠져요.`))return;R.spkSlots=R.spkSlots.filter(y=>y!==x);delete R.spkFinal[x.id];delete R.conf['slot_'+x.id];R.speakers.forEach(sp=>{if(sp.role===x.id)sp.role=''});save();render()},
   spkF:t=>{SUB.spkF=t.dataset.v;render()},
   fullAll:()=>{const L=R.people.filter(p=>p.full==='풀참');if(!L.length){toast('풀참에 체크된 사람이 없어요');return}if(!confirm(`풀참인 ${L.length}명의 들어올 때·나갈 때를 풀참 기준으로 바꿀까요?`))return;L.forEach(applyFull);save();render();toast(`${L.length}명에게 적용했어요`)},
+  pFit:t=>{SUB.pFit=t.dataset.v==='1';try{localStorage.setItem('camp-pfit',SUB.pFit?'1':'0')}catch(_){}render()},
   pSort:t=>{const k=t.dataset.v;if(SUB.ps===k){if(SUB.pd==='desc'){SUB.ps='';SUB.pd=''}else SUB.pd='desc'}else{SUB.ps=k;SUB.pd='asc'}render()},
   pSortDir:()=>{SUB.pd=SUB.pd==='desc'?'asc':'desc';render()},
   pfClear:()=>{SUB.pf={};render()},
@@ -1163,7 +1173,7 @@ $('#rcpUp').onchange=e=>{const f=e.target.files[0];if(f){SUB.rcpFile=f;const n=$
 
 /* ============ 시작 ============ */
 (async()=>{try{await idb.open()}catch(e){$('#app').innerHTML='<div class="card"><div class="empty">이 브라우저에서는 저장소를 쓸 수 없어요. (시크릿 창이면 일반 창에서 열어 주세요)</div></div>';return}
-  try{TAB=localStorage.getItem('camp-tab')||'people';SUB.carView=localStorage.getItem('camp-carview')||'card'}catch(_){}if(!TABS.some(x=>x[0]===TAB))TAB='people';
+  try{TAB=localStorage.getItem('camp-tab')||'people';SUB.carView=localStorage.getItem('camp-carview')||'card';SUB.pFit=localStorage.getItem('camp-pfit')!=='0'}catch(_){}if(!TABS.some(x=>x[0]===TAB))TAB='people';
   const cid=new URLSearchParams(location.search).get('c');
   if(cid){const c=await idb.get('camps',cid);if(!c){location.replace('./');return}R=fill(c);confList().forEach(([k])=>{try{if(k!=='snack'&&R.conf[k].v&&R.conf[k].v.trim()===confSrc(k).trim())R.conf[k].v=''}catch(_){}});R.people.forEach(p=>['in','out'].forEach(k=>{if((p[k+'H']==null||p[k+'H']==='')&&p[k+'T'])setWhenFromText(p,k)}));document.title=R.name+' | 수련회 준비 패키지'}
   else CAMPS=(await idb.all('camps'))||[];
