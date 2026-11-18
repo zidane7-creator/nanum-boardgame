@@ -263,6 +263,7 @@ select.sel-in{width:100%;border:1px solid var(--line);background:var(--panel);bo
         <button type="button" data-act="exportPdf">PDF로 저장<small>표지부터 뒷표지까지 한 파일로</small></button>
         <button type="button" data-act="exportJson">작업 파일 저장 (.json)<small>다른 기기로 옮기거나 백업할 때</small></button>
         <button type="button" data-act="importJson">작업 파일 불러오기<small>보관함에 새 책으로 추가돼요</small></button>
+        <button type="button" data-act="pasteImport">📋 붙여넣어 불러오기<small>책공방에서 ‘옮기기(복사)’ 한 책을 Ctrl+V로</small></button>
         <hr>
         <button type="button" data-act="newBook">새 책 만들기<small>지금 책은 보관함에 그대로 남아요</small></button>
       </div>
@@ -1228,6 +1229,7 @@ const ACTS = {
   publish: () => publish(),
   exportJson: () => exportJson(),
   importJson: () => { $('#fileJson').value = ''; $('#fileJson').click(); },
+  pasteImport: () => openPasteImport(),
   newBook: () => { if (editing) finishEditing(); createBook(blankBook(), {}, '새 책을 만들었어요. 이전 책은 보관함에 그대로 있어요.'); },
   archive: () => openArchive(),
   saveNow: () => { if (editing){ const t = editT(), e = selEl(); if (t && e) e.html = sanitize(t.innerHTML); } saveNow(); }
@@ -1648,6 +1650,36 @@ async function saveFile(filename, data){
   a.href = URL.createObjectURL(blob); a.download = filename;
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+/* 📋 붙여넣어 불러오기: 다른 곳(책공방)에서 복사한 책을 Ctrl+V 로 받아 보관함에 새 책으로 넣어요 */
+function openPasteImport(){
+  if (editing) finishEditing();
+  const m = document.createElement('div'); m.className = 'modal'; m.id = 'pasteModal';
+  m.innerHTML = `<div class="modal-card" role="dialog" aria-modal="true" style="max-width:440px"><h2>📋 붙여넣어 불러오기</h2>
+    <p>책공방 보관함에서 <b>📋 옮기기(복사)</b>를 누른 다음, 아래 칸을 누르고 <b>Ctrl+V</b>(휴대폰은 길게 눌러 붙여넣기) 하세요. 여러 권이면 한 권씩 되풀이하면 돼요.</p>
+    <div id="pasteZone" tabindex="0" contenteditable="true" style="border:2px dashed var(--accent);border-radius:10px;padding:26px 12px;text-align:center;color:var(--muted);outline:none;min-height:40px">여기를 누르고 Ctrl+V</div>
+    <p id="pasteMsg" class="hint" style="min-height:1.4em"></p>
+    <div class="row"><button class="btn" type="button" id="pasteClose">닫기</button></div></div>`;
+  document.body.appendChild(m);
+  const zone = m.querySelector('#pasteZone'), msg = m.querySelector('#pasteMsg');
+  const close = () => m.remove();
+  m.querySelector('#pasteClose').onclick = close;
+  m.addEventListener('keydown', e => { if (e.key === 'Escape'){ e.stopPropagation(); close(); } });
+  zone.addEventListener('beforeinput', e => { if (e.inputType !== 'insertFromPaste') e.preventDefault(); });
+  zone.addEventListener('paste', async ev => {
+    ev.preventDefault(); ev.stopPropagation();
+    const text = ev.clipboardData ? ev.clipboardData.getData('text/plain') : '';
+    let d = null;
+    try { d = JSON.parse(text); } catch(_){}
+    if (!d || !d.book || !Array.isArray(d.book.pages) || !d.book.pages.length || d.book.pages[0].type !== 'front' || d.book.pages[d.book.pages.length - 1].type !== 'back'){
+      msg.textContent = text ? '책공방에서 복사한 책이 아니에요. 보관함의 📋 옮기기(복사)를 먼저 눌러 주세요.' : '붙여넣을 내용이 없어요. 먼저 책공방에서 복사해 주세요.'; return;
+    }
+    msg.textContent = '보관함에 넣는 중…';
+    await createBook(d.book, d.assets || {}, `"${d.book.title || '제목 없는 책'}"을(를) 보관함에 새 책으로 넣었어요.`);
+    msg.textContent = `✔ "${d.book.title || '제목 없는 책'}" 넣었어요. 다음 책도 복사해 와서 다시 붙여넣을 수 있어요.`;
+    zone.textContent = '여기를 누르고 Ctrl+V';
+  });
+  setTimeout(() => zone.focus(), 50);
 }
 function exportJson(){
   if (cT) commit();
