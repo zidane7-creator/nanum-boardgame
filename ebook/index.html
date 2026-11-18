@@ -110,6 +110,7 @@ h1{font-weight:normal;text-align:center;font-size:clamp(30px,7vw,44px);margin:6p
   <h1>전자책 매대</h1>
   <p class="sub">신앙과 교회 생활에 도움이 되는 전자책(PDF)을 둘러보세요.</p>
   <div class="adminbar" id="adminbar" hidden>
+    <a href="maker/" class="mklink"><button class="pri" type="button">📘 전자책 만들기</button></a>
     <button class="go" id="bAdd">📤 책 올리기</button>
     <button id="bSettings">⚙️ 결제 설정</button>
   </div>
@@ -348,7 +349,8 @@ async function pdfCover(bytes){const lib=await pdfjs();const doc=await lib.getDo
   const c=document.createElement("canvas");c.width=Math.round(vp.width);c.height=Math.round(vp.height);const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);await pg.render({canvasContext:x,viewport:vp}).promise;
   const blob=await new Promise(r=>c.toBlob(r,"image/jpeg",.85));return{blob,pages:doc.numPages}}
 async function imgToJpeg(file){const url=URL.createObjectURL(file);const img=await new Promise((r,j)=>{const i=new Image();i.onload=()=>r(i);i.onerror=j;i.src=url});const s=Math.min(1,600/img.width);const c=document.createElement("canvas");c.width=Math.round(img.width*s);c.height=Math.round(img.height*s);c.getContext("2d").drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);return new Promise(r=>c.toBlob(r,"image/jpeg",.85))}
-$("bAdd").onclick=()=>{const code=newCode();let pdfBytes=null,coverBlob=null,pages=0;
+$("bAdd").onclick=()=>openUpload();
+function openUpload(pre){const code=newCode();let pdfBytes=null,coverBlob=null,pages=0;
   modal(`<h2>📤 책 올리기<button class="sm x" data-close>✕</button></h2>
    <div class="f">
     <label>PDF 파일 <input type="file" id="uPdf" accept="application/pdf,.pdf"></label>
@@ -369,6 +371,10 @@ $("bAdd").onclick=()=>{const code=newCode();let pdfBytes=null,coverBlob=null,pag
      const done=busy("PDF를 읽는 중…");try{pdfBytes=new Uint8Array(await f.arrayBuffer());const r=await pdfCover(pdfBytes);if(!coverBlob)coverBlob=r.blob;pages=r.pages;
        q("#uPrev").innerHTML=bookHTML(URL.createObjectURL(coverBlob),true);if(!q("#uTitle").value)q("#uTitle").value=f.name.replace(/\.pdf$/i,"");q("#uGo").disabled=false;done()}
      catch(e){done();pdfBytes=null;toast("PDF를 읽지 못했어요. 암호가 걸린 PDF는 풀고 올려 주세요",4500)}};
+   /* 전자책 만들기에서 넘어온 책: PDF·표지·제목을 미리 채워요 */
+   if(pre){(async()=>{try{pdfBytes=new Uint8Array(await pre.pdf.arrayBuffer());pages=pre.pages||0;coverBlob=pre.cover||null;if(!coverBlob){const r=await pdfCover(pdfBytes);coverBlob=r.blob;pages=r.pages}
+     q("#uPrev").innerHTML=bookHTML(URL.createObjectURL(coverBlob),true);q("#uTitle").value=pre.title||"";q("#uGo").disabled=false;
+     q("#uPdf").closest("label").innerHTML='PDF 파일 <span class="hint">📘 전자책 만들기에서 만든 PDF가 들어 있어요 ('+pages+'쪽 · '+(pdfBytes.length/1048576).toFixed(1)+'MB)</span>'}catch(e){toast("만든 책을 불러오지 못했어요. 다시 해 주세요",4000)}})()}
    q("#uCover").onchange=async()=>{const f=q("#uCover").files[0];if(!f)return;coverBlob=await imgToJpeg(f);q("#uPrev").innerHTML=bookHTML(URL.createObjectURL(coverBlob))};
    q("#uGo").onclick=async()=>{const title=q("#uTitle").value.trim(),price=Math.max(0,Math.round(+q("#uPrice").value||0)),code=q("#uCode").value.trim();
      if(!pdfBytes){toast("PDF 파일을 골라 주세요");return}if(!title){toast("책 제목을 적어 주세요");return}if(price>0&&normCode(code).length<10){toast("열람 코드는 10자 이상으로 해 주세요 (자동으로 만든 코드를 그대로 쓰면 가장 안전해요)");return}
@@ -377,9 +383,9 @@ $("bAdd").onclick=()=>{const code=newCode();let pdfBytes=null,coverBlob=null,pag
        const list=await readJSON("index.json",[]),book={id,title,subtitle:q("#uSub").value.trim(),author:q("#uAuthor").value.trim(),price,pubDate:q("#uDate").value,desc:q("#uDesc").value.trim(),toc:q("#uToc").value.trim(),bio:q("#uBio").value.trim(),pages,size:pdfBytes.length,cover:coverPath,file:filePath,created:Date.now(),updated:Date.now()};
        const next=[book,...(Array.isArray(list)?list:[])];
        await GH.commit("전자책 매대: "+title+" 올리기",[{path:filePath,b64:b64bytes(fileBytes)},{path:coverPath,b64:b64bytes(new Uint8Array(await coverBlob.arrayBuffer()))},{path:"index.json",b64:b64txt(JSON.stringify(next,null,1))}]);
-       if(price>0)setAdminCode(id,normCode(code).replace(/^(.{5})/,"$1-"));BOOKS=next;done();closeModal();render();
+       if(price>0)setAdminCode(id,normCode(code).replace(/^(.{5})/,"$1-"));if(pre)handoff.del("ebook").catch(()=>{});BOOKS=next;done();closeModal();render();
        modal(`<h2>✅ 매대에 올렸어요</h2><p><b>${esc(title)}</b> · ${price>0?won(price):"무료"}</p>${price>0?`<p class="hint">열람 코드</p><div class="codebox">${esc(code)}</div><p class="hint">입금을 확인하면 이 코드를 구매자에게 문자로 보내 주세요. 이 코드는 책을 누르면 다시 볼 수 있어요.</p>`:""}<p class="hint">다른 사람 화면에는 1분쯤 뒤에 보여요.</p><div class="acts"><button class="pri" data-close>확인</button></div>`)}
-     catch(e){done();ghErr("책 올리기",e)}}})};
+     catch(e){done();ghErr("책 올리기",e)}}})}
 function editBook(b){modal(`<h2>✏️ 책 정보 고치기<button class="sm x" data-close>✕</button></h2><div class="f">
    <label>책 제목 <input id="eTitle" value="${esc(b.title)}" maxlength="80"></label>
    <label>부제 <input id="eSub" value="${esc(b.subtitle||"")}" maxlength="100"></label>
@@ -396,7 +402,15 @@ function editBook(b){modal(`<h2>✏️ 책 정보 고치기<button class="sm x" 
 async function delBook(b){if(!confirm("'"+b.title+"'을(를) 매대에서 내릴까요? 책 파일도 사이트에서 지워져요."))return;const done=busy("내리는 중…");
   try{const list=(await readJSON("index.json",[])).filter(x=>x.id!==b.id);await GH.commit("전자책 매대: "+b.title+" 내리기",[{path:"index.json",b64:b64txt(JSON.stringify(list,null,1))}],[b.file,b.cover,(await readKeys(b.id))?keysFile(b.id):""].filter(Boolean));setAdminCode(b.id,null);BOOKS=list;done();closeModal();render();toast("매대에서 내렸어요")}catch(e){done();ghErr("내리기",e)}}
 
-load();
+/* 전자책 만들기 → 판매로 올리기에서 넘어왔을 때 */
+const handoff={open(){return new Promise((res,rej)=>{const r=indexedDB.open("chiyoung-handoff",1);r.onupgradeneeded=()=>r.result.createObjectStore("kv");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})},
+  async tx(mode,fn){const d=await this.open();return new Promise((res,rej)=>{const t=d.transaction("kv",mode),q=fn(t.objectStore("kv"));t.oncomplete=()=>res(q&&q.result);t.onerror=()=>rej(t.error)})},
+  get(k){return this.tx("readonly",s=>s.get(k))},del(k){return this.tx("readwrite",s=>s.delete(k))}};
+async function fromMaker(){if(!/[?&]from=maker\b/.test(location.search))return;history.replaceState(null,"",location.pathname);
+  if(!GH.admin()){toast("관리자로 들어와야 올릴 수 있어요. 아래 🔑 관리자를 눌러 주세요",5000);return}
+  let pre=null;try{pre=await handoff.get("ebook")}catch(e){}if(!pre||!pre.pdf){toast("넘어온 책이 없어요. 전자책 만들기에서 다시 눌러 주세요",4000);return}
+  openUpload(pre)}
+load().then(fromMaker);
 </script>
 <script src="../assets/scene.js?v=20261116d"></script><script src="../assets/home.js"></script>
 <meta property="og:image" content="https://zidane7-creator.github.io/nanum-boardgame/assets/og.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:type" content="website"><meta property="og:site_name" content="치영의 교회 생활 즐기기"><meta property="og:locale" content="ko_KR"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://zidane7-creator.github.io/nanum-boardgame/assets/og.jpg">

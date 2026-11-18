@@ -1,0 +1,1872 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://js.tosspayments.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' data: blob: https://api.github.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://api.open-meteo.com https://api.met.no https://wttr.in https://api.mymemory.translated.net https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.doubleclick.net https://www.google.com https://*.tosspayments.com https://0.peerjs.com wss://0.peerjs.com wss://broker.emqx.io:8084 wss://broker.hivemq.com:8884 https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self' blob:; frame-src 'self' https://www.bskorea.or.kr https://*.tosspayments.com; object-src 'none'; base-uri 'self'; form-action 'self' https://*.tosspayments.com">
+<meta name="referrer" content="strict-origin-when-cross-origin"><script async src="https://www.googletagmanager.com/gtag/js?id=G-0WTWY3TPES"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-0WTWY3TPES");</script>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>전자책 만들기 | 치영의 교회 생활 즐기기 · 전자책 매대 관리자</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📘</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600&family=Gowun+Batang:wght@400;700&display=swap">
+</head><body>
+<style>
+/* Layout: 작업대(책상) 위에 원고 한 장 — 왼쪽 쪽 목록, 가운데 지면, 오른쪽 꾸미기 패널 */
+:root{
+  --bg:#E4E8EB; --panel:#F7F8F9; --panel-2:#EDF0F2; --line:#D0D6DB; --fg:#1B2126; --muted:#5B6670;
+  --accent:#1F6A55; --accent-ink:#FFFFFF; --accent-soft:#D8EBE3; --danger:#B3261E; --desk:#D3D9DE;
+  --shadow:0 1px 2px rgba(20,30,40,.14),0 10px 30px rgba(20,30,40,.16);
+  --f-ui:'IBM Plex Sans KR','Noto Sans KR',system-ui,sans-serif;
+  --f-display:'Gowun Batang','Noto Serif KR',Georgia,serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#14181B; --panel:#1C2125; --panel-2:#23292E; --line:#323A40; --fg:#E5E9EC; --muted:#97A2AB;
+  --accent:#5CC3A0; --accent-ink:#0D1A15; --accent-soft:#1B3A30; --danger:#F08A82; --desk:#0E1113;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 32px rgba(0,0,0,.45); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#14181B; --panel:#1C2125; --panel-2:#23292E; --line:#323A40; --fg:#E5E9EC; --muted:#97A2AB;
+  --accent:#5CC3A0; --accent-ink:#0D1A15; --accent-soft:#1B3A30; --danger:#F08A82; --desk:#0E1113;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 32px rgba(0,0,0,.45); color-scheme:dark}
+
+[hidden]{display:none!important}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-ui);font-size:14px;overflow:hidden}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.app{display:grid;height:100%;grid-template-columns:168px minmax(0,1fr) 304px;grid-template-rows:auto minmax(0,1fr);grid-template-areas:"top top top" "pages work insp"}
+
+/* 상단 */
+.top{grid-area:top;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));background:var(--panel);border-bottom:1px solid var(--line)}
+.brand{font-family:var(--f-display);font-weight:700;font-size:20px;letter-spacing:.02em;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.brand svg{color:var(--accent)}
+.title-in{flex:1 1 180px;min-width:0;max-width:340px;border:1px solid transparent;background:transparent;border-radius:6px;padding:6px 8px;font-size:15px;font-weight:500}
+.title-in:hover{border-color:var(--line)}
+.title-in:focus{border-color:var(--accent);background:var(--panel-2);outline:none}
+.sample-note{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);background:var(--panel-2);border:1px solid var(--line);border-radius:999px;padding:4px 6px 4px 12px}
+.sample-note button{border:0;background:var(--accent-soft);color:var(--fg);border-radius:999px;padding:3px 10px;font-size:12px}
+.spacer{flex:1}
+.status{font-size:12px;color:var(--muted);white-space:nowrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:7px 12px;font-size:13px;font-weight:500;white-space:nowrap}
+.btn:hover{background:var(--panel-2)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.danger{color:var(--danger)}
+.btn.wide{width:100%}
+.btn:disabled{opacity:.45;cursor:default}
+.btn svg{flex:none}
+.menu{position:relative}
+.menu>summary{list-style:none}
+.menu>summary::-webkit-details-marker{display:none}
+.menu-pop{position:absolute;right:0;top:calc(100% + 6px);z-index:30;min-width:220px;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);padding:6px;display:grid;gap:2px}
+.menu-pop button{display:flex;flex-direction:column;align-items:flex-start;text-align:left;border:0;background:transparent;border-radius:7px;padding:8px 10px}
+.menu-pop button:hover{background:var(--panel-2)}
+.menu-pop small{color:var(--muted);font-size:11.5px}
+.menu-pop hr{border:0;border-top:1px solid var(--line);margin:4px 2px}
+
+/* 쪽 목록 */
+.pages{grid-area:pages;display:flex;flex-direction:column;min-height:0;background:var(--panel);border-right:1px solid var(--line);padding-left:max(0px,env(safe-area-inset-left,0px))}
+.page-ops{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:10px 10px 8px}
+.page-ops .add{grid-column:1/-1}
+.icon-btn{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line);background:var(--panel);border-radius:6px;height:30px;padding:0}
+.icon-btn:hover{background:var(--panel-2)}
+.icon-btn:disabled{opacity:.35;cursor:default}
+.plist{flex:1;overflow:auto;padding:4px 10px 16px;display:flex;flex-direction:column;gap:12px;align-items:center}
+.thumb{border:0;background:transparent;padding:0;display:flex;flex-direction:column;align-items:center;gap:5px}
+.tbox{position:relative;overflow:hidden;border-radius:2px;box-shadow:0 0 0 1px var(--line),0 2px 6px rgba(0,0,0,.12)}
+.tbox .bk-page{pointer-events:none}
+.thumb.on .tbox{box-shadow:0 0 0 2.5px var(--accent),0 2px 8px rgba(0,0,0,.18)}
+.thumb .lab{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.thumb.on .lab{color:var(--fg);font-weight:600}
+.thumb .lab.cover{letter-spacing:.06em}
+.add-tile{border:1.5px dashed var(--line);background:transparent;border-radius:4px;color:var(--muted);font-size:12.5px;display:flex;align-items:center;justify-content:center;gap:4px}
+.add-tile:hover{border-color:var(--accent);color:var(--accent)}
+
+/* 작업 영역 */
+.work{grid-area:work;display:flex;flex-direction:column;min-width:0;min-height:0}
+.toolbar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:8px 14px;border-bottom:1px solid var(--line);background:var(--panel)}
+.toolbar .sep{width:1px;height:22px;background:var(--line);margin:0 4px}
+.toolbar .where{margin-left:auto;font-size:12.5px;color:var(--muted)}
+.stage{flex:1;min-height:0;overflow:auto;background:var(--desk);display:grid;place-items:center;padding:24px;position:relative}
+.stage.drop{box-shadow:inset 0 0 0 3px var(--accent)}
+.scaler{position:relative;box-shadow:var(--shadow)}
+
+/* 지면 (책 내용 — 색은 사용자가 정함) */
+.bk-page{position:absolute;left:0;top:0;overflow:hidden;transform-origin:0 0;background:#fff}
+.bk-dim{position:absolute;inset:0;pointer-events:none}
+.bk-el{position:absolute;box-sizing:border-box}
+.bk-text{white-space:pre-wrap;word-break:keep-all;overflow-wrap:break-word;outline:none;min-height:1em}
+.is-image{background-position:center;background-repeat:no-repeat}
+.is-image.empty{background:repeating-linear-gradient(45deg,#e5e7eb 0 10px,#f3f4f6 10px 20px)}
+.bk-pn{position:absolute;white-space:nowrap;pointer-events:none;line-height:1}
+.interactive .bk-el{cursor:move;touch-action:none}
+.interactive .bk-el:hover{outline:calc(1px / var(--s)) dashed #1F6A55}
+.interactive .bk-el.sel{outline:calc(1.5px / var(--s)) solid #1F6A55}
+.interactive .bk-el.editing{cursor:text;outline:calc(1.5px / var(--s)) dashed #1F6A55}
+.interactive .bk-text:empty::before{content:"글을 입력하세요";opacity:.45}
+.bk-h{position:absolute;width:calc(11px / var(--s));height:calc(11px / var(--s));background:#fff;border:calc(1.5px / var(--s)) solid #1F6A55;border-radius:calc(2px / var(--s));transform:translate(-50%,-50%);z-index:5;touch-action:none}
+.bk-h[data-dir=nw]{left:0;top:0;cursor:nwse-resize}.bk-h[data-dir=n]{left:50%;top:0;cursor:ns-resize}
+.bk-h[data-dir=ne]{left:100%;top:0;cursor:nesw-resize}.bk-h[data-dir=e]{left:100%;top:50%;cursor:ew-resize}
+.bk-h[data-dir=se]{left:100%;top:100%;cursor:nwse-resize}.bk-h[data-dir=s]{left:50%;top:100%;cursor:ns-resize}
+.bk-h[data-dir=sw]{left:0;top:100%;cursor:nesw-resize}.bk-h[data-dir=w]{left:0;top:50%;cursor:ew-resize}
+.guide{position:absolute;background:#E0457B;pointer-events:none;z-index:6}
+.guide.v{top:0;bottom:0;width:calc(1px / var(--s))}
+.guide.h{left:0;right:0;height:calc(1px / var(--s))}
+
+/* 꾸미기 패널 */
+.insp{grid-area:insp;display:flex;flex-direction:column;min-height:0;background:var(--panel);border-left:1px solid var(--line);padding-right:max(0px,env(safe-area-inset-right,0px))}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--line)}
+.tabs button{border:0;background:transparent;padding:12px 4px 10px;font-size:13.5px;font-weight:500;color:var(--muted);border-bottom:2px solid transparent}
+.tabs button[aria-selected=true]{color:var(--fg);border-bottom-color:var(--accent)}
+.ibody{flex:1;overflow:auto;padding:4px 16px 24px}
+.ibody section{padding:14px 0;border-bottom:1px solid var(--line);display:grid;gap:12px}
+.ibody section:last-child{border-bottom:0}
+.ibody h3{margin:0;font-size:11.5px;font-weight:600;letter-spacing:.08em;color:var(--muted)}
+.f{display:grid;gap:6px}
+.f>span,.f>label>span{font-size:12.5px;color:var(--muted)}
+.meta{margin:0;font-size:13px}
+.meta b{font-weight:600}
+.hint{margin:0;font-size:12px;color:var(--muted);line-height:1.55}
+select.sel-in{width:100%;border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:7px 8px}
+.rng{display:grid;grid-template-columns:minmax(0,1fr) 64px;gap:8px;align-items:center}
+.rng input[type=range]{width:100%;accent-color:var(--accent)}
+.num{width:100%;border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:5px 6px;font-variant-numeric:tabular-nums;box-sizing:border-box}
+.colrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.colrow input[type=color]{width:34px;height:30px;border:1px solid var(--line);border-radius:6px;padding:2px;background:var(--panel)}
+.colrow .hex{width:78px;border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:5px 6px;font-family:ui-monospace,Menlo,monospace;font-size:12px}
+.sws{display:flex;flex-wrap:wrap;gap:5px;width:100%}
+.sw{width:20px;height:20px;border-radius:50%;border:1px solid rgba(0,0,0,.18);background:var(--c);padding:0}
+.sw:hover{transform:scale(1.12)}
+.seg{display:flex;flex-wrap:wrap;gap:4px}
+.seg button{flex:1 1 auto;border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:6px 8px;font-size:12.5px;min-width:34px}
+.seg button[aria-pressed=true]{background:var(--accent-soft);border-color:var(--accent);color:var(--fg);font-weight:600}
+.grads{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.grads button{aspect-ratio:1;max-width:100%;border-radius:6px;border:1px solid rgba(0,0,0,.15);padding:0}
+.chk{display:flex;align-items:center;gap:8px;font-size:13px}
+.chk input{width:16px;height:16px;accent-color:var(--accent)}
+.row{display:flex;gap:6px;flex-wrap:wrap}
+.row>.btn{flex:1}
+.bgprev{height:70px;border-radius:6px;border:1px solid var(--line);background-size:cover;background-position:center}
+.empty{padding:20px 0;display:grid;gap:14px}
+.empty p{margin:0;color:var(--muted);line-height:1.6}
+.pnlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:6px}
+.pnlist label{display:flex;align-items:center;gap:6px;font-size:12.5px;border:1px solid var(--line);border-radius:6px;padding:5px 7px;font-variant-numeric:tabular-nums}
+.pnlist input{accent-color:var(--accent)}
+
+/* 미리보기 */
+.preview{position:fixed;inset:0;z-index:50;background:rgba(12,15,18,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#EEF2F4;padding:calc(16px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.pv-top{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));display:flex;align-items:center;gap:12px}
+.pv-title{font-family:var(--f-display);font-size:17px}
+.pv-close{margin-left:auto;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:7px;padding:6px 12px}
+.pv-spread{display:flex;filter:drop-shadow(0 18px 40px rgba(0,0,0,.5))}
+.pv-spread.anim{animation:pvIn .28s ease}
+@keyframes pvIn{from{opacity:.2;transform:translateY(6px)}to{opacity:1;transform:none}}
+.pv-slot{position:relative;overflow:hidden}
+.pv-slot.has{background:#fff}
+.pv-spread.two .pv-slot.has::after{content:"";position:absolute;top:0;bottom:0;width:28px;pointer-events:none}
+.pv-spread.two .pv-slot.has:first-child::after{right:0;background:linear-gradient(to left,rgba(0,0,0,.22),transparent)}
+.pv-spread.two .pv-slot.has:last-child::after{left:0;background:linear-gradient(to right,rgba(0,0,0,.22),transparent)}
+.pv-nav{display:flex;align-items:center;gap:16px}
+.pv-nav button{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:999px;width:42px;height:42px;display:grid;place-items:center}
+.pv-nav button:disabled{opacity:.3;cursor:default}
+.pv-lab{min-width:120px;text-align:center;font-variant-numeric:tabular-nums;font-size:14px}
+
+/* 알림, 확인 창 */
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60;background:var(--fg);color:var(--bg);border-radius:9px;padding:10px 14px;font-size:13px;display:flex;gap:12px;align-items:center;box-shadow:var(--shadow);max-width:calc(100% - 32px)}
+.toast button{border:0;background:transparent;color:inherit;font-weight:600;text-decoration:underline;padding:0}
+.modal{position:fixed;inset:0;z-index:70;background:rgba(10,14,18,.5);display:grid;place-items:center;padding:16px}
+.modal-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:20px;max-width:360px;width:100%;display:grid;gap:16px}
+.modal-card h2{margin:0;font-size:17px}
+.modal-card p{margin:0;color:var(--muted);line-height:1.6}
+.offscreen{position:fixed;left:-20000px;top:0}
+
+/* 보관함 */
+.arch{position:fixed;inset:0;z-index:55;background:var(--bg);overflow:auto;padding-top:calc(20px + env(safe-area-inset-top,0px));padding-bottom:calc(32px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.arch-in{max-width:1120px;margin:0 auto;display:grid;gap:16px}
+.arch-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.arch-head h2{margin:0;font-family:var(--f-display);font-size:26px}
+.arch-count{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.arch-note{margin:0;color:var(--muted);font-size:13px;line-height:1.65;max-width:72ch}
+.agrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:16px;align-items:start}
+.acard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:10px;min-width:0}
+.acard.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.athumb{display:grid;place-items:center;background:var(--desk);border:0;border-radius:8px;padding:14px;height:198px}
+.athumb .tb{position:relative;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.22)}
+.athumb .bk-page{pointer-events:none}
+.athumb:hover .tb{box-shadow:0 0 0 2px var(--accent),0 2px 10px rgba(0,0,0,.22)}
+.ainfo h3{margin:0;font-size:15px;font-weight:600;overflow-wrap:anywhere}
+.ainfo p{margin:3px 0 0;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.pill{display:inline-block;margin-top:6px;font-size:11.5px;background:var(--accent-soft);color:var(--fg);border-radius:999px;padding:2px 9px}
+.aact{display:flex;gap:6px}
+.aact .btn{flex:1;padding:6px 6px;font-size:12.5px}
+.aver summary{cursor:pointer;font-size:12.5px;color:var(--muted)}
+.aver ul{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px;max-height:240px;overflow:auto}
+.aver li{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12px;font-variant-numeric:tabular-nums;border-top:1px solid var(--line);padding-top:6px}
+.aver li span{flex:1 1 100%;min-width:0}
+.aver li button{border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:3px 8px;font-size:11.5px}
+.aver li button:hover{background:var(--panel-2)}
+.anew{border:1.5px dashed var(--line);background:transparent;border-radius:12px;min-height:300px;display:grid;place-items:center;text-align:center;color:var(--muted);font-size:14px;line-height:1.8}
+.anew:hover{border-color:var(--accent);color:var(--accent)}
+
+/* 선택한 글자 도구 */
+.selbar{position:fixed;z-index:40;display:flex;align-items:center;gap:4px;flex-wrap:wrap;max-width:min(440px,calc(100vw - 16px));background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);padding:6px}
+.selbar .lbl{font-size:11.5px;color:var(--muted);padding:0 4px;white-space:nowrap}
+.selbar button{border:1px solid var(--line);background:var(--panel);border-radius:6px;height:28px;min-width:28px;padding:0 7px;font-size:12.5px}
+.selbar button:hover{background:var(--panel-2)}
+.selbar button.sw{width:18px;height:18px;min-width:0;padding:0;border-radius:50%;border:1px solid rgba(0,0,0,.2);background:var(--c)}
+.selbar input[type=color]{width:30px;height:28px;border:1px solid var(--line);border-radius:6px;padding:2px;background:var(--panel)}
+.selbar .vsep{width:1px;height:20px;background:var(--line);margin:0 2px}
+
+/* 글꼴 고르기 */
+.fp{width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:7px 10px;font-size:16px;text-align:left}
+.fp:hover{background:var(--panel-2)}
+.fp small{font-family:var(--f-ui);font-size:11.5px;color:var(--muted);white-space:nowrap}
+.fontpop{position:fixed;z-index:45;width:300px;max-width:calc(100vw - 16px);max-height:min(440px,70vh);display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow)}
+.fontpop input{margin:8px;border:1px solid var(--line);background:var(--panel-2);border-radius:6px;padding:7px 9px}
+.fontpop .fl{overflow:auto;padding:0 6px 8px}
+.fontpop h4{margin:10px 6px 4px;font-family:var(--f-ui);font-size:11px;letter-spacing:.08em;color:var(--muted);font-weight:600}
+.fontpop button{display:flex;justify-content:space-between;align-items:baseline;gap:8px;width:100%;border:0;background:transparent;border-radius:6px;padding:7px 8px;text-align:left;font-size:18px;line-height:1.3}
+.fontpop button:hover,.fontpop button.on{background:var(--accent-soft)}
+.fontpop button small{font-family:var(--f-ui);font-size:11px;color:var(--muted);white-space:nowrap}
+
+@media (max-width:900px){
+  body{overflow:auto}
+  .app{display:flex;flex-direction:column;height:auto}
+  .work{order:1}
+  .stage{flex:none;min-height:0;padding:16px}
+  .pages{order:2;border-right:0;border-top:1px solid var(--line)}
+  .page-ops{grid-template-columns:2fr repeat(4,1fr);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .page-ops .add{grid-column:auto}
+  .plist{flex-direction:row;overflow-x:auto;align-items:flex-start;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .thumb{flex:none}
+  .insp{order:3;border-left:0;border-top:1px solid var(--line)}
+  .ibody{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .toolbar{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .toolbar .where{width:100%;margin-left:0}
+  .title-in{max-width:none}
+}
+@media (prefers-reduced-motion: reduce){.pv-spread.anim{animation:none}.sw:hover{transform:none}}
+</style>
+
+<div class="app" id="app">
+  <header class="top">
+    <a class="btn" href="../" title="전자책 매대로 돌아가기">← 전자책 매대</a><div class="brand"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 5.5C5.5 4 8.5 4 12 6c3.5-2 6.5-2 9-.5V19c-2.5-1.5-5.5-1.5-9 .5-3.5-2-6.5-2-9-.5z"/><path d="M12 6v13.5"/></svg>책공방</div>
+    <input class="title-in" id="titleIn" data-s="book" data-k="title" aria-label="책 제목" placeholder="책 제목">
+    <div class="sample-note" id="sampleNote" hidden>예시 책이 열려 있어요<button type="button" data-act="newBook">새 책 만들기</button></div>
+    <div class="spacer"></div>
+    <span class="status" id="status" aria-live="polite"></span>
+    <button class="btn" type="button" data-act="archive"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9M10 13h4"/></svg>보관함</button>
+    <button class="btn" type="button" data-act="preview"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>미리보기</button>
+    <details class="menu" id="expMenu">
+      <summary class="btn">내보내기</summary>
+      <div class="menu-pop">
+        <button type="button" data-act="exportPdf">PDF로 저장<small>표지부터 뒷표지까지 한 파일로</small></button>
+        <button type="button" data-act="exportJson">작업 파일 저장 (.json)<small>다른 기기로 옮기거나 백업할 때</small></button>
+        <button type="button" data-act="importJson">작업 파일 불러오기<small>보관함에 새 책으로 추가돼요</small></button>
+        <hr>
+        <button type="button" data-act="newBook">새 책 만들기<small>지금 책은 보관함에 그대로 남아요</small></button>
+      </div>
+    </details>
+    <button class="btn primary" type="button" data-act="publish" title="PDF로 만들어 전자책 매대 올리기 화면으로 넘겨요" style="background:#e8503a;border-color:#e8503a">📤 판매로 올리기</button>
+    <button class="btn primary" type="button" data-act="saveNow" title="보관함에 저장 (Ctrl+S)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 3h11l3 3v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z"/><path d="M8 3v5h7V3M8 21v-7h8v7"/></svg>저장</button>
+  </header>
+
+  <aside class="pages" aria-label="쪽 목록">
+    <div class="page-ops">
+      <button class="btn add" type="button" data-act="pageAdd" title="지금 쪽 다음에 새 쪽 추가"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>쪽 추가</button>
+      <button class="icon-btn" type="button" data-act="pageUp" id="opUp" title="앞으로 옮기기" aria-label="쪽을 앞으로 옮기기"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
+      <button class="icon-btn" type="button" data-act="pageDown" id="opDown" title="뒤로 옮기기" aria-label="쪽을 뒤로 옮기기"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></button>
+      <button class="icon-btn" type="button" data-act="pageDup" id="opDup" title="쪽 복제" aria-label="쪽 복제"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg></button>
+      <button class="icon-btn" type="button" data-act="pageDel" id="opDel" title="쪽 지우기" aria-label="쪽 지우기"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button>
+    </div>
+    <div class="plist" id="plist"></div>
+  </aside>
+
+  <main class="work">
+    <div class="toolbar">
+      <button class="btn" type="button" data-act="addText"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 6V4h14v2M12 4v16M9 20h6"/></svg>글 상자</button>
+      <button class="btn" type="button" data-act="addImage"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg>이미지</button>
+      <span class="sep"></span>
+      <button class="icon-btn" style="width:34px" type="button" data-act="undo" id="undoBtn" title="실행 취소 (Ctrl+Z)" aria-label="실행 취소"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg></button>
+      <button class="icon-btn" style="width:34px" type="button" data-act="redo" id="redoBtn" title="다시 실행 (Ctrl+Shift+Z)" aria-label="다시 실행"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m15 14 5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/></svg></button>
+      <span class="where" id="where"></span>
+    </div>
+    <div class="stage" id="stage"><div class="scaler" id="scaler"></div></div>
+  </main>
+
+  <aside class="insp" aria-label="꾸미기">
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" data-act="tab" data-tab="page" id="tab-page">배경 · 쪽</button>
+      <button type="button" role="tab" data-act="tab" data-tab="el" id="tab-el">글 · 이미지</button>
+      <button type="button" role="tab" data-act="tab" data-tab="pn" id="tab-pn">쪽번호</button>
+    </div>
+    <div class="ibody" id="ibody"></div>
+  </aside>
+</div>
+
+<div class="preview" id="preview" hidden>
+  <div class="pv-top"><span class="pv-title" id="pvTitle"></span><button class="pv-close" type="button" data-act="closePreview">닫기 (Esc)</button></div>
+  <div id="pvStage"></div>
+  <div class="pv-nav">
+    <button type="button" data-act="pvPrev" id="pvPrev" aria-label="이전"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button>
+    <span class="pv-lab" id="pvLab"></span>
+    <button type="button" data-act="pvNext" id="pvNext" aria-label="다음"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+  </div>
+</div>
+
+<div class="arch" id="archive" hidden role="dialog" aria-modal="true" aria-labelledby="archTitle">
+  <div class="arch-in">
+    <div class="arch-head">
+      <h2 id="archTitle">보관함</h2>
+      <span class="arch-count"><span id="archCount"></span><span id="archUsage"></span></span>
+      <div class="spacer"></div>
+      <button class="btn" type="button" id="archClose" data-arc="close">편집으로 돌아가기 (Esc)</button>
+    </div>
+    <p class="arch-note">만든 책은 모두 이 브라우저 안에 자동으로 보관돼요. 편집 화면의 <b>저장</b>(Ctrl+S)을 누르면 그때 내용이 저장 기록으로 남아서, 나중에 그 버전으로 되돌릴 수 있어요(책마다 최근 30개). 브라우저의 사이트 데이터를 지우면 보관함도 함께 지워지니, 중요한 책은 내보내기에서 작업 파일(.json)로도 받아 두세요.</p>
+    <div class="agrid" id="archGrid"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+<div class="modal" id="modal" hidden><div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="mTitle"><h2 id="mTitle"></h2><p id="mText"></p><div class="row"><button class="btn" type="button" id="mNo">취소</button><button class="btn primary" type="button" id="mYes">확인</button></div></div></div>
+
+<div class="selbar" id="selbar" hidden role="toolbar" aria-label="선택한 글자 꾸미기">
+  <span class="lbl">선택한 글자</span>
+  <input type="color" id="sbColor" value="#D9822B" aria-label="선택한 글자 색" title="색 직접 고르기">
+  <span id="sbSw" style="display:flex;gap:4px;align-items:center"></span>
+  <span class="vsep"></span>
+  <button type="button" data-sb="bold" title="굵게"><b>가</b></button>
+  <button type="button" data-sb="italic" title="기울임"><i>가</i></button>
+  <button type="button" data-sb="underline" title="밑줄"><u>가</u></button>
+  <button type="button" data-sb="mark" title="형광펜">형광</button>
+  <button type="button" data-sb="smaller" title="글자 작게">작게</button>
+  <button type="button" data-sb="bigger" title="글자 크게">크게</button>
+  <button type="button" data-sb="clear" title="선택한 글자의 꾸밈 지우기">지우기</button>
+</div>
+<div class="fontpop" id="fontPop" hidden><input id="fpSearch" placeholder="글꼴 이름 찾기" aria-label="글꼴 찾기"><div class="fl" id="fpList"></div></div>
+
+<input type="file" id="fileImg" accept="image/*" hidden>
+<input type="file" id="fileBg" accept="image/*" hidden>
+<input type="file" id="fileJson" accept=".json,application/json" hidden>
+
+<script>
+(() => {
+'use strict';
+const BASE_W = 600;
+const SIZES = {
+  a5:{label:'A5 세로 · 148×210mm', w:148, h:210},
+  b6:{label:'B6 세로 · 128×182mm', w:128, h:182},
+  square:{label:'정사각 · 200×200mm', w:200, h:200},
+  land:{label:'가로형 · 210×148mm', w:210, h:148}
+};
+/* Google Fonts의 무료 한글 글꼴 전부 + 자주 쓰는 영문 글꼴 */
+const FONT_GROUPS = [
+  ['명조', [['Noto Serif KR','본명조','serif','400;700'],['Nanum Myeongjo','나눔명조','serif','400;700;800'],['Gowun Batang','고운바탕','serif','400;700'],['Hahmlet','함렛','serif','400;700'],['Song Myung','송명','serif'],['Diphylleia','디필레이아','serif'],['Grandiflora One','그랜디플로라','serif']]],
+  ['고딕', [['Noto Sans KR','본고딕','sans-serif','400;700'],['Nanum Gothic','나눔고딕','sans-serif','400;700;800'],['IBM Plex Sans KR','IBM 플렉스 산스','sans-serif','400;700'],['Gothic A1','고딕 A1','sans-serif','400;700'],['Gowun Dodum','고운돋움','sans-serif'],['Orbit','오르빗','sans-serif'],['Sunflower','해바라기','sans-serif','500;700'],['Nanum Gothic Coding','나눔고딕코딩','monospace','400;700']]],
+  ['제목 · 개성', [['Black Han Sans','검은고딕','sans-serif'],['Do Hyeon','도현','sans-serif'],['Jua','주아','sans-serif'],['Dongle','동글','sans-serif','400;700'],['Gugi','구기','sans-serif'],['Stylish','스타일리시','sans-serif'],['Yeon Sung','연성','cursive'],['Black And White Picture','흑백사진','sans-serif'],['Kirang Haerang','기랑해랑','cursive'],['Bagel Fat One','베이글 팻 원','sans-serif'],['Gasoek One','가석 원','sans-serif'],['Moirai One','모이라이 원','sans-serif']]],
+  ['손글씨', [['Nanum Pen Script','나눔손글씨 펜','cursive'],['Nanum Brush Script','나눔손글씨 붓','cursive'],['Gaegu','개구','cursive','400;700'],['Gamja Flower','감자꽃','cursive'],['Hi Melody','하이멜로디','cursive'],['Poor Story','푸어스토리','cursive'],['Single Day','싱글데이','cursive'],['Cute Font','귀여운 글꼴','cursive'],['East Sea Dokdo','동해독도','cursive'],['Dokdo','독도','cursive']]],
+  ['영문', [['Playfair Display','Playfair Display','serif','400;700'],['Lora','Lora','serif','400;700'],['EB Garamond','EB Garamond','serif','400;700'],['Cormorant Garamond','Cormorant Garamond','serif','400;700'],['Merriweather','Merriweather','serif','400;700'],['Montserrat','Montserrat','sans-serif','400;700'],['Poppins','Poppins','sans-serif','400;700'],['Roboto','Roboto','sans-serif','400;700'],['Oswald','Oswald','sans-serif','400;700'],['Bebas Neue','Bebas Neue','sans-serif'],['Dancing Script','Dancing Script','cursive','400;700'],['Pacifico','Pacifico','cursive'],['Caveat','Caveat','cursive','400;700']]]
+];
+const FONTS = FONT_GROUPS.flatMap(([g, list]) => list.map(f => [f[0], f[1], f[2], f[3] || '', g]));
+FONTS.forEach(([f, , , w]) => {
+  const l = document.createElement('link');
+  l.rel = 'stylesheet';
+  l.href = 'https://fonts.googleapis.com/css2?family=' + f.replace(/ /g, '+') + (w ? ':wght@' + w : '') + '&display=swap';
+  document.head.appendChild(l);
+});
+const fontStack = f => { const x = FONTS.find(a => a[0] === f); return `'${f}', ${x ? x[2] : 'sans-serif'}`; };
+const fontLabel = f => { const x = FONTS.find(a => a[0] === f); return x ? x[1] : f; };
+const SWATCH = ['#FFFFFF','#FBF9F4','#1B2126','#5B6670','#0F3B57','#3E8FA8','#1F6A55','#7A2E3A','#D9822B','#E8C547','#6B7FD7','#E07A9B'];
+const GRADS = [['#0F3B57','#3E8FA8',165],['#F6D365','#FDA085',135],['#1B2126','#4B5563',180],['#E0EAFC','#CFDEF3',180],['#7A2E3A','#D9822B',150],['#D4FC79','#96E6A1',135],['#FBF9F4','#EAE2D0',180],['#2B1B3D','#6B4C9A',160],['#FFDEE9','#B5FFFC',135],['#0B1D2A','#0F3B57',200],['#FFF1D6','#F7B267',170],['#E8F3EE','#B9DCCB',150]];
+const PN_FORMATS = [['{n}','1'],['- {n} -','- 1 -'],['— {n} —','— 1 —'],['{n} / {t}','1 / 끝'],['p. {n}','p. 1'],['{n}쪽','1쪽']];
+const PN_POS = [['bottom-center','아래 가운데'],['bottom-outside','아래 바깥쪽'],['bottom-inside','아래 안쪽'],['bottom-left','아래 왼쪽'],['bottom-right','아래 오른쪽'],['top-center','위 가운데'],['top-outside','위 바깥쪽'],['top-left','위 왼쪽'],['top-right','위 오른쪽']];
+
+const $ = s => document.querySelector(s);
+const uid = (p='e') => p + '_' + Math.random().toString(36).slice(2, 10);
+const clone = o => JSON.parse(JSON.stringify(o));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+let book, assets = {}, cur = 0, sel = null, editing = null, tab = 'page', scale = 1;
+let hist = [], hi = -1, clip = null;
+
+/* ---------- 기본값 ---------- */
+/* 글 상자 내용은 서식 있는 글(HTML). 허용한 태그와 스타일만 남긴다. */
+const OK_TAGS = new Set(['SPAN','B','I','U','STRONG','EM','BR','DIV','P','FONT']);
+const OK_CSS = ['color','background-color','font-weight','font-style','text-decoration','text-decoration-line','font-size','font-family'];
+function cleanNode(node){
+  for (const c of [...node.childNodes]){
+    if (c.nodeType === 3) continue;
+    if (c.nodeType !== 1 || !OK_TAGS.has(c.tagName)){
+      if (c.nodeType === 1) c.replaceWith(document.createTextNode(c.textContent)); else c.remove();
+      continue;
+    }
+    const keep = [];
+    for (const p of OK_CSS){ const v = c.style.getPropertyValue(p); if (v && !/url\(|expression|javascript/i.test(v)) keep.push(p + ':' + v); }
+    [...c.attributes].forEach(a => c.removeAttribute(a.name));
+    if (keep.length) c.setAttribute('style', keep.join(';'));
+    cleanNode(c);
+  }
+}
+function sanitize(html){ const tp = document.createElement('template'); tp.innerHTML = String(html || ''); cleanNode(tp.content); return tp.innerHTML; }
+const textToHtml = s => esc(s).replace(/\n/g, '<br>');
+function htmlToText(html){ const tp = document.createElement('template'); tp.innerHTML = html || ''; tp.content.querySelectorAll('br').forEach(b => b.replaceWith('\n')); return tp.content.textContent; }
+function stripCss(html, prop){
+  const tp = document.createElement('template'); tp.innerHTML = html || '';
+  tp.content.querySelectorAll('[style]').forEach(n => { n.style.removeProperty(prop); if (!n.getAttribute('style')) n.removeAttribute('style'); });
+  return tp.innerHTML;
+}
+function migrateBook(b){
+  b.pn = Object.assign(pnDef(), b.pn || {});
+  if (!b.font) b.font = 'Noto Serif KR';
+  if (!b.fontScope) b.fontScope = 'all';
+  b.pages.forEach(p => p.elements.forEach(e => {
+    if (e.type !== 'text') return;
+    e.html = e.text != null ? textToHtml(e.text) : sanitize(e.html || '');
+    delete e.text;
+  }));
+  return b;
+}
+
+const textEl = o => Object.assign({id:uid(), type:'text', x:60, y:80, w:480, h:40, html:'새 글 상자', font:'Noto Sans KR', size:20, color:'#1B2126', bold:false, italic:false, underline:false, shadow:false, align:'left', lh:1.6, ls:0, bgOn:false, bg:'#FFFFFF', opacity:1}, o);
+const imgEl = o => Object.assign({id:uid(), type:'image', x:100, y:100, w:400, h:260, asset:null, fit:'cover', radius:0, opacity:1, borderW:0, borderC:'#FFFFFF'}, o);
+const bgDef = o => Object.assign({type:'color', color:'#FFFFFF', c1:'#0F3B57', c2:'#3E8FA8', angle:165, asset:null, fit:'cover', dim:0}, o);
+const pageDef = (type, o) => Object.assign({id:uid('p'), type, bg:bgDef(), hideNumber:false, elements:[]}, o);
+const pnDef = () => ({show:true, start:1, format:'- {n} -', pos:'bottom-center', font:'Noto Serif KR', size:11, color:'#7A8590', margin:32});
+
+function blankBook(){
+  return migrateBook({v:1, title:'제목 없는 책', size:'a5', sample:false, font:'Noto Serif KR', pn:pnDef(), pages:[
+    pageDef('front', {bg:bgDef({type:'gradient', c1:'#1B2126', c2:'#4B5563', angle:180}), elements:[
+      textEl({x:50, y:300, w:500, text:'책 제목', font:'Gowun Batang', size:48, bold:true, color:'#FFFFFF', align:'center', lh:1.3}),
+      textEl({x:50, y:640, w:500, text:'지은이', font:'Noto Serif KR', size:16, color:'#E5E9EC', align:'center'})]}),
+    pageDef('inner', {bg:bgDef({color:'#FFFFFF'})}),
+    pageDef('back', {bg:bgDef({color:'#1B2126'})})
+  ]});
+}
+
+function sampleBook(){
+  const sea = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="600" height="340" viewBox="0 0 600 340"><defs><linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FDE7B0"/><stop offset="1" stop-color="#F7B267"/></linearGradient></defs><rect width="600" height="340" fill="url(#s)"/><circle cx="410" cy="168" r="62" fill="#FFF4D6"/><path d="M0 190 Q75 168 150 190 T300 190 T450 190 T600 190 V340 H0Z" fill="#3E8FA8"/><path d="M0 230 Q75 208 150 230 T300 230 T450 230 T600 230 V340 H0Z" fill="#2A6F8A"/><path d="M0 275 Q75 253 150 275 T300 275 T450 275 T600 275 V340 H0Z" fill="#0F3B57"/></svg>');
+  assets = {a_sea: sea};
+  const paper = bgDef({color:'#FBF9F4'});
+  return migrateBook({v:1, title:'바다로 가는 길', size:'a5', sample:true, font:'Noto Serif KR', pn:pnDef(), pages:[
+    pageDef('front', {bg:bgDef({type:'gradient', c1:'#0F3B57', c2:'#3E8FA8', angle:165}), elements:[
+      textEl({x:40, y:150, w:520, text:'바다로 가는 길', font:'Gowun Batang', size:54, bold:true, color:'#FFFFFF', align:'center', lh:1.3, shadow:true}),
+      textEl({x:60, y:240, w:480, text:'어느 여름의 짧은 이야기 열두 편', font:'Noto Serif KR', size:17, color:'#DCEFF5', align:'center', ls:1}),
+      imgEl({x:0, y:500, w:600, h:352, asset:'a_sea'}),
+      textEl({x:60, y:420, w:480, text:'한여름 지음', font:'Noto Serif KR', size:16, color:'#FFFFFF', align:'center', ls:3})]}),
+    pageDef('inner', {bg:clone(paper), elements:[
+      textEl({x:64, y:96, w:472, text:'첫 번째 이야기', font:'Nanum Myeongjo', size:13, color:'#1F6A55', ls:2}),
+      textEl({x:64, y:124, w:472, text:'파도가 먼저 인사했다', font:'Nanum Myeongjo', size:30, bold:true, color:'#1B2126', lh:1.35}),
+      textEl({x:64, y:210, w:472, h:480, font:'Noto Serif KR', size:14.5, color:'#2B2B2B', lh:1.9, align:'justify', text:'역에서 내려 한참을 걸었다. 지도에는 오 분이라고 적혀 있었지만, 골목은 자꾸만 다른 골목으로 이어졌다.\n\n소금 냄새가 먼저 도착했다. 그다음엔 소리가 왔다. 낮고 길게, 누군가 이불을 털어 내는 것 같은 소리였다.\n\n마지막 담장을 돌았을 때, 바다는 생각보다 가까이 있었다. 나는 가방을 내려놓고 한동안 아무 말도 하지 않았다.'})]}),
+    pageDef('inner', {bg:clone(paper), elements:[
+      imgEl({x:64, y:90, w:472, h:268, asset:'a_sea', radius:6}),
+      textEl({x:64, y:370, w:472, text:'해 질 무렵의 바다', font:'Noto Sans KR', size:11, color:'#6B7280', align:'center'}),
+      textEl({x:64, y:430, w:472, h:300, font:'Noto Serif KR', size:14.5, color:'#2B2B2B', lh:1.9, align:'justify', text:'민박집 주인은 저녁마다 마당에 의자를 내놓았다. 해가 지는 방향으로, 정확히 두 개.\n\n“한 사람이 와도 두 개를 놔요. 바다가 하나 앉으니까.”\n\n그 말이 농담인지 아닌지 끝내 묻지 못했다.'})]}),
+    pageDef('inner', {bg:bgDef({color:'#EEF3F5'}), elements:[
+      textEl({x:70, y:300, w:460, text:'바다는 언제나\n같은 자리에서\n다른 얼굴을 하고 있었다.', font:'Gowun Batang', size:26, color:'#0F3B57', align:'center', lh:1.7}),
+      textEl({x:70, y:470, w:460, text:'— 본문에서', font:'Noto Serif KR', size:13, color:'#5B6670', align:'center'})]}),
+    pageDef('back', {bg:bgDef({color:'#0F3B57'}), elements:[
+      textEl({x:80, y:300, w:440, text:'열두 번의 여름 저녁, 열두 개의 바다.\n작은 민박집 마당에서 시작된\n조용하고 다정한 이야기들.', font:'Noto Serif KR', size:15, color:'#E6F1F5', align:'center', lh:1.9}),
+      textEl({x:80, y:760, w:440, text:'책공방 · 2026', font:'Noto Sans KR', size:11, color:'#9FC3D1', align:'center', ls:2})]})
+  ]});
+}
+
+/* ---------- 계산 ---------- */
+const pageH = () => { const s = SIZES[book.size] || SIZES.a5; return BASE_W * s.h / s.w; };
+const curPage = () => book.pages[cur];
+const selEl = () => sel ? curPage().elements.find(e => e.id === sel) || null : null;
+const innerCount = () => book.pages.filter(p => p.type === 'inner').length;
+function pnFor(idx){
+  const p = book.pages[idx];
+  if (!p || p.type !== 'inner') return null;
+  const ii = idx - 1;
+  return {n: book.pn.start + ii, t: book.pn.start + innerCount() - 1, recto: ii % 2 === 0};
+}
+function pageName(idx){
+  const p = book.pages[idx];
+  if (p.type === 'front') return '앞표지';
+  if (p.type === 'back') return '뒷표지';
+  return pnFor(idx).n + '쪽';
+}
+
+/* ---------- 지면 그리기 ---------- */
+function paintBg(node, bg){
+  node.style.backgroundColor = bg.color || '#FFFFFF';
+  if (bg.type === 'gradient'){
+    node.style.backgroundImage = `linear-gradient(${bg.angle}deg, ${bg.c1}, ${bg.c2})`;
+  } else if (bg.type === 'image' && bg.asset && assets[bg.asset]){
+    node.style.backgroundImage = `url("${assets[bg.asset]}")`;
+    node.style.backgroundSize = bg.fit === 'contain' ? 'contain' : bg.fit === 'tile' ? '160px auto' : 'cover';
+    node.style.backgroundRepeat = bg.fit === 'tile' ? 'repeat' : 'no-repeat';
+    node.style.backgroundPosition = 'center';
+    if (bg.dim > 0){
+      const d = document.createElement('div');
+      d.className = 'bk-dim';
+      d.style.background = `rgba(0,0,0,${bg.dim})`;
+      node.appendChild(d);
+    }
+  }
+}
+function buildEl(e){
+  const d = document.createElement('div');
+  d.className = 'bk-el is-' + e.type;
+  d.dataset.id = e.id;
+  d.style.left = e.x + 'px'; d.style.top = e.y + 'px'; d.style.width = e.w + 'px';
+  d.style.opacity = e.opacity;
+  if (e.type === 'text'){
+    d.style.minHeight = e.h + 'px';
+    if (e.bgOn){ d.style.background = e.bg; d.style.padding = '10px 14px'; }
+    const t = document.createElement('div');
+    t.className = 'bk-text';
+    t.innerHTML = e.html;
+    Object.assign(t.style, {
+      fontFamily: fontStack(e.font), fontSize: e.size + 'px', color: e.color,
+      fontWeight: e.bold ? '700' : '400', fontStyle: e.italic ? 'italic' : 'normal',
+      textDecoration: e.underline ? 'underline' : 'none', textAlign: e.align,
+      lineHeight: e.lh, letterSpacing: e.ls + 'px',
+      textShadow: e.shadow ? '0 2px 10px rgba(0,0,0,.45)' : 'none'
+    });
+    d.appendChild(t);
+  } else {
+    d.style.height = e.h + 'px';
+    const src = e.asset && assets[e.asset];
+    if (src){
+      d.style.backgroundImage = `url("${src}")`;
+      d.style.backgroundSize = e.fit === 'contain' ? 'contain' : 'cover';
+    } else d.classList.add('empty');
+    d.style.borderRadius = e.radius + 'px';
+    if (e.borderW > 0) d.style.border = `${e.borderW}px solid ${e.borderC}`;
+  }
+  return d;
+}
+function buildPn(idx, node){
+  const info = pnFor(idx), pn = book.pn, p = book.pages[idx];
+  if (!info || !pn.show || p.hideNumber) return;
+  const d = document.createElement('div');
+  d.className = 'bk-pn';
+  d.textContent = pn.format.replace('{n}', info.n).replace('{t}', info.t);
+  Object.assign(d.style, {fontFamily: fontStack(pn.font), fontSize: pn.size + 'px', color: pn.color});
+  const [v, h] = pn.pos.split('-');
+  d.style[v === 'top' ? 'top' : 'bottom'] = pn.margin + 'px';
+  let side = h;
+  if (h === 'outside') side = info.recto ? 'right' : 'left';
+  if (h === 'inside') side = info.recto ? 'left' : 'right';
+  if (side === 'center'){ d.style.left = '0'; d.style.right = '0'; d.style.textAlign = 'center'; }
+  else d.style[side] = Math.max(24, pn.margin + 8) + 'px';
+  node.appendChild(d);
+}
+function buildPage(idx, interactive){
+  const p = book.pages[idx];
+  const node = document.createElement('div');
+  node.className = 'bk-page' + (interactive ? ' interactive' : '');
+  node.style.width = BASE_W + 'px';
+  node.style.height = pageH() + 'px';
+  paintBg(node, p.bg);
+  for (const e of p.elements){
+    const d = buildEl(e);
+    if (interactive){
+      if (e.id === sel) d.classList.add('sel');
+      if (e.id === editing) d.classList.add('editing');
+      if (e.id === sel && e.id !== editing){
+        for (const dir of ['nw','n','ne','e','se','s','sw','w']){
+          const h = document.createElement('div');
+          h.className = 'bk-h'; h.dataset.dir = dir;
+          d.appendChild(h);
+        }
+      }
+    }
+    node.appendChild(d);
+  }
+  buildPn(idx, node);
+  return node;
+}
+
+/* ---------- 작업대 ---------- */
+const stage = $('#stage'), scaler = $('#scaler');
+let pageNode = null;
+function fit(){
+  const H = pageH();
+  const narrow = matchMedia('(max-width:900px)').matches;
+  const availW = stage.clientWidth - (narrow ? 32 : 48);
+  const availH = narrow ? Infinity : stage.clientHeight - 48;
+  scale = Math.max(0.2, Math.min(availW / BASE_W, availH / H, narrow ? 1 : 1.6));
+  scaler.style.width = BASE_W * scale + 'px';
+  scaler.style.height = H * scale + 'px';
+  if (pageNode){ pageNode.style.transform = `scale(${scale})`; pageNode.style.setProperty('--s', scale); }
+}
+function renderStage(){
+  let keep = null;
+  if (editing){ const old = editT(); if (old) keep = {offs: rangeOffsets(old, savedRange), focus: document.activeElement === old}; }
+  pageNode = buildPage(cur, true);
+  pageNode.style.transform = `scale(${scale})`;
+  pageNode.style.setProperty('--s', scale);
+  const gv = document.createElement('div'); gv.className = 'guide v'; gv.hidden = true; gv.style.left = BASE_W / 2 + 'px';
+  const gh = document.createElement('div'); gh.className = 'guide h'; gh.hidden = true; gh.style.top = pageH() / 2 + 'px';
+  pageNode.append(gv, gh);
+  scaler.replaceChildren(pageNode);
+  pageNode.addEventListener('pointerdown', onPagePointer);
+  $('#where').textContent = pageName(cur) + ' 편집 중' + (curPage().type === 'inner' ? ` · 전체 ${book.pages.length}장 중 ${cur + 1}번째` : '');
+  if (editing) bindEditing(keep); else hideBar();
+}
+
+let lastTap = {id:null, t:0};
+function onPagePointer(ev){
+  if (ev.button > 0) return;
+  const elNode = ev.target.closest('.bk-el');
+  const handle = ev.target.closest('.bk-h');
+  if (editing){
+    if (elNode && elNode.dataset.id === editing) return;
+    finishEditing();
+  }
+  const ae = document.activeElement;
+  if (ae && ae !== document.body && !ae.isContentEditable && ae.blur) ae.blur();
+  if (!elNode){ if (sel){ sel = null; renderStage(); renderInspector(); } return; }
+  ev.preventDefault();
+  const id = elNode.dataset.id;
+  const e = curPage().elements.find(x => x.id === id);
+  const now = Date.now();
+  if (e.type === 'text' && lastTap.id === id && now - lastTap.t < 380 && !handle){
+    lastTap = {id:null, t:0};
+    startEditing(id);
+    return;
+  }
+  lastTap = {id, t:now};
+  if (sel !== id){ sel = id; tab = 'el'; renderStage(); renderInspector(); }
+  startDrag(ev, e, handle ? handle.dataset.dir : null);
+}
+
+function startDrag(ev, e, dir){
+  const node = pageNode.querySelector(`[data-id="${e.id}"]`);
+  const H = pageH();
+  const s0 = {x:e.x, y:e.y, w:e.w, h: e.type === 'text' ? Math.max(e.h, node.offsetHeight) : e.h, px:ev.clientX, py:ev.clientY};
+  const ratio = s0.w / s0.h;
+  const gv = pageNode.querySelector('.guide.v'), gh = pageNode.querySelector('.guide.h');
+  let moved = false;
+  const move = m => {
+    const dx = (m.clientX - s0.px) / scale, dy = (m.clientY - s0.py) / scale;
+    if (!moved && Math.abs(dx) + Math.abs(dy) < 2) return;
+    moved = true;
+    if (!dir){
+      let x = s0.x + dx, y = s0.y + dy;
+      const w = node.offsetWidth, h = node.offsetHeight;
+      const snapX = Math.abs(x + w / 2 - BASE_W / 2) < 6, snapY = Math.abs(y + h / 2 - H / 2) < 6;
+      if (snapX) x = BASE_W / 2 - w / 2;
+      if (snapY) y = H / 2 - h / 2;
+      gv.hidden = !snapX; gh.hidden = !snapY;
+      e.x = Math.round(x * 10) / 10; e.y = Math.round(y * 10) / 10;
+    } else {
+      let {x, y, w, h} = s0;
+      if (dir.includes('e')) w = Math.max(24, s0.w + dx);
+      if (dir.includes('s')) h = Math.max(16, s0.h + dy);
+      if (dir.includes('w')){ w = Math.max(24, s0.w - dx); x = s0.x + s0.w - w; }
+      if (dir.includes('n')){ h = Math.max(16, s0.h - dy); y = s0.y + s0.h - h; }
+      if (e.type === 'image' && dir.length === 2 && !m.shiftKey){
+        h = w / ratio;
+        if (dir.includes('n')) y = s0.y + s0.h - h;
+      }
+      Object.assign(e, {x:Math.round(x), y:Math.round(y), w:Math.round(w), h:Math.round(h)});
+    }
+    node.style.left = e.x + 'px'; node.style.top = e.y + 'px'; node.style.width = e.w + 'px';
+    if (e.type === 'text') node.style.minHeight = e.h + 'px'; else node.style.height = e.h + 'px';
+  };
+  const up = () => {
+    removeEventListener('pointermove', move);
+    removeEventListener('pointerup', up);
+    removeEventListener('pointercancel', up);
+    gv.hidden = gh.hidden = true;
+    if (moved){ commit(); thumbsSoon(); }
+  };
+  addEventListener('pointermove', move);
+  addEventListener('pointerup', up);
+  addEventListener('pointercancel', up);
+}
+
+/* ---------- 글 편집 · 선택한 글자 꾸미기 ---------- */
+let savedRange = null, lastWrap = null;
+const editT = () => editing && pageNode ? pageNode.querySelector(`[data-id="${editing}"] .bk-text`) : null;
+function rangeOffsets(t, r){
+  if (!r || !t.contains(r.startContainer) || !t.contains(r.endContainer)) return null;
+  const p = document.createRange(); p.selectNodeContents(t);
+  p.setEnd(r.startContainer, r.startOffset); const start = p.toString().length;
+  p.setEnd(r.endContainer, r.endOffset);
+  return {start, end: p.toString().length};
+}
+function offsetsRange(t, o){
+  const r = document.createRange();
+  const w = document.createTreeWalker(t, NodeFilter.SHOW_TEXT);
+  let n = 0, started = false, node;
+  while ((node = w.nextNode())){
+    const len = node.data.length;
+    if (!started && o.start <= n + len){ r.setStart(node, o.start - n); started = true; }
+    if (started && o.end <= n + len){ r.setEnd(node, o.end - n); return r; }
+    n += len;
+  }
+  r.selectNodeContents(t); r.collapse(false);
+  return r;
+}
+function startEditing(id){
+  sel = id; editing = id; tab = 'el'; savedRange = null;
+  renderStage(); renderInspector();
+  const t = editT();
+  if (!t) return;
+  t.focus();
+  const r = document.createRange(); r.selectNodeContents(t);
+  const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+}
+function bindEditing(keep){
+  const e = selEl(), t = editT();
+  if (!t || !e){ editing = null; hideBar(); return; }
+  t.contentEditable = 'true';
+  t.spellcheck = false;
+  lastWrap = null;
+  t.addEventListener('input', () => { e.html = t.innerHTML; thumbsSoon(); });
+  t.addEventListener('paste', ev => {
+    if (!ev.clipboardData) return;
+    ev.preventDefault();
+    document.execCommand('insertText', false, ev.clipboardData.getData('text/plain'));
+  });
+  t.addEventListener('keydown', ev => {
+    if (ev.key === 'Escape'){ ev.preventDefault(); finishEditing(); }
+    else if (ev.key === 'Enter' && !ev.isComposing){ ev.preventDefault(); document.execCommand('insertLineBreak'); }
+  });
+  savedRange = null;
+  if (keep && keep.offs){
+    savedRange = offsetsRange(t, keep.offs);
+    if (keep.focus){ t.focus(); const s = getSelection(); s.removeAllRanges(); s.addRange(savedRange); }
+  }
+  if (!savedRange || savedRange.collapsed) hideBar(); else placeBar();
+}
+function finishEditing(){
+  if (!editing) return;
+  const t = editT(), e = selEl();
+  if (t && e) e.html = sanitize(t.innerHTML);
+  editing = null; savedRange = null; lastWrap = null;
+  hideBar();
+  commit(); renderStage(); renderInspector(); thumbsSoon();
+}
+
+const selbar = $('#selbar');
+const SB_COLORS = ['#1B2126','#FFFFFF','#B3261E','#D9822B','#E8C547','#1F6A55','#3E8FA8','#6B7FD7','#E07A9B'];
+$('#sbSw').innerHTML = SB_COLORS.map(c => `<button type="button" class="sw" data-sb="color" data-v="${c}" style="--c:${c}" title="${c}" aria-label="글자 색 ${c}"></button>`).join('');
+function hideBar(){ selbar.hidden = true; }
+function placeBar(){
+  if (!savedRange || savedRange.collapsed){ hideBar(); return; }
+  selbar.hidden = false;
+  const rect = savedRange.getBoundingClientRect();
+  const bw = selbar.offsetWidth, bh = selbar.offsetHeight;
+  let top = rect.top - bh - 10;
+  if (top < 8) top = rect.bottom + 10;
+  let left = rect.left + rect.width / 2 - bw / 2;
+  left = Math.max(8, Math.min(innerWidth - bw - 8, left));
+  selbar.style.top = top + 'px'; selbar.style.left = left + 'px';
+}
+document.addEventListener('selectionchange', () => {
+  if (!editing) return;
+  const t = editT(), s = getSelection();
+  if (!t || !s.rangeCount) return;
+  const r = s.getRangeAt(0);
+  if (!t.contains(r.startContainer) || !t.contains(r.endContainer)) return;
+  savedRange = r.cloneRange();
+  if (r.collapsed || !r.toString().trim()) hideBar(); else placeBar();
+});
+stage.addEventListener('scroll', placeBar);
+addEventListener('resize', placeBar);
+
+const covers = (r, n) => n && n.isConnected && r.startContainer === n && r.startOffset === 0 && r.endContainer === n && r.endOffset === n.childNodes.length;
+function unwrapBare(root){ [...root.querySelectorAll('span:not([style])')].reverse().forEach(sp => sp.replaceWith(...sp.childNodes)); }
+function finishInline(t, e, first, last, span){
+  const nr = document.createRange();
+  if (span){ nr.selectNodeContents(span); lastWrap = span; }
+  else if (first && first.isConnected){ nr.setStartBefore(first); nr.setEndAfter(last); lastWrap = null; }
+  else { nr.selectNodeContents(t); nr.collapse(false); lastWrap = null; }
+  savedRange = nr;
+  const s = getSelection(); s.removeAllRanges(); s.addRange(nr);
+  e.html = t.innerHTML; thumbsSoon(); commitSoon(); placeBar();
+}
+function applyInline(styles){
+  const t = editT(), e = selEl(), r = savedRange;
+  if (!t || !e || !r || r.collapsed || !t.contains(r.startContainer)) return;
+  let span;
+  if (covers(r, lastWrap)) span = lastWrap;
+  else {
+    const frag = r.extractContents();
+    frag.querySelectorAll('[style]').forEach(n => { for (const k in styles) n.style.removeProperty(k); if (!n.getAttribute('style')) n.removeAttribute('style'); });
+    unwrapBare(frag);
+    span = document.createElement('span');
+    span.appendChild(frag);
+    r.insertNode(span);
+  }
+  for (const [k, v] of Object.entries(styles)) span.style.setProperty(k, v);
+  finishInline(t, e, null, null, span);
+}
+function clearInline(){
+  const t = editT(), e = selEl(), r = savedRange;
+  if (!t || !e || !r || r.collapsed || !t.contains(r.startContainer)) return;
+  let first, last;
+  if (covers(r, lastWrap)){
+    first = lastWrap.firstChild; last = lastWrap.lastChild;
+    lastWrap.querySelectorAll('[style]').forEach(n => n.removeAttribute('style'));
+    unwrapBare(lastWrap);
+    first = lastWrap.firstChild; last = lastWrap.lastChild;
+    lastWrap.replaceWith(...lastWrap.childNodes);
+  } else {
+    const frag = r.extractContents();
+    frag.querySelectorAll('[style]').forEach(n => n.removeAttribute('style'));
+    unwrapBare(frag);
+    first = frag.firstChild; last = frag.lastChild;
+    r.insertNode(frag);
+  }
+  t.normalize();
+  finishInline(t, e, first, last, null);
+}
+function selStyle(){
+  let n = savedRange.startContainer;
+  if (n.nodeType === 3){
+    if (savedRange.startOffset === n.data.length && n.nextSibling) n = n.nextSibling;
+    if (n.nodeType === 3) n = n.parentElement;
+  } else if (n.childNodes[savedRange.startOffset]){
+    const c = n.childNodes[savedRange.startOffset]; n = c.nodeType === 1 ? c : n;
+  }
+  return getComputedStyle(n);
+}
+selbar.addEventListener('pointerdown', ev => { if (ev.target.closest('button')) ev.preventDefault(); });
+selbar.addEventListener('click', ev => {
+  const b = ev.target.closest('[data-sb]');
+  if (!b || !savedRange || savedRange.collapsed) return;
+  const cs = selStyle();
+  switch (b.dataset.sb){
+    case 'color': applyInline({color: b.dataset.v}); $('#sbColor').value = b.dataset.v; break;
+    case 'bold': applyInline({'font-weight': parseInt(cs.fontWeight, 10) >= 600 ? '400' : '700'}); break;
+    case 'italic': applyInline({'font-style': cs.fontStyle === 'italic' ? 'normal' : 'italic'}); break;
+    case 'underline': applyInline({'text-decoration': (cs.textDecorationLine || '').includes('underline') ? 'none' : 'underline'}); break;
+    case 'mark': applyInline({'background-color': '#FFF27A'}); break;
+    case 'smaller': applyInline({'font-size': Math.max(6, parseFloat(cs.fontSize) - 2) + 'px'}); break;
+    case 'bigger': applyInline({'font-size': Math.min(200, parseFloat(cs.fontSize) + 2) + 'px'}); break;
+    case 'clear': clearInline(); break;
+  }
+});
+$('#sbColor').addEventListener('input', ev => applyInline({color: ev.target.value}));
+stage.addEventListener('pointerdown', ev => {
+  if (ev.target !== stage) return;
+  if (editing) finishEditing();
+  else if (sel){ sel = null; renderStage(); renderInspector(); }
+});
+
+/* ---------- 쪽 목록 ---------- */
+let thumbT;
+function thumbsSoon(){ clearTimeout(thumbT); thumbT = setTimeout(renderPages, 220); }
+function renderPages(){
+  const list = $('#plist');
+  const tw = matchMedia('(max-width:900px)').matches ? 76 : 116;
+  const s = tw / BASE_W, th = pageH() * s;
+  const frag = document.createDocumentFragment();
+  book.pages.forEach((p, i) => {
+    if (p.type === 'back'){
+      const add = document.createElement('button');
+      add.type = 'button'; add.className = 'add-tile'; add.dataset.act = 'pageAddEnd';
+      add.style.width = tw + 'px'; add.style.height = Math.min(th, 64) + 'px';
+      add.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>쪽 추가';
+      frag.appendChild(add);
+    }
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'thumb' + (i === cur ? ' on' : '');
+    b.dataset.page = i;
+    b.setAttribute('aria-label', pageName(i));
+    const box = document.createElement('div');
+    box.className = 'tbox'; box.style.width = tw + 'px'; box.style.height = th + 'px';
+    const pg = buildPage(i, false); pg.style.transform = `scale(${s})`;
+    box.appendChild(pg);
+    const lab = document.createElement('span');
+    lab.className = 'lab' + (p.type !== 'inner' ? ' cover' : '');
+    lab.textContent = pageName(i) + (p.type === 'inner' && (p.hideNumber || !book.pn.show) ? ' · 번호 숨김' : '');
+    b.append(box, lab);
+    frag.appendChild(b);
+  });
+  list.replaceChildren(frag);
+  const inner = curPage().type === 'inner';
+  $('#opUp').disabled = !inner || cur <= 1;
+  $('#opDown').disabled = !inner || cur >= book.pages.length - 2;
+  $('#opDup').disabled = !inner;
+  $('#opDel').disabled = !inner;
+  const on = list.querySelector('.thumb.on');
+  if (on && list.dataset.cur !== String(cur)){ on.scrollIntoView({block:'nearest', inline:'nearest'}); list.dataset.cur = cur; }
+}
+$('#plist').addEventListener('click', ev => {
+  const b = ev.target.closest('.thumb');
+  if (!b) return;
+  goPage(+b.dataset.page);
+});
+function goPage(i){
+  if (editing) finishEditing();
+  cur = Math.max(0, Math.min(book.pages.length - 1, i));
+  sel = null;
+  if (tab === 'el') tab = 'page';
+  renderStage(); renderPages(); renderInspector();
+}
+
+/* ---------- 꾸미기 패널 ---------- */
+const ibody = $('#ibody');
+function rng(s, k, min, max, step, v){
+  return `<div class="rng"><input type="range" id="r-${s}-${k}" data-s="${s}" data-k="${k}" data-t="num" min="${min}" max="${max}" step="${step}" value="${v}" aria-label="${k}"><input class="num" type="number" id="n-${s}-${k}" data-s="${s}" data-k="${k}" data-t="num" min="${min}" max="${max}" step="${step}" value="${v}" aria-label="${k} 값"></div>`;
+}
+function colorRow(s, k, v){
+  return `<div class="colrow"><input type="color" id="c-${s}-${k}" data-s="${s}" data-k="${k}" value="${v}" aria-label="색 고르기"><input class="hex" type="text" id="h-${s}-${k}" data-s="${s}" data-k="${k}" data-t="hex" value="${v}" maxlength="7" aria-label="색 코드">
+    <div class="sws">${SWATCH.map(c => `<button type="button" class="sw" style="--c:${c}" data-set data-s="${s}" data-k="${k}" data-v="${c}" title="${c}" aria-label="${c}"></button>`).join('')}</div></div>`;
+}
+function seg(s, k, curV, opts, num){
+  return `<div class="seg" role="group">${opts.map(([v, l, t]) => `<button type="button" data-set data-s="${s}" data-k="${k}" data-v="${v}"${num ? ' data-t="num"' : ''} aria-pressed="${String(curV) === String(v)}"${t ? ` title="${t}"` : ''}>${l}</button>`).join('')}</div>`;
+}
+function tog(s, k, on, label, title, style){
+  return `<button type="button" data-toggle data-s="${s}" data-k="${k}" aria-pressed="${!!on}" title="${title}" style="${style || ''}">${label}</button>`;
+}
+function fontPicker(s, k, v){
+  return `<button type="button" class="fp" id="fp-${s}-${k}" data-fp data-s="${s}" data-k="${k}" style="font-family:${esc(fontStack(v))}" aria-label="글꼴 고르기, 지금 ${esc(fontLabel(v))}"><span>${esc(fontLabel(v))}</span><small>바꾸기 ▾</small></button>`;
+}
+
+function pageTab(){
+  const p = curPage(), bg = p.bg;
+  let where = p.type === 'front' ? '<b>앞표지</b>' : p.type === 'back' ? '<b>뒷표지</b>' : `<b>${pnFor(cur).n}쪽</b> · 내지 ${cur}번째 장`;
+  let h = `<section><h3>지금 쪽</h3><p class="meta">${where}</p>`;
+  if (p.type === 'inner') h += `<label class="chk"><input type="checkbox" id="pg-hide" data-s="page" data-k="hideNumber"${p.hideNumber ? ' checked' : ''}> 이 쪽에서 쪽번호 숨기기</label>`;
+  h += `</section><section><h3>배경</h3>${seg('bg', 'type', bg.type, [['color','단색'],['gradient','그라데이션'],['image','이미지']])}`;
+  if (bg.type === 'color'){
+    h += `<div class="f"><span>배경색</span>${colorRow('bg', 'color', bg.color)}</div>`;
+  } else if (bg.type === 'gradient'){
+    h += `<div class="f"><span>추천 조합</span><div class="grads">${GRADS.map((g, i) => `<button type="button" data-act="grad" data-i="${i}" style="background:linear-gradient(${g[2]}deg,${g[0]},${g[1]})" aria-label="그라데이션 ${i + 1}"></button>`).join('')}</div></div>
+      <div class="f"><span>시작 색</span>${colorRow('bg', 'c1', bg.c1)}</div>
+      <div class="f"><span>끝 색</span>${colorRow('bg', 'c2', bg.c2)}</div>
+      <div class="f"><span>방향 (도)</span>${rng('bg', 'angle', 0, 360, 5, bg.angle)}</div>`;
+  } else {
+    const src = bg.asset && assets[bg.asset];
+    h += src ? `<div class="bgprev" style="background-image:url('${src}')"></div>` : `<p class="hint">아직 고른 이미지가 없어요.</p>`;
+    h += `<button class="btn wide" type="button" data-act="bgimg">${src ? '다른 이미지로 바꾸기' : '배경 이미지 올리기'}</button>
+      <div class="f"><span>채우는 방식</span>${seg('bg', 'fit', bg.fit, [['cover','꽉 채우기'],['contain','전체 보이기'],['tile','바둑판']])}</div>
+      <div class="f"><span>어둡게</span>${rng('bg', 'dim', 0, 0.8, 0.05, bg.dim)}</div>
+      <div class="f"><span>빈 곳 색</span>${colorRow('bg', 'color', bg.color)}</div>`;
+  }
+  h += `<button class="btn wide" type="button" data-act="bgAll">이 배경을 모든 내지에 적용</button></section>`;
+  h += `<section><h3>책 전체 글꼴</h3>
+    <div class="f"><span>글꼴</span>${fontPicker('book', 'font', book.font)}</div>
+    <div class="f"><span>적용할 쪽</span>${seg('book', 'fontScope', book.fontScope, [['all','모든 쪽'],['inner','내지만'],['cover','표지만']])}</div>
+    <label class="chk"><input type="checkbox" id="book-fontpn" data-s="book" data-k="fontPn"${book.fontPn !== false ? ' checked' : ''}> 쪽번호 글꼴도 함께 바꾸기</label>
+    <button class="btn primary wide" type="button" data-act="fontAll">이 글꼴을 한 번에 적용</button>
+    <p class="hint">고른 쪽의 모든 글 상자가 이 글꼴로 바뀌어요. 글자 일부에 넣은 색·굵기는 그대로 남고, 새로 만드는 글 상자도 이 글꼴로 시작해요.</p>
+  </section>`;
+  h += `<section><h3>책 크기</h3><select class="sel-in" id="book-size" data-s="book" data-k="size" data-rerender>${Object.entries(SIZES).map(([k, v]) => `<option value="${k}"${book.size === k ? ' selected' : ''}>${v.label}</option>`).join('')}</select><p class="hint">모든 쪽에 같은 크기가 적용돼요. PDF도 이 크기로 저장됩니다.</p></section>`;
+  return h;
+}
+
+function elTab(){
+  const e = selEl();
+  if (!e) return `<div class="empty"><p>지면에서 글 상자나 이미지를 누르면 여기서 꾸밀 수 있어요. 글 상자는 두 번 누르면 바로 글을 고칠 수 있습니다.</p><div class="row"><button class="btn" type="button" data-act="addText">글 상자 추가</button><button class="btn" type="button" data-act="addImage">이미지 넣기</button></div>${clip ? `<button class="btn wide" type="button" data-act="pasteEl">복사한 ${clip.el.type === 'text' ? '글 상자' : '이미지'} 붙여넣기 (Ctrl+V)</button>` : ''}</div>`;
+  let h = '';
+  if (e.type === 'text'){
+    h += `<section><h3>글</h3>
+      <button class="btn wide" type="button" data-act="editText">${editing ? '편집 중 · Esc로 마치기' : '글 내용 고치기'}</button>
+      <p class="hint">글을 고치는 중에 글자 일부를 드래그해서 고르면 그 부분만 색·굵기·크기를 바꾸는 도구가 나타나요. 아래 설정은 글 상자 전체에 적용돼요.</p>
+      <div class="f"><span>글꼴</span>${fontPicker('el', 'font', e.font)}</div>
+      <div class="f"><span>글자 크기 (pt)</span>${rng('el', 'size', 6, 160, 0.5, e.size)}</div>
+      <div class="f"><span>글자 색</span>${colorRow('el', 'color', e.color)}</div>
+      <div class="f"><span>모양</span><div class="seg">${tog('el', 'bold', e.bold, '<b>굵게</b>', '굵게')}${tog('el', 'italic', e.italic, '<i>기울임</i>', '기울임')}${tog('el', 'underline', e.underline, '<u>밑줄</u>', '밑줄')}${tog('el', 'shadow', e.shadow, '그림자', '글자 그림자')}</div></div>
+      <div class="f"><span>정렬</span>${seg('el', 'align', e.align, [['left','왼쪽'],['center','가운데'],['right','오른쪽'],['justify','양쪽']])}</div>
+      <div class="f"><span>줄 간격</span>${rng('el', 'lh', 1, 3, 0.05, e.lh)}</div>
+      <div class="f"><span>자간</span>${rng('el', 'ls', -3, 14, 0.5, e.ls)}</div>
+    </section>
+    <section><h3>글 상자</h3>
+      <label class="chk"><input type="checkbox" id="el-bgon" data-s="el" data-k="bgOn" data-rerender${e.bgOn ? ' checked' : ''}> 상자에 배경색 넣기</label>
+      ${e.bgOn ? `<div class="f"><span>상자 배경색</span>${colorRow('el', 'bg', e.bg)}</div>` : ''}
+      <div class="f"><span>불투명도</span>${rng('el', 'opacity', 0.1, 1, 0.05, e.opacity)}</div>
+    </section>`;
+  } else {
+    h += `<section><h3>이미지</h3>
+      <div class="row"><button class="btn" type="button" data-act="replaceImg">이미지 바꾸기</button><button class="btn" type="button" data-act="fitPage">용지에 꽉 맞추기</button></div>
+      <div class="f"><span>맞추는 방식</span>${seg('el', 'fit', e.fit, [['cover','꽉 채우기'],['contain','전체 보이기']])}</div>
+      <div class="f"><span>모서리 둥글게</span>${rng('el', 'radius', 0, 300, 1, e.radius)}</div>
+      <div class="f"><span>테두리 두께</span>${rng('el', 'borderW', 0, 30, 1, e.borderW)}</div>
+      <div class="f"><span>테두리 색</span>${colorRow('el', 'borderC', e.borderC)}</div>
+      <div class="f"><span>불투명도</span>${rng('el', 'opacity', 0.1, 1, 0.05, e.opacity)}</div>
+      <p class="hint">모서리 손잡이로 크기를 바꾸면 비율이 유지돼요. Shift를 누르고 끌면 자유롭게 바뀝니다.</p>
+    </section>`;
+  }
+  h += `<section><h3>배치</h3>
+    <div class="row"><button class="btn" type="button" data-act="centerH">가로 가운데</button><button class="btn" type="button" data-act="centerV">세로 가운데</button></div>
+    <div class="seg"><button type="button" data-act="layer" data-v="top">맨 앞</button><button type="button" data-act="layer" data-v="up">앞으로</button><button type="button" data-act="layer" data-v="down">뒤로</button><button type="button" data-act="layer" data-v="bottom">맨 뒤</button></div>
+    <div class="row"><button class="btn" type="button" data-act="copyEl" title="Ctrl+C">복사</button><button class="btn" type="button" data-act="pasteEl" title="Ctrl+V"${clip ? '' : ' disabled'}>붙여넣기</button><button class="btn" type="button" data-act="dupEl" title="Ctrl+D">복제</button></div>
+    <button class="btn danger wide" type="button" data-act="delEl">지우기</button>
+    <p class="hint">복사한 뒤 다른 쪽으로 가서 붙여넣을 수 있어요. 단축키: 복사 Ctrl+C, 잘라내기 Ctrl+X, 붙여넣기 Ctrl+V.</p>
+  </section>`;
+  return h;
+}
+
+function pnNote(){
+  const c = innerCount(), s = book.pn.start;
+  if (!c) return '내지가 없어서 쪽번호가 들어갈 곳이 없어요. 쪽을 추가해 주세요.';
+  return `앞표지 다음 쪽이 <b>${s}쪽</b>, 뒷표지 바로 앞 쪽이 <b>${s + c - 1}쪽</b>이에요. 표지에는 번호가 들어가지 않아요.`;
+}
+function pnTab(){
+  const pn = book.pn;
+  let h = `<section><h3>쪽번호</h3>
+    <label class="chk"><input type="checkbox" id="pn-show" data-s="pn" data-k="show" data-rerender${pn.show ? ' checked' : ''}> 내지에 쪽번호 넣기</label>
+    <p class="hint" id="pnNote">${pnNote()}</p>
+    <div class="f"><span>시작 번호</span><input class="num" type="number" id="n-pn-start" data-s="pn" data-k="start" data-t="num" min="0" max="9999" step="1" value="${pn.start}" style="max-width:110px"></div>
+  </section>
+  <section><h3>모양 · 위치</h3>
+    <div class="f"><span>표기</span>${seg('pn', 'format', pn.format, PN_FORMATS.map(([v, l]) => [v, esc(l)]))}</div>
+    <div class="f"><span>위치</span><select class="sel-in" id="pn-pos" data-s="pn" data-k="pos">${PN_POS.map(([v, l]) => `<option value="${v}"${pn.pos === v ? ' selected' : ''}>${l}</option>`).join('')}</select></div>
+    <p class="hint">바깥쪽은 책을 펼쳤을 때 바깥 가장자리예요. 1쪽처럼 오른쪽 면은 오른쪽에, 왼쪽 면은 왼쪽에 놓입니다.</p>
+    <div class="f"><span>가장자리와 거리</span>${rng('pn', 'margin', 8, 140, 1, pn.margin)}</div>
+  </section>
+  <section><h3>글자</h3>
+    <div class="f"><span>글꼴</span>${fontPicker('pn', 'font', pn.font)}</div>
+    <div class="f"><span>크기</span>${rng('pn', 'size', 6, 48, 0.5, pn.size)}</div>
+    <div class="f"><span>쪽번호 색</span>${colorRow('pn', 'color', pn.color)}</div>
+  </section>`;
+  const inner = book.pages.map((p, i) => [p, i]).filter(([p]) => p.type === 'inner');
+  if (inner.length){
+    h += `<section><h3>쪽마다 보이기</h3><p class="hint">체크를 풀면 그 쪽만 번호가 숨겨지고, 번호 순서는 그대로 이어져요.</p>
+      <div class="pnlist">${inner.map(([p, i]) => `<label><input type="checkbox" id="pg-${p.id}" data-s="pg" data-pi="${i}" data-k="hideNumber" data-invert data-rerender${p.hideNumber ? '' : ' checked'}>${pnFor(i).n}쪽</label>`).join('')}</div></section>`;
+  }
+  return h;
+}
+
+function renderInspector(){
+  for (const t of ['page', 'el', 'pn']) $('#tab-' + t).setAttribute('aria-selected', String(tab === t));
+  const st = ibody.scrollTop;
+  ibody.innerHTML = tab === 'page' ? pageTab() : tab === 'el' ? elTab() : pnTab();
+  ibody.scrollTop = st;
+}
+
+function tgt(t){
+  switch (t.dataset.s){
+    case 'el': return selEl();
+    case 'bg': return curPage().bg;
+    case 'page': return curPage();
+    case 'pn': return book.pn;
+    case 'book': return book;
+    case 'pg': return book.pages[+t.dataset.pi];
+  }
+  return null;
+}
+function onFieldInput(ev){
+  const t = ev.target;
+  const k = t.dataset.k;
+  if (!k || t.hasAttribute('data-set') || t.hasAttribute('data-toggle')) return;
+  const obj = tgt(t);
+  if (!obj) return;
+  let v;
+  if (t.type === 'checkbox') v = t.hasAttribute('data-invert') ? !t.checked : t.checked;
+  else if (t.dataset.t === 'num'){ v = parseFloat(t.value); if (isNaN(v)) return; }
+  else if (t.dataset.t === 'hex'){ v = t.value.trim(); if (!/^#[0-9a-f]{6}$/i.test(v)) return; }
+  else v = t.value;
+  if (k === 'start') v = Math.max(0, Math.round(v));
+  if (obj[k] === v && ev.type === 'change' && !t.hasAttribute('data-rerender')) return;
+  obj[k] = v;
+  document.querySelectorAll(`[data-s="${t.dataset.s}"][data-k="${k}"]`).forEach(o => {
+    if (o !== t && o.type !== 'checkbox' && !o.hasAttribute('data-set') && (t.dataset.s !== 'pg' || o.dataset.pi === t.dataset.pi)) o.value = v;
+  });
+  if (t.dataset.s === 'book' && k === 'title'){ commitSoon(); return; }
+  if (k === 'size' && t.dataset.s === 'book') fit();
+  if (editing && t.dataset.s === 'el'){ /* 편집 중인 글 상자는 스타일만 바로 반영 */ }
+  renderStage();
+  if (t.dataset.s === 'pn' || t.dataset.s === 'pg' || k === 'hideNumber'){ const n = $('#pnNote'); if (n) n.innerHTML = pnNote(); }
+  if (t.hasAttribute('data-rerender')) renderInspector();
+  thumbsSoon();
+  commitSoon();
+}
+document.addEventListener('input', onFieldInput);
+document.addEventListener('change', onFieldInput);
+
+/* ---------- 버튼 동작 ---------- */
+/* 글꼴 고르기 창 */
+const fontPop = $('#fontPop');
+let fpFor = null;
+function renderFontList(q){
+  q = (q || '').trim().toLowerCase();
+  const curF = fpFor.cur;
+  const html = FONT_GROUPS.map(([g, list]) => {
+    const items = list.filter(f => !q || f[0].toLowerCase().includes(q) || f[1].toLowerCase().includes(q));
+    if (!items.length) return '';
+    return `<h4>${g}</h4>` + items.map(f => `<button type="button" data-font="${f[0]}" class="${f[0] === curF ? 'on' : ''}" style="font-family:${esc(fontStack(f[0]))}">${esc(f[1])}<small>${f[1] === f[0] ? '' : esc(f[0])}</small></button>`).join('');
+  }).join('');
+  $('#fpList').innerHTML = html || '<p class="hint" style="padding:8px">찾는 글꼴이 없어요.</p>';
+}
+function openFontPop(btn){
+  fpFor = {s: btn.dataset.s, k: btn.dataset.k};
+  const obj = tgt({dataset: fpFor});
+  fpFor.cur = obj ? obj[fpFor.k] : '';
+  $('#fpSearch').value = '';
+  renderFontList('');
+  fontPop.hidden = false;
+  const r = btn.getBoundingClientRect(), pw = fontPop.offsetWidth, ph = fontPop.offsetHeight;
+  let top = r.bottom + 6;
+  if (top + ph > innerHeight - 8) top = Math.max(8, r.top - ph - 6);
+  fontPop.style.top = top + 'px';
+  fontPop.style.left = Math.max(8, Math.min(r.left, innerWidth - pw - 8)) + 'px';
+  const on = fontPop.querySelector('button.on');
+  if (on) on.scrollIntoView({block: 'center'});
+  if (!matchMedia('(pointer:coarse)').matches) $('#fpSearch').focus();
+}
+function closeFontPop(){ fontPop.hidden = true; }
+$('#fpSearch').addEventListener('input', e => renderFontList(e.target.value));
+document.addEventListener('pointerdown', ev => {
+  if (!fontPop.hidden && !fontPop.contains(ev.target) && !ev.target.closest('[data-fp]')) closeFontPop();
+}, true);
+
+document.addEventListener('click', ev => {
+  const fpB = ev.target.closest('[data-fp]');
+  if (fpB){ if (!fontPop.hidden && fpFor && fpFor.s === fpB.dataset.s && fpFor.k === fpB.dataset.k) closeFontPop(); else openFontPop(fpB); return; }
+  const fItem = ev.target.closest('[data-font]');
+  if (fItem && fpFor){
+    const obj = tgt({dataset: fpFor});
+    closeFontPop();
+    if (!obj) return;
+    obj[fpFor.k] = fItem.dataset.font;
+    if (fpFor.s === 'book'){ renderInspector(); commit(); } else after();
+    return;
+  }
+  const setB = ev.target.closest('[data-set]');
+  if (setB){
+    const obj = tgt(setB); if (!obj) return;
+    obj[setB.dataset.k] = setB.dataset.t === 'num' ? parseFloat(setB.dataset.v) : setB.dataset.v;
+    after(); return;
+  }
+  const togB = ev.target.closest('[data-toggle]');
+  if (togB){
+    const obj = tgt(togB); if (!obj) return;
+    obj[togB.dataset.k] = !obj[togB.dataset.k];
+    after(); return;
+  }
+  const a = ev.target.closest('[data-act]');
+  if (!a) return;
+  const fn = ACTS[a.dataset.act];
+  if (fn){
+    const m = a.closest('details'); if (m) m.open = false;
+    fn(a, ev);
+  }
+});
+function after(){ renderStage(); renderInspector(); thumbsSoon(); commit(); }
+
+function addElement(e){
+  curPage().elements.push(e);
+  sel = e.id; tab = 'el';
+  after();
+}
+let imgTarget = null;
+const ACTS = {
+  tab: b => { tab = b.dataset.tab; renderInspector(); },
+  addText: () => {
+    const H = pageH();
+    if (editing) finishEditing();
+    addElement(textEl({x:80, y:Math.round(H / 2 - 30), w:440, html:'여기에 글을 쓰세요', font:book.font || 'Noto Serif KR', size:18, align:'center',
+      color: curPage().bg.type === 'color' && isDark(curPage().bg.color) ? '#FFFFFF' : '#1B2126'}));
+    startEditing(sel);
+  },
+  addImage: () => { imgTarget = 'new'; $('#fileImg').value = ''; $('#fileImg').click(); },
+  replaceImg: () => { imgTarget = 'replace'; $('#fileImg').value = ''; $('#fileImg').click(); },
+  bgimg: () => { $('#fileBg').value = ''; $('#fileBg').click(); },
+  grad: b => { const g = GRADS[+b.dataset.i]; Object.assign(curPage().bg, {type:'gradient', c1:g[0], c2:g[1], angle:g[2]}); after(); },
+  bgAll: () => {
+    const bg = curPage().bg;
+    book.pages.forEach(p => { if (p.type === 'inner') p.bg = clone(bg); });
+    after(); toast(`모든 내지(${innerCount()}쪽)에 같은 배경을 적용했어요.`, '실행 취소', undo);
+  },
+  editText: () => { const e = selEl(); if (e && !editing) startEditing(e.id); },
+  centerH: () => { const e = selEl(); const n = pageNode.querySelector(`[data-id="${e.id}"]`); e.x = Math.round(BASE_W / 2 - n.offsetWidth / 2); after(); },
+  centerV: () => { const e = selEl(); const n = pageNode.querySelector(`[data-id="${e.id}"]`); e.y = Math.round(pageH() / 2 - n.offsetHeight / 2); after(); },
+  layer: b => {
+    const els = curPage().elements, i = els.findIndex(x => x.id === sel); if (i < 0) return;
+    const [e] = els.splice(i, 1);
+    const v = b.dataset.v;
+    const j = v === 'top' ? els.length : v === 'bottom' ? 0 : v === 'up' ? Math.min(els.length, i + 1) : Math.max(0, i - 1);
+    els.splice(j, 0, e); after();
+  },
+  dupEl: () => dupEl(),
+  delEl: () => delEl(),
+  copyEl: () => copyEl(false),
+  pasteEl: () => pasteEl(),
+  fitPage: () => {
+    const e = selEl(); if (!e) return;
+    Object.assign(e, {x:0, y:0, w:BASE_W, h:pageH(), fit:'cover', radius:0, borderW:0});
+    const els = curPage().elements; els.splice(els.indexOf(e), 1); els.unshift(e);
+    after(); toast('용지에 꽉 맞추고 맨 뒤로 보냈어요.');
+  },
+  fontAll: () => {
+    if (editing) finishEditing();
+    const sc = book.fontScope || 'all';
+    let n = 0;
+    book.pages.forEach(p => {
+      if (sc === 'inner' && p.type !== 'inner') return;
+      if (sc === 'cover' && p.type === 'inner') return;
+      p.elements.forEach(e => { if (e.type === 'text'){ e.font = book.font; e.html = stripCss(e.html, 'font-family'); n++; } });
+    });
+    if (book.fontPn !== false && sc !== 'cover') book.pn.font = book.font;
+    after();
+    toast(`글 상자 ${n}개를 ${fontLabel(book.font)}(으)로 바꿨어요.`, '실행 취소', undo);
+  },
+  pageAdd: () => addPage(Math.min(cur + 1, book.pages.length - 1)),
+  pageAddEnd: () => addPage(book.pages.length - 1),
+  pageUp: () => movePage(-1),
+  pageDown: () => movePage(1),
+  pageDup: () => {
+    if (curPage().type !== 'inner') return;
+    const p = clone(curPage()); p.id = uid('p'); p.elements.forEach(e => e.id = uid());
+    book.pages.splice(cur + 1, 0, p); cur++; sel = null;
+    renderAll(); commit(); toast(`${pageName(cur)}으로 복제했어요.`);
+  },
+  pageDel: () => {
+    if (curPage().type !== 'inner') return;
+    const name = pageName(cur);
+    book.pages.splice(cur, 1); cur = Math.min(cur, book.pages.length - 1); sel = null;
+    renderAll(); commit(); toast(`${name}을 지웠어요.`, '실행 취소', undo);
+  },
+  undo: () => undo(),
+  redo: () => redo(),
+  preview: () => openPreview(),
+  closePreview: () => closePreview(),
+  pvPrev: () => pvGo(-1),
+  pvNext: () => pvGo(1),
+  exportPdf: () => exportPdf(),
+  publish: () => publish(),
+  exportJson: () => exportJson(),
+  importJson: () => { $('#fileJson').value = ''; $('#fileJson').click(); },
+  newBook: () => { if (editing) finishEditing(); createBook(blankBook(), {}, '새 책을 만들었어요. 이전 책은 보관함에 그대로 있어요.'); },
+  archive: () => openArchive(),
+  saveNow: () => { if (editing){ const t = editT(), e = selEl(); if (t && e) e.html = sanitize(t.innerHTML); } saveNow(); }
+};
+
+function isDark(hex){
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex || ''); if (!m) return false;
+  const n = parseInt(m[1], 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+  return (0.299 * r + 0.587 * g + 0.114 * b) < 128;
+}
+function addPage(at){
+  if (editing) finishEditing();
+  const near = book.pages[cur].type === 'inner' ? book.pages[cur] : book.pages.find(p => p.type === 'inner');
+  const p = pageDef('inner', {bg: near ? clone(near.bg) : bgDef()});
+  book.pages.splice(at, 0, p);
+  cur = at; sel = null; if (tab === 'el') tab = 'page';
+  renderAll(); commit();
+  toast(`${pageName(cur)}을 추가했어요.`);
+}
+function movePage(d){
+  const j = cur + d;
+  if (curPage().type !== 'inner' || j < 1 || j > book.pages.length - 2) return;
+  [book.pages[cur], book.pages[j]] = [book.pages[j], book.pages[cur]];
+  cur = j; renderAll(); commit();
+}
+function dupEl(){
+  const e = selEl(); if (!e) return;
+  const c = clone(e); c.id = uid(); c.x += 16; c.y += 16;
+  addElement(c);
+}
+function delEl(){
+  const els = curPage().elements, i = els.findIndex(x => x.id === sel); if (i < 0) return;
+  els.splice(i, 1); sel = null; editing = null; after();
+}
+function copyEl(cut){
+  const e = selEl(); if (!e) return false;
+  if (editing) finishEditing();
+  clip = {el: clone(selEl()), from: curPage().id, n: 0, cut: !!cut, stamp: e.type === 'text' ? htmlToText(e.html) : ''};
+  const what = e.type === 'text' ? '글 상자' : '이미지';
+  if (cut){ delEl(); toast(`${what}를 잘라냈어요. 원하는 쪽에서 붙여넣으세요.`); }
+  else { renderInspector(); toast(`${what}를 복사했어요. 원하는 쪽에서 붙여넣으세요.`); }
+  return true;
+}
+function pasteEl(){
+  if (!clip){ toast('먼저 글 상자나 이미지를 복사해 주세요.'); return; }
+  if (editing) finishEditing();
+  const c = clone(clip.el); c.id = uid();
+  const off = clip.from === curPage().id && !clip.cut ? 16 * (++clip.n) : 0;
+  c.x += off; c.y += off;
+  clip.from = curPage().id; clip.cut = false;
+  addElement(c);
+  toast(`${pageName(cur)}에 붙여넣었어요.`);
+}
+const isField = t => t && t.nodeType === 1 && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName));
+const blocked = () => editing || !$('#preview').hidden || !$('#modal').hidden;
+document.addEventListener('copy', ev => {
+  if (blocked() || isField(ev.target) || !selEl()) return;
+  ev.preventDefault();
+  copyEl(false);
+  if (ev.clipboardData) ev.clipboardData.setData('text/plain', clip.stamp);
+});
+document.addEventListener('cut', ev => {
+  if (blocked() || isField(ev.target) || !selEl()) return;
+  ev.preventDefault();
+  const stamp = selEl().type === 'text' ? htmlToText(selEl().html) : '';
+  copyEl(true);
+  if (ev.clipboardData) ev.clipboardData.setData('text/plain', stamp);
+});
+document.addEventListener('paste', ev => {
+  if (blocked() || isField(ev.target)) return;
+  const cd = ev.clipboardData;
+  const files = cd ? [...cd.files].filter(f => /^image\//.test(f.type)) : [];
+  if (files.length){ ev.preventDefault(); files.forEach(f => insertImageFile(f, 'new')); return; }
+  const text = cd ? cd.getData('text/plain') : '';
+  if (clip && (!text || text === clip.stamp)){ ev.preventDefault(); pasteEl(); return; }
+  if (text && text.trim()){
+    ev.preventDefault();
+    const H = pageH();
+    addElement(textEl({x:80, y:Math.round(H / 2 - 40), w:440, html:textToHtml(text), font:book.font || 'Noto Serif KR', size:16, lh:1.7,
+      color: curPage().bg.type === 'color' && isDark(curPage().bg.color) ? '#FFFFFF' : '#1B2126'}));
+    toast('붙여넣은 글로 새 글 상자를 만들었어요.');
+  }
+});
+
+/* ---------- 이미지 ---------- */
+function readImage(file){
+  return new Promise((res, rej) => {
+    if (!file || !/^image\//.test(file.type)) return rej(new Error('이미지 파일만 넣을 수 있어요.'));
+    const fr = new FileReader();
+    fr.onerror = () => rej(new Error('파일을 읽지 못했어요.'));
+    fr.onload = () => {
+      const img = new Image();
+      img.onerror = () => rej(new Error('이미지를 열지 못했어요. 다른 파일로 해 보세요.'));
+      img.onload = () => {
+        const w = img.naturalWidth || 800, h = img.naturalHeight || 600;
+        const k = Math.min(1, 1800 / Math.max(w, h));
+        if ((k === 1 && file.size < 1.5e6 && file.type !== 'image/svg+xml') || file.type === 'image/gif') return res({src:fr.result, w, h});
+        const c = document.createElement('canvas');
+        c.width = Math.round(w * k); c.height = Math.round(h * k);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        const keepAlpha = file.type === 'image/png' || file.type === 'image/webp' || file.type === 'image/svg+xml';
+        res({src: c.toDataURL(keepAlpha ? 'image/png' : 'image/jpeg', 0.88), w:c.width, h:c.height});
+      };
+      img.src = fr.result;
+    };
+    fr.readAsDataURL(file);
+  });
+}
+async function insertImageFile(file, mode){
+  try {
+    const {src, w, h} = await readImage(file);
+    const id = uid('a'); assets[id] = src;
+    if (mode === 'replace' && selEl() && selEl().type === 'image'){
+      const e = selEl(); e.asset = id; e.h = Math.round(e.w * h / w); after(); return;
+    }
+    const H = pageH();
+    if (curPage().type !== 'inner'){
+      if (editing) finishEditing();
+      const c = imgEl({asset:id, x:0, y:0, w:BASE_W, h:H, fit:'cover'});
+      curPage().elements.unshift(c);
+      sel = c.id; tab = 'el';
+      after();
+      toast('표지 용지에 꽉 맞춰 넣었어요. 글 상자는 그림 위에 보여요.');
+      return;
+    }
+    let ew = 360, eh = ew * h / w;
+    if (eh > H * 0.6){ eh = H * 0.6; ew = eh * w / h; }
+    addElement(imgEl({asset:id, w:Math.round(ew), h:Math.round(eh), x:Math.round((BASE_W - ew) / 2), y:Math.round((H - eh) / 2)}));
+  } catch(err){ toast(err.message); }
+}
+$('#fileImg').addEventListener('change', e => { const f = e.target.files[0]; if (f) insertImageFile(f, imgTarget); });
+$('#fileBg').addEventListener('change', async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try {
+    const {src} = await readImage(f);
+    const id = uid('a'); assets[id] = src;
+    Object.assign(curPage().bg, {type:'image', asset:id});
+    after();
+  } catch(err){ toast(err.message); }
+});
+stage.addEventListener('dragover', e => { if ([...e.dataTransfer.types].includes('Files')){ e.preventDefault(); stage.classList.add('drop'); } });
+stage.addEventListener('dragleave', () => stage.classList.remove('drop'));
+stage.addEventListener('drop', e => {
+  e.preventDefault(); stage.classList.remove('drop');
+  [...e.dataTransfer.files].filter(f => /^image\//.test(f.type)).forEach(f => insertImageFile(f, 'new'));
+});
+
+/* ---------- 실행 취소 · 저장 ---------- */
+let cT, sT;
+function commit(){
+  clearTimeout(cT); cT = null;
+  const s = JSON.stringify(book);
+  if (hist[hi] === s) return;
+  hist = hist.slice(0, hi + 1); hist.push(s);
+  if (hist.length > 80) hist.shift();
+  hi = hist.length - 1;
+  updUndo(); saveSoon();
+}
+function commitSoon(){ clearTimeout(cT); cT = setTimeout(commit, 350); }
+function restore(){
+  book = JSON.parse(hist[hi]);
+  editing = null;
+  cur = Math.min(cur, book.pages.length - 1);
+  if (sel && !curPage().elements.some(e => e.id === sel)) sel = null;
+  fit(); renderAll(); updUndo(); saveSoon();
+}
+function undo(){ if (cT) commit(); if (hi > 0){ hi--; restore(); } }
+function redo(){ if (hi < hist.length - 1){ hi++; restore(); } }
+function updUndo(){ $('#undoBtn').disabled = hi <= 0; $('#redoBtn').disabled = hi >= hist.length - 1; }
+
+/* 브라우저 보관함 (IndexedDB): books = 책마다 최신 내용, versions = 저장 버튼을 누를 때마다 남는 기록 */
+const idb = {
+  db: null,
+  open(){ return this.db ? Promise.resolve(this.db) : new Promise((res, rej) => {
+    const r = indexedDB.open('chaekgongbang', 2);
+    r.onupgradeneeded = () => {
+      const d = r.result;
+      if (!d.objectStoreNames.contains('kv')) d.createObjectStore('kv');
+      if (!d.objectStoreNames.contains('books')) d.createObjectStore('books', {keyPath:'id'});
+      if (!d.objectStoreNames.contains('versions')) d.createObjectStore('versions', {keyPath:'vid'}).createIndex('bookId', 'bookId');
+    };
+    r.onsuccess = () => { this.db = r.result; res(r.result); };
+    r.onerror = () => rej(r.error);
+  }); },
+  async req(store, mode, fn){
+    const d = await this.open();
+    return new Promise((res, rej) => {
+      const tx = d.transaction(store, mode);
+      const q = fn(tx.objectStore(store));
+      let out;
+      if (q) q.onsuccess = () => { out = q.result; };
+      tx.oncomplete = () => res(out);
+      tx.onerror = () => rej(tx.error);
+      tx.onabort = () => rej(tx.error);
+    });
+  },
+  get(store, k){ return this.req(store, 'readonly', s => s.get(k)); },
+  all(store){ return this.req(store, 'readonly', s => s.getAll()); },
+  put(store, v, k){ return this.req(store, 'readwrite', s => k === undefined ? s.put(v) : s.put(v, k)); },
+  del(store, k){ return this.req(store, 'readwrite', s => s.delete(k)); },
+  versionsOf(id){ return this.req('versions', 'readonly', s => s.index('bookId').getAll(id)); }
+};
+let curId = null, curCreated = Date.now(), lastSavedAt = 0;
+function usedAssets(){
+  const all = JSON.stringify(book) + hist.join('');
+  const out = {};
+  for (const k in assets) if (all.includes(k)) out[k] = assets[k];
+  return out;
+}
+const fmtTime = t => new Intl.DateTimeFormat('ko-KR', {year:'numeric', month:'numeric', day:'numeric', hour:'numeric', minute:'2-digit'}).format(t);
+async function persist(){
+  if (!curId) return;
+  assets = usedAssets();
+  await idb.put('books', {id:curId, title:book.title || '제목 없는 책', created:curCreated, updated:Date.now(), pages:book.pages.length, data:{book, assets}});
+  await idb.put('kv', curId, 'current');
+}
+function saveSoon(){
+  $('#status').textContent = '저장 중…';
+  clearTimeout(sT);
+  sT = setTimeout(async () => {
+    sT = null;
+    try { await persist(); $('#status').textContent = lastSavedAt ? `보관함 저장 ${fmtTime(lastSavedAt)} · 자동 저장됨` : '자동 저장됨'; }
+    catch(_){ $('#status').textContent = '자동 저장 안 됨 · 작업 파일로 저장하세요'; }
+  }, 500);
+}
+async function flushSave(){
+  if (cT) commit();
+  clearTimeout(sT); sT = null;
+  try { await persist(); } catch(_){}
+}
+async function addVersion(note){
+  const v = {vid:uid('v'), bookId:curId, title:book.title || '제목 없는 책', savedAt:Date.now(), pages:book.pages.length, note:note || '', data:{book:clone(book), assets:usedAssets()}};
+  await idb.put('versions', v);
+  const vs = (await idb.versionsOf(curId)).sort((a, b) => b.savedAt - a.savedAt);
+  for (const old of vs.slice(30)) await idb.del('versions', old.vid);
+  return Math.min(vs.length, 30);
+}
+async function saveNow(){
+  try {
+    await flushSave();
+    const n = await addVersion('');
+    lastSavedAt = Date.now();
+    $('#status').textContent = `보관함 저장 ${fmtTime(lastSavedAt)}`;
+    toast(`보관함에 저장했어요. 이 책의 저장 기록 ${n}개`, '보관함 열기', openArchive);
+  } catch(_){
+    toast('이 브라우저에 저장하지 못했어요. 내보내기에서 작업 파일(.json)로 저장해 주세요.');
+  }
+}
+function loadInto(b, a, id, created){
+  if (editing){ editing = null; hideBar(); }
+  book = migrateBook(b); assets = a || {};
+  curId = id; curCreated = created || Date.now();
+  cur = 0; sel = null; tab = 'page';
+  hist = [JSON.stringify(book)]; hi = 0;
+  fit(); renderAll();
+}
+async function createBook(b, a, msg){
+  await flushSave();
+  lastSavedAt = 0;
+  loadInto(b, a, uid('b'), Date.now());
+  try { await persist(); $('#status').textContent = '자동 저장됨'; } catch(_){}
+  if (msg) toast(msg);
+}
+async function switchTo(id){
+  if (id === curId){ closeArchive(); return; }
+  await flushSave();
+  const rec = await idb.get('books', id);
+  if (!rec) return;
+  lastSavedAt = 0;
+  loadInto(rec.data.book, rec.data.assets, rec.id, rec.created);
+  try { await idb.put('kv', curId, 'current'); } catch(_){}
+  $('#status').textContent = '자동 저장됨';
+  closeArchive();
+  toast(`"${book.title}"을(를) 열었어요.`);
+}
+addEventListener('pagehide', () => { if (cT) commit(); if (sT){ clearTimeout(sT); persist().catch(() => {}); } });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden' && sT){ clearTimeout(sT); sT = null; persist().catch(() => {}); } });
+
+/* ---------- 보관함 화면 ---------- */
+const arch = $('#archive');
+function recThumb(rec, h){
+  const sb = book, sa = assets;
+  try {
+    book = migrateBook(rec.data.book); assets = rec.data.assets || {};
+    const s = h / pageH();
+    const box = document.createElement('div');
+    box.className = 'tb'; box.style.width = BASE_W * s + 'px'; box.style.height = h + 'px';
+    const pg = buildPage(0, false); pg.style.transform = `scale(${s})`;
+    box.appendChild(pg);
+    return box;
+  } finally { book = sb; assets = sa; }
+}
+async function openArchive(){
+  if (editing) finishEditing();
+  closeFontPop();
+  await flushSave();
+  arch.hidden = false;
+  await renderArchive();
+  $('#archClose').focus();
+}
+function closeArchive(){ arch.hidden = true; }
+async function renderArchive(){
+  let list = [], vers = [];
+  try { list = await idb.all('books'); vers = await idb.all('versions'); }
+  catch(_){ $('#archGrid').innerHTML = '<p class="arch-note">이 브라우저에서는 보관함을 쓸 수 없어요. 개인 정보 보호 창이거나 사이트 저장이 막혀 있을 수 있어요. 내보내기에서 작업 파일(.json)로 저장해 주세요.</p>'; return; }
+  list.sort((a, b) => b.updated - a.updated);
+  const byBook = {};
+  vers.forEach(v => (byBook[v.bookId] = byBook[v.bookId] || []).push(v));
+  $('#archCount').textContent = `책 ${list.length}권 · 저장 기록 ${vers.length}개`;
+  try {
+    const est = navigator.storage && navigator.storage.estimate ? await navigator.storage.estimate() : null;
+    $('#archUsage').textContent = est && est.usage ? ` · 사용 중 ${(est.usage / 1048576).toFixed(1)}MB` : '';
+  } catch(_){ $('#archUsage').textContent = ''; }
+  const grid = $('#archGrid');
+  grid.replaceChildren();
+  const add = document.createElement('button');
+  add.type = 'button'; add.className = 'anew'; add.dataset.arc = 'new';
+  add.innerHTML = '<span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><br>새 책 만들기</span>';
+  grid.appendChild(add);
+  for (const rec of list){
+    const vs = (byBook[rec.id] || []).sort((a, b) => b.savedAt - a.savedAt);
+    const card = document.createElement('article');
+    card.className = 'acard' + (rec.id === curId ? ' on' : '');
+    const th = document.createElement('button');
+    th.type = 'button'; th.className = 'athumb'; th.dataset.arc = 'open'; th.dataset.id = rec.id;
+    th.setAttribute('aria-label', `${rec.title} 열기`);
+    th.appendChild(recThumb(rec, 170));
+    card.appendChild(th);
+    const info = document.createElement('div');
+    info.className = 'ainfo';
+    info.innerHTML = `<h3>${esc(rec.title || '제목 없는 책')}</h3><p>${rec.pages}장 · ${fmtTime(rec.updated)} 수정</p>${rec.id === curId ? '<span class="pill">지금 편집 중</span>' : ''}`;
+    card.appendChild(info);
+    const act = document.createElement('div');
+    act.className = 'aact';
+    act.innerHTML = `<button class="btn" type="button" data-arc="open" data-id="${rec.id}">${rec.id === curId ? '계속 편집' : '열기'}</button><button class="btn" type="button" data-arc="dup" data-id="${rec.id}">복제</button><button class="btn danger" type="button" data-arc="del" data-id="${rec.id}">지우기</button>`;
+    card.appendChild(act);
+    const det = document.createElement('details');
+    det.className = 'aver';
+    det.innerHTML = `<summary>저장 기록 ${vs.length}개</summary>` + (vs.length
+      ? `<ul>${vs.map(v => `<li><span>${fmtTime(v.savedAt)} · ${v.pages}장${v.note ? ` · ${esc(v.note)}` : ''}</span><button type="button" data-arc="restore" data-vid="${v.vid}">이 버전으로 되돌리기</button><button type="button" data-arc="vdel" data-vid="${v.vid}" aria-label="이 저장 기록 지우기">지우기</button></li>`).join('')}</ul>`
+      : '<p class="hint" style="margin-top:6px">아직 없어요. 편집 화면에서 저장(Ctrl+S)을 누르면 그때 내용이 기록으로 남아요.</p>');
+    card.appendChild(det);
+    grid.appendChild(card);
+  }
+}
+arch.addEventListener('click', async ev => {
+  const b = ev.target.closest('[data-arc]');
+  if (!b) return;
+  const id = b.dataset.id, vid = b.dataset.vid;
+  try {
+    switch (b.dataset.arc){
+      case 'close': closeArchive(); break;
+      case 'new': closeArchive(); await createBook(blankBook(), {}, '새 책을 만들었어요. 이전 책은 보관함에 그대로 있어요.'); break;
+      case 'open': await switchTo(id); break;
+      case 'dup': {
+        if (id === curId) await flushSave();
+        const rec = await idb.get('books', id);
+        const now = Date.now();
+        rec.id = uid('b'); rec.title = (rec.title || '제목 없는 책') + ' (사본)'; rec.data.book.title = rec.title;
+        rec.created = now; rec.updated = now;
+        await idb.put('books', rec);
+        await renderArchive(); toast(`"${rec.title}"을(를) 만들었어요.`);
+        break;
+      }
+      case 'del': {
+        const rec = await idb.get('books', id);
+        const vs = await idb.versionsOf(id);
+        ask('이 책을 보관함에서 지울까요?', `"${esc(rec.title)}"과(와) 저장 기록 ${vs.length}개가 함께 지워지고, 되돌릴 수 없어요. 남겨 두려면 먼저 열어서 작업 파일(.json)로 내보내 주세요.`, '지우기', async () => {
+          for (const v of vs) await idb.del('versions', v.vid);
+          await idb.del('books', id);
+          if (id === curId){
+            const rest = (await idb.all('books')).sort((a, c) => c.updated - a.updated);
+            if (rest.length) loadInto(rest[0].data.book, rest[0].data.assets, rest[0].id, rest[0].created);
+            else { loadInto(blankBook(), {}, uid('b'), Date.now()); await persist(); }
+            await idb.put('kv', curId, 'current');
+          }
+          await renderArchive(); toast('보관함에서 지웠어요.');
+        });
+        break;
+      }
+      case 'restore': {
+        const v = await idb.get('versions', vid);
+        ask('이 버전으로 되돌릴까요?', `${fmtTime(v.savedAt)}에 저장한 내용으로 바뀌어요. 지금 내용은 저장 기록에 먼저 남겨 두니까 다시 돌아올 수 있어요.`, '되돌리기', async () => {
+          if (v.bookId !== curId){
+            await flushSave();
+            const rec = await idb.get('books', v.bookId);
+            loadInto(rec.data.book, rec.data.assets, rec.id, rec.created);
+          }
+          await addVersion('되돌리기 전 자동 기록');
+          loadInto(v.data.book, Object.assign({}, assets, v.data.assets), curId, curCreated);
+          await persist();
+          closeArchive(); toast(`${fmtTime(v.savedAt)} 버전으로 되돌렸어요.`);
+        });
+        break;
+      }
+      case 'vdel': await idb.del('versions', vid); await renderArchive(); break;
+    }
+  } catch(_){ toast('보관함 작업을 마치지 못했어요. 다시 해 주세요.'); }
+});
+
+/* ---------- 내보내기 ---------- */
+const safeName = () => (book.title || '전자책').replace(/[\\/:*?"<>|]/g, '').trim() || '전자책';
+async function saveFile(filename, data){
+  let dl = null;
+  try { dl = window.claude && window.claude.use ? await window.claude.use('downloads') : null; } catch(_){ dl = null; }
+  if (dl){
+    try { await dl.save({filename, data}); toast(`${filename} 저장을 마쳤어요.`); }
+    catch(err){
+      if (err && err.code === 'declined') toast('저장을 취소했어요.');
+      else if (err && err.code === 'rate_limited') toast('저장 창이 이미 열려 있어요. 잠시 뒤 다시 해 주세요.');
+      else toast('이 화면에서는 파일을 저장할 수 없어요.');
+    }
+    return;
+  }
+  if (window.claude){ toast('이 화면에서는 파일을 저장할 수 없어요.'); return; }
+  const blob = data instanceof Blob ? data : new Blob([data], {type:'application/octet-stream'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+function exportJson(){
+  if (cT) commit();
+  const data = JSON.stringify({app:'chaekgongbang', v:1, book, assets:usedAssets()});
+  saveFile(safeName() + '.json', data);
+}
+$('#fileJson').addEventListener('change', e => {
+  const f = e.target.files[0]; if (!f) return;
+  const fr = new FileReader();
+  fr.onload = () => {
+    try {
+      const d = JSON.parse(fr.result);
+      if (!d || !d.book || !Array.isArray(d.book.pages) || d.book.pages[0].type !== 'front' || d.book.pages[d.book.pages.length - 1].type !== 'back') throw 0;
+      if (editing) finishEditing();
+      createBook(d.book, d.assets || {}, `"${d.book.title || '제목 없는 책'}"을(를) 보관함에 새 책으로 추가하고 열었어요.`);
+    } catch(_){ toast('책공방 작업 파일(.json)이 아니에요. 내보내기로 저장한 파일을 골라 주세요.'); }
+  };
+  fr.readAsText(f);
+});
+const SRI = {'html2canvas':'sha384-ZZ1pncU3bQe8y31yfZdMFdSpttDoPmOZg2wguVK9almUodir1PghgT0eY7Mrty8H','jspdf':'sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk'};
+function loadScript(src){
+  return new Promise((res, rej) => {
+    const s = document.createElement('script'); s.src = src; s.onload = res; const k = Object.keys(SRI).find(x => src.includes(x)); if (k){ s.integrity = SRI[k]; s.crossOrigin = 'anonymous'; }
+    s.onerror = () => rej(new Error('PDF 도구를 불러오지 못했어요. 인터넷 연결을 확인해 주세요.'));
+    document.head.appendChild(s);
+  });
+}
+let exporting = false;
+async function makePdf(){
+    toast('PDF 만드는 중…');
+    if (!window.html2canvas) await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
+    if (!window.jspdf) await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+    await document.fonts.ready;
+    const sz = SIZES[book.size] || SIZES.a5;
+    const orient = sz.w > sz.h ? 'l' : 'p';
+    const pdf = new window.jspdf.jsPDF({orientation:orient, unit:'mm', format:[sz.w, sz.h]});
+    const box = document.createElement('div'); box.className = 'offscreen';
+    document.body.appendChild(box);
+    let coverBlob = null;
+    for (let i = 0; i < book.pages.length; i++){
+      toast(`PDF 만드는 중… ${i + 1} / ${book.pages.length}`);
+      const node = buildPage(i, false);
+      node.style.position = 'relative';
+      box.replaceChildren(node);
+      const canvas = await window.html2canvas(node, {scale:2.5, useCORS:true, backgroundColor:'#FFFFFF', logging:false});
+      if (i > 0) pdf.addPage([sz.w, sz.h], orient);
+      pdf.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, sz.w, sz.h);
+      if (i === 0){ const c = document.createElement('canvas'), k = Math.min(1, 900 / canvas.width); c.width = Math.round(canvas.width * k); c.height = Math.round(canvas.height * k); c.getContext('2d').drawImage(canvas, 0, 0, c.width, c.height); coverBlob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.88)); }
+    }
+    box.remove();
+    return {blob: pdf.output('blob'), cover: coverBlob, pages: book.pages.length};
+}
+async function exportPdf(){
+  if (exporting) return;
+  exporting = true;
+  if (editing) finishEditing();
+  try { const r = await makePdf(); await saveFile(safeName() + '.pdf', r.blob); }
+  catch(err){ toast(err && err.message ? err.message : 'PDF를 만들지 못했어요.'); }
+  finally { exporting = false; }
+}
+/* 📤 판매로 올리기: PDF와 표지를 만들어 전자책 매대의 '책 올리기' 화면으로 넘겨요 (관리자만) */
+const handoff = {open(){return new Promise((res, rej) => {const r = indexedDB.open('chiyoung-handoff', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);});},
+  async put(k, v){const d = await this.open(); return new Promise((res, rej) => {const t = d.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, k); t.oncomplete = res; t.onerror = () => rej(t.error);});}};
+async function publish(){
+  let tok = ''; try { tok = localStorage.getItem('csub:gh-token') || ''; } catch(_){}
+  if (!tok){ ask('관리자만 올릴 수 있어요', '전자책 매대에서 <b>🔑 관리자</b>로 들어온 뒤 다시 눌러 주세요. 지금 만든 책은 보관함에 그대로 있어요.', '매대로 가기', () => { location.href = '../'; }); return; }
+  if (exporting) return;
+  exporting = true;
+  if (editing) finishEditing();
+  try {
+    await flushSave();
+    const r = await makePdf();
+    await handoff.put('ebook', {pdf: r.blob, cover: r.cover, pages: r.pages, title: book.title || '제목 없는 책', at: Date.now()});
+    toast('매대의 책 올리기 화면으로 넘어가요…');
+    location.href = '../?from=maker';
+  } catch(err){ toast(err && err.message ? err.message : 'PDF를 만들지 못했어요.'); }
+  finally { exporting = false; }
+}
+
+/* ---------- 미리보기 ---------- */
+let pvList = [], pvIdx = 0, pvSingle = false;
+function spreads(){
+  const last = book.pages.length - 1;
+  const inner = book.pages.map((p, i) => i).filter(i => book.pages[i].type === 'inner');
+  const out = [[null, 0]];
+  const list = [null, ...inner];
+  for (let i = 0; i < list.length; i += 2){
+    const pair = [list[i], list[i + 1] ?? null];
+    if (pair[0] !== null || pair[1] !== null) out.push(pair);
+  }
+  out.push([last, null]);
+  return out;
+}
+function openPreview(){
+  if (editing) finishEditing();
+  pvSingle = innerWidth < 760;
+  pvList = pvSingle ? book.pages.map((_, i) => [i]) : spreads();
+  pvIdx = Math.max(0, pvList.findIndex(sp => sp.includes(cur)));
+  $('#preview').hidden = false;
+  $('#pvTitle').textContent = book.title;
+  renderPreview(false);
+}
+function closePreview(){ $('#preview').hidden = true; }
+function pvGo(d){ const n = pvIdx + d; if (n < 0 || n >= pvList.length) return; pvIdx = n; renderPreview(true); }
+function renderPreview(anim){
+  const H = pageH(), slots = pvList[pvIdx], per = pvSingle ? 1 : 2;
+  const s = Math.min((innerWidth - (pvSingle ? 32 : 120)) / (BASE_W * per), (innerHeight - 170) / H);
+  const spread = document.createElement('div');
+  spread.className = 'pv-spread' + (pvSingle ? '' : ' two') + (anim ? ' anim' : '');
+  slots.forEach(i => {
+    const slot = document.createElement('div');
+    slot.className = 'pv-slot' + (i !== null ? ' has' : '');
+    slot.style.width = BASE_W * s + 'px'; slot.style.height = H * s + 'px';
+    if (i !== null){ const pg = buildPage(i, false); pg.style.transform = `scale(${s})`; slot.appendChild(pg); }
+    spread.appendChild(slot);
+  });
+  $('#pvStage').replaceChildren(spread);
+  $('#pvLab').textContent = slots.filter(i => i !== null).map(pageName).join(' · ');
+  $('#pvPrev').disabled = pvIdx === 0;
+  $('#pvNext').disabled = pvIdx === pvList.length - 1;
+}
+let swipeX = null;
+$('#pvStage').addEventListener('pointerdown', e => { swipeX = e.clientX; });
+$('#pvStage').addEventListener('pointerup', e => {
+  if (swipeX === null) return;
+  const dx = e.clientX - swipeX; swipeX = null;
+  if (Math.abs(dx) > 40) pvGo(dx < 0 ? 1 : -1);
+  else { const r = e.currentTarget.getBoundingClientRect(); pvGo(e.clientX > r.left + r.width / 2 ? 1 : -1); }
+});
+
+/* ---------- 알림 · 확인 ---------- */
+let toastT;
+function toast(msg, actLabel, fn){
+  const t = $('#toast');
+  t.replaceChildren(document.createTextNode(msg));
+  if (actLabel){ const b = document.createElement('button'); b.type = 'button'; b.textContent = actLabel; b.onclick = () => { t.hidden = true; fn(); }; t.appendChild(b); }
+  t.hidden = false;
+  clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, actLabel ? 5000 : 2600);
+}
+function ask(title, text, yes, fn){
+  $('#mTitle').textContent = title; $('#mText').innerHTML = text; $('#mYes').textContent = yes;
+  const m = $('#modal'); m.hidden = false; $('#mYes').focus();
+  const close = () => { m.hidden = true; $('#mYes').onclick = $('#mNo').onclick = null; };
+  $('#mNo').onclick = close;
+  $('#mYes').onclick = () => { close(); fn(); };
+}
+
+/* ---------- 단축키 ---------- */
+document.addEventListener('keydown', ev => {
+  if (!fontPop.hidden){ if (ev.key === 'Escape'){ ev.preventDefault(); closeFontPop(); } return; }
+  if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 's'){ ev.preventDefault(); if ($('#modal').hidden && arch.hidden) ACTS.saveNow(); return; }
+  if (!arch.hidden && $('#modal').hidden){ if (ev.key === 'Escape') closeArchive(); return; }
+  if (!$('#modal').hidden){ if (ev.key === 'Escape') $('#mNo').click(); return; }
+  if (!$('#preview').hidden){
+    if (ev.key === 'Escape') closePreview();
+    if (ev.key === 'ArrowRight' || ev.key === 'PageDown' || ev.key === ' '){ ev.preventDefault(); pvGo(1); }
+    if (ev.key === 'ArrowLeft' || ev.key === 'PageUp'){ ev.preventDefault(); pvGo(-1); }
+    return;
+  }
+  const tg = ev.target;
+  if (tg.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(tg.tagName)) return;
+  const mod = ev.ctrlKey || ev.metaKey;
+  if (mod && ev.key.toLowerCase() === 'z'){ ev.preventDefault(); ev.shiftKey ? redo() : undo(); return; }
+  if (mod && ev.key.toLowerCase() === 'y'){ ev.preventDefault(); redo(); return; }
+  const e = selEl();
+  if (!e){
+    if (ev.key === 'PageDown'){ ev.preventDefault(); goPage(cur + 1); }
+    if (ev.key === 'PageUp'){ ev.preventDefault(); goPage(cur - 1); }
+    return;
+  }
+  if (mod && ev.key.toLowerCase() === 'd'){ ev.preventDefault(); dupEl(); return; }
+  if (ev.key === 'Delete' || ev.key === 'Backspace'){ ev.preventDefault(); delEl(); return; }
+  if (ev.key === 'Enter' && e.type === 'text'){ ev.preventDefault(); startEditing(e.id); return; }
+  if (ev.key === 'Escape'){ sel = null; renderStage(); renderInspector(); return; }
+  const step = ev.shiftKey ? 10 : 1;
+  const mv = {ArrowLeft:[-step, 0], ArrowRight:[step, 0], ArrowUp:[0, -step], ArrowDown:[0, step]}[ev.key];
+  if (mv){ ev.preventDefault(); e.x += mv[0]; e.y += mv[1]; renderStage(); thumbsSoon(); commitSoon(); }
+});
+
+/* ---------- 시작 ---------- */
+function renderAll(){
+  $('#titleIn').value = book.title;
+  $('#sampleNote').hidden = !book.sample;
+  renderStage(); renderPages(); renderInspector(); updUndo();
+}
+new ResizeObserver(() => { fit(); }).observe(stage);
+addEventListener('resize', () => { renderPages(); if (!$('#preview').hidden) renderPreview(false); });
+if (document.fonts) document.fonts.addEventListener && document.fonts.addEventListener('loadingdone', () => thumbsSoon());
+
+(async () => {
+  let rec = null, ok = true;
+  try {
+    const id = await idb.get('kv', 'current');
+    if (id) rec = await idb.get('books', id);
+    if (!rec){
+      const list = await idb.all('books');
+      if (list.length) rec = list.sort((a, b) => b.updated - a.updated)[0];
+    }
+    if (!rec){
+      /* 이전 버전(책 한 권만 저장하던 방식)에서 옮겨 오기 */
+      const old = await idb.get('kv', 'state');
+      if (old && old.book && Array.isArray(old.book.pages) && old.book.pages.length >= 2){
+        const now = Date.now();
+        rec = {id:uid('b'), title:old.book.title || '제목 없는 책', created:now, updated:now, pages:old.book.pages.length, data:{book:old.book, assets:old.assets || {}}};
+        await idb.put('books', rec);
+        await idb.del('kv', 'state');
+      }
+    }
+  } catch(_){ ok = false; }
+  if (rec) loadInto(rec.data.book, rec.data.assets, rec.id, rec.created);
+  else {
+    loadInto(sampleBook(), assets, uid('b'), Date.now());
+    if (ok) try { await persist(); } catch(_){}
+  }
+  $('#status').textContent = ok ? '자동 저장됨' : '이 브라우저에 저장할 수 없어요 · 작업 파일로 저장하세요';
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch(_){}
+})();
+})();
+</script>
+
+
+</body></html>
