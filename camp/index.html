@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://js.tosspayments.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' data: blob: https://api.github.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://api.open-meteo.com https://api.met.no https://wttr.in https://api.mymemory.translated.net https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.doubleclick.net https://www.google.com https://*.tosspayments.com https://0.peerjs.com wss://0.peerjs.com wss://broker.emqx.io:8084 wss://broker.hivemq.com:8884 https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self' blob:; frame-src 'self' https://www.bskorea.or.kr https://*.tosspayments.com; object-src 'none'; base-uri 'self'; form-action 'self' https://*.tosspayments.com">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>수련회 준비 패키지 | 치영의 교회 생활 즐기기 · 스탭·일정·장소·회계·조배정·방배정</title>
+<meta name="description" content="수련회 준비를 한곳에서: 스탭·찬양팀·회의록·간트차트 일정·주제·장소 비교(ICE)·강사·프로그램·시간표·확정사항·준비물·체크리스트·자료실·회계·참석인원·차량·조·방 배정.">
+<link rel="canonical" href="https://zidane7-creator.github.io/nanum-boardgame/camp/">
+<meta property="og:title" content="수련회 준비 패키지 — 치영의 교회 생활 즐기기">
+<meta property="og:description" content="수련회 준비를 처음부터 끝까지 한곳에서">
+<meta property="og:image" content="https://zidane7-creator.github.io/nanum-boardgame/assets/og.jpg">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⛺</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<script src="../assets/jua.js"></script>
+<style>
+:root{--ink:#3b2a20;--cream:#fffaf0;--paper:#fff;--line:#e3d6c2;--accent:#e8503a;--gold:#f5b82e;--green:#3f9a55;--blue:#2f6fb0;--pink:#c8507a;--muted:#7a6a5c;--soft:#f6efe2}
+*{box-sizing:border-box}
+html,body{margin:0;color:var(--ink);background:#f7f1e6;font:15px/1.5 "Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif}
+.j,h1,h2,h3,.tabs button,.top,button.big{font-family:"Jua","Apple SD Gothic Neo",sans-serif;font-weight:normal}
+button,.btn{font:inherit;color:inherit;border:1.5px solid var(--ink);background:var(--cream);border-radius:10px;padding:5px 11px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+button:hover,.btn:hover{background:#fff2d6}
+button.pri,.btn.pri{background:var(--accent);color:#fff;border-color:#b5361f}
+button.ok{background:var(--green);color:#fff;border-color:#2c7440}
+button.sm{padding:2px 8px;font-size:13px;border-radius:8px}
+button.x{border:0;background:none;padding:0 3px;font-size:14px;color:var(--muted)}
+button.x:hover{color:var(--accent);background:none}
+button.danger{color:#b5361f;border-color:#b5361f}
+input,select,textarea{font:inherit;color:inherit;border:1.5px solid #cdbda6;border-radius:8px;padding:4px 7px;background:#fff;min-width:0;max-width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--gold);border-color:var(--ink)}
+textarea{width:100%;resize:vertical}
+.top{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:10px;padding:calc(8px + env(safe-area-inset-top,0px)) 14px 8px;background:rgba(255,255,255,.95);border-bottom:4px solid var(--gold);font-size:15px}
+.top a{color:var(--ink);text-decoration:none;border:2px solid var(--ink);border-radius:14px;padding:3px 10px;background:var(--cream)}
+.top .ttl{flex:1;font-size:19px}
+.wrap{max-width:1180px;margin:0 auto;padding:12px 12px 80px}
+.head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:4px 0 10px}
+.head h1{margin:0;font-size:26px}
+.dday{background:var(--accent);color:#fff;border-radius:12px;padding:2px 10px;font-family:Jua,sans-serif}
+.sync{font-size:13px;color:var(--muted);margin-left:auto}
+.tabs{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 14px;padding:8px;background:var(--cream);border:2px solid var(--ink);border-radius:16px}
+.tabs button{border-radius:12px;padding:5px 10px;font-size:15px;background:#fff}
+.tabs button.on{background:var(--ink);color:#fff}
+.card{background:var(--paper);border:2px solid var(--ink);border-radius:16px;padding:14px;margin-bottom:14px}
+.card h2{margin:0 0 8px;font-size:21px}
+.card h3{margin:12px 0 6px;font-size:17px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.sp{flex:1}
+.hint{font-size:13px;color:var(--muted)}
+.empty{padding:16px;text-align:center;color:var(--muted);background:var(--soft);border-radius:12px}
+.hs{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table.t{border-collapse:collapse;width:100%;font-size:14px}
+table.t th,table.t td{border-bottom:1px solid var(--line);padding:4px 5px;text-align:left;vertical-align:middle}
+table.t th{background:var(--soft);font-weight:600;white-space:nowrap;position:sticky;top:0}
+table.t td input,table.t td select{width:100%}
+table.t td.num,table.t th.num{text-align:right;white-space:nowrap}
+.chip{display:inline-flex;align-items:center;gap:2px;border:1.5px solid var(--ink);border-radius:999px;padding:1px 4px 1px 9px;margin:2px;background:var(--cream);font-size:14px;white-space:nowrap}
+.chip.p{background:#fff}
+.chip.m{background:#e3efff;border-color:#2f6fb0}.chip.f{background:#ffe5ef;border-color:#c8507a}
+.chip.on{background:var(--ink);color:#fff}
+.chip[draggable=true]{cursor:grab}
+.chip.tog{cursor:pointer;padding:1px 10px}
+.le{display:flex;flex-wrap:wrap;align-items:center;gap:2px}
+.le .leadd{width:140px}
+.who{display:flex;flex-wrap:wrap;align-items:center;gap:2px}
+.who select{width:auto;max-width:150px;font-size:13px;padding:2px 4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+.box{border:2px solid var(--ink);border-radius:14px;padding:10px;background:#fff}
+.box.drop-on,.pool.drop-on{outline:3px dashed var(--gold);outline-offset:2px}
+.box .bh{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+.box .bh b{font-family:Jua,sans-serif;font-size:17px;font-weight:normal}
+.box .mem{min-height:38px;background:var(--soft);border-radius:10px;padding:4px;margin-top:6px}
+.cnt{font-family:Jua,sans-serif;border-radius:10px;padding:0 8px;background:#e7f5ea;color:#226b37}
+.cnt.over{background:#fde3dc;color:#b5361f}
+.pool{position:sticky;top:64px;z-index:5;background:#fffdf7;border:2px dashed #b7a58c;border-radius:14px;padding:8px;margin-bottom:12px;max-height:180px;overflow:auto}
+.fld{display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--muted)}
+.fld input,.fld select,.fld textarea{color:var(--ink);font-size:15px}
+.f2{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.badge{display:inline-block;border-radius:8px;padding:0 7px;font-size:12px;background:var(--soft);border:1px solid var(--line);white-space:nowrap}
+.b-ok{background:#dff3e4;border-color:#9ccfa9;color:#1f6a35}.b-no{background:#fde3dc;border-color:#f0aa98;color:#a3301a}.b-mid{background:#fff1cc;border-color:#ebc95f;color:#7a5a00}
+.prog{height:10px;background:#efe6d6;border-radius:6px;overflow:hidden}.prog i{display:block;height:100%;background:var(--green)}
+/* minutes */
+.mprev{background:#fffdf6;border:1.5px dashed #cdbda6;border-radius:12px;padding:10px 12px;min-height:80px;white-space:pre-wrap;font-size:15px}
+.mprev .l{display:flex;gap:5px}.mprev .mk{flex:none;font-weight:600}
+#mbody{font:15px/1.6 ui-monospace,Consolas,"D2Coding","Malgun Gothic",monospace;min-height:260px;tab-size:2}
+/* gantt */
+.gantt{border:1.5px solid var(--line);border-radius:12px;background:#fff}
+.gin{position:relative}
+.grow{display:flex;border-bottom:1px solid #f0e8da;min-height:30px}
+.glab{position:sticky;left:0;z-index:3;width:170px;flex:none;background:#fff;border-right:1.5px solid var(--line);padding:4px 6px;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gtrack{position:relative;flex:none}
+.gbar{position:absolute;top:5px;height:20px;border-radius:7px;color:#fff;font-size:12px;line-height:20px;padding:0 6px;white-space:nowrap;overflow:hidden;box-shadow:0 1px 0 rgba(0,0,0,.25)}
+.gbar.done{opacity:.45}
+.gtoday{position:absolute;top:0;bottom:0;width:2px;background:var(--accent);z-index:2}
+.gcamp{position:absolute;top:0;bottom:0;background:rgba(245,184,46,.25);z-index:1}
+.ghd{font-size:11px;color:var(--muted)}
+.ghd .gd{position:absolute;top:0;text-align:center;line-height:18px}
+.ghd .gd.we{color:#c8507a}
+.ghd .gm{position:absolute;top:0;font-weight:600;color:var(--ink);padding-left:3px;border-left:1.5px solid var(--line);white-space:nowrap}
+/* timetable */
+table.tt{border-collapse:collapse;min-width:100%}
+table.tt th,table.tt td{border:1px solid var(--line);padding:0}
+table.tt th{background:var(--soft);padding:4px 6px;font-weight:600;white-space:nowrap}
+table.tt td.tm{font-size:12px;color:var(--muted);padding:0 6px;white-space:nowrap;background:#fffdf7}
+table.tt td.tm.h{color:var(--ink);font-weight:600}
+table.tt input{border:0;border-radius:0;width:100%;min-width:130px;padding:3px 6px;background:transparent}
+table.tt td.cont input{color:transparent}
+table.tt td.cont input:focus{color:var(--ink)}
+table.tt td.cont{border-top-color:transparent}
+/* venue */
+.vrank td.r1{background:#fff3c4;font-weight:700}
+.dens{font-size:12px;border-radius:6px;padding:0 5px}
+/* supplies */
+.steps{display:flex;flex-wrap:wrap;gap:2px}
+.steps button{font-size:12px;padding:1px 6px;border-radius:7px;background:#fff;border-color:#cdbda6;color:var(--muted)}
+.steps button.past{background:#e7f5ea;border-color:#9ccfa9;color:#226b37}
+.steps button.cur{background:var(--green);border-color:#2c7440;color:#fff}
+.steps button.fin.cur{background:var(--blue);border-color:#245a90}
+tr.late td{background:#fff1ee}
+/* files */
+.ftile{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.fi{border:1.5px solid var(--line);border-radius:12px;padding:8px;background:#fff;text-align:center;font-size:13px;word-break:break-all;position:relative}
+.fi.dir{cursor:pointer;background:#fff8e6;border-color:#ebc95f}
+.fi .ic{font-size:34px;line-height:1.2}
+.fi img{width:100%;height:90px;object-fit:cover;border-radius:8px;display:block;margin-bottom:4px;background:var(--soft)}
+.fi .acts{display:flex;justify-content:center;gap:4px;margin-top:4px}
+/* rooms */
+.bld{margin-bottom:16px}
+.floor{position:relative;border:2px solid #b7a58c;border-radius:14px;background:repeating-linear-gradient(0deg,#fbf7ef 0 19px,#f2ead9 19px 20px),#fbf7ef;background-size:20px 20px;margin:4px 0 12px;min-height:200px;overflow:auto}
+.floor .fl{position:sticky;left:0;top:0;display:inline-block;background:var(--ink);color:#fff;border-radius:0 0 10px 0;padding:1px 10px;font-family:Jua,sans-serif;z-index:3}
+.room{position:absolute;width:200px;border:2.5px solid var(--ink);border-radius:12px;background:#fff;box-shadow:0 3px 0 rgba(0,0,0,.12)}
+.room .rhead{cursor:move;background:var(--cream);border-bottom:1.5px solid var(--ink);border-radius:10px 10px 0 0;padding:4px 6px;display:flex;align-items:center;gap:4px;touch-action:none;user-select:none}
+.room .rhead b{font-family:Jua,sans-serif;font-weight:normal;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.room.g-m .rhead{background:#e3efff}.room.g-f .rhead{background:#ffe5ef}
+.room .rb{padding:4px 6px 6px;min-height:60px}
+.room .cap{font-size:12px;color:var(--muted)}
+.room select{font-size:12px;padding:1px 3px;width:100%;margin-top:3px}
+/* modal / toast */
+.modal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;padding:14px}
+.modal .mc{background:var(--cream);border:3px solid var(--ink);border-radius:18px;max-width:560px;width:100%;max-height:88vh;overflow:auto;padding:16px 18px}
+.modal h2{margin:0 0 10px;font-size:22px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:9px 16px;border-radius:14px;opacity:0;transition:.25s;z-index:200;pointer-events:none;max-width:90vw;text-align:center}
+.toast.show{opacity:1}
+.camps{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.camp{border:2.5px solid var(--ink);border-radius:16px;padding:12px;background:#fff;cursor:pointer}
+.camp:hover{background:#fff8e6}
+.camp .n{font-family:Jua,sans-serif;font-size:20px}
+.kv{display:grid;grid-template-columns:110px 1fr auto;gap:6px 10px;align-items:start}
+.kv>b{font-family:Jua,sans-serif;font-weight:normal;font-size:16px;padding-top:4px}
+.stars button{border:0;background:none;padding:0 1px;font-size:17px;color:#d8cbb5}
+.stars button.on{color:var(--gold)}
+@media (max-width:640px){.kv{grid-template-columns:1fr}.glab{width:110px}.head h1{font-size:21px}.pool{top:56px}}
+@media print{.top,.tabs,.no-print,#siteGuideBtn,#homeFab{display:none!important}body{background:#fff}.card{border:0}}
+</style>
+</head><body>
+<div class="top"><a href="../">← 목장</a><span class="ttl">⛺ 수련회 준비 패키지</span></div>
+<div class="wrap" id="app"><div class="empty">불러오는 중…</div></div>
+<div class="toast" id="toast"></div>
+<input type="file" id="fileUp" hidden multiple>
+<input type="file" id="xlsUp" hidden accept=".xlsx,.xls,.csv">
+<input type="file" id="bakUp" hidden accept=".json">
+<input type="file" id="rcpUp" hidden accept="image/*,.pdf">
+<script>
+(function(){
+"use strict";
+/* ============ 기본 도구 ============ */
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const pad=n=>String(n).padStart(2,'0');
+const todayStr=()=>{const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
+const toT=s=>{const[y,m,d]=s.split('-').map(Number);return Date.UTC(y,m-1,d)};
+const fromT=t=>new Date(t).toISOString().slice(0,10);
+const addD=(s,n)=>fromT(toT(s)+n*864e5);
+const diffD=(a,b)=>Math.round((toT(b)-toT(a))/864e5);
+const DOW='일월화수목금토';
+const fmtD=s=>{if(!s)return'';const[,m,d]=s.split('-');return `${+m}/${+d}(${DOW[new Date(toT(s)).getUTCDay()]})`};
+const won=n=>(Math.round(+n||0)).toLocaleString('ko-KR');
+let toastT;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2300)}
+function modal(html){const m=document.createElement('div');m.className='modal';m.innerHTML=`<div class="mc" role="dialog">${html}</div>`;document.body.appendChild(m);m.addEventListener('click',e=>{if(e.target===m||e.target.dataset.close!==undefined)m.remove()});return m}
+const hue=s=>{let h=0;for(const c of String(s))h=(h*31+c.charCodeAt(0))%360;return h};
+const PAL=['#2f6fb0','#3f9a55','#c8507a','#d9822b','#7a4fb0','#167a7a','#b5361f','#5b6d7a'];
+
+/* ============ 저장소 (이 기기 브라우저의 IndexedDB) ============ */
+const idb={db:null,
+  open(){return new Promise((res,rej)=>{const r=indexedDB.open('camp-pack',1);r.onupgradeneeded=()=>{const d=r.result;d.createObjectStore('camps');d.createObjectStore('files')};r.onsuccess=()=>{this.db=r.result;res()};r.onerror=()=>rej(r.error)})},
+  tx(st,mode,fn){return new Promise((res,rej)=>{const t=this.db.transaction(st,mode),q=fn(t.objectStore(st));t.oncomplete=()=>res(q&&q.result);t.onerror=()=>rej(t.error);t.onabort=()=>rej(t.error)})},
+  get(st,k){return this.tx(st,'readonly',s=>s.get(k))},put(st,k,v){return this.tx(st,'readwrite',s=>s.put(v,k))},
+  del(st,k){return this.tx(st,'readwrite',s=>s.delete(k))},all(st){return this.tx(st,'readonly',s=>s.getAll())}};
+
+let R=null,TAB='staff';const SUB={dir:'in',folder:'',min:null,ledEdit:null};
+let saveT;function save(){clearTimeout(saveT);const s=$('#sync');if(s)s.textContent='저장 중…';saveT=setTimeout(async()=>{try{R.updated=Date.now();await idb.put('camps',R.id,R);const s=$('#sync');if(s)s.textContent='✔ 이 기기에 저장됨 '+new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}catch(e){toast('저장하지 못했어요: '+(e&&e.message||e))}},250)}
+addEventListener('pagehide',()=>{if(R&&saveT){clearTimeout(saveT);try{idb.put('camps',R.id,R)}catch(e){}}});
+
+const METHODS={'온라인':['구입필요','구입완료','배송완료','준비완료'],'오프라인':['구입필요','구입완료','준비완료'],'챙기기':['준비필요','준비완료'],'제작':['준비전','시안제작완료','발주완료','배송완료','준비완료'],'인쇄':['준비전','작성완료','인쇄완료','준비완료']};
+const SPK_ST=['후보','연락 예정','연락함','답변 대기','수락','확정','거절'];
+function fill(R){
+  const d=(k,v)=>{if(R[k]==null)R[k]=v};
+  d('nights',2);d('start','');
+  d('cfg',{});const c=R.cfg;
+  if(!c.minRoles)c.minRoles=['목사','전도사','간사'];
+  if(!c.staffRoles)c.staffRoles=['회장','총무','스탭'];
+  if(!c.parts)c.parts=['찬양인도자','싱어','메인건반','세컨건반','일렉기타','어쿠스틱기타','베이스','드럼'];
+  d('people',[]);d('minutes',[]);d('sched',[]);
+  d('theme',{});const t=R.theme;['hearts','verses','cands'].forEach(k=>{if(!t[k])t[k]=[]});
+  d('venue',{});const v=R.venue;if(v.expected==null)v.expected=null;if(!v.list)v.list=[];if(!v.crit)v.crit=[{id:'c_snd',name:'음향'},{id:'c_use',name:'용도(프로그램 공간)'}];
+  if(!v.w){v.w={fixed:20,var:25,cap:20,loc:15};const r=20/v.crit.length;v.crit.forEach(x=>v.w[x.id]=Math.round(r))}
+  d('speakers',[]);d('programs',[]);
+  d('tt',{});if(!R.tt.from)R.tt.from='07:00';if(!R.tt.to)R.tt.to='24:00';if(!R.tt.cells)R.tt.cells={};
+  d('conf',{});CONF.forEach(([k])=>{if(!R.conf[k])R.conf[k]={v:'',ok:false}});
+  d('sup',[]);d('chk',[]);d('folders',[]);d('files',[]);
+  d('acc',{});if(!R.acc.cats)R.acc.cats={in:['수련회비','후원','지원금','기타'],out:['준비(데코)','준비(간식)','준비(프로그램)','장소비','강사비','식사','간식','기타']};if(!R.acc.items)R.acc.items=[];
+  d('cars',{});if(!R.cars.types)R.cars.types={in:['버스 본대','버스 후발대','자차 본대','자차 후발대','스탭차'],out:['버스 본대','버스 후발대','자차 본대','자차 후발대','스탭차']};if(!R.cars.list)R.cars.list=[];
+  d('grp',{});const g=R.grp;if(!g.roles)g.roles=['부조장','서기'];if(g.useLeader==null)g.useLeader=true;if(g.useStaff==null)g.useStaff=true;if(!g.list)g.list=[];
+  d('rooms',[]);
+  return R}
+
+/* 경로로 객체 찾기: "venue.list#ID>sc" */
+function objOf(spec){if(spec==null)return null;if(spec==='.')return R;const[main,post]=spec.split('>');const[path,id]=main.split('#');let o=R;for(const p of path.split('.'))o=o==null?o:o[p];
+  if(id!==undefined)o=Array.isArray(o)?o.find(x=>x.id===id):o&&o[id];
+  if(post&&o){for(const p of post.split('.')){if(o[p]==null)o[p]={};o=o[p]}}return o}
+
+const P=id=>R.people.find(p=>p.id===id);
+const pn=id=>{const p=P(id);return p?p.name||'(이름 없음)':'(삭제된 사람)'};
+const prepList=()=>R.people.filter(p=>p.prep);
+const byName=(a,b)=>String(a.name).localeCompare(String(b.name),'ko');
+const campEnd=()=>R.start?addD(R.start,+R.nights||0):'';
+const campRange=()=>R.start?`${R.start.replace(/-/g,'.')}(${DOW[new Date(toT(R.start)).getUTCDay()]}) ~ ${fmtD(campEnd())} · ${R.nights}박 ${+R.nights+1}일`:'';
+const roleOf=p=>p.prep?(p.role||(p.prep==='min'?'사역자':'준비인원')):'';
+
+/* ============ 공용 위젯 ============ */
+function LE(path,ph){const arr=objOf(path)||[];return `<div class="le">${arr.map((x,i)=>`<span class="chip"><span data-act="leRen" data-le="${path}" data-i="${i}" title="눌러서 이름 바꾸기" style="cursor:pointer">${esc(x)}</span>${i?`<button class="x" data-act="leUp" data-le="${path}" data-i="${i}" title="앞으로">‹</button>`:''}<button class="x" data-act="leDel" data-le="${path}" data-i="${i}" title="빼기">×</button></span>`).join('')}<input class="leadd" data-le-add="${path}" placeholder="${esc(ph||'+ 추가 후 Enter')}"></div>`}
+const LE_REF={
+  'cfg.minRoles':(a,b)=>R.people.forEach(p=>{if(p.prep==='min'&&p.role===a)p.role=b}),
+  'cfg.staffRoles':(a,b)=>R.people.forEach(p=>{if(p.prep==='staff'&&p.role===a)p.role=b}),
+  'cfg.parts':(a,b)=>R.people.forEach(p=>{if(p.parts)p.parts=p.parts.map(x=>x===a?b:x).filter(Boolean)}),
+  'grp.roles':(a,b)=>R.grp.list.forEach(g=>{for(const k in g.roles||{})if(g.roles[k]===a){if(b)g.roles[k]=b;else delete g.roles[k]}}),
+  'cars.types.in':(a,b)=>R.cars.list.forEach(c=>{if(c.dir==='in'&&c.type===a)c.type=b}),
+  'cars.types.out':(a,b)=>R.cars.list.forEach(c=>{if(c.dir==='out'&&c.type===a)c.type=b}),
+  'acc.cats.in':(a,b)=>R.acc.items.forEach(x=>{if(x.type==='in'&&x.cat===a)x.cat=b}),
+  'acc.cats.out':(a,b)=>R.acc.items.forEach(x=>{if(x.type==='out'&&x.cat===a)x.cat=b})};
+function WHO(spec,key,cands,ph){const o=objOf(spec)||{};const arr=o[key]||[];return `<div class="who">${arr.map(id=>`<span class="chip p">${esc(pn(id))}<button class="x" data-act="rmFrom" data-o="${spec}" data-k="${key}" data-v="${id}">×</button></span>`).join('')}<select data-act="addTo" data-o="${spec}" data-k="${key}"><option value="">${esc(ph||'+ 추가')}</option>${cands.filter(p=>!arr.includes(p.id)).sort(byName).map(p=>`<option value="${p.id}">${esc(p.name)}${p.prep?' · '+esc(roleOf(p)):''}</option>`).join('')}</select></div>`}
+const inp=(spec,k,o={})=>{const ob=objOf(spec)||{};const v=ob[k];return `<input data-o="${spec}" data-k="${k}"${o.n?' data-t="n" type="number" inputmode="numeric"':o.type?` type="${o.type}"`:''}${o.rr?' data-rr':''}${o.list?` list="${o.list}"`:''} value="${esc(v??'')}" placeholder="${esc(o.ph||'')}"${o.st?` style="${o.st}"`:''}>`};
+const sel=(spec,k,opts,o={})=>{const ob=objOf(spec)||{};const v=ob[k]??'';return `<select data-o="${spec}" data-k="${k}"${o.rr?' data-rr':''}${o.st?` style="${o.st}"`:''}>${o.blank!==undefined?`<option value="">${esc(o.blank)}</option>`:''}${opts.map(x=>{const[val,lab]=Array.isArray(x)?x:[x,x];return `<option value="${esc(val)}"${String(val)===String(v)?' selected':''}>${esc(lab)}</option>`}).join('')}</select>`};
+const ta=(spec,k,ph,rows)=>{const ob=objOf(spec)||{};return `<textarea data-o="${spec}" data-k="${k}" rows="${rows||3}" placeholder="${esc(ph||'')}">${esc(ob[k]||'')}</textarea>`};
+const peopleOpts=(L,blank)=>[['',blank||'— 선택 —'],...L.slice().sort(byName).map(p=>[p.id,p.name+(p.prep?' · '+roleOf(p):'')])];
+
+/* 배정 칩 (끌어서 옮기기) */
+function CHIP(pid,from,extra){const p=P(pid);if(!p)return'';return `<span class="chip p ${p.gender==='여'?'f':p.gender==='남'?'m':''}" draggable="true" data-pid="${pid}" data-from="${from}" title="${esc([p.gender,p.age,p.org].filter(Boolean).join(' · '))}">${esc(p.name||'(이름 없음)')}${extra||''}${from!=='pool'?`<button class="x" data-act="unassign" data-from="${from}" data-pid="${pid}" title="빼기">×</button>`:''}</span>`}
+function holder(key){const[k,id]=key.split('#');if(k==='car')return R.cars.list.find(c=>c.id===id);if(k==='grp')return R.grp.list.find(g=>g.id===id);if(k==='room')return R.rooms.find(r=>r.id===id);return null}
+function scopeOf(key){const[k,id]=key.split('#');if(k==='car'){const c=holder(key);return R.cars.list.filter(x=>x.dir===(c?c.dir:SUB.dir))}if(k==='grp')return R.grp.list;if(k==='room')return R.rooms;return[]}
+function assign(pid,to,from){
+  if(from&&from!=='pool'){const h=holder(from);if(h)h.members=(h.members||[]).filter(x=>x!==pid)}
+  if(to&&to!=='pool'){scopeOf(to).forEach(h=>h.members=(h.members||[]).filter(x=>x!==pid));const h=holder(to);if(h){(h.members=h.members||[]).push(pid)}}
+  [...R.grp.list].forEach(g=>{if(g.leader&&!(g.members||[]).includes(g.leader))g.leader=''});
+  R.rooms.forEach(r=>{if(r.captain&&!(r.members||[]).includes(r.captain))r.captain=''});
+  save();render()}
+function addSel(to,cands){return `<select data-act="assign" data-to="${to}" style="width:100%;margin-top:4px;font-size:13px"><option value="">+ 참석인원에서 추가</option>${cands.slice().sort(byName).map(p=>`<option value="${p.id}">${esc(p.name)}${p.gender?' ('+p.gender+')':''}${p.org?' · '+esc(p.org):''}</option>`).join('')}</select>`}
+function poolHTML(cands,label){return `<div class="pool" data-drop="pool"><div class="row" style="margin-bottom:4px"><b class="j">🙋 ${esc(label)} (${cands.length})</b><span class="hint">이름을 끌어다 놓거나, 각 칸의 ‘+ 추가’로 넣어요</span><input id="poolQ" placeholder="이름 찾기" style="margin-left:auto;width:120px" value="${esc(SUB.poolQ||'')}"></div>${cands.length?cands.slice().sort(byName).map(p=>CHIP(p.id,'pool')).join(''):'<span class="hint">모두 배정했어요 👏</span>'}</div>`}
+
+/* ============ 메뉴 ============ */
+const TABS=[['staff','👥 스탭'],['praise','🎸 찬양팀'],['minutes','📝 회의록'],['sched','📅 일정'],['theme','💡 주제정하기'],['venue','🏕️ 장소탐색'],['speaker','🎤 강사탐색'],['program','🎲 프로그램'],['tt','⏰ 시간표'],['confirm','✅ 확정사항'],['sup','📦 준비물'],['chk','☑️ 체크리스트'],['files','📁 자료실'],['acc','💰 회계'],['people','🙋 참석인원'],['cars','🚌 차량배정'],['grp','🧩 조배정'],['rooms','🛏️ 방배정']];
+
+function render(){
+  const ae=document.activeElement,key=ae&&(ae.dataset&&ae.dataset.o!=null?'o:'+ae.dataset.o+'|'+ae.dataset.k:ae.id?'#'+ae.id:null),selS=ae&&ae.selectionStart,keep={};
+  $$('[data-keep]').forEach(e=>keep[e.dataset.keep]=[e.scrollLeft,e.scrollTop]);
+  const app=$('#app');
+  if(!R){app.innerHTML=vHome();return}
+  const dd=R.start?diffD(todayStr(),R.start):null;
+  const V={staff:vStaff,praise:vPraise,minutes:vMinutes,sched:vSched,theme:vTheme,venue:vVenue,speaker:vSpeaker,program:vProgram,tt:vTT,confirm:vConfirm,sup:vSup,chk:vChk,files:vFiles,acc:vAcc,people:vPeople,cars:vCars,grp:vGrp,rooms:vRooms}[TAB]||vStaff;
+  app.innerHTML=`<div class="head no-print"><a class="btn" href="./">☰ 수련회 목록</a><h1 class="j">${esc(R.name)}</h1>${dd!=null?`<span class="dday">${dd>0?'D-'+dd:dd===0?'D-DAY':dd>=-(+R.nights)?'수련회 중':'끝났어요'}</span>`:''}<span class="hint">${esc(campRange()||'날짜 미정')}</span><button class="sm" data-act="campSet">⚙️ 설정·백업</button><span class="sync" id="sync">✔ 이 기기에 저장됨</span></div>
+  <nav class="tabs">${TABS.map(([k,l])=>`<button data-act="tab" data-v="${k}" class="${k===TAB?'on':''}">${l}</button>`).join('')}</nav>
+  <div id="view">${V()}</div>`;
+  for(const k in keep){const e=$(`[data-keep="${k}"]`);if(e){e.scrollLeft=keep[k][0];e.scrollTop=keep[k][1]}}
+  if(key){let el=null;if(key[0]==='#')el=document.getElementById(key.slice(1));else{const[o,k]=key.slice(2).split('|');el=$$('[data-o]').find(e=>e.dataset.o===o&&e.dataset.k===k)}
+    if(el&&el!==document.activeElement){el.focus({preventScroll:true});try{if(selS!=null&&el.setSelectionRange)el.setSelectionRange(selS,selS)}catch(_){}}}
+  afterRender()}
+let rrT;function rr(){clearTimeout(rrT);rrT=setTimeout(render,0)}
+
+function afterRender(){
+  if(TAB==='minutes')updPrev();
+  if(TAB==='files'||TAB==='acc')$$('img[data-fid]').forEach(async im=>{try{const f=await idb.get('files',im.dataset.fid);if(f)im.src=URL.createObjectURL(f.blob||f)}catch(e){}});
+  if(TAB==='rooms')bindRooms();
+  if(TAB==='people'){const q=$('#pq');if(q)filterPeople(q.value)}
+  const pq=$('#poolQ');if(pq)filterPool(pq.value);
+}
+
+/* ---------- 수련회 목록 ---------- */
+let CAMPS=[];
+function vHome(){return `<div class="head"><h1 class="j">⛺ 수련회 준비 패키지</h1></div>
+ <div class="card"><h2>새 수련회 만들기</h2><div class="f2">
+  <label class="fld">수련회 이름<input id="nName" placeholder="예) 2027 청년부 겨울수련회"></label>
+  <label class="fld">시작일<input id="nStart" type="date"></label>
+  <label class="fld">몇 박<select id="nNights">${[0,1,2,3,4,5].map(n=>`<option value="${n}"${n===2?' selected':''}>${n}박 ${n+1}일</option>`).join('')}</select></label>
+ </div><div class="row" style="margin-top:10px"><button class="pri big" data-act="newCamp">⛺ 만들기</button><button data-act="bakIn">📂 백업 파일 불러오기</button></div>
+ <p class="hint">스탭·찬양팀·회의록·일정(간트차트)·주제·장소 비교·강사·프로그램·시간표·확정사항·준비물·체크리스트·자료실·회계·참석인원·차량·조·방 배정을 수련회마다 따로 관리해요. 기록은 이 기기의 브라우저에 저장돼요.</p></div>
+ <div class="card"><h2>📒 나의 수련회 (${CAMPS.length})</h2>${CAMPS.length?`<div class="camps">${CAMPS.sort((a,b)=>(b.updated||0)-(a.updated||0)).map(c=>{const dd=c.start?diffD(todayStr(),c.start):null;return `<div class="camp" data-act="openCamp" data-v="${c.id}"><div class="n">${esc(c.name)}</div><div class="hint">${c.start?esc(c.start.replace(/-/g,'.'))+` · ${c.nights}박 ${+c.nights+1}일`:'날짜 미정'}${dd!=null&&dd>=0?` · <b style="color:var(--accent)">D-${dd}</b>`:''}</div><div class="hint">참석 ${(c.people||[]).length}명 · 준비인원 ${(c.people||[]).filter(p=>p.prep).length}명</div></div>`}).join('')}</div>`:'<div class="empty">아직 만든 수련회가 없어요. 위에서 만들어 보세요 ⛺</div>'}</div>`}
+
+/* ---------- 스탭 (준비인원) ---------- */
+function vStaff(){
+  const L=prepList(),mins=L.filter(p=>p.prep==='min'),st=L.filter(p=>p.prep==='staff');
+  const tbl=(arr,type)=>arr.length?`<div class="hs"><table class="t"><tr><th>이름</th><th>직책</th><th style="min-width:220px">맡은 역할</th><th>연락처</th><th>소속</th><th></th></tr>${arr.sort((a,b)=>{const r=R.cfg[type==='min'?'minRoles':'staffRoles'];return (r.indexOf(a.role)-r.indexOf(b.role))||byName(a,b)}).map(p=>`<tr><td><b>${esc(p.name)}</b></td><td>${sel('people#'+p.id,'role',R.cfg[type==='min'?'minRoles':'staffRoles'],{blank:'—',st:'min-width:90px'})}</td><td>${inp('people#'+p.id,'duty',{ph:'예) 프로그램 총괄, 간식, 사진'})}</td><td>${esc(p.phone||'')}</td><td>${esc(p.org||'')}</td><td><button class="sm" data-act="unprep" data-v="${p.id}" title="준비인원에서 빼기 (참석인원에는 남아요)">해제</button></td></tr>`).join('')}</table></div>`:'<div class="empty">아직 없어요</div>';
+  const others=R.people.filter(p=>!p.prep);
+  return `<div class="card"><div class="row"><h2 style="margin:0">👥 스탭 (준비인원)</h2><span class="sp"></span><span class="hint">[참석인원]에서 사역자·준비인원으로 지정한 사람만 여기에 나와요</span></div>
+  <div class="row" style="margin:10px 0"><select id="mkPrepP"><option value="">참석인원에서 고르기</option>${others.sort(byName).map(p=>`<option value="${p.id}">${esc(p.name)}${p.org?' · '+esc(p.org):''}</option>`).join('')}</select>
+   <select id="mkPrepT"><option value="staff">준비인원으로</option><option value="min">사역자로</option></select><button class="pri" data-act="mkPrep">지정</button>
+   <button data-act="tab" data-v="people">🙋 참석인원 먼저 등록하기</button></div>
+  <h3>⛪ 사역자 (${mins.length})</h3>${tbl(mins,'min')}
+  <h3>🛠️ 준비인원 (${st.length})</h3>${tbl(st,'staff')}</div>
+  <div class="card"><h2>⚙️ 직책명 설정</h2><p class="hint">직책 이름을 눌러 바꾸고, ×로 빼고, ‹로 순서를 바꿔요.</p>
+   <h3>사역자 직책</h3>${LE('cfg.minRoles')}<h3>준비인원 직책</h3>${LE('cfg.staffRoles')}</div>
+  ${L.length?`<div class="card"><h2>📋 역할 분배 한눈에</h2>${L.filter(p=>p.duty).length?L.filter(p=>p.duty).map(p=>`<div>• <b>${esc(p.name)}</b> <span class="badge">${esc(roleOf(p))}</span> ${esc(p.duty)}</div>`).join(''):'<div class="hint">맡은 역할을 적으면 여기에 모여요</div>'}<div class="row" style="margin-top:8px"><button class="sm" data-act="copyStaff">📋 카톡용 복사</button></div></div>`:''}`}
+
+/* ---------- 찬양팀 ---------- */
+function vPraise(){
+  const L=R.people.filter(p=>p.praise).sort(byName),parts=R.cfg.parts;
+  return `<div class="card"><div class="row"><h2 style="margin:0">🎸 찬양팀 (${L.length})</h2><span class="sp"></span><span class="hint">[참석인원]에 먼저 등록하고 찬양팀으로 지정하면 여기에 나와요</span></div>
+  <div class="row" style="margin:10px 0"><select id="mkPr"><option value="">참석인원에서 고르기</option>${R.people.filter(p=>!p.praise).sort(byName).map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select><button class="pri" data-act="mkPraise">찬양팀으로 지정</button></div>
+  ${L.length?`<div class="hs"><table class="t"><tr><th>이름</th><th>파트 (눌러서 고르기, 여러 개 가능)</th><th>메모</th><th></th></tr>${L.map(p=>`<tr><td><b>${esc(p.name)}</b></td><td>${parts.map(x=>`<span class="chip tog ${(p.parts||[]).includes(x)?'on':''}" data-act="togArr" data-o="people#${p.id}" data-k="parts" data-v="${esc(x)}">${esc(x)}</span>`).join('')}</td><td>${inp('people#'+p.id,'pmemo',{ph:'예) 1일차만 가능'})}</td><td><button class="sm" data-act="unpraise" data-v="${p.id}">해제</button></td></tr>`).join('')}</table></div>`:'<div class="empty">찬양팀으로 지정된 사람이 없어요</div>'}</div>
+  <div class="card"><h2>🎼 파트별 보기</h2>${parts.map(x=>{const n=L.filter(p=>(p.parts||[]).includes(x));return `<div style="margin:3px 0"><span class="badge" style="min-width:90px;display:inline-block">${esc(x)}</span> ${n.length?n.map(p=>esc(p.name)).join(', '):'<span class="hint">비어 있어요</span>'}</div>`}).join('')}
+  <h3>⚙️ 파트 설정</h3>${LE('cfg.parts','+ 파트 추가 (예: 퍼커션)')}</div>`}
+
+/* ---------- 회의록 ---------- */
+const MK_RE=/^(\d+\.|\(\d+\)|\d+\)|[-•·])\s*/;
+function outline(text){const cnt=[0,0,0,0,0,0,0,0];return String(text||'').split('\n').map(raw=>{if(!raw.trim())return{lv:-1};const ind=raw.match(/^[\t ]*/)[0].replace(/\t/g,'  ').length;const lv=Math.min(7,ind>>1);cnt[lv]++;for(let j=lv+1;j<8;j++)cnt[j]=0;const n=cnt[lv];return{lv,mk:lv===0?n+'.':lv===1?'('+n+')':lv===2?n+')':'-',t:raw.trim().replace(MK_RE,'')}})}
+function minText(m){const L=outline(m.body);return `📝 ${m.title||'회의록'}\n일시: ${m.date||''}${m.place?'\n장소: '+m.place:''}\n참석: ${[...(m.att||[]).map(pn),m.etc].filter(Boolean).join(', ')}\n\n`+L.map(x=>x.lv<0?'':' '.repeat(x.lv)+x.mk+' '+x.t).join('\n')}
+function updPrev(){const b=$('#mbody'),p=$('#mprev');if(!b||!p)return;const L=outline(b.value);p.innerHTML=L.length&&b.value.trim()?L.map(x=>x.lv<0?'<div>&nbsp;</div>':`<div class="l" style="padding-left:${x.lv*1.2}em"><span class="mk">${esc(x.mk)}</span><span>${esc(x.t)}</span></div>`).join(''):'<span class="hint">여기에 정리된 모양이 보여요</span>'}
+function vMinutes(){
+  if(SUB.min){const m=R.minutes.find(x=>x.id===SUB.min);if(m){const s='minutes#'+m.id,pl=prepList();
+    return `<div class="card"><div class="row"><button data-act="minBack">← 회의록 목록</button><span class="sp"></span><button data-act="minCopy">📋 카톡용 복사</button><button data-act="minPrint">🖨️ 인쇄·PDF</button><button class="danger" data-act="minDel">지우기</button></div>
+    <div class="f2" style="margin-top:10px"><label class="fld">회의 날짜${inp(s,'date',{type:'date'})}</label><label class="fld" style="grid-column:span 2">회의 제목${inp(s,'title',{ph:'예) 3차 준비 회의'})}</label><label class="fld">장소${inp(s,'place',{ph:'예) 교육관 2층'})}</label></div>
+    <h3>🙋 참석 (스탭에서 고르기)</h3>${pl.length?pl.sort(byName).map(p=>`<span class="chip tog ${(m.att||[]).includes(p.id)?'on':''}" data-act="togArr" data-o="${s}" data-k="att" data-v="${p.id}">${esc(p.name)}</span>`).join(''):'<span class="hint">[스탭]에 준비인원을 먼저 지정해 주세요.</span>'}
+    <div class="row" style="margin-top:4px"><span class="hint">그 밖의 참석자</span>${inp(s,'etc',{ph:'예) 담임목사님',st:'flex:1'})}</div>
+    <h3>📋 회의 내용</h3><p class="hint" style="margin:0 0 4px">한 줄에 한 항목. <b>Tab</b>(또는 → 버튼)을 누르면 한 칸 들어가 아래 항목이 돼요: <b>1.</b> → <b>(1)</b> → <b>1)</b> → <b>-</b>. 번호는 저절로 매겨져요.</p>
+    <div class="row no-print" style="margin-bottom:4px"><button class="sm" data-act="ind" data-v="1">→ 들여쓰기</button><button class="sm" data-act="ind" data-v="-1">← 내어쓰기</button></div>
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))"><textarea id="mbody" data-o="${s}" data-k="body" placeholder="예)\n수련회 장소\n  후보 3곳 비교\n    가격\n      1인당 6만원 이하\n일정\n  다음 회의 12/3">${esc(m.body||'')}</textarea><div class="mprev" id="mprev"></div></div></div>`}SUB.min=null}
+  const q=(SUB.mq||'').trim(),L=R.minutes.filter(m=>!q||(m.title+' '+m.body+' '+m.date).includes(q)).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+  return `<div class="card"><div class="row"><h2 style="margin:0">📝 회의록 (${R.minutes.length})</h2><span class="sp"></span><input id="mq" placeholder="🔍 찾기" value="${esc(SUB.mq||'')}" style="width:150px"><button class="pri" data-act="minNew">+ 새 회의록</button></div>
+  <div style="margin-top:10px">${L.length?L.map(m=>`<div class="box" style="margin-bottom:8px;cursor:pointer" data-act="minOpen" data-v="${m.id}"><div class="row"><b class="j" style="font-size:17px">${esc(m.title||'(제목 없음)')}</b><span class="badge">${esc(m.date||'')}</span><span class="hint">참석 ${(m.att||[]).length+(m.etc?1:0)}${m.etc?'+':''}명</span></div><div class="hint" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(outline(m.body).filter(x=>x.lv>=0).slice(0,3).map(x=>x.mk+' '+x.t).join('  '))}</div></div>`).join(''):'<div class="empty">회의록이 없어요. ‘+ 새 회의록’으로 시작해요</div>'}</div></div>`}
+
+/* ---------- 일정 (간트차트) ---------- */
+function vSched(){
+  const T=R.sched,td=todayStr(),rs=R.start,re=campEnd();
+  let a=[td,...T.map(t=>t.start).filter(Boolean)].sort()[0];
+  let b=[rs||addD(td,30),re,...T.map(t=>t.end||t.start).filter(Boolean)].filter(Boolean).sort().pop();
+  a=addD(a,-2);b=addD(b,2);let n=Math.min(400,diffD(a,b)+1);const w=n>150?10:n>70?16:24,LW=170,W=n*w;
+  let hd='',mo='';for(let i=0;i<n;i++){const d=addD(a,i),dw=new Date(toT(d)).getUTCDay(),dd=+d.slice(8);if(d.slice(0,7)!==mo){mo=d.slice(0,7);hd+=`<span class="gm" style="left:${i*w}px;top:0">${+d.slice(5,7)}월</span>`}if(w>=16||dw===1)hd+=`<span class="gd ${dw===0||dw===6?'we':''}" style="left:${i*w}px;width:${w}px;top:18px">${dd}</span>`}
+  const over=()=>{let s='';const ti=diffD(a,td);if(ti>=0&&ti<n)s+=`<div class="gtoday" style="left:${ti*w+w/2}px" title="오늘"></div>`;if(rs){const ci=diffD(a,rs);s+=`<div class="gcamp" style="left:${ci*w}px;width:${(diffD(rs,re)+1)*w}px" title="수련회"></div>`}return s};
+  const bg=`background-image:linear-gradient(to right,#f1e9da 1px,transparent 1px);background-size:${w}px 100%`;
+  const rows=T.map((t,i)=>{let bar='';if(t.start){const s=Math.max(0,diffD(a,t.start)),e=Math.min(n-1,diffD(a,t.end&&t.end>=t.start?t.end:t.start));const who=(t.who||[]).map(pn).join(', ');bar=`<div class="gbar ${t.done?'done':''}" style="left:${s*w}px;width:${Math.max(w,(e-s+1)*w)}px;background:${PAL[i%PAL.length]}" title="${esc(t.name+' '+fmtD(t.start)+'~'+fmtD(t.end||t.start)+(who?' · '+who:''))}">${t.done?'✔ ':''}${esc(t.name)}${who?' · '+esc(who):''}</div>`}
+    return `<div class="grow"><div class="glab" title="${esc(t.name)}">${t.done?'✔ ':''}${esc(t.name||'(이름 없음)')}</div><div class="gtrack" style="width:${W}px;${bg}">${over()}${bar}</div></div>`}).join('');
+  const cands=prepList().length?prepList():R.people;
+  return `<div class="card"><div class="row"><h2 style="margin:0">📅 준비 일정</h2><span class="hint">${rs?`수련회 ${esc(campRange())} · <b style="color:var(--accent)">${diffD(td,rs)>=0?'D-'+diffD(td,rs):'지남'}</b>`:'⚙️ 설정에서 수련회 날짜를 정하면 차트에 노란 띠로 보여요'}</span><span class="sp"></span><button data-act="schedTpl">✨ 기본 일정 넣기</button><button class="pri" data-act="schedAdd">+ 할 일</button></div>
+  <div class="gantt hs" data-keep="gantt" style="margin-top:10px"><div class="gin" style="width:${LW+W}px"><div class="grow" style="min-height:38px"><div class="glab"><b>할 일</b></div><div class="gtrack ghd" style="width:${W}px">${hd}</div></div>${rows||`<div class="grow"><div class="glab hint">할 일을 추가해요</div><div class="gtrack" style="width:${W}px;${bg}">${over()}</div></div>`}</div></div>
+  <p class="hint">빨간 선 = 오늘, 노란 띠 = 수련회 기간</p></div>
+  <div class="card"><h2>✏️ 할 일 목록</h2>${T.length?`<div class="hs"><table class="t"><tr><th>#</th><th style="min-width:160px">할 일</th><th>시작</th><th>끝</th><th style="min-width:220px">누가 (담당)</th><th>완료</th><th></th></tr>${T.map((t,i)=>`<tr><td><span style="display:inline-block;width:12px;height:12px;border-radius:4px;background:${PAL[i%PAL.length]}"></span></td><td>${inp('sched#'+t.id,'name',{rr:1,ph:'예) 장소 섭외'})}</td><td>${inp('sched#'+t.id,'start',{type:'date',rr:1})}</td><td>${inp('sched#'+t.id,'end',{type:'date',rr:1})}</td><td>${WHO('sched#'+t.id,'who',cands,'+ 담당')}</td><td style="text-align:center"><input type="checkbox" data-o="sched#${t.id}" data-k="done" data-rr ${t.done?'checked':''}></td><td><button class="sm" data-act="mvUp" data-c="sched" data-v="${t.id}" title="위로">↑</button><button class="x" data-act="del" data-c="sched" data-v="${t.id}">🗑</button></td></tr>`).join('')}</table></div>`:'<div class="empty">‘✨ 기본 일정 넣기’로 수련회 날짜에 맞춘 준비 일정을 한 번에 넣을 수 있어요</div>'}</div>`}
+
+/* ---------- 주제정하기 ---------- */
+function vTheme(){const t=R.theme,names=R.people.map(p=>p.name);
+  return `<datalist id="pnames">${names.map(n=>`<option value="${esc(n)}">`).join('')}</datalist>
+  <div class="card" style="border-color:var(--accent)"><h2>🎯 수련회 주제</h2><div class="f2"><label class="fld" style="grid-column:1/-1">주제${inp('theme','title',{ph:'예) 다시, 처음 사랑으로'})}</label><label class="fld">주제말씀 (본문)${inp('theme','verse',{ph:'예) 요한계시록 2:4-5'})}</label><label class="fld" style="grid-column:span 2">말씀 내용${inp('theme','verseText',{ph:'말씀을 적어 두세요'})}</label></div></div>
+  <div class="card"><div class="row"><h2 style="margin:0">💗 수련회에 대한 마음 나누기</h2><span class="sp"></span><button class="pri" data-act="add" data-c="theme.hearts">+ 마음 적기</button></div><p class="hint">이번 수련회를 위해 기도하며 받은 마음, 바라는 것, 우리 공동체에 필요한 것을 나눠요.</p>
+  ${t.hearts.length?t.hearts.map(h=>`<div class="box" style="margin-bottom:8px"><div class="row">${inp('theme.hearts#'+h.id,'who',{ph:'누구',list:'pnames',st:'width:130px'})}<span class="sp"></span><button class="x" data-act="del" data-c="theme.hearts" data-v="${h.id}">🗑</button></div>${ta('theme.hearts#'+h.id,'text','받은 마음',3)}</div>`).join(''):'<div class="empty">아직 나눈 마음이 없어요</div>'}</div>
+  <div class="card"><div class="row"><h2 style="margin:0">📖 관련 말씀 찾아보기</h2><span class="sp"></span><a class="btn" href="../bible/" target="_blank">성경 읽기에서 찾기 ↗</a><button class="pri" data-act="add" data-c="theme.verses">+ 말씀 추가</button></div>
+  ${t.verses.length?`<div class="hs"><table class="t"><tr><th style="width:150px">본문</th><th>말씀</th><th style="width:200px">왜 이 말씀?</th><th></th></tr>${t.verses.map(v=>`<tr><td>${inp('theme.verses#'+v.id,'ref',{ph:'예) 시 23:1'})}</td><td>${inp('theme.verses#'+v.id,'text')}</td><td>${inp('theme.verses#'+v.id,'note')}</td><td><button class="sm" data-act="useVerse" data-v="${v.id}" title="주제말씀으로">⭐</button><button class="x" data-act="del" data-c="theme.verses" data-v="${v.id}">🗑</button></td></tr>`).join('')}</table></div><p class="hint">⭐를 누르면 주제말씀으로 정해져요.</p>`:'<div class="empty">관련 말씀을 모아 보세요</div>'}</div>
+  <div class="card"><div class="row"><h2 style="margin:0">🗳️ 주제 후보</h2><span class="sp"></span><button class="pri" data-act="add" data-c="theme.cands">+ 후보</button></div>
+  ${t.cands.length?t.cands.slice().map(c=>`<div class="row" style="margin:4px 0">${inp('theme.cands#'+c.id,'title',{ph:'주제 후보',st:'flex:2'})}${inp('theme.cands#'+c.id,'verse',{ph:'주제말씀',st:'flex:1'})}<button class="sm" data-act="vote" data-v="${c.id}">👍 ${c.votes||0}</button><button class="sm ok" data-act="useCand" data-v="${c.id}">이걸로 정하기</button><button class="x" data-act="del" data-c="theme.cands" data-v="${c.id}">🗑</button></div>`).join(''):'<div class="empty">주제 후보를 적고 👍로 투표해요</div>'}</div>`}
+
+/* ---------- 장소탐색 (ICE) ---------- */
+function densInfo(d){if(d==null||!isFinite(d))return['-',null,''];if(d<=1.2)return['매우 쾌적',5,'b-ok'];if(d<=1.5)return['추천',5,'b-ok'];if(d<=2)return['적정',4,'b-mid'];if(d<=2.5)return['가능하지만 불편',2,'b-mid'];if(d<=3)return['비추천',1,'b-no'];return['너무 좁아요',0,'b-no']}
+function vCalc(v){const N=+R.venue.expected||0,varc=((+v.lodge||0)+(+v.meal||0))*N,tot=(+v.fixed||0)+varc;const dens=v.area>0&&N?N/v.area:null;return{N,varc,tot,per:N?tot/N:0,dens}}
+function critList(){return[{id:'fixed',name:'고정비',auto:1},{id:'var',name:'변동비',auto:1},{id:'cap',name:'수용(평당 인원)',auto:1},{id:'loc',name:'위치(이동시간)',auto:1},...R.venue.crit]}
+function scores(){const L=R.venue.list,C=critList();const rel=(vals,v)=>{const xs=vals.filter(x=>x!=null&&x!==''&&!isNaN(x)).map(Number);if(v==null||v===''||isNaN(v)||!xs.length)return null;const mx=Math.max(...xs),mn=Math.min(...xs);return mx===mn?5:Math.round((1+4*(mx-v)/(mx-mn))*10)/10};
+  const fx=L.map(v=>v.fixed),vr=L.map(v=>(v.lodge!=null||v.meal!=null)?vCalc(v).varc:null),lc=L.map(v=>v.travel);
+  const out=L.map((v,i)=>{const c=vCalc(v);const auto={fixed:rel(fx,v.fixed),var:rel(vr,vr[i]),cap:(()=>{let s=densInfo(c.dens)[1];if(s!=null&&v.cap&&c.N&&+v.cap<c.N)s=Math.min(s,1);return s})(),loc:rel(lc,v.travel)};
+    const sc={};C.forEach(k=>{const m=(v.sc||{})[k.id];sc[k.id]={auto:auto[k.id]??null,v:(m!==undefined&&m!==null&&m!=='')?+m:(auto[k.id]??null),manual:m!==undefined&&m!==null&&m!==''}});
+    const wsum=C.reduce((s,k)=>s+(+R.venue.w[k.id]||0),0)||1;
+    const ice=C.reduce((s,k)=>s+(sc[k.id].v||0),0),plus=C.reduce((s,k)=>s+(sc[k.id].v||0)*(+R.venue.w[k.id]||0),0)/wsum;return{v,sc,ice,plus,c}});
+  const rank=(key)=>{const s=out.map(o=>o[key]).sort((a,b)=>b-a);out.forEach(o=>o[key+'R']=s.indexOf(o[key])+1)};rank('ice');rank('plus');return out}
+function vVenue(){const V=R.venue,C=critList(),S=scores(),wsum=C.reduce((s,k)=>s+(+V.w[k.id]||0),0);
+  const card=v=>{const c=vCalc(v),d=densInfo(c.dens),s='venue.list#'+v.id;return `<div class="box"><div class="bh">${inp(s,'name',{ph:'장소 이름',rr:1,st:'flex:1;font-weight:600'})}<button class="x" data-act="del" data-c="venue.list" data-v="${v.id}">🗑</button></div>
+   <div class="f2" style="grid-template-columns:1fr 1fr">
+    <label class="fld">고정비 (대여비, 원)${inp(s,'fixed',{n:1,rr:1,ph:'예배당 등 대여비'})}</label>
+    <label class="fld">이동시간 (분)${inp(s,'travel',{n:1,rr:1,ph:'교회→장소'})}</label>
+    <label class="fld">숙소비 (1인, 원)${inp(s,'lodge',{n:1,rr:1})}</label>
+    <label class="fld">식대 (1인 전체, 원)${inp(s,'meal',{n:1,rr:1})}</label>
+    <label class="fld">숙소 수용인원 (명)${inp(s,'cap',{n:1,rr:1})}</label>
+    <label class="fld">예배당 면적 (평)${inp(s,'area',{n:1,rr:1})}</label></div>
+   <div style="margin-top:6px;font-size:14px">변동비 <b>${won(c.varc)}</b>원 <span class="hint">(숙소비+식대)×${c.N}명</span><br>총비용 <b>${won(c.tot)}</b>원 · 1인당 <b>${won(c.per)}</b>원<br>
+   예배당 평당 <b>${c.dens==null?'-':c.dens.toFixed(2)}</b>명 ${c.dens!=null?`<span class="dens badge ${d[2]}">${d[0]}</span>`:''}${v.cap&&c.N&&+v.cap<c.N?` <span class="badge b-no">숙소 ${c.N-v.cap}명 부족</span>`:''}</div>
+   <label class="fld" style="margin-top:6px">위치·주소${inp(s,'addr',{ph:'주소 또는 지역'})}</label>
+   <label class="fld">링크·연락처${inp(s,'link',{ph:'홈페이지, 전화번호'})}</label>
+   ${V.crit.length?`<div style="margin-top:6px">${V.crit.map(k=>{const x=+((v.sc||{})[k.id]||0);return `<div class="row" style="gap:4px"><span style="min-width:110px;font-size:13px">${esc(k.name)}</span><span class="stars">${[1,2,3,4,5].map(n=>`<button data-act="star" data-v="${v.id}" data-c="${k.id}" data-n="${n}" class="${n<=x?'on':''}">★</button>`).join('')}</span></div>`}).join('')}</div>`:''}
+   <label class="fld" style="margin-top:4px">메모${inp(s,'memo')}</label></div>`};
+  return `<div class="card"><div class="row"><h2 style="margin:0">🏕️ 장소탐색</h2><span class="sp"></span><a class="btn pri" href="../retreat/" target="_blank">🔎 수련회 장소찾기 ↗</a></div>
+  <div class="row" style="margin-top:8px"><b class="j" style="font-size:17px">예상 참석인원</b>${inp('venue','expected',{n:1,rr:1,st:'width:100px',ph:'명'})}<span>명</span><span class="hint">변동비와 평당 인원 계산에 쓰여요 · 참석인원에 ${R.people.length}명 등록됨</span></div>
+  <p class="hint" style="margin:6px 0 0">평당 인원: 1~1.2 매우 쾌적 · 1.3~1.5 추천 · 1.5~2 적정 · 2~2.5 가능하지만 불편 · 2.5~3 비추천</p></div>
+  <div class="row" style="margin-bottom:8px"><button class="pri" data-act="add" data-c="venue.list">+ 장소 후보 추가</button></div>
+  ${V.list.length?`<div class="grid">${V.list.map(card).join('')}</div>`:'<div class="card"><div class="empty">장소 후보를 추가해 비교해 보세요</div></div>'}
+  <div class="card"><h2>⭐ 적합도 항목</h2><p class="hint">음향, 용도, 식사 질, 주차, 화장실 등 비교하고 싶은 항목을 하나씩 추가해요. 각 장소 카드에서 별점(1~5)을 매겨요.</p>
+   <div class="row">${V.crit.map(k=>`<span class="chip"><span data-act="critRen" data-v="${k.id}" style="cursor:pointer">${esc(k.name)}</span><button class="x" data-act="critDel" data-v="${k.id}">×</button></span>`).join('')}<input id="critNew" placeholder="+ 적합도 항목 추가 후 Enter" style="width:200px"></div></div>
+  ${V.list.length?`<div class="card"><h2>🏆 의사결정 (ICE / ICE+)</h2>
+   <p class="hint">점수는 1~5점. 고정비·변동비·이동시간은 장소끼리 비교해 싼/가까운 곳이 5점, 수용은 평당 인원으로 자동 계산돼요. 칸에 숫자를 직접 적으면 그 점수로 바뀌어요(지우면 자동). <b>ICE</b> = 항목 점수 합계 순위, <b>ICE+</b> = 가중치를 곱한 점수 순위.</p>
+   <div class="hs" data-keep="ice"><table class="t vrank"><tr><th>장소</th>${C.map(k=>`<th class="num">${esc(k.name)}<br><span style="font-weight:400">가중치 <input data-o="venue.w" data-k="${k.id}" data-t="n" type="number" data-rr value="${esc(V.w[k.id]??0)}" style="width:52px">%</span></th>`).join('')}<th class="num">ICE<br>합계</th><th class="num">ICE<br>순위</th><th class="num">ICE+<br>점수</th><th class="num">ICE+<br>순위</th></tr>
+   ${S.map(o=>`<tr><td><b>${esc(o.v.name||'(이름 없음)')}</b></td>${C.map(k=>{const x=o.sc[k.id];return `<td class="num"><input data-o="venue.list#${o.v.id}>sc" data-k="${k.id}" data-t="n" type="number" step="0.5" min="0" max="5" data-rr value="${x.manual?esc(x.v):''}" placeholder="${x.auto==null?'-':x.auto}" style="width:58px;${x.manual?'background:#fff6d8':''}"></td>`}).join('')}<td class="num">${o.ice.toFixed(1)}</td><td class="num ${o.iceR===1?'r1':''}">${o.iceR}위</td><td class="num">${o.plus.toFixed(2)}</td><td class="num ${o.plusR===1?'r1':''}">${o.plusR}위</td></tr>`).join('')}</table></div>
+   <div class="row" style="margin-top:6px"><span class="${wsum===100?'badge b-ok':'badge b-no'}">가중치 합계 ${wsum}%${wsum===100?' ✔':' (100%로 맞춰 주세요)'}</span><button class="sm" data-act="wEven">균등하게 나누기</button></div></div>`:''}`}
+
+/* ---------- 강사탐색 ---------- */
+function vSpeaker(){const L=R.speakers,cnt={};L.forEach(s=>cnt[s.status||'후보']=(cnt[s.status||'후보']||0)+1);
+  const cls=s=>s==='확정'||s==='수락'?'b-ok':s==='거절'?'b-no':s==='후보'?'':'b-mid';
+  return `<div class="card"><div class="row"><h2 style="margin:0">🎤 강사 섭외 현황</h2><span class="sp"></span>${SPK_ST.filter(s=>cnt[s]).map(s=>`<span class="badge ${cls(s)}">${s} ${cnt[s]}</span>`).join(' ')}<button class="pri" data-act="add" data-c="speakers">+ 강사 후보</button></div>
+  ${L.length?`<div class="hs" style="margin-top:10px"><table class="t"><tr><th>이름</th><th>맡을 순서</th><th>소속</th><th>연락처</th><th>주제·분야</th><th>사례비</th><th>상태</th><th>가능 일정</th><th style="min-width:160px">메모</th><th></th></tr>${L.map(s=>{const k='speakers#'+s.id;return `<tr><td>${inp(k,'name',{st:'min-width:80px'})}</td><td>${inp(k,'role',{ph:'예) 집회 설교, 특강',st:'min-width:110px'})}</td><td>${inp(k,'org')}</td><td>${inp(k,'phone',{st:'min-width:110px'})}</td><td>${inp(k,'topic')}</td><td>${inp(k,'fee',{n:1,st:'width:90px'})}</td><td>${sel(k,'status',SPK_ST,{rr:1})} </td><td>${inp(k,'avail',{st:'min-width:90px'})}</td><td>${inp(k,'memo')}</td><td><button class="x" data-act="del" data-c="speakers" data-v="${s.id}">🗑</button></td></tr>`}).join('')}</table></div>`:'<div class="empty" style="margin-top:10px">강사 후보를 추가해서 섭외 상황을 정리해요</div>'}</div>`}
+
+/* ---------- 프로그램 ---------- */
+function vProgram(){const cands=prepList().length?prepList():R.people;
+  return `<div class="card"><div class="row"><h2 style="margin:0">🎲 프로그램</h2><span class="sp"></span><button class="pri" data-act="add" data-c="programs">+ 프로그램</button></div><p class="hint">여기에 적은 프로그램 이름은 [시간표]에서 골라 쓸 수 있어요.</p></div>
+  ${R.programs.length?`<div class="grid">${R.programs.map(p=>{const k='programs#'+p.id;return `<div class="box"><div class="bh">${inp(k,'name',{ph:'프로그램 이름 (예: 레크리에이션)',st:'flex:1;font-weight:600'})}<button class="x" data-act="del" data-c="programs" data-v="${p.id}">🗑</button></div>
+   <div class="f2" style="grid-template-columns:1fr 1fr"><label class="fld">언제${inp(k,'when',{ph:'예) 1일차 저녁'})}</label><label class="fld">소요 시간${inp(k,'dur',{ph:'예) 90분'})}</label><label class="fld">장소${inp(k,'place')}</label><label class="fld">예산 (원)${inp(k,'budget',{n:1})}</label></div>
+   <div class="fld" style="margin-top:4px">담당${WHO(k,'who',cands,'+ 담당')}</div>
+   <label class="fld" style="margin-top:4px">내용·진행 순서${ta(k,'content','진행 방법, 순서',4)}</label>
+   <label class="fld">필요한 것${ta(k,'need','준비물, 음향, 인원 등',2)}</label></div>`}).join('')}</div>`:'<div class="card"><div class="empty">프로그램을 추가해 내용을 정리해요</div></div>'}`}
+
+/* ---------- 시간표 ---------- */
+function slots(){const toM=s=>{const[h,m]=String(s).split(':').map(Number);return h*60+(m||0)};let f=toM(R.tt.from),t=toM(R.tt.to);if(t<=f)t=f+60*18;const L=[];for(let m=f;m<t;m+=30)L.push(pad(Math.floor(m/60)%24)+':'+pad(m%60));return L}
+function vTT(){const days=(+R.nights||0)+1,S=slots(),C=R.tt.cells;
+  const head=Array.from({length:days},(_,d)=>`<th>${d+1}일차${R.start?' · '+fmtD(addD(R.start,d)):''}</th>`).join('');
+  const times=Array.from({length:S.length+1},(_,i)=>{const m=S[0].split(':').map(Number);const x=m[0]*60+m[1]+i*30;return pad(Math.floor(x/60)%24)+':'+pad(x%60)});
+  const body=S.map((s,i)=>`<tr><td class="tm ${s.endsWith(':00')?'h':''}">${s}~${times[i+1]}</td>${Array.from({length:days},(_,d)=>{const v=C[d+'-'+s]||'',pv=i?C[d+'-'+S[i-1]]||'':'';const cont=v&&v===pv;return `<td class="${cont?'cont':''}" style="${v?`background:hsl(${hue(v)},70%,90%)`:''}"><input data-o="tt.cells" data-k="${d}-${s}" data-rr list="progList" value="${esc(v)}"></td>`}).join('')}</tr>`).join('');
+  return `<datalist id="progList">${[...new Set([...R.programs.map(p=>p.name).filter(Boolean),'기상','아침 식사','점심 식사','저녁 식사','간식','자유시간','개회예배','집회','소그룹 나눔','레크리에이션','세면·정리','취침','폐회예배','이동','출발','도착','QT'])].map(n=>`<option value="${esc(n)}">`).join('')}</datalist>
+  <div class="card"><div class="row"><h2 style="margin:0">⏰ 시간표</h2><span class="sp"></span><button data-act="ttCopy">📋 텍스트로 복사</button><button data-act="print">🖨️ 인쇄</button></div>
+   <div class="row" style="margin-top:8px"><label class="fld">시작일${inp('.','start',{type:'date',rr:1})}</label><label class="fld">기간${sel('.','nights',[0,1,2,3,4,5].map(n=>[n,n+'박 '+(n+1)+'일']),{rr:1})}</label><label class="fld">하루 시작${inp('tt','from',{type:'time',rr:1})}</label><label class="fld">하루 끝${inp('tt','to',{type:'time',rr:1})}</label></div>
+   <p class="hint">30분 단위 칸에 일정을 적어요. 이어지는 칸에 같은 내용을 적으면 한 덩어리로 묶여 보여요. [프로그램]에 적은 이름도 골라 쓸 수 있어요.</p>
+   <div class="hs" data-keep="tt"><table class="tt"><tr><th>시간</th>${head}</tr>${body}</table></div></div>`}
+function ttText(){const days=(+R.nights||0)+1,S=slots(),C=R.tt.cells;let out=`⏰ ${R.name} 시간표\n`;for(let d=0;d<days;d++){out+=`\n[${d+1}일차${R.start?' '+fmtD(addD(R.start,d)):''}]\n`;let i=0;while(i<S.length){const v=C[d+'-'+S[i]];if(!v){i++;continue}let j=i;while(j+1<S.length&&C[d+'-'+S[j+1]]===v)j++;const e=S[j].split(':').map(Number),em=e[0]*60+e[1]+30;out+=`${S[i]}~${pad(Math.floor(em/60)%24)}:${pad(em%60)} ${v}\n`;i=j+1}}return out}
+
+/* ---------- 확정사항 ---------- */
+const CONF=[['sched','일정'],['place','장소'],['theme','주제'],['verse','주제말씀'],['song','주제찬양'],['preacher','집회설교자'],['speaker','강사'],['tt','시간표'],['praise','찬양팀'],['staff','스탭'],['snack','간식']];
+function confSrc(k){const okS=R.speakers.filter(s=>s.status==='확정'||s.status==='수락');
+  switch(k){case'sched':return campRange();case'place':{const S=scores().sort((a,b)=>a.plusR-b.plusR);return S[0]?S[0].v.name+(S[0].v.addr?' ('+S[0].v.addr+')':''):''}
+   case'theme':return R.theme.title||'';case'verse':return[R.theme.verse,R.theme.verseText].filter(Boolean).join(' — ');
+   case'preacher':return okS.filter(s=>/설교|집회/.test(s.role||'')).map(s=>s.name+(s.org?'('+s.org+')':'')).join(', ');
+   case'speaker':return okS.filter(s=>!/설교|집회/.test(s.role||'')).map(s=>s.name+(s.role?' - '+s.role:'')).join(', ');
+   case'tt':{const n=Object.values(R.tt.cells).filter(Boolean).length;return n?`[시간표] 메뉴 참고 (${n}칸 작성)`:''}
+   case'praise':return R.cfg.parts.map(x=>{const n=R.people.filter(p=>p.praise&&(p.parts||[]).includes(x));return n.length?x+': '+n.map(p=>p.name).join(', '):''}).filter(Boolean).join(' / ');
+   case'staff':return prepList().sort((a,b)=>(a.prep===b.prep?0:a.prep==='min'?-1:1)).map(p=>`${p.name}(${roleOf(p)}${p.duty?' · '+p.duty:''})`).join(', ');
+   case'snack':return R.programs.filter(p=>/간식/.test(p.name||'')).map(p=>p.content).filter(Boolean).join(' / ');default:return''}}
+function vConfirm(){const n=CONF.filter(([k])=>R.conf[k].ok).length;
+  return `<div class="card"><div class="row"><h2 style="margin:0">✅ 확정사항</h2><span class="badge ${n===CONF.length?'b-ok':'b-mid'}">${n}/${CONF.length} 확정</span><span class="sp"></span><button data-act="confAll">⤵ 빈 칸 모두 불러오기</button><button class="pri" data-act="confCopy">📋 카톡용 복사</button></div>
+  <p class="hint">‘⤵ 불러오기’를 누르면 다른 메뉴에 적어 둔 내용을 가져와요. 확정되면 ✔에 체크해요.</p>
+  <div class="kv" style="margin-top:8px">${CONF.map(([k,l])=>{const src=confSrc(k);return `<b>${l}</b><div>${ta('conf.'+k,'v',src?'불러올 내용: '+src:'직접 적어요',/praise|staff|tt/.test(k)?2:1)}</div><div class="row" style="gap:4px;padding-top:3px"><button class="sm" data-act="confFill" data-v="${k}" ${src?'':'disabled'} title="다른 메뉴에서 불러오기">⤵</button><label class="chip tog ${R.conf[k].ok?'on':''}"><input type="checkbox" data-o="conf.${k}" data-k="ok" data-rr ${R.conf[k].ok?'checked':''} style="display:none">✔ 확정</label></div>`}).join('')}</div></div>`}
+
+/* ---------- 준비물 ---------- */
+function vSup(){const L=R.sup,f=SUB.supF||'all',td=todayStr(),cands=prepList().length?prepList():R.people;
+  const fin=s=>s.method&&(+s.stage||0)>=METHODS[s.method].length-1;
+  const done=L.filter(fin).length;
+  const rows=L.filter(s=>f==='all'||(f==='todo'?!fin(s):f==='done'?fin(s):s.method===f));
+  return `<div class="card"><div class="row"><h2 style="margin:0">📦 준비물</h2><span class="badge ${done===L.length&&L.length?'b-ok':'b-mid'}">준비완료 ${done}/${L.length}</span><span class="sp"></span>
+   <a class="btn" href="../image/" target="_blank">🏷️ 명찰 시안 만들기 ↗</a><a class="btn" href="../image/" target="_blank">🎌 현수막 시안 만들기 ↗</a><button class="pri" data-act="supAdd">+ 준비물</button></div>
+   <div class="prog" style="margin:8px 0"><i style="width:${L.length?done/L.length*100:0}%"></i></div>
+   <div class="row">${[['all','전체'],['todo','준비 중'],['done','준비완료'],...Object.keys(METHODS).map(m=>[m,m])].map(([k,l])=>`<span class="chip tog ${f===k?'on':''}" data-act="supF" data-v="${k}">${l}</span>`).join('')}</div>
+  ${rows.length?`<div class="hs" style="margin-top:8px"><table class="t"><tr><th style="min-width:130px">준비물</th><th>수량</th><th>준비방법</th><th style="min-width:250px">준비도 (단계를 눌러 체크)</th><th>언제까지</th><th>담당</th><th style="min-width:120px">둔 곳</th><th>메모</th><th></th></tr>
+   ${rows.map(s=>{const k='sup#'+s.id,st=s.method?METHODS[s.method]:[],cur=+s.stage||0,late=s.due&&s.due<td&&!fin(s),dd=s.due?diffD(td,s.due):null;
+    return `<tr class="${late?'late':''}"><td>${inp(k,'name',{ph:'예) 명찰',rr:1})}${/명찰/.test(s.name||'')?'<a class="hint" href="../image/" target="_blank">🏷️ 명찰 시안 ↗</a>':''}${/현수막/.test(s.name||'')?'<a class="hint" href="../image/" target="_blank">🎌 현수막 시안 ↗</a>':''}</td><td>${inp(k,'qty',{st:'width:60px'})}</td><td>${sel(k,'method',Object.keys(METHODS),{rr:1,blank:'— 선택 —'})}</td>
+    <td>${st.length?`<div class="steps">${st.map((x,i)=>`<button data-act="stage" data-v="${s.id}" data-n="${i}" class="${i<cur?'past':i===cur?'cur':''} ${i===st.length-1?'fin':''}">${i<=cur&&i?'✔ ':''}${x}</button>`).join('')}</div>`:'<span class="hint">준비방법을 고르세요</span>'}</td>
+    <td>${inp(k,'due',{type:'date',rr:1})}${dd!=null&&!fin(s)?`<div class="hint" style="${late?'color:#b5361f':''}">${dd>0?'D-'+dd:dd===0?'오늘까지':Math.abs(dd)+'일 지남'}</div>`:''}</td>
+    <td>${sel(k,'owner',peopleOpts(cands,'—'),{st:'min-width:90px'})}</td><td>${fin(s)?inp(k,'place',{ph:'예) 교육관 창고'}):'<span class="hint">준비완료 후 적어요</span>'}</td><td>${inp(k,'memo')}</td><td><button class="x" data-act="del" data-c="sup" data-v="${s.id}">🗑</button></td></tr>`}).join('')}</table></div>`:'<div class="empty" style="margin-top:8px">준비물이 없어요</div>'}
+  <p class="hint">준비방법별 단계 — 온라인: 구입필요→구입완료→배송완료→준비완료 · 오프라인: 구입필요→구입완료→준비완료 · 챙기기: 준비필요→준비완료 · 제작: 준비전→시안제작완료→발주완료→배송완료→준비완료 · 인쇄: 준비전→작성완료→인쇄완료→준비완료</p></div>`}
+
+/* ---------- 체크리스트 ---------- */
+function vChk(){const L=R.chk,cats=[...new Set(L.map(x=>x.cat||'기타'))],done=L.filter(x=>x.done).length;
+  return `<datalist id="chkCats">${[...new Set([...cats,'출발 전','장소 도착','예배·집회','식사·간식','안전','정리'])].map(c=>`<option value="${esc(c)}">`).join('')}</datalist>
+  <div class="card"><div class="row"><h2 style="margin:0">☑️ 체크리스트</h2><span class="badge ${done===L.length&&L.length?'b-ok':'b-mid'}">${done}/${L.length}</span><span class="sp"></span><button data-act="chkSup">📦 덜 된 준비물 가져오기</button><button data-act="chkReset">체크 모두 풀기</button></div>
+  <div class="prog" style="margin:8px 0"><i style="width:${L.length?done/L.length*100:0}%"></i></div>
+  <div class="row"><input id="chkT" placeholder="체크할 것 (예: 마이크 배터리 확인)" style="flex:2;min-width:180px"><input id="chkC" list="chkCats" placeholder="분류" style="width:120px"><button class="pri" data-act="chkAdd">+ 추가</button></div>
+  ${cats.length?cats.map(c=>`<h3>${esc(c)} <span class="hint">${L.filter(x=>(x.cat||'기타')===c&&x.done).length}/${L.filter(x=>(x.cat||'기타')===c).length}</span></h3>${L.filter(x=>(x.cat||'기타')===c).map(x=>`<div class="row" style="padding:3px 0;border-bottom:1px dashed var(--line)"><label class="row" style="flex:1;gap:8px;cursor:pointer;${x.done?'text-decoration:line-through;color:var(--muted)':''}"><input type="checkbox" data-o="chk#${x.id}" data-k="done" data-rr ${x.done?'checked':''} style="width:20px;height:20px">${esc(x.text)}</label><button class="x" data-act="del" data-c="chk" data-v="${x.id}">🗑</button></div>`).join('')}`).join(''):'<div class="empty" style="margin-top:8px">수련회 직전에 확인할 것들을 적어 두세요</div>'}</div>`}
+
+/* ---------- 자료실 ---------- */
+const fsize=n=>!n?"0KB":n>1048576?(n/1048576).toFixed(1)+'MB':Math.max(1,Math.round(n/1024))+'KB';
+const ficon=f=>/image/.test(f.type)?'🖼️':/pdf/.test(f.type)?'📕':/sheet|excel|csv/.test(f.type+f.name)?'📊':/word|hwp|document/.test(f.type+f.name)?'📄':/presentation|ppt|key/.test(f.type+f.name)?'📽️':/audio/.test(f.type)?'🎵':/video/.test(f.type)?'🎬':/zip/.test(f.type)?'🗜️':'📎';
+function vFiles(){const cur=SUB.folder||'',isR=cur==='__rcp';
+  const path=[];let c=cur;while(c&&c!=='__rcp'){const f=R.folders.find(x=>x.id===c);if(!f)break;path.unshift(f);c=f.parent||''}
+  const subs=isR?[]:R.folders.filter(f=>(f.parent||'')===cur).sort(byName),files=R.files.filter(f=>(f.folder||'')===cur);
+  const total=R.files.reduce((s,f)=>s+(f.size||0),0);
+  return `<div class="card"><div class="row"><h2 style="margin:0">📁 자료실</h2><span class="hint">${R.files.length}개 · ${fsize(total)}</span><span class="sp"></span>${isR?'':`<button data-act="mkdir">📁+ 새 폴더</button><button class="pri" data-act="upload">⬆️ 자료 올리기</button>`}</div>
+  <div class="row" style="margin:10px 0;font-size:15px"><a href="#" data-act="cd" data-v="">🏠 자료실</a>${isR?' › 🧾 영수증 (회계)':path.map(f=>` › <a href="#" data-act="cd" data-v="${f.id}">${esc(f.name)}</a>`).join('')}${cur&&!isR?`<span class="sp"></span><button class="sm" data-act="rendir">이름 바꾸기</button><button class="sm danger" data-act="rmdir">폴더 지우기</button>`:''}</div>
+  <div class="ftile">${!cur?`<div class="fi dir" data-act="cd" data-v="__rcp"><div class="ic">🧾</div>영수증 (회계)<div class="hint">${R.files.filter(f=>f.folder==='__rcp').length}개</div></div>`:''}${subs.map(f=>`<div class="fi dir" data-act="cd" data-v="${f.id}"><div class="ic">📁</div>${esc(f.name)}<div class="hint">${R.files.filter(x=>x.folder===f.id).length}개</div></div>`).join('')}
+  ${files.map(f=>`<div class="fi">${/image/.test(f.type)?`<img data-fid="${f.id}" alt="">`:`<div class="ic">${ficon(f)}</div>`}<div>${esc(f.name)}</div><div class="hint">${fsize(f.size||0)} · ${esc((f.date||'').slice(0,10))}</div><div class="acts"><button class="sm" data-act="fopen" data-v="${f.id}">열기</button><button class="sm" data-act="fdown" data-v="${f.id}">⬇️</button>${isR?'':`<button class="sm" data-act="fmv" data-v="${f.id}" title="다른 폴더로">↪</button><button class="sm danger" data-act="fdel" data-v="${f.id}">🗑</button>`}</div></div>`).join('')}</div>
+  ${!subs.length&&!files.length&&cur?'<div class="empty">비어 있어요. ⬆️ 자료 올리기로 파일을 넣어요</div>':''}
+  <p class="hint" style="margin-top:10px">파일은 이 기기 브라우저에 저장돼요. 다른 기기로 옮길 땐 ⚙️ 설정·백업의 백업 파일을 써요.</p></div>`}
+
+/* ---------- 회계 ---------- */
+function vAcc(){const A=R.acc,ed=SUB.ledEdit?A.items.find(x=>x.id===SUB.ledEdit):null,f=ed||{type:SUB.ledType||'in',date:todayStr()};
+  const items=A.items.map((x,i)=>({x,i})).sort((a,b)=>String(a.x.date).localeCompare(String(b.x.date))||a.i-b.i);let bal=0;
+  const rows=items.map(({x})=>{bal+=(x.type==='in'?1:-1)*(+x.amount||0);return{x,bal}});
+  const tin=A.items.filter(x=>x.type==='in').reduce((s,x)=>s+(+x.amount||0),0),tout=A.items.filter(x=>x.type==='out').reduce((s,x)=>s+(+x.amount||0),0);
+  const byCat=t=>A.cats[t].map(c=>[c,A.items.filter(x=>x.type===t&&x.cat===c).reduce((s,x)=>s+(+x.amount||0),0)]).filter(x=>x[1]);
+  const ty=f.type||'in';
+  return `<div class="card"><div class="row"><h2 style="margin:0">💰 회계</h2><span class="sp"></span><span class="badge b-ok">수입 ${won(tin)}원</span><span class="badge b-no">지출 ${won(tout)}원</span><span class="badge" style="font-size:14px">잔액 <b>${won(tin-tout)}</b>원</span><button class="sm" data-act="accCopy">📋 회계보고 복사</button></div></div>
+  <div class="card no-print" style="${ed?'border-color:var(--accent)':''}"><h2>${ed?'✏️ 내역 고치기':'✍️ 내역 적기'}</h2><div class="row">${['in','out'].map(t=>`<span class="chip tog ${ty===t?'on':''}" data-act="ledType" data-v="${t}">${t==='in'?'➕ 수입':'➖ 지출'}</span>`).join('')}</div>
+   <div class="f2" style="margin-top:8px"><label class="fld">날짜<input id="lDate" type="date" value="${esc(f.date||'')}"></label>
+   <label class="fld">항목<select id="lCat">${A.cats[ty].map(c=>`<option${c===f.cat?' selected':''}>${esc(c)}</option>`).join('')}</select></label>
+   <label class="fld">금액 (원)<input id="lAmt" type="number" inputmode="numeric" value="${esc(f.amount??'')}"></label>
+   <label class="fld">${ty==='in'?'입금자·후원자 이름':'사용처·결제자'}<input id="lWho" value="${esc(f.who||'')}" list="pnames2"></label>
+   <label class="fld" style="grid-column:span 2">적요<input id="lMemo" value="${esc(f.memo||'')}" placeholder="${ty==='in'?'예) 수련회비 (홍길동 외 3명)':'예) 간식 구입 (코스트코)'}"></label></div>
+   <datalist id="pnames2">${R.people.map(p=>`<option value="${esc(p.name)}">`).join('')}</datalist>
+   ${ty==='out'?`<div class="row" style="margin-top:6px"><button class="sm" data-act="rcpPick">🧾 영수증 사진·PDF 올리기</button><span class="hint" id="rcpName">${SUB.rcpFile?esc(SUB.rcpFile.name):ed&&ed.rcp?'영수증 있음 (새로 고르면 바뀌어요)':'선택 안 함'}</span></div>`:''}
+   <div class="row" style="margin-top:10px"><button class="pri" data-act="ledSave">${ed?'고친 내용 저장':'+ 적기'}</button>${ed?'<button data-act="ledCancel">취소</button>':''}</div></div>
+  <div class="card"><h2>📒 내역</h2>${rows.length?`<div class="hs"><table class="t"><tr><th>날짜</th><th>수입/지출</th><th>항목</th><th class="num">금액</th><th>적요</th><th class="num">현재잔액</th><th>영수증</th><th></th></tr>
+   ${rows.map(({x,bal})=>`<tr><td>${esc(x.date||'')}</td><td>${x.type==='in'?'<span class="badge b-ok">수입</span>':'<span class="badge b-no">지출</span>'}</td><td>${esc(x.cat||'')}</td><td class="num" style="color:${x.type==='in'?'#1f6a35':'#a3301a'}">${x.type==='in'?'+':'-'}${won(x.amount)}</td><td>${esc(x.memo||'')}${x.who?` <span class="hint">(${esc(x.who)})</span>`:''}</td><td class="num"><b>${won(bal)}</b></td><td>${x.rcp?`<button class="sm" data-act="fopen" data-v="${x.rcp}">🧾 보기</button>`:x.type==='out'?'<span class="hint">없음</span>':''}</td><td style="white-space:nowrap"><button class="sm" data-act="ledEdit" data-v="${x.id}">✏️</button><button class="x" data-act="ledDel" data-v="${x.id}">🗑</button></td></tr>`).join('')}</table></div>`:'<div class="empty">아직 내역이 없어요</div>'}</div>
+  <div class="card"><h2>📊 항목별</h2><div class="grid"><div><h3>수입</h3>${byCat('in').map(([c,v])=>`<div class="row"><span>${esc(c)}</span><span class="sp"></span><b>${won(v)}</b>원</div>`).join('')||'<span class="hint">없음</span>'}</div><div><h3>지출</h3>${byCat('out').map(([c,v])=>`<div class="row"><span>${esc(c)}</span><span class="sp"></span><b>${won(v)}</b>원</div>`).join('')||'<span class="hint">없음</span>'}</div></div>
+   <h3>⚙️ 항목 설정</h3><div class="hint">수입</div>${LE('acc.cats.in')}<div class="hint" style="margin-top:6px">지출</div>${LE('acc.cats.out')}</div>`}
+
+/* ---------- 참석인원 ---------- */
+const PF=[['name','이름'],['gender','성별'],['age','나이'],['org','소속'],['addr','사는 곳'],['phone','핸드폰번호'],['ins','보험가입'],['inT','들어오는 시간'],['outT','나가는 시간']];
+function vPeople(){const L=R.people,m=L.filter(p=>p.gender==='남').length,f=L.filter(p=>p.gender==='여').length;
+  return `<div class="card"><div class="row"><h2 style="margin:0">🙋 참석인원 (${L.length})</h2><span class="sp"></span><input id="pq" placeholder="🔍 이름·소속 찾기" style="width:150px"><button data-act="xls">📊 엑셀·CSV 불러오기</button><button data-act="pExport">⬇️ CSV 내보내기</button><button class="pri" data-act="pAdd">+ 한 명 추가</button></div>
+  <div class="row hint" style="margin:6px 0">남 ${m} · 여 ${f} · 보험 미가입 ${L.filter(p=>p.ins==='미가입').length} · 사역자 ${L.filter(p=>p.prep==='min').length} · 준비인원 ${L.filter(p=>p.prep==='staff').length} · 찬양팀 ${L.filter(p=>p.praise).length}</div>
+  <p class="hint" style="margin:0 0 6px">구글폼·네이버폼 응답을 엑셀(.xlsx)이나 CSV로 받아서 ‘📊 엑셀·CSV 불러오기’로 올리면 한 번에 추가돼요. 오른쪽 <b>구분</b>에서 사역자·준비인원을, <b>찬양팀</b> 칸으로 찬양팀을 지정해요.</p>
+  ${L.length?`<div class="hs" data-keep="people"><table class="t" id="ptbl"><tr><th>#</th><th>이름</th><th>성별</th><th>나이</th><th>소속</th><th>사는 곳</th><th>핸드폰번호</th><th>보험</th><th>들어오는 시간</th><th>나가는 시간</th><th>구분</th><th>직책</th><th>찬양팀</th><th></th></tr>
+  ${L.map((p,i)=>{const k='people#'+p.id;return `<tr data-s="${esc((p.name||'')+' '+(p.org||'')+' '+(p.phone||''))}"><td class="hint">${i+1}</td><td>${inp(k,'name',{st:'min-width:70px'})}</td><td>${sel(k,'gender',['남','여'],{blank:'-',st:'width:52px'})}</td><td>${inp(k,'age',{st:'width:50px'})}</td><td>${inp(k,'org',{st:'min-width:80px'})}</td><td>${inp(k,'addr',{st:'min-width:80px'})}</td><td>${inp(k,'phone',{type:'tel',st:'min-width:115px'})}</td><td>${sel(k,'ins',['가입','미가입'],{blank:'-',st:'width:72px'})}</td><td>${inp(k,'inT',{ph:'예) 1일차 18시',st:'min-width:95px'})}</td><td>${inp(k,'outT',{ph:'예) 3일차 점심후',st:'min-width:95px'})}</td>
+  <td>${sel(k,'prep',[['min','사역자'],['staff','준비인원']],{blank:'일반',rr:1,st:'width:88px'})}</td><td>${p.prep?sel(k,'role',R.cfg[p.prep==='min'?'minRoles':'staffRoles'],{blank:'—',st:'width:80px'}):''}</td><td style="text-align:center"><input type="checkbox" data-o="${k}" data-k="praise" ${p.praise?'checked':''}></td><td><button class="x" data-act="pDel" data-v="${p.id}">🗑</button></td></tr>`}).join('')}</table></div>`:'<div class="empty">참석인원을 추가하거나 엑셀로 불러와요</div>'}</div>`}
+function filterPeople(q){q=(q||'').trim();$$('#ptbl tr[data-s]').forEach(tr=>tr.style.display=!q||tr.dataset.s.includes(q)?'':'none')}
+function filterPool(q){q=(q||'').trim();SUB.poolQ=q;$$('.pool .chip').forEach(c=>c.style.display=!q||c.textContent.includes(q)?'':'none')}
+
+/* ---------- 차량배정 ---------- */
+function vCars(){const dir=SUB.dir,L=R.cars.list.filter(c=>c.dir===dir),used=new Set(L.flatMap(c=>c.members||[])),pool=R.people.filter(p=>!used.has(p.id));
+  const tot=L.reduce((s,c)=>s+(c.members||[]).length,0),cap=L.reduce((s,c)=>s+(+c.cap||0),0);
+  return `<div class="card"><div class="row"><h2 style="margin:0">🚌 차량배정</h2>${[['in','🏕️ 수련회 들어오는 차'],['out','🏠 집에 가는 차']].map(([k,l])=>`<span class="chip tog ${dir===k?'on':''}" data-act="dir" data-v="${k}">${l}</span>`).join('')}<span class="sp"></span><span class="hint">탑승 ${tot}명 / 자리 ${cap}석 · 미배정 ${pool.length}명</span><button class="pri" data-act="carAdd">+ 차량</button></div>
+   <h3>차편 종류</h3>${LE('cars.types.'+dir,'+ 종류 추가 (예: 승합차)')}</div>
+  ${poolHTML(pool,'아직 차가 없는 사람')}
+  ${L.length?`<div class="grid">${R.cars.types[dir].concat(['']).map(t=>L.filter(c=>(c.type||'')===t||(!t&&!R.cars.types[dir].includes(c.type))).map(c=>{const k='cars.list#'+c.id,n=(c.members||[]).length;return `<div class="box" data-drop="car#${c.id}"><div class="bh"><b>${dir==='in'?'🚌':'🏠'}</b>${sel(k,'type',R.cars.types[dir],{blank:'종류',rr:1,st:'width:auto'})}${inp(k,'name',{ph:'차 이름·번호',st:'flex:1;min-width:80px'})}<span class="cnt ${c.cap&&n>c.cap?'over':''}">${n}/${c.cap||'?'}</span><button class="x" data-act="del" data-c="cars.list" data-v="${c.id}">🗑</button></div>
+    <div class="f2" style="grid-template-columns:1fr 1fr"><label class="fld">출발시각${inp(k,'time',{ph:dir==='in'?'예) 1일차 13:00':'예) 3일차 14:00'})}</label><label class="fld">${dir==='in'?'출발장소':'도착장소'}${inp(k,'place',{ph:dir==='in'?'예) 교회 앞':'예) 교회 / 강남역'})}</label><label class="fld">탑승가능인원${inp(k,'cap',{n:1,rr:1})}</label><label class="fld">운전자${sel(k,'driver',peopleOpts(R.people,'—'))}</label></div>
+    <div class="mem">${(c.members||[]).map(pid=>CHIP(pid,'car#'+c.id)).join('')||'<span class="hint">여기로 끌어다 놓아요</span>'}</div>${addSel('car#'+c.id,pool)}</div>`}).join('')).join('')}</div>`:'<div class="card"><div class="empty">‘+ 차량’으로 차를 추가해요</div></div>'}`}
+
+/* ---------- 조배정 ---------- */
+function vGrp(){const G=R.grp,used=new Set(G.list.flatMap(g=>g.members||[])),pool=R.people.filter(p=>!used.has(p.id)),pl=prepList();
+  return `<div class="card"><h2>🧩 조배정</h2><div class="row"><label class="row">조 개수 <input id="gCnt" type="number" min="0" max="60" value="${G.list.length}" style="width:70px"></label><button data-act="gApply">적용</button>
+   <label class="chip tog ${G.useLeader?'on':''}"><input type="checkbox" data-o="grp" data-k="useLeader" data-rr ${G.useLeader?'checked':''} style="display:none">👑 조장 지정</label>
+   <label class="chip tog ${G.useStaff?'on':''}"><input type="checkbox" data-o="grp" data-k="useStaff" data-rr ${G.useStaff?'checked':''} style="display:none">🛠️ 담당스탭 지정</label>
+   <span class="sp"></span><label class="row hint"><input type="checkbox" id="gNoPrep" checked> 준비인원 빼고</label><button data-act="gAuto">✨ 남은 사람 자동 배정</button><button class="danger" data-act="gClear">모두 비우기</button></div>
+   <h3>조 직책</h3>${LE('grp.roles','+ 직책 추가 (예: 기도짱)')}<p class="hint" style="margin:4px 0 0">자동 배정은 성별·나이가 고르게 섞이도록 인원이 적은 조부터 넣어요.</p></div>
+  ${poolHTML(pool,'아직 조가 없는 사람')}
+  ${G.list.length?`<div class="grid">${G.list.map((g,gi)=>{const k='grp.list#'+g.id,M=g.members||[];return `<div class="box" data-drop="grp#${g.id}" style="border-color:hsl(${gi*47%360},55%,45%)"><div class="bh">${inp(k,'name',{st:'flex:1;font-weight:600'})}<span class="cnt">${M.length}명</span><span class="hint">남${M.filter(id=>(P(id)||{}).gender==='남').length} 여${M.filter(id=>(P(id)||{}).gender==='여').length}</span></div>
+    ${G.useLeader?`<div class="row" style="gap:4px"><span style="width:70px">👑 조장</span>${sel(k,'leader',peopleOpts(M.map(P).filter(Boolean),'— 조원 중 선택 —'),{rr:1,st:'flex:1'})}</div>`:''}
+    ${G.useStaff?`<div class="row" style="gap:4px;margin-top:3px"><span style="width:70px">🛠️ 담당스탭</span><div style="flex:1">${WHO(k,'staff',pl,'+ 스탭')}</div></div>`:''}
+    <div class="mem">${M.map(pid=>CHIP(pid,'grp#'+g.id,(G.useLeader&&g.leader===pid?' 👑':'')+(G.roles.length?`<select data-act="gRole" data-g="${g.id}" data-pid="${pid}" style="border:0;padding:0 2px;font-size:12px;background:transparent;width:auto"><option value="">·</option>${G.roles.map(r=>`<option${(g.roles||{})[pid]===r?' selected':''}>${esc(r)}</option>`).join('')}</select>`:''))).join('')||'<span class="hint">여기로 끌어다 놓아요</span>'}</div>${addSel('grp#'+g.id,pool)}</div>`}).join('')}</div>`:'<div class="card"><div class="empty">조 개수를 적고 ‘적용’을 눌러요</div></div>'}
+  ${G.list.length?`<div class="card no-print"><button data-act="gCopy">📋 조 편성표 복사</button></div>`:''}`}
+
+/* ---------- 방배정 ---------- */
+function vRooms(){const L=R.rooms,used=new Set(L.flatMap(r=>r.members||[])),pool=R.people.filter(p=>!used.has(p.id));
+  const blds=[...new Set(L.map(r=>r.building||'건물'))];const capT=L.reduce((s,r)=>s+(+r.cap||0),0);
+  return `<div class="card"><div class="row"><h2 style="margin:0">🛏️ 방배정</h2><span class="sp"></span><span class="hint">방 ${L.length}개 · ${capT}명 수용 · 배정 ${used.size}명 · 미배정 ${pool.length}명</span><button data-act="roomCopy">📋 방 배정표 복사</button></div>
+   <div class="f2" style="margin-top:8px"><label class="fld">건물<input id="rB" list="rBl" placeholder="예) 본관" value="${esc(SUB.rB||'')}"></label><label class="fld">층<input id="rF" placeholder="예) 2층" value="${esc(SUB.rF||'')}"></label><label class="fld">방 이름<input id="rN" placeholder="예) 201호"></label><label class="fld">수용인원<input id="rC" type="number" inputmode="numeric" placeholder="명"></label><label class="fld">방 구분<select id="rG"><option value="">구분 없음</option><option value="남">남자방</option><option value="여">여자방</option><option value="스탭">스탭방</option></select></label></div>
+   <datalist id="rBl">${blds.map(b=>`<option value="${esc(b)}">`).join('')}</datalist>
+   <div class="row" style="margin-top:8px"><button class="pri" data-act="roomAdd">+ 방 추가</button><span class="hint">방 이름표(윗부분)를 끌어서 실제 배치처럼 옮겨요. 이름을 방으로 끌어다 놓거나 ‘+ 추가’로 넣어요.</span></div></div>
+  ${poolHTML(pool,'아직 방이 없는 사람')}
+  ${blds.map(b=>{const fl=[...new Set(L.filter(r=>(r.building||'건물')===b).map(r=>r.floor||''))].sort((a,c)=>String(c).localeCompare(String(a),'ko',{numeric:true}));
+   return `<div class="bld"><h2 class="j" style="margin:0 0 4px">🏢 ${esc(b)}</h2>${fl.map(f=>{const rs=L.filter(r=>(r.building||'건물')===b&&(r.floor||'')===f);const h=Math.max(220,...rs.map(r=>(r.y||0)+130+Math.ceil(((r.members||[]).length||1)/3)*30));
+    return `<div class="floor" style="height:${h}px" data-keep="fl-${esc(b)}-${esc(f)}"><span class="fl">${esc(f||'층 미정')}</span>${rs.map(r=>{const n=(r.members||[]).length;return `<div class="room ${r.gender==='남'?'g-m':r.gender==='여'?'g-f':''}" data-room="${r.id}" data-drop="room#${r.id}" style="left:${r.x||0}px;top:${r.y||0}px"><div class="rhead"><b title="${esc(r.name)}">${esc(r.name||'방')}</b><span class="cnt ${r.cap&&n>r.cap?'over':''}">${n}/${r.cap||'?'}</span><button class="x" data-act="roomEdit" data-v="${r.id}" title="고치기">✎</button></div>
+     <div class="rb">${r.gender?`<span class="cap">${esc(r.gender==='스탭'?'스탭방':r.gender+'자방')}</span> `:''}<div>${(r.members||[]).map(pid=>CHIP(pid,'room#'+r.id,r.captain===pid?' 🔑':'')).join('')}</div>
+     <select data-o="rooms#${r.id}" data-k="captain" data-rr><option value="">🔑 방장 지정</option>${(r.members||[]).map(pid=>`<option value="${pid}"${r.captain===pid?' selected':''}>🔑 방장: ${esc(pn(pid))}</option>`).join('')}</select>${addSel('room#'+r.id,pool.filter(p=>!r.gender||r.gender==='스탭'||!p.gender||p.gender===r.gender))}</div></div>`}).join('')}</div>`}).join('')}</div>`}).join('')||'<div class="card"><div class="empty">건물·층·방 이름·수용인원을 적고 ‘+ 방 추가’를 눌러요</div></div>'}`}
+function bindRooms(){$$('.room .rhead').forEach(h=>{h.onpointerdown=e=>{if(e.target.closest('button'))return;const box=h.parentElement,fl=box.parentElement,r=R.rooms.find(x=>x.id===box.dataset.room);if(!r)return;e.preventDefault();h.setPointerCapture(e.pointerId);
+  const sx=e.clientX,sy=e.clientY,ox=r.x||0,oy=r.y||0;
+  h.onpointermove=ev=>{const x=Math.max(0,Math.round((ox+ev.clientX-sx)/10)*10),y=Math.max(24,Math.round((oy+ev.clientY-sy)/10)*10);box.style.left=x+'px';box.style.top=y+'px';r.x=x;r.y=y;const need=y+box.offsetHeight+20;if(need>fl.offsetHeight)fl.style.height=need+'px'};
+  h.onpointerup=()=>{h.onpointermove=null;h.onpointerup=null;save()}}})}
+
+/* ============ 동작 ============ */
+const ACT={
+  tab:t=>{TAB=t.dataset.v;try{localStorage.setItem('camp-tab',TAB)}catch(_){}SUB.poolQ='';render();scrollTo(0,0)},
+  newCamp:async()=>{const n=$('#nName').value.trim();if(!n){toast('수련회 이름을 적어 주세요');$('#nName').focus();return}
+    const c=fill({id:uid(),name:n,start:$('#nStart').value,nights:+$('#nNights').value,created:Date.now()});await idb.put('camps',c.id,c);location.href='./?c='+c.id},
+  openCamp:t=>{location.href='./?c='+t.dataset.v},
+  bakIn:()=>{$('#bakUp').value='';$('#bakUp').click()},
+  campSet:()=>{const m=modal(`<h2>⚙️ 수련회 설정·백업</h2><div class="f2"><label class="fld" style="grid-column:1/-1">이름<input id="sN" value="${esc(R.name)}"></label><label class="fld">시작일<input id="sS" type="date" value="${esc(R.start||'')}"></label><label class="fld">기간<select id="sT">${[0,1,2,3,4,5].map(n=>`<option value="${n}"${n===+R.nights?' selected':''}>${n}박 ${n+1}일</option>`).join('')}</select></label></div>
+    <div class="row" style="margin-top:10px"><button class="pri" id="sSave">저장</button><button data-close>닫기</button></div>
+    <h3>💾 백업</h3><p class="hint">모든 메뉴의 기록과 자료실 파일·영수증까지 한 파일로 저장해요. 다른 기기에서는 수련회 목록의 ‘📂 백업 파일 불러오기’로 열어요.</p><button id="sBak">⬇️ 백업 파일 저장</button>
+    <h3 style="color:#b5361f">🗑 지우기</h3><button class="danger" id="sDel">이 수련회 통째로 지우기</button>`);
+    m.querySelector('#sSave').onclick=()=>{R.name=m.querySelector('#sN').value.trim()||R.name;R.start=m.querySelector('#sS').value;R.nights=+m.querySelector('#sT').value;save();m.remove();render()};
+    m.querySelector('#sBak').onclick=backup;
+    m.querySelector('#sDel').onclick=async()=>{if(!confirm(`‘${R.name}’의 모든 기록과 자료를 지울까요? 되돌릴 수 없어요.`))return;for(const f of R.files)try{await idb.del('files',f.id)}catch(_){}await idb.del('camps',R.id);location.href='./'}},
+  leDel:t=>{const a=objOf(t.dataset.le),i=+t.dataset.i,old=a[i];if(!confirm(`‘${old}’을(를) 뺄까요?`))return;a.splice(i,1);const f=LE_REF[t.dataset.le];if(f)f(old,'');save();render()},
+  leUp:t=>{const a=objOf(t.dataset.le),i=+t.dataset.i;[a[i-1],a[i]]=[a[i],a[i-1]];save();render()},
+  leRen:t=>{const a=objOf(t.dataset.le),i=+t.dataset.i,old=a[i],nw=(prompt('새 이름',old)||'').trim();if(!nw||nw===old)return;if(a.includes(nw)){toast('이미 있는 이름이에요');return}a[i]=nw;const f=LE_REF[t.dataset.le];if(f)f(old,nw);save();render()},
+  rmFrom:t=>{const o=objOf(t.dataset.o);o[t.dataset.k]=(o[t.dataset.k]||[]).filter(x=>x!==t.dataset.v);save();render()},
+  togArr:t=>{const o=objOf(t.dataset.o),k=t.dataset.k,v=t.dataset.v;const a=o[k]=o[k]||[];const i=a.indexOf(v);if(i>=0)a.splice(i,1);else a.push(v);save();render()},
+  add:t=>{const a=objOf(t.dataset.c);const it={id:uid()};if(t.dataset.c==='speakers')it.status='후보';if(t.dataset.c==='venue.list')it.sc={};a.push(it);save();render();setTimeout(()=>{const el=$$(`[data-o="${t.dataset.c}#${it.id}"]`)[0];if(el){el.focus();el.scrollIntoView({block:'center'})}},30)},
+  del:t=>{const a=objOf(t.dataset.c),i=a.findIndex(x=>x.id===t.dataset.v);if(i<0)return;const it=a[i];const filled=Object.keys(it).some(k=>k!=='id'&&k!=='sc'&&it[k]!==''&&it[k]!=null&&!(Array.isArray(it[k])&&!it[k].length));if(filled&&!confirm('지울까요?'))return;a.splice(i,1);save();render()},
+  mvUp:t=>{const a=objOf(t.dataset.c),i=a.findIndex(x=>x.id===t.dataset.v);if(i>0){[a[i-1],a[i]]=[a[i],a[i-1]];save();render()}},
+  unassign:t=>assign(t.dataset.pid,'pool',t.dataset.from),
+  print:()=>print(),
+  /* 스탭·찬양 */
+  mkPrep:()=>{const id=$('#mkPrepP').value;if(!id){toast('사람을 골라 주세요');return}const p=P(id);p.prep=$('#mkPrepT').value;p.role='';save();render()},
+  unprep:t=>{const p=P(t.dataset.v);if(p){p.prep='';p.role='';save();render()}},
+  copyStaff:()=>copy(`🛠️ ${R.name} 스탭 역할\n`+prepList().map(p=>`• ${p.name} (${roleOf(p)})${p.duty?' - '+p.duty:''}`).join('\n')),
+  mkPraise:()=>{const id=$('#mkPr').value;if(!id){toast('사람을 골라 주세요');return}P(id).praise=true;save();render()},
+  unpraise:t=>{const p=P(t.dataset.v);if(p){p.praise=false;save();render()}},
+  /* 회의록 */
+  minNew:()=>{const m={id:uid(),date:todayStr(),title:`${R.minutes.length+1}차 준비 회의`,att:[],body:''};R.minutes.push(m);SUB.min=m.id;save();render();setTimeout(()=>$('#mbody')&&$('#mbody').focus(),30)},
+  minOpen:t=>{SUB.min=t.dataset.v;render();scrollTo(0,0)},minBack:()=>{SUB.min=null;render()},
+  minDel:()=>{if(!confirm('이 회의록을 지울까요?'))return;R.minutes=R.minutes.filter(m=>m.id!==SUB.min);SUB.min=null;save();render()},
+  minCopy:()=>copy(minText(R.minutes.find(m=>m.id===SUB.min))),
+  minPrint:()=>{const m=R.minutes.find(x=>x.id===SUB.min);const w=open('','_blank');if(!w){toast('팝업이 막혔어요');return}w.document.write(`<!doctype html><meta charset="utf-8"><title>${esc(m.title)}</title><style>body{font:15px/1.7 "Malgun Gothic",sans-serif;padding:30px;max-width:760px;margin:auto}h1{font-size:22px;border-bottom:2px solid #333;padding-bottom:6px}.l{display:flex;gap:6px}.mk{flex:none;font-weight:600}</style><h1>${esc(m.title)}</h1><p>일시: ${esc(m.date)}${m.place?'<br>장소: '+esc(m.place):''}<br>참석: ${esc([...(m.att||[]).map(pn),m.etc].filter(Boolean).join(', '))}</p>${outline(m.body).map(x=>x.lv<0?'<br>':`<div class="l" style="padding-left:${x.lv*1.2}em"><span class="mk">${esc(x.mk)}</span><span>${esc(x.t)}</span></div>`).join('')}<script>setTimeout(()=>print(),300)<\/script>`);w.document.close()},
+  ind:t=>indent(+t.dataset.v),
+  /* 일정 */
+  schedAdd:()=>{const td=todayStr();R.sched.push({id:uid(),name:'',start:td,end:addD(td,6),who:[]});save();render();setTimeout(()=>{const L=$$('[data-k="name"][data-o^="sched#"]');const el=L[L.length-1];if(el){el.focus();el.scrollIntoView({block:'center'})}},30)},
+  schedTpl:()=>{if(!R.start){toast('⚙️ 설정에서 수련회 시작일을 먼저 정해 주세요');return}if(R.sched.length&&!confirm('기본 일정을 아래에 더할까요?'))return;
+    [['주제 정하기',-70,-50],['장소 탐색·계약',-70,-45],['강사 섭외',-60,-35],['프로그램 기획',-45,-20],['홍보·참가 신청 받기',-35,-10],['수련회비 받기',-30,-7],['시간표 확정',-21,-14],['준비물 준비',-21,-2],['차량·조·방 배정',-10,-3],['최종 점검·리허설',-3,-1]].forEach(([n,a,b])=>R.sched.push({id:uid(),name:n,start:addD(R.start,a),end:addD(R.start,b),who:[]}));save();render()},
+  /* 주제 */
+  useVerse:t=>{const v=R.theme.verses.find(x=>x.id===t.dataset.v);R.theme.verse=v.ref||'';R.theme.verseText=v.text||'';save();render();toast('주제말씀으로 정했어요')},
+  vote:t=>{const c=R.theme.cands.find(x=>x.id===t.dataset.v);c.votes=(c.votes||0)+1;save();render()},
+  useCand:t=>{const c=R.theme.cands.find(x=>x.id===t.dataset.v);R.theme.title=c.title||'';if(c.verse)R.theme.verse=c.verse;save();render();scrollTo(0,0);toast('주제로 정했어요')},
+  /* 장소 */
+  star:t=>{const v=R.venue.list.find(x=>x.id===t.dataset.v);v.sc=v.sc||{};const n=+t.dataset.n;v.sc[t.dataset.c]=+v.sc[t.dataset.c]===n?null:n;save();render()},
+  critDel:t=>{const c=R.venue.crit.find(x=>x.id===t.dataset.v);if(!confirm(`‘${c.name}’ 항목을 뺄까요?`))return;R.venue.crit=R.venue.crit.filter(x=>x.id!==c.id);delete R.venue.w[c.id];save();render()},
+  critRen:t=>{const c=R.venue.crit.find(x=>x.id===t.dataset.v);const n=(prompt('새 이름',c.name)||'').trim();if(n){c.name=n;save();render()}},
+  wEven:()=>{const C=critList(),b=Math.floor(100/C.length);C.forEach((k,i)=>R.venue.w[k.id]=b+(i<100-b*C.length?1:0));save();render()},
+  /* 확정 */
+  confFill:t=>{R.conf[t.dataset.v].v=confSrc(t.dataset.v);save();render()},
+  confAll:()=>{CONF.forEach(([k])=>{if(!R.conf[k].v)R.conf[k].v=confSrc(k)});save();render()},
+  confCopy:()=>copy(`✅ ${R.name} 확정사항\n`+CONF.map(([k,l])=>`• ${l}: ${R.conf[k].v||confSrc(k)||'(미정)'}${R.conf[k].ok?' ✔':''}`).join('\n')),
+  ttCopy:()=>copy(ttText()),
+  /* 준비물·체크 */
+  supAdd:()=>{const it={id:uid(),name:'',method:'',stage:0};R.sup.push(it);SUB.supF='all';save();render();setTimeout(()=>{const el=$(`[data-o="sup#${it.id}"][data-k="name"]`);if(el){el.focus();el.scrollIntoView({block:'center'})}},30)},
+  supF:t=>{SUB.supF=t.dataset.v;render()},
+  stage:t=>{const s=R.sup.find(x=>x.id===t.dataset.v);const n=+t.dataset.n;s.stage=(+s.stage===n&&n>0)?n-1:n;save();render()},
+  chkAdd:()=>{const x=$('#chkT').value.trim();if(!x)return;SUB.chkC=$('#chkC').value.trim();R.chk.push({id:uid(),text:x,cat:SUB.chkC||'기타',done:false});save();render();const c=$('#chkC');if(c)c.value=SUB.chkC;$('#chkT').focus()},
+  chkSup:()=>{let n=0;R.sup.forEach(s=>{const fin=s.method&&(+s.stage||0)>=METHODS[s.method].length-1;const tx='📦 '+(s.name||'준비물')+(s.qty?' ×'+s.qty:'');if(!fin&&s.name&&!R.chk.some(c=>c.text===tx)){R.chk.push({id:uid(),text:tx,cat:'준비물',done:false});n++}});save();render();toast(n?`${n}개 가져왔어요`:'가져올 준비물이 없어요')},
+  chkReset:()=>{if(confirm('체크를 모두 풀까요?')){R.chk.forEach(c=>c.done=false);save();render()}},
+  /* 자료실 */
+  cd:(t,e)=>{e.preventDefault();SUB.folder=t.dataset.v;render()},
+  mkdir:()=>{const n=(prompt('새 폴더 이름')||'').trim();if(!n)return;R.folders.push({id:uid(),name:n,parent:SUB.folder||''});save();render()},
+  rendir:()=>{const f=R.folders.find(x=>x.id===SUB.folder);const n=(prompt('새 이름',f.name)||'').trim();if(n){f.name=n;save();render()}},
+  rmdir:async()=>{const ids=[];const walk=id=>{ids.push(id);R.folders.filter(f=>f.parent===id).forEach(f=>walk(f.id))};walk(SUB.folder);const fs=R.files.filter(f=>ids.includes(f.folder));
+    if(!confirm(`이 폴더${ids.length>1?'(하위 폴더 포함)':''}와 안의 파일 ${fs.length}개를 지울까요?`))return;for(const f of fs)try{await idb.del('files',f.id)}catch(_){}
+    R.files=R.files.filter(f=>!ids.includes(f.folder));const cur=R.folders.find(x=>x.id===SUB.folder);R.folders=R.folders.filter(f=>!ids.includes(f.id));SUB.folder=cur?cur.parent||'':'';save();render()},
+  upload:()=>{$('#fileUp').value='';$('#fileUp').click()},
+  fopen:async t=>{const f=await idb.get('files',t.dataset.v);if(!f){toast('파일을 찾지 못했어요');return}const meta=R.files.find(x=>x.id===t.dataset.v)||{};const b=f.blob||f,url=URL.createObjectURL(b);
+    if(/image/.test(b.type)){const m=modal(`<h2>${esc(meta.name||'')}</h2><img src="${url}" style="width:100%;border-radius:10px"><div class="row" style="margin-top:8px"><button data-close>닫기</button></div>`)}else{const w=open(url,'_blank');if(!w)dl(b,meta.name||'file')}},
+  fdown:async t=>{const f=await idb.get('files',t.dataset.v);const meta=R.files.find(x=>x.id===t.dataset.v)||{};if(f)dl(f.blob||f,meta.name||'file')},
+  fdel:async t=>{const meta=R.files.find(x=>x.id===t.dataset.v);if(!confirm(`‘${meta.name}’을(를) 지울까요?`))return;try{await idb.del('files',meta.id)}catch(_){}R.files=R.files.filter(x=>x.id!==meta.id);save();render()},
+  fmv:t=>{const meta=R.files.find(x=>x.id===t.dataset.v);const opts=[['','🏠 자료실 (맨 위)'],...R.folders.map(f=>[f.id,'📁 '+fpath(f.id)])];const m=modal(`<h2>↪ 다른 폴더로 옮기기</h2><p>${esc(meta.name)}</p><select id="mvTo" style="width:100%">${opts.map(([v,l])=>`<option value="${v}"${v===meta.folder?' selected':''}>${esc(l)}</option>`).join('')}</select><div class="row" style="margin-top:10px"><button class="pri" id="mvGo">옮기기</button><button data-close>취소</button></div>`);
+    m.querySelector('#mvGo').onclick=()=>{meta.folder=m.querySelector('#mvTo').value;save();m.remove();render()}},
+  /* 회계 */
+  ledType:t=>{SUB.ledType=t.dataset.v;if(SUB.ledEdit){const x=R.acc.items.find(i=>i.id===SUB.ledEdit);if(x){x.type=t.dataset.v;x.cat=R.acc.cats[x.type][0]}}render()},
+  rcpPick:()=>{$('#rcpUp').value='';$('#rcpUp').click()},
+  ledSave:async()=>{const amt=+$('#lAmt').value;if(!amt){toast('금액을 적어 주세요');$('#lAmt').focus();return}
+    const ed=SUB.ledEdit?R.acc.items.find(x=>x.id===SUB.ledEdit):null;const ty=ed?ed.type:(SUB.ledType||'in');
+    const it=ed||{id:uid(),type:ty};Object.assign(it,{date:$('#lDate').value||todayStr(),cat:$('#lCat').value,amount:amt,who:$('#lWho').value.trim(),memo:$('#lMemo').value.trim()});
+    if(SUB.rcpFile&&ty==='out'){const f=SUB.rcpFile,id=uid();await idb.put('files',id,{blob:f});if(it.rcp){try{await idb.del('files',it.rcp)}catch(_){}R.files=R.files.filter(x=>x.id!==it.rcp)}R.files.push({id,folder:'__rcp',name:`영수증_${it.date}_${it.memo||it.cat}${(f.name.match(/\.[a-z0-9]+$/i)||[''])[0]}`,size:f.size,type:f.type,date:new Date().toISOString()});it.rcp=id}
+    if(!ed)R.acc.items.push(it);SUB.rcpFile=null;SUB.ledEdit=null;save();render();toast(ed?'고쳤어요':'적었어요')},
+  ledEdit:t=>{SUB.ledEdit=t.dataset.v;SUB.rcpFile=null;render();scrollTo(0,0)},ledCancel:()=>{SUB.ledEdit=null;SUB.rcpFile=null;render()},
+  ledDel:async t=>{const x=R.acc.items.find(i=>i.id===t.dataset.v);if(!confirm(`${x.date} ${x.memo||x.cat} ${won(x.amount)}원을 지울까요?`))return;if(x.rcp){try{await idb.del('files',x.rcp)}catch(_){}R.files=R.files.filter(f=>f.id!==x.rcp)}R.acc.items=R.acc.items.filter(i=>i.id!==x.id);save();render()},
+  accCopy:()=>{const A=R.acc;let bal=0;const L=A.items.slice().sort((a,b)=>String(a.date).localeCompare(String(b.date)));const tin=L.filter(x=>x.type==='in').reduce((s,x)=>s+(+x.amount||0),0),tout=L.filter(x=>x.type==='out').reduce((s,x)=>s+(+x.amount||0),0);
+    copy(`💰 ${R.name} 회계보고\n수입 ${won(tin)}원 / 지출 ${won(tout)}원 / 잔액 ${won(tin-tout)}원\n\n`+L.map(x=>{bal+=(x.type==='in'?1:-1)*(+x.amount||0);return `${x.date} ${x.type==='in'?'수입':'지출'} ${x.cat} ${x.type==='in'?'+':'-'}${won(x.amount)} ${x.memo||''}${x.who?'('+x.who+')':''} → 잔액 ${won(bal)}`}).join('\n'))},
+  /* 참석인원 */
+  pAdd:()=>{const p={id:uid(),name:''};R.people.unshift(p);save();render();setTimeout(()=>{const el=$(`[data-o="people#${p.id}"][data-k="name"]`);if(el)el.focus()},30)},
+  pDel:t=>{const p=P(t.dataset.v);if(p.name&&!confirm(`${p.name}님을 참석인원에서 지울까요? 차량·조·방 배정과 담당에서도 빠져요.`))return;purge(p.id);save();render()},
+  xls:()=>{$('#xlsUp').value='';$('#xlsUp').click()},
+  pExport:()=>{const H=[...PF.map(x=>x[1]),'구분','직책','맡은 역할','찬양팀','찬양 파트'];const q=v=>{v=String(v??'');return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+    const rows=R.people.map(p=>[...PF.map(([k])=>p[k]||''),p.prep==='min'?'사역자':p.prep==='staff'?'준비인원':'',p.role||'',p.duty||'',p.praise?'O':'',(p.parts||[]).join('/')]);
+    dl(new Blob(['﻿'+[H,...rows].map(r=>r.map(q).join(',')).join('\r\n')],{type:'text/csv'}),R.name+'_참석인원.csv')},
+  /* 배정 */
+  dir:t=>{SUB.dir=t.dataset.v;render()},
+  carAdd:()=>{R.cars.list.push({id:uid(),dir:SUB.dir,type:R.cars.types[SUB.dir][0]||'',members:[]});save();render()},
+  gApply:()=>{const n=Math.max(0,Math.min(60,+$('#gCnt').value||0)),G=R.grp.list;if(n<G.length){const lost=G.slice(n).reduce((s,g)=>s+(g.members||[]).length,0);if(lost&&!confirm(`${G.length-n}개 조를 줄이면 그 조의 ${lost}명이 미배정으로 돌아가요. 할까요?`))return;G.length=n}else for(let i=G.length;i<n;i++)G.push({id:uid(),name:(i+1)+'조',members:[],leader:'',staff:[],roles:{}});save();render()},
+  gAuto:()=>{const G=R.grp.list;if(!G.length){toast('조 개수를 먼저 정해 주세요');return}const used=new Set(G.flatMap(g=>g.members||[]));const noPrep=$('#gNoPrep').checked;
+    const L=R.people.filter(p=>!used.has(p.id)&&!(noPrep&&p.prep)).sort((a,b)=>String(a.gender||'').localeCompare(String(b.gender||''))||(parseInt(a.age)||0)-(parseInt(b.age)||0));
+    L.forEach(p=>{const g=G.slice().sort((a,b)=>(a.members.length-b.members.length)||(a.members.filter(id=>(P(id)||{}).gender===p.gender).length-b.members.filter(id=>(P(id)||{}).gender===p.gender).length))[0];g.members.push(p.id)});save();render();toast(`${L.length}명을 배정했어요`)},
+  gClear:()=>{if(!confirm('모든 조의 조원·조장을 비울까요?'))return;R.grp.list.forEach(g=>{g.members=[];g.leader='';g.roles={}});save();render()},
+  gCopy:()=>copy(`🧩 ${R.name} 조 편성\n`+R.grp.list.map(g=>`\n[${g.name}] ${(g.members||[]).length}명`+(R.grp.useLeader&&g.leader?`\n조장: ${pn(g.leader)}`:'')+(R.grp.useStaff&&(g.staff||[]).length?`\n담당스탭: ${g.staff.map(pn).join(', ')}`:'')+`\n`+(g.members||[]).map(id=>pn(id)+((g.roles||{})[id]?'('+g.roles[id]+')':'')).join(', ')).join('\n')),
+  roomAdd:()=>{const n=$('#rN').value.trim();if(!n){toast('방 이름을 적어 주세요');$('#rN').focus();return}const b=$('#rB').value.trim()||'건물',f=$('#rF').value.trim();SUB.rB=b;SUB.rF=f;
+    const same=R.rooms.filter(r=>(r.building||'건물')===b&&(r.floor||'')===f).length;R.rooms.push({id:uid(),building:b,floor:f,name:n,cap:+$('#rC').value||null,gender:$('#rG').value,captain:'',members:[],x:10+(same%4)*215,y:30+Math.floor(same/4)*190});save();render();setTimeout(()=>$('#rN')&&$('#rN').focus(),30)},
+  roomEdit:t=>{const r=R.rooms.find(x=>x.id===t.dataset.v);const m=modal(`<h2>✎ 방 고치기</h2><div class="f2"><label class="fld">건물<input id="eB" value="${esc(r.building||'')}"></label><label class="fld">층<input id="eF" value="${esc(r.floor||'')}"></label><label class="fld">방 이름<input id="eN" value="${esc(r.name||'')}"></label><label class="fld">수용인원<input id="eC" type="number" value="${esc(r.cap??'')}"></label><label class="fld">구분<select id="eG">${[['','구분 없음'],['남','남자방'],['여','여자방'],['스탭','스탭방']].map(([v,l])=>`<option value="${v}"${r.gender===v?' selected':''}>${l}</option>`).join('')}</select></label></div>
+    <div class="row" style="margin-top:10px"><button class="pri" id="eGo">저장</button><button data-close>취소</button><span class="sp"></span><button class="danger" id="eDel">방 지우기</button></div>`);
+    m.querySelector('#eGo').onclick=()=>{Object.assign(r,{building:m.querySelector('#eB').value.trim()||'건물',floor:m.querySelector('#eF').value.trim(),name:m.querySelector('#eN').value.trim()||r.name,cap:+m.querySelector('#eC').value||null,gender:m.querySelector('#eG').value});save();m.remove();render()};
+    m.querySelector('#eDel').onclick=()=>{if(!confirm(`${r.name}을(를) 지울까요? 배정된 ${(r.members||[]).length}명은 미배정으로 돌아가요.`))return;R.rooms=R.rooms.filter(x=>x.id!==r.id);save();m.remove();render()}},
+  roomCopy:()=>copy(`🛏️ ${R.name} 방 배정\n`+R.rooms.map(r=>`\n[${r.building||''} ${r.floor||''} ${r.name}] ${(r.members||[]).length}/${r.cap||'?'}명${r.captain?' · 방장 '+pn(r.captain):''}\n`+(r.members||[]).map(pn).join(', ')).join('\n')),
+};
+function fpath(id){const L=[];let c=id;while(c){const f=R.folders.find(x=>x.id===c);if(!f)break;L.unshift(f.name);c=f.parent}return L.join(' › ')}
+function purge(id){R.people=R.people.filter(p=>p.id!==id);const rm=a=>(a||[]).filter(x=>x!==id);
+  R.sched.forEach(t=>t.who=rm(t.who));R.programs.forEach(t=>t.who=rm(t.who));R.minutes.forEach(m=>m.att=rm(m.att));
+  R.cars.list.forEach(c=>{c.members=rm(c.members);if(c.driver===id)c.driver=''});R.grp.list.forEach(g=>{g.members=rm(g.members);g.staff=rm(g.staff);if(g.leader===id)g.leader='';if(g.roles)delete g.roles[id]});
+  R.rooms.forEach(r=>{r.members=rm(r.members);if(r.captain===id)r.captain=''});R.sup.forEach(s=>{if(s.owner===id)s.owner=''})}
+function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)}
+async function copy(t){try{await navigator.clipboard.writeText(t);toast('📋 복사했어요. 카톡에 붙여넣으세요')}catch(e){const x=document.createElement('textarea');x.value=t;document.body.appendChild(x);x.select();try{document.execCommand('copy');toast('📋 복사했어요')}catch(_){toast('복사하지 못했어요')}x.remove()}}
+function indent(dir){const b=$('#mbody');if(!b)return;const v=b.value,s=b.selectionStart,e=b.selectionEnd;const ls=v.lastIndexOf('\n',s-1)+1;let le=v.indexOf('\n',Math.max(s,e-1));if(le<0)le=v.length;
+  const lines=v.slice(ls,le).split('\n');let d0=0,dT=0;const out=lines.map((l,i)=>{if(dir>0){if(i===0)d0=2;dT+=2;return '  '+l}const m=l.match(/^( {1,2}|\t)/);if(!m)return l;if(i===0)d0=-m[0].length;dT-=m[0].length;return l.slice(m[0].length)});
+  b.value=v.slice(0,ls)+out.join('\n')+v.slice(le);b.selectionStart=Math.max(ls,s+d0);b.selectionEnd=Math.max(ls,e+dT);b.dispatchEvent(new Event('input',{bubbles:true}));b.focus()}
+
+/* 백업 */
+async function backup(){toast('백업 파일을 만드는 중…');const files={};for(const f of R.files){try{const x=await idb.get('files',f.id);if(x){const b=x.blob||x;files[f.id]=await new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(fr.result);fr.readAsDataURL(b)})}}catch(_){}}
+  dl(new Blob([JSON.stringify({app:'camp-pack',v:1,camp:R,files})],{type:'application/json'}),`${R.name}_백업_${todayStr()}.json`)}
+async function restore(file){try{const d=JSON.parse(await file.text());if(d.app!=='camp-pack'||!d.camp)throw 0;const c=fill(d.camp);const old=await idb.get('camps',c.id);
+  if(old&&!confirm(`‘${old.name}’이(가) 이미 있어요. 백업 내용으로 덮어쓸까요? (취소하면 새 수련회로 추가해요)`)){const map={};c.id=uid();c.name+=' (백업)';for(const f of c.files){const n=uid();map[f.id]=n;f.id=n}c.acc.items.forEach(x=>{if(x.rcp)x.rcp=map[x.rcp]});const F={};for(const k in d.files)F[map[k]||k]=d.files[k];d.files=F}
+  for(const id in d.files){const b=await (await fetch(d.files[id])).blob();await idb.put('files',id,{blob:b})}await idb.put('camps',c.id,c);location.href='./?c='+c.id}catch(e){toast('수련회 백업 파일이 아니에요')}}
+
+/* 엑셀·CSV 불러오기 */
+function loadXLSX(){return window.XLSX?Promise.resolve():new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
+const GUESS={name:/^(이름|성명|성함|name)|이름|성명/i,gender:/성별/,age:/나이|연령|생년|출생|학년/,org:/소속|교구|셀|목장|부서|학교|공동체/,addr:/사는|주소|거주|지역|동네/,phone:/연락처|전화|핸드폰|휴대폰|폰|phone/i,ins:/보험/,inT:/들어오|입소|도착|오는|참석.*시작/,outT:/나가|퇴소|귀가|떠나|가는/};
+async function importXls(file){try{await loadXLSX()}catch(e){toast('엑셀 도구를 불러오지 못했어요. 인터넷 연결을 확인해 주세요');return}
+  let rows;try{const wb=XLSX.read(await file.arrayBuffer(),{type:'array'});rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:'',raw:false})}catch(e){toast('파일을 읽지 못했어요');return}
+  const hi=rows.findIndex(r=>r.filter(x=>String(x).trim()).length>=2);if(hi<0){toast('내용이 없어요');return}
+  const H=rows[hi].map(x=>String(x).trim()),data=rows.slice(hi+1).filter(r=>r.some(x=>String(x).trim()));
+  const map={};PF.forEach(([k])=>{const i=H.findIndex((h,j)=>GUESS[k].test(h)&&!Object.values(map).includes(j));map[k]=i});
+  const m=modal(`<h2>📊 엑셀·CSV 불러오기</h2><p>${data.length}명의 응답을 찾았어요. 각 항목이 어느 칸(열)인지 확인해 주세요.</p>
+   <div class="f2">${PF.map(([k,l])=>`<label class="fld">${l}<select data-map="${k}"><option value="-1">— 없음 —</option>${H.map((h,j)=>`<option value="${j}"${map[k]===j?' selected':''}>${esc(h||('('+(j+1)+'번째 열)'))}</option>`).join('')}</select></label>`).join('')}</div>
+   <p class="hint">이미 있는 사람(이름과 핸드폰번호가 같은 사람)은 새 내용으로 채워요.</p>
+   <div class="row"><button class="pri" id="xGo">${data.length}명 추가</button><button data-close>취소</button></div>`);
+  m.querySelector('#xGo').onclick=()=>{const mp={};m.querySelectorAll('[data-map]').forEach(s=>mp[s.dataset.map]=+s.value);if(mp.name<0){toast('이름 칸을 골라 주세요');return}
+    let add=0,upd=0;const norm=s=>String(s||'').replace(/\D/g,'');
+    data.forEach(r=>{const g=k=>mp[k]>=0?String(r[mp[k]]??'').trim():'';const name=g('name');if(!name)return;
+      const o={name,age:g('age'),org:g('org'),addr:g('addr'),phone:g('phone'),inT:g('inT'),outT:g('outT')};
+      const gd=g('gender');o.gender=/여|female|^f$/i.test(gd)?'여':/남|male|^m$/i.test(gd)?'남':'';
+      const ins=g('ins');o.ins=/미가입|아니|없|no|x/i.test(ins)?'미가입':/가입|예|네|있|yes|o/i.test(ins)?'가입':'';
+      const ex=R.people.find(p=>p.name===name&&norm(p.phone)===norm(o.phone));
+      if(ex){for(const k in o)if(o[k])ex[k]=o[k];upd++}else{R.people.push({id:uid(),...o});add++}});
+    save();m.remove();render();toast(`${add}명 추가${upd?`, ${upd}명 갱신`:''}했어요`)}}
+
+/* ============ 이벤트 ============ */
+document.addEventListener('click',e=>{const t=e.target.closest('[data-act]');if(!t||t.tagName==='SELECT')return;const f=ACT[t.dataset.act];if(f){if(t.tagName==='A'&&t.getAttribute('href')==='#')e.preventDefault();f(t,e)}});
+function apply(t){const o=objOf(t.dataset.o);if(!o)return;const k=t.dataset.k;let v=t.type==='checkbox'?t.checked:t.dataset.t==='n'?(t.value===''?null:+t.value):t.value;if(t.dataset.o==='.'&&k==='nights')v=+v;o[k]=v;save()}
+document.addEventListener('input',e=>{const t=e.target;
+  if(t.id==='mq'){SUB.mq=t.value;clearTimeout(t._t);t._t=setTimeout(render,250);return}
+  if(t.id==='pq'){filterPeople(t.value);return}if(t.id==='poolQ'){filterPool(t.value);return}
+  if(t.dataset.o==null||t.tagName==='SELECT'||t.type==='checkbox')return;apply(t);if(t.id==='mbody')updPrev()});
+document.addEventListener('change',e=>{const t=e.target;
+  if(t.tagName==='SELECT'&&t.dataset.act==='addTo'){if(!t.value)return;const o=objOf(t.dataset.o);(o[t.dataset.k]=o[t.dataset.k]||[]).push(t.value);save();render();return}
+  if(t.tagName==='SELECT'&&t.dataset.act==='assign'){if(t.value)assign(t.value,t.dataset.to,null);return}
+  if(t.tagName==='SELECT'&&t.dataset.act==='gRole'){const g=R.grp.list.find(x=>x.id===t.dataset.g);g.roles=g.roles||{};if(t.value)g.roles[t.dataset.pid]=t.value;else delete g.roles[t.dataset.pid];save();return}
+  if(t.dataset.o==null)return;if(t.tagName==='SELECT'||t.type==='checkbox')apply(t);
+  if(t.dataset.o.startsWith('people#')&&t.dataset.k==='prep'){const p=objOf(t.dataset.o);p.role=''}
+  if(t.dataset.rr!==undefined)rr()});
+document.addEventListener('keydown',e=>{const t=e.target;
+  if(t.dataset&&t.dataset.leAdd&&e.key==='Enter'&&!e.isComposing){e.preventDefault();const v=t.value.trim();if(!v)return;const a=objOf(t.dataset.leAdd);if(a.includes(v)){toast('이미 있어요');return}a.push(v);save();render();const n=$(`[data-le-add="${t.dataset.leAdd}"]`);if(n)n.focus();return}
+  if(t.id==='critNew'&&e.key==='Enter'&&!e.isComposing){const v=t.value.trim();if(!v)return;const id='c_'+uid();R.venue.crit.push({id,name:v});R.venue.w[id]=0;save();render();const n=$('#critNew');if(n)n.focus();toast('가중치를 다시 맞춰 주세요 (합계 100%)');return}
+  if(t.id==='chkT'&&e.key==='Enter'&&!e.isComposing){ACT.chkAdd();return}
+  if(t.id==='rN'&&e.key==='Enter'&&!e.isComposing){ACT.roomAdd();return}
+  if(t.id==='mbody'){if(e.key==='Tab'){e.preventDefault();indent(e.shiftKey?-1:1);return}
+    if(e.key==='Enter'&&!e.isComposing&&!e.shiftKey){const v=t.value,s=t.selectionStart;const ls=v.lastIndexOf('\n',s-1)+1;const line=v.slice(ls,s);const ind=line.match(/^[\t ]*/)[0];
+      if(!ind)return;e.preventDefault();let ins='\n'+ind;if(!line.trim()&&t.selectionEnd===s){/* 빈 줄에서 Enter → 한 단계 위로 */const nw=ind.slice(2);t.value=v.slice(0,ls)+nw+v.slice(s);t.selectionStart=t.selectionEnd=ls+nw.length}else{t.value=v.slice(0,s)+ins+v.slice(t.selectionEnd);t.selectionStart=t.selectionEnd=s+ins.length}t.dispatchEvent(new Event('input',{bubbles:true}))}}});
+/* 끌어다 놓기 */
+document.addEventListener('dragstart',e=>{const c=e.target.closest&&e.target.closest('.chip[data-pid]');if(!c)return;e.dataTransfer.setData('text/plain',JSON.stringify({pid:c.dataset.pid,from:c.dataset.from}));e.dataTransfer.effectAllowed='move'});
+document.addEventListener('dragover',e=>{const z=e.target.closest&&e.target.closest('[data-drop]');if(!z)return;e.preventDefault();$$('.drop-on').forEach(x=>x!==z&&x.classList.remove('drop-on'));z.classList.add('drop-on')});
+document.addEventListener('dragleave',e=>{const z=e.target.closest&&e.target.closest('[data-drop]');if(z&&!z.contains(e.relatedTarget))z.classList.remove('drop-on')});
+document.addEventListener('drop',e=>{const z=e.target.closest&&e.target.closest('[data-drop]');$$('.drop-on').forEach(x=>x.classList.remove('drop-on'));if(!z)return;e.preventDefault();let d;try{d=JSON.parse(e.dataTransfer.getData('text/plain'))}catch(_){return}if(!d||!d.pid||d.from===z.dataset.drop)return;assign(d.pid,z.dataset.drop,d.from)});
+/* 파일 입력 */
+$('#fileUp').onchange=async e=>{const fs=[...e.target.files];if(!fs.length)return;toast('올리는 중…');for(const f of fs){const id=uid();try{await idb.put('files',id,{blob:f});R.files.push({id,folder:SUB.folder||'',name:f.name,size:f.size,type:f.type,date:new Date().toISOString()})}catch(err){toast('저장하지 못한 파일: '+f.name)}}save();render();toast(`${fs.length}개 올렸어요`)};
+$('#xlsUp').onchange=e=>{const f=e.target.files[0];if(f)importXls(f)};
+$('#bakUp').onchange=e=>{const f=e.target.files[0];if(f)restore(f)};
+$('#rcpUp').onchange=e=>{const f=e.target.files[0];if(f){SUB.rcpFile=f;const n=$('#rcpName');if(n)n.textContent='🧾 '+f.name}};
+
+/* ============ 시작 ============ */
+(async()=>{try{await idb.open()}catch(e){$('#app').innerHTML='<div class="card"><div class="empty">이 브라우저에서는 저장소를 쓸 수 없어요. (시크릿 창이면 일반 창에서 열어 주세요)</div></div>';return}
+  try{TAB=localStorage.getItem('camp-tab')||'staff'}catch(_){}if(!TABS.some(x=>x[0]===TAB))TAB='staff';
+  const cid=new URLSearchParams(location.search).get('c');
+  if(cid){const c=await idb.get('camps',cid);if(!c){location.replace('./');return}R=fill(c);document.title=R.name+' | 수련회 준비 패키지'}
+  else CAMPS=(await idb.all('camps'))||[];
+  render()})();
+})();
+</script>
+<script src="../assets/scene.js?v=20261116d"></script>
+<script src="../assets/home.js?v=20261118"></script>
+</body></html>
