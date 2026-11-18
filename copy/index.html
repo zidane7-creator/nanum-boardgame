@@ -54,7 +54,19 @@ h2{font-weight:normal;margin:0 0 10px;font-size:21px}
 .ref iframe{position:absolute;left:0;top:0;width:1024px;border:0;transform-origin:0 0}
 .vers{display:inline-flex;border:2px solid var(--ink);border-radius:12px;overflow:hidden}
 .vers button{border:0;border-radius:0;box-shadow:none;padding:4px 10px;background:#fff;font-size:14px}.vers button.on{background:var(--gold)}
-textarea#tx{width:100%;min-height:300px;font-family:"Gowun Batang",serif;font-size:19px;line-height:1.9;resize:vertical;background:repeating-linear-gradient(#fff 0 35px,#e8dcc6 35px 36px);background-attachment:local}
+.ed{position:relative;border:2px solid var(--ink);border-radius:12px;background:#fff;overflow:hidden}
+.ed .bd,.ed textarea{font-family:"Gowun Batang",serif;font-size:19px;line-height:36px;padding:6px 12px 6px 46px;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:break-word;word-break:normal;letter-spacing:0;tab-size:4}
+.ed .bd{position:absolute;inset:0;color:transparent;pointer-events:none;overflow:hidden;background:repeating-linear-gradient(transparent 0 35px,#e8dcc6 35px 36px);background-position:0 6px}
+.ed .bd .vl{position:relative;min-height:36px}
+.ed .bd .vn{position:absolute;left:-40px;width:32px;text-align:right;color:#b08a5a;font-family:"Jua",sans-serif;font-size:14px}
+.ed .bd .vl.cur{background:rgba(59,130,196,.10)}
+.ed .bd .vl.cur .vn{color:#3b82c4;font-size:16px;font-weight:bold}
+.ed .bd .vl.dn .vn{color:#5aa957}
+.ref .vband{position:absolute;left:0;right:0;height:var(--h,40px);background:rgba(59,130,196,.16);border-left:5px solid #3b82c4;pointer-events:none;z-index:2;transition:top .35s ease}
+.ref .vband span{position:absolute;left:6px;top:-11px;background:#3b82c4;color:#fff;border-radius:8px;padding:0 8px;font-size:12px}
+.ed .bd .vl.over .vn{color:#c9b79e}
+.ed textarea{position:relative;display:block;width:100%;min-height:300px;border:0;border-radius:0;background:transparent;resize:vertical;outline:none;color:var(--ink)}
+.vnow{display:flex;justify-content:space-between;align-items:center;margin:8px 0 4px;font-size:16px}.vnow b{color:#3b82c4;font-size:22px}
 .prog{height:8px;background:#eee3d0;border-radius:5px;overflow:hidden;margin:6px 0}.prog i{display:block;height:100%;background:var(--gold);transition:width .3s}
 .grow{animation:grow 1.2s ease-out}
 @keyframes grow{0%{transform:scale(.96);filter:brightness(1.3)}60%{transform:scale(1.03)}}
@@ -157,7 +169,8 @@ function openP(i,c,grew){cur=i;const p=DB.list[i];if(!p){home();return}const N=B
       <div class="vers"><button data-v="GAE" class="${ver==="GAE"?"on":""}">개역개정</button><button data-v="SAENEW" class="${ver==="SAENEW"?"on":""}">새번역</button></div></div>
       <p class="hint" style="margin:6px 0">위의 본문을 보며 아래에 따라 써요. <b>장·절 번호는 쓰지 않고 말씀만</b> 적으면 돼요.</p>
       <div class="ref" id="ref"><iframe id="rf" title="성경 본문" referrerpolicy="no-referrer" scrolling="no"></iframe></div>
-      <textarea id="tx" placeholder="여기에 말씀을 적어 보세요"></textarea>
+      <div class="vnow"><span>✍️ 지금 <b id="vNow">1</b>절 쓰는 중 <span class="hint" id="vTot"></span></span><span class="hint">한 절을 다 쓰면 Enter로 줄을 바꿔요</span></div>
+      <div class="ed"><div class="bd" id="bd" aria-hidden="true"></div><textarea id="tx" spellcheck="false" placeholder="1절부터 말씀을 적어 보세요. 한 절이 끝나면 Enter를 눌러요"></textarea></div>
       <div class="prog"><i id="pg"></i></div><div class="row" style="justify-content:space-between"><span class="hint" id="cnt"></span>
       <div class="row"><button class="sm" id="prevC">◀ 이전 장</button><button class="go" id="doneC"></button><button class="sm" id="nextC">다음 장 ▶</button></div></div></div>
   </div></div>`;
@@ -174,7 +187,24 @@ function openP(i,c,grew){cur=i;const p=DB.list[i];if(!p){home();return}const N=B
   const upd=()=>{/* 장·절 번호는 빼고 글자만 세요 */const n=tx.value.replace(/[0-9\s.,:;'"“”‘’!?·\-()]/g,"").length,r=Math.min(1,n/nd);$("pg").style.width=r*100+"%";
     $("cnt").textContent=`${n.toLocaleString()}자 · ${r>=1?"다 쓸 만큼 썼어요":"조금 더 써 주세요"}`;const dn=p.done.includes(curC);
     $("doneC").textContent=dn?"✔ 다 쓴 장":"🌱 이 장 다 썼어요";$("doneC").disabled=dn||r<1};
-  let st;tx.oninput=()=>{upd();clearTimeout(st);st=setTimeout(()=>setTx(p.id,curC,tx.value),400)};upd();
+  /* 줄마다 절 번호: Enter로 나눈 줄 하나가 한 절이에요. 커서가 있는 줄이 지금 쓰는 절 */
+  const bd=$("bd");$("vTot").textContent=`(${curC}장은 ${vn}절까지)`;let lastV=0;
+  const curLine=()=>tx.value.slice(0,tx.selectionStart).split("\n").length;
+  /* 본문은 지금 쓰는 절 근처로 자동 스크롤 (공식 페이지라 위치는 대략이에요) */
+  
+  /* 공식 페이지 배치: 1절이 위에서 약 612px, 한 줄 32px, 한 줄에 한글 약 42자.
+     이미 쓴 절은 내가 쓴 글 길이로 몇 줄인지 어림하고, 아직 안 쓴 절은 두 줄로 쳐요 */
+  const units=t=>{let u=0;for(const ch of t)u+=/\s/.test(ch)?.35:/[0-9]/.test(ch)?.55:/[.,:;!?'"“”‘’()·\-]/.test(ch)?.4:1;return u};
+  const linesOf=(t,k)=>t&&t.trim()?Math.max(1,Math.ceil((units(t.trim())+String(k).length*.55+1.1)/42)):2;
+  const scrollRef=v=>{const sc=ref.clientWidth/647,L=tx.value.split("\n");let y=612;for(let k=1;k<Math.min(v,vn);k++)y+=linesOf(L[k-1],k)*32;
+    const top=(y-337)*sc;
+    ref.scrollTo({top:Math.max(0,top-40),behavior:"smooth"})};
+  const paint=()=>{const lines=tx.value.split("\n"),cv=curLine();
+    bd.innerHTML=lines.map((l,k)=>`<div class="vl${k+1===cv?" cur":k+1<cv&&l.trim()?" dn":""}${k+1>vn?" over":""}"><span class="vn">${k+1<cv&&l.trim()?"✓":""}${k+1}</span>${esc(l)||"&#8203;"}</div>`).join("");
+    bd.scrollTop=tx.scrollTop;const v=Math.min(cv,vn);$("vNow").textContent=cv>vn?`${vn}절 다음`:cv;if(v!==lastV){lastV=v;scrollRef(v)}else{clearTimeout(paint.t);paint.t=setTimeout(()=>scrollRef(v),600)}};
+  let st;tx.oninput=()=>{upd();paint();clearTimeout(st);st=setTimeout(()=>setTx(p.id,curC,tx.value),400)};
+  ["keyup","click","select"].forEach(ev=>tx.addEventListener(ev,paint));tx.addEventListener("scroll",()=>{bd.scrollTop=tx.scrollTop});
+  new ResizeObserver(paint).observe(tx);upd();paint();
   $("doneC").onclick=()=>{setTx(p.id,curC,tx.value);if(!p.done.includes(curC))p.done.push(curC);p.done.sort((a,b)=>a-b);save();
     const d2=p.done.length;toast(d2===N?`🎉 ${BOOKS[p.b][0]}를 다 썼어요! 나무에 열매가 맺혔어요`:`🌱 ${curC}장 완료! 나무가 자랐어요 (${d2}/${N})`,3000);openP(i,nextChap(p),true)}}
 home();
