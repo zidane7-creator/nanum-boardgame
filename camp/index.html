@@ -129,15 +129,23 @@ label.paid.on{background:#dff3e4;color:#1f6a35}
 .prow:nth-child(odd):not(.phead){background:#fffaf0}
 .prow .c input,.prow .c select{width:100%}
 .prow .w2{grid-column:span 2}
-.prow .no{color:var(--muted);font-size:13px;padding-top:6px;grid-row:span 2}
+.prow .no{color:var(--muted);font-size:13px;padding-top:6px;grid-row:span 3}
+.prow .mv,.phead .w4{grid-column:span 4}
+.mvr{display:flex;flex-wrap:wrap;gap:4px}.prow .mvr select,.prow .mvr input{width:auto;font-size:13px;padding:3px 4px}
+.prow .mv{background:#f6efe2;border-radius:10px;padding:4px}
 .prow .no2{display:none}
 .prow .del{text-align:right}
 .phead{position:sticky;top:56px;z-index:4;background:var(--soft);border-radius:10px;font-size:13px;font-weight:600;padding:5px 4px;gap:2px 8px}
-.phead>div:nth-child(9){display:none}.phead>div:first-child{grid-row:span 2}
-@media (max-width:820px){.phead{display:none}.prow{grid-template-columns:repeat(2,minmax(0,1fr))}.prow .no{grid-row:auto;grid-column:1/-1;padding:0}.prow .w2{grid-column:span 2}
+.phead>div:nth-child(9){display:none}.phead>div:first-child{grid-row:span 3}
+@media (max-width:820px){.phead{display:none}.prow{grid-template-columns:repeat(2,minmax(0,1fr))}.prow .mv{grid-column:1/-1}.prow .no{grid-row:auto;grid-column:1/-1;padding:0}.prow .w2{grid-column:span 2}
  .prow .c::before{content:attr(data-l);display:block;font-size:11px;color:var(--muted)}.prow .del{grid-column:1/-1}}
 .meth{font-size:12px;white-space:nowrap}.m-c{background:#fff3c4;border-color:#ebc95f}.m-b{background:#e3efff;border-color:#9bbde3}.m-k{background:#f1e4ff;border-color:#c9a9ec}
 select.pm{font-size:12px;padding:1px 3px;margin-top:3px;width:100%}
+.sugg{margin-top:6px;background:#fff1e0;border:1.5px dashed #d9822b;border-radius:10px;padding:5px 6px;font-size:13px}
+.sugg button{margin:2px;background:#fff;font-size:13px;white-space:normal;text-align:left}
+.autoc{font-size:13px;background:#eef6ea;border-radius:8px;padding:3px 7px;margin-bottom:5px}
+.box.vfinal{border-color:var(--green);box-shadow:0 0 0 3px #bfe6c9}
+.vfin-tag{display:inline-block;background:var(--green);color:#fff;border-radius:8px;padding:1px 8px;font-size:13px;margin-bottom:5px}
 /* supplies */
 .steps{display:flex;flex-wrap:wrap;gap:2px}
 .steps button{font-size:12px;padding:1px 6px;border-radius:7px;background:#fff;border-color:#cdbda6;color:var(--muted)}
@@ -264,7 +272,7 @@ function fill(R){
   d('acc',{});if(!R.acc.cats)R.acc.cats={in:['수련회비','후원','지원금','기타'],out:['준비(데코)','준비(간식)','준비(프로그램)','장소비','강사비','식사','간식','기타']};if(!R.acc.items)R.acc.items=[];
   d('cars',{});if(!R.cars.types)R.cars.types={in:['버스 본대','버스 후발대','자차 본대','자차 후발대','스탭차'],out:['버스 본대','버스 후발대','자차 본대','자차 후발대','스탭차']};if(!R.cars.list)R.cars.list=[];
   d('grp',{});const g=R.grp;if(!g.roles)g.roles=['부조장','서기'];if(g.useLeader==null)g.useLeader=true;if(g.useStaff==null)g.useStaff=true;if(!g.list)g.list=[];
-  d('rooms',[]);
+  d('rooms',[]);d('notices',[]);
   d('fee',{});if(R.fee.base===undefined)R.fee.base=null;if(!R.fee.rules)R.fee.rules=[];
   R.cars.list.forEach(c=>{if(c.time&&!/^\d{2}:\d{2}$/.test(c.time)){const dm=String(c.time).match(/(\d+)\s*일차/),tm=String(c.time).match(/(\d{1,2})\s*[:시]\s*(\d{2})?/);if(dm&&c.day==null)c.day=+dm[1]-1;c.time=tm?pad(+tm[1])+':'+pad(+(tm[2]||0)):''}});
   return R}
@@ -313,7 +321,7 @@ function addSel(to,cands){return `<select data-act="assign" data-to="${to}" styl
 function poolHTML(cands,label){return `<div class="pool" data-drop="pool"><div class="row" style="margin-bottom:4px"><b class="j">🙋 ${esc(label)} (${cands.length})</b><span class="hint">이름을 끌어다 놓거나, 각 칸의 ‘+ 추가’로 넣어요</span><input id="poolQ" placeholder="이름 찾기" style="margin-left:auto;width:120px" value="${esc(SUB.poolQ||'')}"></div>${cands.length?cands.slice().sort(byName).map(p=>CHIP(p.id,'pool')).join(''):'<span class="hint">모두 배정했어요 👏</span>'}</div>`}
 
 /* ============ 메뉴 ============ */
-const TABS=[['people','🙋 참석인원'],['staff','👥 준비인원'],['praise','🎸 찬양팀'],['minutes','📝 회의록'],['sched','📅 일정'],['theme','💡 주제정하기'],['venue','🏕️ 장소탐색'],['speaker','🎤 강사탐색'],['program','🎲 프로그램'],['tt','⏰ 시간표'],['confirm','✅ 확정사항'],['sup','📦 준비물'],['chk','☑️ 체크리스트'],['files','📁 자료실'],['acc','💰 회계'],['cars','🚌 차량배정'],['grp','🧩 조배정'],['rooms','🛏️ 방배정']];
+const TABS=[['people','🙋 참석인원'],['staff','👥 준비인원'],['praise','🎸 찬양팀'],['minutes','📝 회의록'],['sched','📅 일정'],['theme','💡 주제정하기'],['venue','🏕️ 장소탐색'],['speaker','🎤 강사탐색'],['program','🎲 프로그램'],['tt','⏰ 시간표'],['confirm','✅ 확정사항'],['sup','📦 준비물'],['chk','☑️ 체크리스트'],['files','📁 자료실'],['acc','💰 회계'],['cars','🚌 차량배정'],['grp','🧩 조배정'],['rooms','🛏️ 방배정'],['notice','📢 공지문']];
 
 function render(){
   const ae=document.activeElement,key=ae&&(ae.dataset&&ae.dataset.o!=null?'o:'+ae.dataset.o+'|'+ae.dataset.k:ae.id?'#'+ae.id:null),selS=ae&&ae.selectionStart,keep={};
@@ -321,7 +329,8 @@ function render(){
   const app=$('#app');
   if(!R){app.innerHTML=vHome();return}
   const dd=R.start?diffD(todayStr(),R.start):null;
-  const V={staff:vStaff,praise:vPraise,minutes:vMinutes,sched:vSched,theme:vTheme,venue:vVenue,speaker:vSpeaker,program:vProgram,tt:vTT,confirm:vConfirm,sup:vSup,chk:vChk,files:vFiles,acc:vAcc,people:vPeople,cars:vCars,grp:vGrp,rooms:vRooms}[TAB]||vPeople;
+  if(TAB==='cars'){let n=0;while(n<3&&syncCars())n++;if(n)save()}
+  const V={staff:vStaff,praise:vPraise,minutes:vMinutes,sched:vSched,theme:vTheme,venue:vVenue,speaker:vSpeaker,program:vProgram,tt:vTT,confirm:vConfirm,sup:vSup,chk:vChk,files:vFiles,acc:vAcc,people:vPeople,cars:vCars,grp:vGrp,rooms:vRooms,notice:vNotice}[TAB]||vPeople;
   app.innerHTML=`<div class="head no-print"><a class="btn" href="./">☰ 수련회 목록</a><h1 class="j">${esc(R.name)}</h1>${dd!=null?`<span class="dday">${dd>0?'D-'+dd:dd===0?'D-DAY':dd>=-(+R.nights)?'수련회 중':'끝났어요'}</span>`:''}<span class="hint">${esc(campRange()||'날짜 미정')}</span><button class="sm" data-act="campSet">⚙️ 설정·백업</button><span class="sync" id="sync">✔ 이 기기에 저장됨</span></div>
   <nav class="tabs">${TABS.map(([k,l])=>`<button data-act="tab" data-v="${k}" class="${k===TAB?'on':''}">${l}</button>`).join('')}</nav>
   <div id="view">${V()}</div>`;
@@ -453,12 +462,18 @@ function scores(){const C=critList();const out=R.venue.list.map(v=>{const c=vCal
 const starTxt=n=>n==null?'<span class="hint">-</span>':`<span class="sv" title="${n}점">${'★'.repeat(Math.round(n))}<i>${'★'.repeat(5-Math.round(n))}</i></span>`;
 const fmtN=(x,u)=>x==null||x===''?'∞':u==='원'?won(x):String(x);
 const wBadge=w=>`<span class="wsum badge ${w===100?'b-ok':'b-no'}" style="font-size:15px;padding:3px 10px">${w===100?'✔ 가중치 합계 100%':`⚠️ 가중치 합계 ${w}% · ${w<100?(100-w)+'% 모자라요':(w-100)+'% 넘어요'}`}</span>`;
+const venueTxt=v=>(v.name||'(이름 없음)')+(v.addr?' ('+v.addr+')':'');
+function setFinal(id){const old=R.venue.list.find(x=>x.id===R.venue.finalId);R.venue.finalId=id||'';const v=R.venue.list.find(x=>x.id===id);
+  if(v){R.conf.place.v=venueTxt(v);R.conf.place.ok=true;toast(`📌 ${v.name||'장소'}로 최종확정했어요 · [확정사항]에 들어갔어요`)}
+  else if(old&&R.conf.place.v===venueTxt(old)){R.conf.place.v='';R.conf.place.ok=false;toast('최종확정을 취소했어요')}
+  save();render()}
 function vVenue(){const V=R.venue,C=critList(),S=scores(),wsum=C.reduce((s,k)=>s+(+V.w[k.id]||0),0),E=expN(),SC={};S.forEach(o=>SC[o.v.id]=o);
   const ruleBox=k=>{const D=RULE_DEF[k],L=V.rules[k];return `<div class="rbox"><div class="row"><b class="j" style="font-size:16px">${D.name}</b><span class="hint">${D.sub} · 단위 ${D.unit}</span></div>
     <table class="t rt">${L.map(r=>{const s='venue.rules.'+k+'#'+r.id;return `<tr><td>${inp(s,'from',{n:1,rr:1,ph:'0'})}</td><td class="hint">부터</td><td>${inp(s,'to',{n:1,rr:1,ph:'끝없음'})}</td><td class="hint">까지</td><td class="stars">${[1,2,3,4,5].map(n=>`<button data-act="ruleStar" data-k="${k}" data-v="${r.id}" data-n="${n}" class="${n<=(+r.s||0)?'on':''}">★</button>`).join('')}</td><td><button class="x" data-act="ruleDel" data-k="${k}" data-v="${r.id}" title="구간 빼기">×</button></td></tr>`}).join('')}</table>
     <div class="row"><button class="sm" data-act="ruleAdd" data-k="${k}">+ 구간</button><span class="hint">${D.unit==='원'?'예) 300000 부터 600000 까지 ★★★★':'예) 60 부터 90 까지 ★★★★'} · 칸을 비우면 ‘처음부터/끝없음’</span></div></div>`};
   const card=v=>{const c=vCalc(v),d=densInfo(c.dens),s='venue.list#'+v.id,o=SC[v.id]||{sc:{}},sc=o.sc;const line=(k,txt)=>`<div class="row sline"><span>${txt}</span><span class="sp"></span>${starTxt(sc[k])}</div>`;
-   return `<div class="box"><div class="bh">${inp(s,'name',{ph:'장소 이름',rr:1,st:'font-weight:600'})}<span class="bt"><span class="badge ${o.iceR===1?'b-ok':''}" style="font-size:14px">ICE <b>${o.ice??0}</b>/${o.max} · ${o.iceR||'-'}위</span><button class="x" data-act="del" data-c="venue.list" data-v="${v.id}">🗑</button></span></div>
+   const fin=V.finalId===v.id;return `<div class="box ${fin?'vfinal':''}">${fin?'<div class="vfin-tag">✅ 최종확정 장소</div>':''}<div class="bh">${inp(s,'name',{ph:'장소 이름',rr:1,st:'font-weight:600'})}<span class="bt"><span class="badge ${o.iceR===1?'b-ok':''}" style="font-size:14px">ICE <b>${o.ice??0}</b>/${o.max} · ${o.iceR||'-'}위</span><button class="x" data-act="del" data-c="venue.list" data-v="${v.id}">🗑</button></span></div>
+   <button class="sm ${fin?'ok':''}" data-act="vFinal" data-v="${v.id}" style="width:100%;justify-content:center;margin-bottom:6px">${fin?'✅ 최종확정됨 (누르면 취소)':'📌 이 장소로 최종확정'}</button>
    <div class="f2 two"><label class="fld">고정비 (공용공간 총합, 원)${inp(s,'fixed',{n:1,rr:1,ph:'예배당·다목적실 등'})}</label><label class="fld">이동시간 (분)${inp(s,'travel',{n:1,rr:1,ph:'교회→장소'})}</label></div>
    ${line('fixed',`고정비 <b>${v.fixed!=null&&v.fixed!==''?won(v.fixed)+'원':'-'}</b>`)}${line('loc',`이동시간 <b>${v.travel!=null&&v.travel!==''?v.travel+'분':'-'}</b>`)}
    <div class="sec"><b>🛏️ 숙소 방</b><span class="hint"> 몇 인용 방, 1실 금액, 개수</span>
@@ -484,6 +499,7 @@ function vVenue(){const V=R.venue,C=critList(),S=scores(),wsum=C.reduce((s,k)=>s
   <div class="row" style="margin-bottom:8px"><button class="pri" data-act="vAdd">+ 장소 후보 추가</button></div>
   ${V.list.length?`<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(320px,1fr))">${V.list.map(card).join('')}</div>`:'<div class="card"><div class="empty">장소 후보를 추가해 비교해 보세요</div></div>'}
   ${V.list.length?`<div class="card"><div class="row"><h2 style="margin:0">🏆 의사결정 (ICE / ICE+)</h2><span class="sp"></span>${wBadge(wsum)}</div>
+   <div class="row" style="margin:8px 0;padding:8px;border-radius:12px;background:${V.list.find(x=>x.id===V.finalId)?'#dff3e4':'#fff6d8'}"><b class="j" style="font-size:17px">📌 최종확정 장소</b><select id="vFinalSel" style="min-width:180px"><option value="">— 아직 정하지 않았어요 —</option>${S.slice().sort((a,b)=>a.plusR-b.plusR).map(o=>`<option value="${o.v.id}"${V.finalId===o.v.id?' selected':''}>${esc(o.v.name||'(이름 없음)')} · ICE+ ${o.plusR}위</option>`).join('')}</select><span class="hint">고르면 [확정사항]의 ‘장소’에 들어가고 ✔ 확정돼요</span></div>
    <p class="hint">점수는 위 📏 점수 기준으로 자동 계산돼요(별 0~5개). <b>ICE</b> = 항목 별점 합계 순위, <b>ICE+</b> = 항목별 가중치(합계 100%)를 곱한 점수 순위예요.</p>
    <div class="hs" data-keep="ice"><table class="t vrank"><tr><th>장소</th>${C.map(k=>`<th class="num">${esc(k.name)}<br><span style="font-weight:400">가중치 <input data-o="venue.w" data-k="${k.id}" data-t="n" type="number" data-rr value="${esc(V.w[k.id]??0)}" style="width:52px">%</span></th>`).join('')}<th class="num">ICE<br>총점</th><th class="num">ICE<br>순위</th><th class="num">ICE+<br>점수</th><th class="num">ICE+<br>순위</th></tr>
    ${S.map(o=>`<tr><td><b>${esc(o.v.name||'(이름 없음)')}</b></td>${C.map(k=>`<td class="num">${starTxt(o.sc[k.id])}</td>`).join('')}<td class="num"><b>${o.ice}</b>/${o.max}</td><td class="num ${o.iceR===1?'r1':''}">${o.iceR}위</td><td class="num">${o.plus.toFixed(2)}</td><td class="num ${o.plusR===1?'r1':''}">${o.plusR}위</td></tr>`).join('')}</table></div>
@@ -520,7 +536,7 @@ function ttText(){const days=(+R.nights||0)+1,S=slots(),C=R.tt.cells;let out=`�
 /* ---------- 확정사항 ---------- */
 const CONF=[['sched','일정'],['place','장소'],['theme','주제'],['verse','주제말씀'],['song','주제찬양'],['preacher','집회설교자'],['speaker','강사'],['tt','시간표'],['praise','찬양팀'],['staff','스탭'],['snack','간식']];
 function confSrc(k){const okS=R.speakers.filter(s=>s.status==='확정'||s.status==='수락');
-  switch(k){case'sched':return campRange();case'place':{const S=scores().sort((a,b)=>a.plusR-b.plusR);return S[0]?S[0].v.name+(S[0].v.addr?' ('+S[0].v.addr+')':''):''}
+  switch(k){case'sched':return campRange();case'place':{const f=R.venue.list.find(x=>x.id===R.venue.finalId);if(f)return venueTxt(f);const S=scores().sort((a,b)=>a.plusR-b.plusR);return S[0]?venueTxt(S[0].v)+' (ICE+ 1위 · 아직 최종확정 전)':''}
    case'theme':return R.theme.title||'';case'verse':return[R.theme.verse,R.theme.verseText].filter(Boolean).join(' — ');
    case'preacher':return okS.filter(s=>/설교|집회/.test(s.role||'')).map(s=>s.name+(s.org?'('+s.org+')':'')).join(', ');
    case'speaker':return okS.filter(s=>!/설교|집회/.test(s.role||'')).map(s=>s.name+(s.role?' - '+s.role:'')).join(', ');
@@ -597,7 +613,7 @@ function vAcc(){const A=R.acc,ed=SUB.ledEdit?A.items.find(x=>x.id===SUB.ledEdit)
    <div class="f2" style="margin-top:8px"><label class="fld">날짜<input id="lDate" type="date" value="${esc(f.date||'')}"></label>
    <label class="fld">항목<select id="lCat">${A.cats[ty].map(c=>`<option${c===f.cat?' selected':''}>${esc(c)}</option>`).join('')}</select></label>
    <label class="fld">금액 (원)<input id="lAmt" type="number" inputmode="numeric" value="${esc(f.amount??'')}"></label>
-   <div class="fld">${ty==='in'?'받은 방법':'결제 방법'}<div class="row" style="gap:4px">${PAYM[ty].map(m=>`<label class="chip tog ${(f.method||SUB.ledMeth&&PAYM[ty].includes(SUB.ledMeth)&&SUB.ledMeth||(ty==='in'?'계좌이체':'카드'))===m?'on':''}" style="margin:0"><input type="radio" name="lMeth" value="${m}" style="display:none" ${(f.method||SUB.ledMeth&&PAYM[ty].includes(SUB.ledMeth)&&SUB.ledMeth||(ty==='in'?'계좌이체':'카드'))===m?'checked':''}>${m==='현금'?'💵':m==='카드'?'💳':'🏦'} ${m}</label>`).join('')}</div></div>
+   <label class="fld">${ty==='in'?'받은 방법':'결제 방법'}<select id="lMeth">${(()=>{const cur=f.method||(SUB.ledMeth&&PAYM[ty].includes(SUB.ledMeth)?SUB.ledMeth:(ty==='in'?'계좌이체':'카드'));return PAYM[ty].map(m=>`<option value="${m}"${cur===m?' selected':''}>${m==='현금'?'💵':m==='카드'?'💳':'🏦'} ${m}</option>`).join('')})()}</select></label>
    <label class="fld">${ty==='in'?'입금자·후원자 이름':'사용처·결제자'}<input id="lWho" value="${esc(f.who||'')}" list="pnames2"></label>
    <label class="fld" style="grid-column:span 2">적요<input id="lMemo" value="${esc(f.memo||'')}" placeholder="${ty==='in'?'예) 수련회비 (홍길동 외 3명)':'예) 간식 구입 (코스트코)'}"></label></div>
    <datalist id="pnames2">${R.people.map(p=>`<option value="${esc(p.name)}">`).join('')}</datalist>
@@ -638,15 +654,30 @@ function vFee(){const F=R.fee,L=R.people,open=SUB.feeOpen!==false;
    ${F.rules.length?F.rules.map((r,i)=>{const k='fee.rules#'+r.id,n=L.filter(p=>!(p.fee!=null&&p.fee!=='')&&R.fee.rules.find(x=>x.amount!=null&&x.amount!==''&&feeRuleHit(x,p))===r).length;
      return `<div class="row frule"><span class="badge">${i+1}</span>${sel(k,'field',FEE_F,{rr:1})}${cond(r)}<span>→</span>${inp(k,'amount',{n:1,rr:1,st:'width:110px',ph:'회비'})}<span>원</span>${inp(k,'label',{ph:'이름 (예: 학생)',st:'width:120px'})}<span class="hint">${n}명</span><span class="sp"></span>${i?`<button class="sm" data-act="mvUp" data-c="fee.rules" data-v="${r.id}" title="위로">↑</button>`:''}<button class="x" data-act="del" data-c="fee.rules" data-v="${r.id}">🗑</button></div>`}).join(''):'<div class="hint">예) 소속에 ‘고등부’ 포함 → 50,000원 / 나이 0~19세 → 50,000원 / 구분 ‘사역자’ → 0원</div>'}
    <div class="row" style="margin-top:6px"><button class="sm pri" data-act="feeAdd">+ 회비 기준 추가</button><span class="hint">표 맨 뒤 ‘회비’ 칸에 금액을 직접 적으면 그 사람만 따로 정할 수 있어요.</span></div></details>`}
+/* 📢 공지문: 써서 보관하고, 카톡용으로 복사해요 */
+function noticeText(n){return `${n.title?'📢 '+n.title+'\n':''}${n.body||''}`}
+function confSummary(){return CONF.map(([k,l])=>{const v=R.conf[k].v||(k==='place'?'':confSrc(k));return v&&k!=='tt'?`▪ ${l}: ${v}`:''}).filter(Boolean).join('\n')}
+function vNotice(){
+  if(SUB.ntc){const n=R.notices.find(x=>x.id===SUB.ntc);if(n){const s='notices#'+n.id;
+    return `<div class="card"><div class="row"><button data-act="ntcBack">← 공지문 보관함</button><span class="sp"></span><button data-act="ntcPin">${n.pin?'📌 고정 풀기':'📌 맨 위 고정'}</button><button data-act="ntcCopy">📋 카톡용 복사</button><button data-act="ntcPrint">🖨️ 인쇄·PDF</button><button data-act="ntcDup">복제</button><button class="danger" data-act="ntcDel">지우기</button></div>
+    <div class="f2" style="margin-top:10px"><label class="fld">날짜${inp(s,'date',{type:'date'})}</label><label class="fld" style="grid-column:span 2">제목${inp(s,'title',{ph:'예) 겨울수련회 안내'})}</label><label class="fld">받는 사람${inp(s,'to',{ph:'예) 전체 / 준비인원 / 학부모',list:'ntcTo'})}</label></div>
+    <datalist id="ntcTo">${['전체','참석자','준비인원','찬양팀','학부모','미입금자'].map(x=>`<option value="${x}">`).join('')}</datalist>
+    <div class="row" style="margin:10px 0 4px"><b class="j" style="font-size:17px">✍️ 내용</b><span class="sp"></span><span class="hint">넣기:</span><button class="sm" data-act="ntcIns" data-v="conf">✅ 확정사항</button><button class="sm" data-act="ntcIns" data-v="tt">⏰ 시간표</button><button class="sm" data-act="ntcIns" data-v="sup">🎒 준비물</button><button class="sm" data-act="ntcIns" data-v="fee">💰 회비</button></div>
+    <textarea id="ntcBody" data-o="${s}" data-k="body" rows="16" placeholder="공지할 내용을 적어요. 위 버튼으로 확정사항·시간표 등을 넣을 수 있어요.">${esc(n.body||'')}</textarea>
+    <div class="hint" id="ntcLen" style="text-align:right">${(n.body||'').length}자</div></div>`}SUB.ntc=null}
+  const q=(SUB.nq||'').trim(),L=R.notices.filter(n=>!q||((n.title||'')+' '+(n.body||'')+' '+(n.to||'')).includes(q)).sort((a,b)=>(b.pin?1:0)-(a.pin?1:0)||String(b.date).localeCompare(String(a.date))||(b.created||0)-(a.created||0));
+  return `<div class="card"><div class="row"><h2 style="margin:0">📢 공지문 (${R.notices.length})</h2><span class="sp"></span><input id="nq" placeholder="🔍 찾기" value="${esc(SUB.nq||'')}" style="width:150px"><button class="pri" data-act="ntcNew">+ 새 공지문</button></div>
+  <p class="hint" style="margin:6px 0">공지문을 써서 보관해요. 카톡용으로 복사하거나 인쇄(PDF)할 수 있어요. 확정사항·시간표·준비물·회비 안내를 버튼 하나로 넣을 수 있어요.</p>
+  ${L.length?L.map(n=>`<div class="box" style="margin-bottom:8px;cursor:pointer;${n.pin?'border-color:var(--accent)':''}" data-act="ntcOpen" data-v="${n.id}"><div class="row">${n.pin?'<span>📌</span>':''}<b class="j" style="font-size:17px">${esc(n.title||'(제목 없음)')}</b><span class="badge">${esc(n.date||'')}</span>${n.to?`<span class="badge b-mid">${esc(n.to)}</span>`:''}<span class="sp"></span><span class="hint">${(n.body||'').length}자</span></div><div class="hint" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc((n.body||'').replace(/\s+/g,' ').slice(0,120))}</div></div>`).join(''):'<div class="empty">공지문이 없어요. ‘+ 새 공지문’으로 시작해요</div>'}</div>`}
 function vPeople(){const L=R.people,m=L.filter(p=>p.gender==='남').length,f=L.filter(p=>p.gender==='여').length;
   return `${vFee()}<div class="card"><div class="row"><h2 style="margin:0">🙋 참석인원 (${L.length})</h2><span class="sp"></span><input id="pq" placeholder="🔍 이름·소속 찾기" style="width:150px"><button data-act="xls">📊 엑셀·CSV 불러오기</button><button data-act="pExport">⬇️ CSV 내보내기</button><button class="pri" data-act="pAdd">+ 한 명 추가</button></div>
   <div class="row hint" style="margin:6px 0">남 ${m} · 여 ${f} · 보험 미가입 ${L.filter(p=>p.ins==='미가입').length} · 사역자 ${L.filter(p=>p.prep==='min').length} · 준비인원 ${L.filter(p=>p.prep==='staff').length} · 찬양팀 ${L.filter(p=>p.praise).length}</div>
   <p class="hint" style="margin:0 0 6px">구글폼·네이버폼 응답을 엑셀(.xlsx)이나 CSV로 받아서 ‘📊 엑셀·CSV 불러오기’로 올리면 한 번에 추가돼요. 오른쪽 <b>구분</b>에서 사역자·준비인원을, <b>찬양팀</b> 칸으로 찬양팀을 지정해요.</p>
   ${L.length?`<div id="ptbl" class="plist"><div class="prow phead"><div>#</div><div>이름</div><div>성별</div><div>나이</div><div>소속</div><div>사는 곳</div><div class="w2">핸드폰번호</div><div>보험</div>
-   <div></div><div>들어오는 시간</div><div>나가는 시간</div><div>구분</div><div>직책</div><div>찬양팀</div><div>회비</div><div>입금확인</div><div></div></div>
+   <div></div><div class="w4">들어올 때 · 이동방법 (카풀가능·자차필요는 출발장소)</div><div class="w4">나갈 때 · 이동방법 (카풀가능·자차필요는 도착장소)</div><div>구분</div><div>직책</div><div>찬양팀</div><div>회비</div><div>입금확인</div><div></div></div>
   ${L.map((p,i)=>{const k='people#'+p.id,fe=feeOf(p),bk=feeBooked(p.id);return `<div class="prow" data-s="${esc((p.name||'')+' '+(p.org||'')+' '+(p.phone||''))}"><div class="no">${i+1}</div>
    <div class="c" data-l="이름">${inp(k,'name',{ph:'이름'})}</div><div class="c" data-l="성별">${sel(k,'gender',['남','여'],{blank:'-'})}</div><div class="c" data-l="나이">${inp(k,'age')}</div><div class="c" data-l="소속">${inp(k,'org')}</div><div class="c" data-l="사는 곳">${inp(k,'addr')}</div><div class="c w2" data-l="핸드폰번호">${inp(k,'phone',{type:'tel'})}</div><div class="c" data-l="보험">${sel(k,'ins',['가입','미가입'],{blank:'-'})}</div>
-   <div class="no2"></div><div class="c" data-l="들어오는 시간">${inp(k,'inT',{ph:'예) 1일차 18시'})}</div><div class="c" data-l="나가는 시간">${inp(k,'outT',{ph:'예) 3일차 점심후'})}</div><div class="c" data-l="구분">${sel(k,'prep',[['min','사역자'],['staff','준비인원']],{blank:'일반',rr:1})}</div><div class="c" data-l="직책">${p.prep?sel(k,'role',R.cfg[p.prep==='min'?'minRoles':'staffRoles'],{blank:'—'}):'<span class="hint">—</span>'}</div>
+   <div class="no2"></div>${mvBlock(p,k,'in')}${mvBlock(p,k,'out')}<div class="c" data-l="구분">${sel(k,'prep',[['min','사역자'],['staff','준비인원']],{blank:'일반',rr:1})}</div><div class="c" data-l="직책">${p.prep?sel(k,'role',R.cfg[p.prep==='min'?'minRoles':'staffRoles'],{blank:'—'}):'<span class="hint">—</span>'}</div>
    <div class="c" data-l="찬양팀"><label class="chip tog ${p.praise?'on':''}" style="margin:0"><input type="checkbox" data-o="${k}" data-k="praise" data-rr ${p.praise?'checked':''} style="display:none">🎸 ${p.praise?'찬양팀':'아니요'}</label></div>
    <div class="c" data-l="회비">${inp(k,'fee',{n:1,rr:1,ph:fe.amt!=null&&!(p.fee!=null&&p.fee!=='')?won(fe.amt):'금액',st:'text-align:right'})}<div class="hint" style="font-size:11px">${esc(fe.why)}</div></div>
    <div class="c" data-l="입금확인"><label class="paid ${p.paid?'on':''}"><input type="checkbox" data-o="${k}" data-k="paid" data-rr ${p.paid?'checked':''}> ${p.paid?'입금':'미입금'}</label>${p.paid?`<select data-o="${k}" data-k="payMethod" data-rr class="pm"><option value="">입금방법</option>${PAYM.in.map(m=>`<option${p.payMethod===m?' selected':''}>${m}</option>`).join('')}</select>`:''}${p.paid&&p.paidDate?`<div class="hint" style="font-size:11px">${esc(p.paidDate.slice(5).replace('-','/'))}${bk?' · 수입 ✔':' · 회계 대기'}</div>`:''}</div>
@@ -660,10 +691,11 @@ function vCars(){const dir=SUB.dir,L=R.cars.list.filter(c=>c.dir===dir),used=new
   return `<div class="card"><div class="row"><h2 style="margin:0">🚌 차량배정</h2>${[['in','🏕️ 수련회 들어오는 차'],['out','🏠 집에 가는 차']].map(([k,l])=>`<span class="chip tog ${dir===k?'on':''}" data-act="dir" data-v="${k}">${l}</span>`).join('')}<span class="sp"></span><span class="hint">탑승 ${tot}명 / 자리 ${cap}석 · 미배정 ${pool.length}명</span><button class="pri" data-act="carAdd">+ 차량</button></div>
    <div class="row" style="margin-top:8px">${[['card','🗂️ 차량별로 보기'],['tl','🕒 타임라인으로 보기']].map(([k,l])=>`<span class="chip tog ${(SUB.carView||'card')===k?'on':''}" data-act="carView" data-v="${k}">${l}</span>`).join('')}</div>
    ${SUB.carView==='tl'?'':`<h3>차편 종류</h3>${LE('cars.types.'+dir,'+ 종류 추가 (예: 승합차)')}`}</div>
-  ${SUB.carView==='tl'?carTimeline():`${poolHTML(pool,'아직 차가 없는 사람')}
+  ${SUB.carView==='tl'?carTimeline():`${needCard(dir)}${poolHTML(pool,'아직 차가 없는 사람')}
   ${L.length?`<div class="grid">${R.cars.types[dir].concat(['']).map(t=>L.filter(c=>(c.type||'')===t||(!t&&!R.cars.types[dir].includes(c.type))).map(c=>{const k='cars.list#'+c.id,n=(c.members||[]).length;return `<div class="box" data-drop="car#${c.id}"><div class="bh"><b>${dir==='in'?'🚌':'🏠'}</b>${sel(k,'type',R.cars.types[dir],{blank:'종류',rr:1})}${inp(k,'name',{ph:'차 이름·번호'})}<span class="bt"><span class="cnt ${c.cap&&n>c.cap?'over':''}">${n}/${c.cap||'?'}</span><button class="x" data-act="del" data-c="cars.list" data-v="${c.id}" title="지우기">🗑</button></span></div>
+    ${c.autoPid?`<div class="autoc">🚗 <b>${esc(pn(c.autoPid))}</b>님 ${c.carpool?'자차(카풀가능)':'자차(카풀불가능) · 같이 타는 사람을 넣어요'} <span class="hint">· ${c.carpool?'시각·장소는':'시각은'} [참석인원]에서 바꿔요</span></div>`:''}
     <div class="f2 two"><label class="fld">출발 날짜${sel(k,'day',dayOpts(),{blank:'— 일차 —'})}</label><label class="fld">출발시각${inp(k,'time',{type:'time'})}</label><label class="fld">${dir==='in'?'출발장소':'도착장소'}${inp(k,'place',{ph:dir==='in'?'예) 교회 앞':'예) 교회 / 강남역'})}</label><label class="fld">탑승가능인원${inp(k,'cap',{n:1,rr:1})}</label><label class="fld">운전자${sel(k,'driver',peopleOpts(R.people,'—'))}</label></div>
-    <div class="mem">${(c.members||[]).map(pid=>CHIP(pid,'car#'+c.id)).join('')||'<span class="hint">여기로 끌어다 놓아요</span>'}</div>${addSel('car#'+c.id,pool)}</div>`}).join('')).join('')}</div>`:'<div class="card"><div class="empty">‘+ 차량’으로 차를 추가해요</div></div>'}`}`}
+    <div class="mem">${(c.members||[]).map(pid=>CHIP(pid,'car#'+c.id)).join('')||'<span class="hint">여기로 끌어다 놓아요</span>'}</div>${addSel('car#'+c.id,pool)}${c.carpool?suggHTML(c):''}</div>`}).join('')).join('')}</div>`:'<div class="card"><div class="empty">‘+ 차량’으로 차를 추가해요</div></div>'}`}`}
 const dayOpts=()=>Array.from({length:(+R.nights||0)+1},(_,d)=>[d,`${d+1}일차${R.start?' · '+fmtD(addD(R.start,d)):''}`]);
 /* 🕒 차량 타임라인: [시간표]의 하루 일정 옆에 어느 차가 언제 출발하는지 */
 /* 참석인원의 '들어오는/나가는 시간' 글을 일차·시각으로 읽기 (예: 1일차 18:00, 1/20 오후 3시, 둘째날 저녁 7시 반) */
@@ -674,7 +706,46 @@ function parseWhen(t,kind){t=String(t||'').trim();if(!t)return null;const last=+
   if(d==null)d=kind==='in'?0:last;
   const tm=t.replace(/\d+\s*일\s*차/,' ').match(/(\d{1,2})\s*(?::|시)\s*(\d{1,2})?/);if(!tm)return{d,m:null};
   let h=+tm[1],mi=+(tm[2]||0);if(!tm[2]&&/반/.test(t.slice(tm.index)))mi=30;if((/오후|점심|저녁|밤/.test(t)||(h<6&&!/오전|새벽|아침/.test(t)))&&h<12)h+=12;return{d,m:h*60+mi}}
-function peopleMoves(){const L=[];R.people.forEach(p=>{[['in','inT'],['out','outT']].forEach(([k,f])=>{let w=parseWhen(p[f],k),src='';
+const MOVES=['본대버스','자차(카풀불가능)','자차(카풀가능)','자차필요'];
+const hm=m=>pad(Math.floor(m/60)%24)+':'+pad(m%60);
+const apTxt=m=>{const h=Math.floor(m/60)%24;return `${h<12?'오전':'오후'} ${h%12||12}:${pad(m%60)}`};
+const whenShort=w=>w&&w.m!=null?`${w.d+1}일차 ${apTxt(w.m)}`:'시간 미정';
+/* 참석인원의 시각: 드롭다운(일차·오전/오후·시·분) 우선, 없으면 예전에 글로 적은 시간 */
+function pWhen(p,k){const H=p[k+'H'];if(H!=null&&H!==''){const ap=p[k+'AP']||((+H<7||+H===12)?'오후':'오전'),h=(+H%12)+(ap==='오후'?12:0),dd=p[k+'Day'];
+    return{d:dd!=null&&dd!==''?+dd:(k==='in'?0:(+R.nights||0)),m:h*60+(+p[k+'M']||0)}}
+  return parseWhen(p[k+'T'],k)}
+function whenText(p,k){const w=pWhen(p,k);return w&&w.m!=null?whenShort(w):(p[k+'T']||'')}
+function setWhenFromText(o,k){const w=parseWhen(o[k+'T'],k);if(!w||w.m==null)return;const h=Math.floor(w.m/60)%24;o[k+'Day']=String(w.d);o[k+'AP']=h<12?'오전':'오후';o[k+'H']=String(h%12||12);o[k+'M']=String(Math.floor((w.m%60)/10)*10)}
+/* 🚌 차량 자동 맞추기: 본대버스 → 본대 버스에, 자차 → 그 사람 차를 자동으로 만들어요 */
+function needList(dir){const used=new Set(R.cars.list.filter(c=>c.dir===dir).flatMap(c=>c.members||[]));return R.people.filter(p=>p[dir+'Move']==='자차필요'&&!used.has(p.id))}
+function syncCars(){const C=R.cars;let ch=false;const last=+R.nights||0;
+  ['in','out'].forEach(dir=>{const tl=C.types[dir];
+    C.list.filter(c=>c.dir===dir).forEach(c=>(c.members||[]).slice().forEach(pid=>{const p=P(pid);if(p&&p['bus_'+dir]===c.id&&p[dir+'Move']!=='본대버스'){c.members=c.members.filter(x=>x!==pid);delete p['bus_'+dir];ch=true}}));
+    const want=R.people.filter(p=>p[dir+'Move']==='본대버스'&&!C.list.some(c=>c.dir===dir&&(c.members||[]).includes(p.id)));
+    if(want.length){let bt=tl.find(t=>/본대/.test(t)&&/버스/.test(t));if(!bt){bt='버스 본대';tl.unshift(bt)}
+      let buses=C.list.filter(c=>c.dir===dir&&c.type===bt);if(!buses.length){const c={id:uid(),dir,type:bt,name:'',day:dir==='in'?0:last,time:'',members:[]};C.list.push(c);buses=[c]}
+      want.forEach(p=>{const b=buses.find(c=>!c.cap||(c.members||[]).length<+c.cap)||buses[buses.length-1];(b.members=b.members||[]).push(p.id);p['bus_'+dir]=b.id});ch=true}
+    R.people.forEach(p=>{const mv=p[dir+'Move'];if(mv!=='자차(카풀불가능)'&&mv!=='자차(카풀가능)')return;const pool=mv==='자차(카풀가능)';
+      if(!tl.includes(mv)){tl.push(mv);ch=true}
+      let c=C.list.find(x=>x.dir===dir&&x.autoPid===p.id);
+      if(!c){C.list.forEach(x=>{if(x.dir===dir)x.members=(x.members||[]).filter(i=>i!==p.id)});c={id:uid(),dir,autoPid:p.id,members:[p.id]};C.list.push(c);ch=true}
+      const set=(k,v)=>{if(c[k]!==v){c[k]=v;ch=true}};const w=pWhen(p,dir);
+      set('type',mv);set('driver',p.id);set('carpool',pool);if(!c.name)set('name',(p.name||'')+' 차');
+      if(w&&w.m!=null){set('day',w.d);set('time',hm(w.m))}
+      if(pool&&p[dir+'Place'])set('place',p[dir+'Place']);
+      if(!(c.members||[]).includes(p.id)){C.list.forEach(x=>{if(x.dir===dir)x.members=(x.members||[]).filter(i=>i!==p.id)});c.members.unshift(p.id);ch=true}});
+    const n=C.list.length;C.list=C.list.filter(c=>{if(!c.autoPid||c.dir!==dir)return true;const p=P(c.autoPid);return p&&/^자차\(카풀/.test(p[dir+'Move']||'')});if(C.list.length!==n)ch=true});
+  return ch}
+function suggHTML(c){const toMin=t=>{const[h,m]=String(t).split(':').map(Number);return h*60+(m||0)};const t0=c.time?(+c.day||0)*1440+toMin(c.time):null;
+  const L=needList(c.dir).map(p=>{const w=pWhen(p,c.dir),t=w&&w.m!=null?w.d*1440+w.m:null;return{p,w,diff:t0!=null&&t!=null?Math.abs(t-t0):1e9}}).sort((a,b)=>a.diff-b.diff);
+  if(!L.length)return'';const free=c.cap?Math.max(0,+c.cap-(c.members||[]).length):null;
+  return `<div class="sugg"><b>🙋 차가 필요한 사람</b> <span class="hint">가까운 시간순${free!=null?` · 빈자리 ${free}`:''} · ⭐ 1시간 이내</span><div>${L.slice(0,8).map(x=>`<button class="sm" data-act="assignP" data-to="car#${c.id}" data-pid="${x.p.id}" title="이 차에 태우기">＋ ${esc(x.p.name||'')} <span class="hint">${whenShort(x.w)}${x.p[c.dir+'Place']?' · '+esc(x.p[c.dir+'Place']):''}</span>${x.diff<=60?' ⭐':''}</button>`).join('')}${L.length>8?`<span class="hint"> 외 ${L.length-8}명</span>`:''}</div></div>`}
+function needCard(dir){const L=needList(dir).map(p=>({p,w:pWhen(p,dir)})).sort((a,b)=>((a.w&&a.w.m!=null?a.w.d*1440+a.w.m:1e9)-(b.w&&b.w.m!=null?b.w.d*1440+b.w.m:1e9)));if(!L.length)return'';
+  return `<div class="card" style="border-color:#d9822b"><b class="j" style="font-size:17px">🚗 차가 필요한 사람 (${L.length})</b> <span class="hint">[참석인원]에서 ‘자차필요’로 고른 사람이에요. 카풀가능 차 카드에 시간이 가까운 순서로 떠요. 끌어다 놓아도 돼요.</span>
+   <div style="margin-top:6px">${L.map(x=>CHIP(x.p.id,'pool',` <span class="hint">${whenShort(x.w)}${x.p[dir+'Place']?' · 📍'+esc(x.p[dir+'Place']):''}</span>`)).join('')}</div></div>`}
+function mvBlock(p,k,dir){const days=(+R.nights||0)+1,mv=p[dir+'Move'],legacy=!(p[dir+'H']!=null&&p[dir+'H']!=='')&&p[dir+'T'];
+  return `<div class="c mv" data-l="${dir==='in'?'들어올 때':'나갈 때'}"><div class="mvr">${sel(k,dir+'Day',Array.from({length:days},(_,d)=>[d,(d+1)+'일차']),{blank:'일차',rr:1})}${sel(k,dir+'AP',['오전','오후'],{blank:'오전/오후',rr:1})}${sel(k,dir+'H',Array.from({length:12},(_,i)=>[i+1,(i+1)+'시']),{blank:'시',rr:1})}${sel(k,dir+'M',[0,10,20,30,40,50].map(m=>[m,pad(m)+'분']),{blank:'분',rr:1})}${sel(k,dir+'Move',MOVES,{blank:'이동방법',rr:1})}${mv==='자차(카풀가능)'||mv==='자차필요'?inp(k,dir+'Place',{ph:dir==='in'?'출발장소':'도착장소',st:'flex:1 1 110px'}):''}</div>${legacy?`<div class="hint" style="font-size:11px">적어 둔 글: ${esc(p[dir+'T'])}</div>`:''}</div>`}
+function peopleMoves(){const L=[];R.people.forEach(p=>{[['in','inT'],['out','outT']].forEach(([k,f])=>{let w=pWhen(p,k),src='';
     if(!w||w.m==null){const car=R.cars.list.find(c=>c.dir===k&&(c.members||[]).includes(p.id)&&c.day!=null&&c.day!==''&&c.time);if(car){const[h,mi]=car.time.split(':').map(Number);w={d:+car.day,m:h*60+mi};src=car}}
     L.push({p,k,w,src,raw:p[f]||''})})});return L}
 /* 사람이 많으면 앞의 몇 명만 보이고 ‘더보기’로 펼쳐요 */
@@ -758,7 +829,7 @@ const ACT={
   rmFrom:t=>{const o=objOf(t.dataset.o);o[t.dataset.k]=(o[t.dataset.k]||[]).filter(x=>x!==t.dataset.v);save();render()},
   togArr:t=>{const o=objOf(t.dataset.o),k=t.dataset.k,v=t.dataset.v;const a=o[k]=o[k]||[];const i=a.indexOf(v);if(i>=0)a.splice(i,1);else a.push(v);save();render()},
   add:t=>{const a=objOf(t.dataset.c);const it={id:uid()};if(t.dataset.c==='speakers')it.status='후보';if(t.dataset.c==='venue.list')it.sc={};a.push(it);save();render();setTimeout(()=>{const el=$$(`[data-o="${t.dataset.c}#${it.id}"]`)[0];if(el){el.focus();el.scrollIntoView({block:'center'})}},30)},
-  del:t=>{const a=objOf(t.dataset.c),i=a.findIndex(x=>x.id===t.dataset.v);if(i<0)return;const it=a[i];const filled=Object.keys(it).some(k=>k!=='id'&&k!=='sc'&&it[k]!==''&&it[k]!=null&&!(Array.isArray(it[k])&&!it[k].length));if(filled&&!confirm('지울까요?'))return;a.splice(i,1);save();render()},
+  del:t=>{const a=objOf(t.dataset.c),i=a.findIndex(x=>x.id===t.dataset.v);if(i<0)return;if(t.dataset.c==='venue.list'&&R.venue.finalId===t.dataset.v&&!confirm('최종확정한 장소예요. 지우면 확정도 풀려요. 지울까요?'))return;const it=a[i];const filled=Object.keys(it).some(k=>k!=='id'&&k!=='sc'&&it[k]!==''&&it[k]!=null&&!(Array.isArray(it[k])&&!it[k].length));if(filled&&!confirm('지울까요?'))return;a.splice(i,1);save();render()},
   mvUp:t=>{const a=objOf(t.dataset.c),i=a.findIndex(x=>x.id===t.dataset.v);if(i>0){[a[i-1],a[i]]=[a[i],a[i-1]];save();render()}},
   unassign:t=>assign(t.dataset.pid,'pool',t.dataset.from),
   print:()=>print(),
@@ -769,6 +840,20 @@ const ACT={
   mkPraise:()=>{const id=$('#mkPr').value;if(!id){toast('사람을 골라 주세요');return}P(id).praise=true;save();render()},
   unpraise:t=>{const p=P(t.dataset.v);if(p){p.praise=false;save();render()}},
   /* 회의록 */
+  ntcNew:()=>{const n={id:uid(),date:todayStr(),title:'',to:'전체',body:'',created:Date.now()};R.notices.push(n);SUB.ntc=n.id;save();render();setTimeout(()=>{const e=$(`[data-o="notices#${n.id}"][data-k="title"]`);if(e)e.focus()},30)},
+  ntcOpen:t=>{SUB.ntc=t.dataset.v;render();scrollTo(0,0)},ntcBack:()=>{SUB.ntc=null;render()},
+  ntcDel:()=>{const n=R.notices.find(x=>x.id===SUB.ntc);if(!confirm(`‘${n.title||'제목 없음'}’ 공지문을 지울까요?`))return;R.notices=R.notices.filter(x=>x.id!==SUB.ntc);SUB.ntc=null;save();render()},
+  ntcDup:()=>{const n=R.notices.find(x=>x.id===SUB.ntc);const c={...n,id:uid(),date:todayStr(),title:(n.title||'')+' (복사)',pin:false,created:Date.now()};R.notices.push(c);SUB.ntc=c.id;save();render();toast('복제했어요')},
+  ntcPin:()=>{const n=R.notices.find(x=>x.id===SUB.ntc);n.pin=!n.pin;save();render()},
+  ntcCopy:()=>copy(noticeText(R.notices.find(x=>x.id===SUB.ntc))),
+  ntcPrint:()=>{const n=R.notices.find(x=>x.id===SUB.ntc);const w=open('','_blank');if(!w){toast('팝업이 막혔어요');return}w.document.write(`<!doctype html><meta charset="utf-8"><title>${esc(n.title||'공지문')}</title><style>body{font:16px/1.8 "Malgun Gothic",sans-serif;padding:36px;max-width:760px;margin:auto}h1{font-size:24px;border-bottom:2px solid #333;padding-bottom:6px}.m{color:#666;font-size:14px}pre{white-space:pre-wrap;font:inherit}</style><h1>${esc(n.title||'공지문')}</h1><div class="m">${esc(n.date||'')}${n.to?' · '+esc(n.to):''} · ${esc(R.name)}</div><pre>${esc(n.body||'')}</pre><script>setTimeout(()=>print(),300)<\/script>`);w.document.close()},
+  ntcIns:t=>{const b=$('#ntcBody');if(!b)return;const k=t.dataset.v;let x='';
+    if(k==='conf')x='[수련회 안내]\n'+confSummary();
+    else if(k==='tt')x=ttText();
+    else if(k==='sup')x='[개인 준비물]\n- 성경, 필기도구\n- 세면도구, 수건\n- 개인 상비약\n- 갈아입을 옷';
+    else if(k==='fee'){const F=R.fee;x=['[회비 안내]',...(F.base!=null&&F.base!==''?[`- 회비: ${won(F.base)}원`]:[]),...F.rules.filter(r=>r.amount!=null&&r.amount!=='').map(r=>`- ${r.label||feeRuleText(r)}: ${won(r.amount)}원`),'- 입금 계좌: '].join('\n')}
+    const s0=b.selectionStart??b.value.length,pre=b.value.slice(0,s0),add=(pre&&!pre.endsWith('\n\n')?(pre.endsWith('\n')?'\n':'\n\n'):'')+x+'\n';
+    b.value=pre+add+b.value.slice(b.selectionEnd??s0);b.selectionStart=b.selectionEnd=(pre+add).length;b.dispatchEvent(new Event('input',{bubbles:true}));b.focus()},
   minNew:()=>{const m={id:uid(),date:todayStr(),title:`${R.minutes.length+1}차 준비 회의`,att:[],body:''};R.minutes.push(m);SUB.min=m.id;save();render();setTimeout(()=>$('#mbody')&&$('#mbody').focus(),30)},
   minOpen:t=>{SUB.min=t.dataset.v;render();scrollTo(0,0)},minBack:()=>{SUB.min=null;render()},
   minDel:()=>{if(!confirm('이 회의록을 지울까요?'))return;R.minutes=R.minutes.filter(m=>m.id!==SUB.min);SUB.min=null;save();render()},
@@ -792,6 +877,7 @@ const ACT={
   feeInAll:()=>{const L=feePending();if(!L.length)return;if(!confirm(`${L.length}명, ${won(L.reduce((s,p)=>s+(feeOf(p).amt||0),0))}원을 수입으로 넣을까요?`))return;L.forEach(bookFee);save();render();toast(`${L.length}건을 수입에 넣었어요`)},
   feeUnbook:t=>{const x=R.acc.items.find(i=>i.id===t.dataset.v);if(!x||!confirm(`${x.who||''} 수련회비 ${won(x.amount)}원을 수입 내역에서 뺄까요?`))return;R.acc.items=R.acc.items.filter(i=>i!==x);save();render()},
   rulesReset:()=>{if(!confirm('점수 기준(구간·별점)을 처음 기본값으로 되돌릴까요?'))return;RULE_KEYS.forEach(k=>R.venue.rules[k]=RULE_DEF[k].rows.map(([f,t,sc])=>({id:uid(),from:f,to:t,s:sc})));save();render()},
+  vFinal:t=>setFinal(R.venue.finalId===t.dataset.v?'':t.dataset.v),
   vAdd:()=>{const it={id:uid(),sc:{},rooms:[{id:uid(),size:null,price:null,count:null}]};R.venue.list.push(it);save();render();setTimeout(()=>{const el=$(`[data-o="venue.list#${it.id}"][data-k="name"]`);if(el){el.focus();el.scrollIntoView({block:'center'})}},30)},
   vroomAdd:t=>{const v=R.venue.list.find(x=>x.id===t.dataset.v);(v.rooms=v.rooms||[]).push({id:uid(),size:null,price:null,count:null});save();render()},
   vroomDel:t=>{const v=R.venue.list.find(x=>x.id===t.dataset.v);v.rooms=v.rooms.filter(r=>r.id!==t.dataset.r);save();render()},
@@ -832,7 +918,7 @@ const ACT={
   rcpPick:()=>{$('#rcpUp').value='';$('#rcpUp').click()},
   ledSave:async()=>{const amt=+$('#lAmt').value;if(!amt){toast('금액을 적어 주세요');$('#lAmt').focus();return}
     const ed=SUB.ledEdit?R.acc.items.find(x=>x.id===SUB.ledEdit):null;const ty=ed?ed.type:(SUB.ledType||'in');
-    const it=ed||{id:uid(),type:ty};Object.assign(it,{date:$('#lDate').value||todayStr(),cat:$('#lCat').value,amount:amt,who:$('#lWho').value.trim(),memo:$('#lMemo').value.trim(),method:(document.querySelector('input[name=lMeth]:checked')||{}).value||''});SUB.ledMeth=it.method;
+    const it=ed||{id:uid(),type:ty};Object.assign(it,{date:$('#lDate').value||todayStr(),cat:$('#lCat').value,amount:amt,who:$('#lWho').value.trim(),memo:$('#lMemo').value.trim(),method:($('#lMeth')||{}).value||''});SUB.ledMeth=it.method;
     if(SUB.rcpFile&&ty==='out'){const f=SUB.rcpFile,id=uid();await idb.put('files',id,{blob:f});if(it.rcp){try{await idb.del('files',it.rcp)}catch(_){}R.files=R.files.filter(x=>x.id!==it.rcp)}R.files.push({id,folder:'__rcp',name:`영수증_${it.date}_${it.memo||it.cat}${(f.name.match(/\.[a-z0-9]+$/i)||[''])[0]}`,size:f.size,type:f.type,date:new Date().toISOString()});it.rcp=id}
     if(!ed)R.acc.items.push(it);SUB.rcpFile=null;SUB.ledEdit=null;save();render();toast(ed?'고쳤어요':'적었어요')},
   ledEdit:t=>{SUB.ledEdit=t.dataset.v;SUB.rcpFile=null;render();scrollTo(0,0)},ledCancel:()=>{SUB.ledEdit=null;SUB.rcpFile=null;render()},
@@ -843,12 +929,13 @@ const ACT={
   pAdd:()=>{const p={id:uid(),name:''};R.people.unshift(p);save();render();setTimeout(()=>{const el=$(`[data-o="people#${p.id}"][data-k="name"]`);if(el)el.focus()},30)},
   pDel:t=>{const p=P(t.dataset.v);if(p.name&&!confirm(`${p.name}님을 참석인원에서 지울까요? 차량·조·방 배정과 담당에서도 빠져요.`))return;purge(p.id);save();render()},
   xls:()=>{$('#xlsUp').value='';$('#xlsUp').click()},
-  pExport:()=>{const H=[...PF.map(x=>x[1]),'구분','직책','맡은 역할','찬양팀','찬양 파트','회비','입금확인','입금방법'];const q=v=>{v=String(v??'');return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
-    const rows=R.people.map(p=>[...PF.map(([k])=>p[k]||''),p.prep==='min'?'사역자':p.prep==='staff'?'준비인원':'',p.role||'',p.duty||'',p.praise?'O':'',(p.parts||[]).join('/'),feeOf(p).amt??'',p.paid?'O':'',p.paid?p.payMethod||'':'']);
+  pExport:()=>{const H=[...PF.map(x=>x[1]),'들어올 때 이동','출발장소','나갈 때 이동','도착장소','구분','직책','맡은 역할','찬양팀','찬양 파트','회비','입금확인','입금방법'];const q=v=>{v=String(v??'');return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+    const rows=R.people.map(p=>[...PF.map(([k])=>k==='inT'?whenText(p,'in'):k==='outT'?whenText(p,'out'):p[k]||''),p.inMove||'',p.inPlace||'',p.outMove||'',p.outPlace||'',p.prep==='min'?'사역자':p.prep==='staff'?'준비인원':'',p.role||'',p.duty||'',p.praise?'O':'',(p.parts||[]).join('/'),feeOf(p).amt??'',p.paid?'O':'',p.paid?p.payMethod||'':'']);
     dl(new Blob(['﻿'+[H,...rows].map(r=>r.map(q).join(',')).join('\r\n')],{type:'text/csv'}),R.name+'_참석인원.csv')},
   /* 배정 */
   dir:t=>{SUB.dir=t.dataset.v;render()},
   pmore:t=>{const m=t.previousElementSibling;if(!m)return;m.hidden=!m.hidden;t.textContent=m.hidden?`＋ ${t.dataset.n}명 더보기`:'접기 ▲'},
+  assignP:t=>assign(t.dataset.pid,t.dataset.to,null),
   carView:t=>{SUB.carView=t.dataset.v;try{localStorage.setItem('camp-carview',SUB.carView)}catch(_){}render()},
   carAdd:()=>{SUB.carView='card';R.cars.list.push({id:uid(),dir:SUB.dir,type:R.cars.types[SUB.dir][0]||'',day:SUB.dir==='in'?0:(+R.nights||0),time:'',members:[]});save();render()},
   gApply:()=>{const n=Math.max(0,Math.min(60,+$('#gCnt').value||0)),G=R.grp.list;if(n<G.length){const lost=G.slice(n).reduce((s,g)=>s+(g.members||[]).length,0);if(lost&&!confirm(`${G.length-n}개 조를 줄이면 그 조의 ${lost}명이 미배정으로 돌아가요. 할까요?`))return;G.length=n}else for(let i=G.length;i<n;i++)G.push({id:uid(),name:(i+1)+'조',members:[],leader:'',staff:[],roles:{}});save();render()},
@@ -901,6 +988,7 @@ async function importXls(file){try{await loadXLSX()}catch(e){toast('엑셀 도�
       const o={name,age:g('age'),org:g('org'),addr:g('addr'),phone:g('phone'),inT:g('inT'),outT:g('outT')};
       const gd=g('gender');o.gender=/여|female|^f$/i.test(gd)?'여':/남|male|^m$/i.test(gd)?'남':'';
       const ins=g('ins');o.ins=/미가입|아니|없|no|x/i.test(ins)?'미가입':/가입|예|네|있|yes|o/i.test(ins)?'가입':'';
+      setWhenFromText(o,'in');setWhenFromText(o,'out');
       const ex=R.people.find(p=>p.name===name&&norm(p.phone)===norm(o.phone));
       if(ex){for(const k in o)if(o[k])ex[k]=o[k];upd++}else{R.people.push({id:uid(),...o});add++}});
     save();m.remove();render();toast(`${add}명 추가${upd?`, ${upd}명 갱신`:''}했어요`)}}
@@ -910,15 +998,18 @@ document.addEventListener('click',e=>{const t=e.target.closest('[data-act]');if(
 function apply(t){const o=objOf(t.dataset.o);if(!o)return;const k=t.dataset.k;let v=t.type==='checkbox'?t.checked:t.dataset.t==='n'?(t.value===''?null:+t.value):t.value;if(t.dataset.o==='.'&&k==='nights')v=+v;o[k]=v;save()}
 document.addEventListener('input',e=>{const t=e.target;
   if(t.id==='mq'){SUB.mq=t.value;clearTimeout(t._t);t._t=setTimeout(render,250);return}
+  if(t.id==='nq'){SUB.nq=t.value;clearTimeout(t._t);t._t=setTimeout(render,250);return}
   if(t.id==='pq'){filterPeople(t.value);return}if(t.id==='poolQ'){filterPool(t.value);return}
-  if(t.dataset.o==null||t.tagName==='SELECT'||t.type==='checkbox')return;apply(t);if(t.id==='mbody')updPrev();
+  if(t.dataset.o==null||t.tagName==='SELECT'||t.type==='checkbox')return;apply(t);if(t.id==='mbody')updPrev();if(t.id==='ntcBody'){const l=$('#ntcLen');if(l)l.textContent=t.value.length+'자'}
   if(t.dataset.o==='venue.w'){const w=critList().reduce((s,k)=>s+(+R.venue.w[k.id]||0),0);$$('.wsum').forEach(b=>b.outerHTML=wBadge(w))}});
 document.addEventListener('change',e=>{const t=e.target;
+  if(t.id==='vFinalSel'){setFinal(t.value);return}
   if(t.name==='lMeth'){$$('input[name=lMeth]').forEach(r=>r.parentElement.classList.toggle('on',r.checked));return}
   if(t.tagName==='SELECT'&&t.dataset.act==='addTo'){if(!t.value)return;const o=objOf(t.dataset.o);(o[t.dataset.k]=o[t.dataset.k]||[]).push(t.value);save();render();return}
   if(t.tagName==='SELECT'&&t.dataset.act==='assign'){if(t.value)assign(t.value,t.dataset.to,null);return}
   if(t.tagName==='SELECT'&&t.dataset.act==='gRole'){const g=R.grp.list.find(x=>x.id===t.dataset.g);g.roles=g.roles||{};if(t.value)g.roles[t.dataset.pid]=t.value;else delete g.roles[t.dataset.pid];save();return}
   if(t.dataset.o==null)return;if(t.tagName==='SELECT'||t.type==='checkbox')apply(t);
+  if(t.dataset.o==='venue.list#'+R.venue.finalId&&(t.dataset.k==='name'||t.dataset.k==='addr')){const v=objOf(t.dataset.o);R.conf.place.v=venueTxt(v);save()}
   if(t.dataset.o.startsWith('people#')&&t.dataset.k==='prep'){const p=objOf(t.dataset.o);p.role=''}
   if(t.dataset.o.startsWith('people#')&&t.dataset.k==='payMethod'){const p=objOf(t.dataset.o),b=feeBooked(p.id);if(b)b.method=p.payMethod}
   if(t.dataset.o.startsWith('people#')&&t.dataset.k==='paid'){const p=objOf(t.dataset.o);p.paidDate=p.paid?todayStr():'';if(p.paid&&!p.payMethod)p.payMethod='계좌이체';if(p.paid&&feeOf(p).amt)toast(`💰 ${p.name||''} 입금확인 · [회계]에서 수입으로 넣을 수 있어요`)}
@@ -946,7 +1037,7 @@ $('#rcpUp').onchange=e=>{const f=e.target.files[0];if(f){SUB.rcpFile=f;const n=$
 (async()=>{try{await idb.open()}catch(e){$('#app').innerHTML='<div class="card"><div class="empty">이 브라우저에서는 저장소를 쓸 수 없어요. (시크릿 창이면 일반 창에서 열어 주세요)</div></div>';return}
   try{TAB=localStorage.getItem('camp-tab')||'people';SUB.carView=localStorage.getItem('camp-carview')||'card'}catch(_){}if(!TABS.some(x=>x[0]===TAB))TAB='people';
   const cid=new URLSearchParams(location.search).get('c');
-  if(cid){const c=await idb.get('camps',cid);if(!c){location.replace('./');return}R=fill(c);document.title=R.name+' | 수련회 준비 패키지'}
+  if(cid){const c=await idb.get('camps',cid);if(!c){location.replace('./');return}R=fill(c);R.people.forEach(p=>['in','out'].forEach(k=>{if((p[k+'H']==null||p[k+'H']==='')&&p[k+'T'])setWhenFromText(p,k)}));document.title=R.name+' | 수련회 준비 패키지'}
   else CAMPS=(await idb.all('camps'))||[];
   render()})();
 })();
