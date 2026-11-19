@@ -24,8 +24,12 @@ select,input{font:inherit;color:var(--ink);border:2px solid #cdbda6;border-radiu
 main{max-width:1200px;margin:0 auto;padding:12px 12px 80px}
 .bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}.sp{flex:1}.hint{font-size:14px;color:var(--muted)}
 /* 코르크 게시판 */
-.board{position:relative;min-height:70vh;border:14px solid #8a5a32;border-radius:14px;box-shadow:inset 0 0 30px rgba(0,0,0,.25),0 6px 0 rgba(0,0,0,.15);
-  background:radial-gradient(circle at 20% 30%,rgba(255,255,255,.14) 0 2px,transparent 3px) 0 0/18px 18px,radial-gradient(circle at 70% 60%,rgba(0,0,0,.12) 0 2px,transparent 3px) 0 0/23px 23px,#c8955c;overflow:hidden;touch-action:pan-y}
+.board{position:relative;min-height:70vh;border:16px solid #9a6a3e;border-radius:12px;box-shadow:inset 0 0 40px rgba(0,0,0,.45),0 6px 0 rgba(0,0,0,.18),0 0 0 3px #6e4626;
+  background:radial-gradient(ellipse at 30% 20%,rgba(255,255,255,.07),transparent 55%),radial-gradient(ellipse at 75% 80%,rgba(255,255,255,.05),transparent 50%),repeating-linear-gradient(-12deg,rgba(255,255,255,.018) 0 2px,transparent 2px 9px),#2f4b3c;overflow:hidden;touch-action:pan-y}
+.board:after{content:"";position:absolute;left:0;right:0;bottom:0;height:12px;background:linear-gradient(#b07a48,#8a5a32);box-shadow:0 -2px 4px rgba(0,0,0,.3);pointer-events:none}
+.board .empty{font-family:"Gaegu","Jua",sans-serif!important;color:#f3f1e6!important;text-shadow:0 0 2px rgba(255,255,255,.4)!important}
+.grip{display:block;margin:-6px auto 0;width:120px;height:20px;border-radius:0 0 12px 12px;background:#6e4626;color:#f6e7cf;font-size:13px;text-align:center;line-height:18px;cursor:ns-resize;touch-action:none;user-select:none}
+main.wide{max-width:none}
 .board .empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.4);font-family:Jua,sans-serif;font-size:22px;text-align:center;padding:20px}
 .note{position:absolute;width:176px;min-height:150px;max-height:200px;padding:22px 12px 12px;box-shadow:2px 6px 10px rgba(0,0,0,.28);cursor:grab;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:none;transition:box-shadow .15s}
 .note:hover{box-shadow:3px 10px 16px rgba(0,0,0,.32)}
@@ -54,9 +58,9 @@ main{max-width:1200px;margin:0 auto;padding:12px 12px 80px}
 </head><body>
 <div class="top"><a href="../">← 목장</a><span class="ttl">📌 게시판</span></div>
 <main>
- <div class="bar"><button class="pri" id="add">📝 포스트잇 붙이기</button><span class="hint" id="cnt"></span><span class="sp"></span><select id="sort"><option value="">붙인 자리 그대로</option><option value="new">🕒 최신순으로 정리</option><option value="color">🎨 색깔별로 정리</option></select></div>
- <div class="board" id="board"></div>
- <p class="hint">포스트잇을 누르면 메모를 보고 고치거나 지울 수 있어요. 끌어서 원하는 자리로 옮길 수 있어요. 메모는 이 기기에 저장돼요.</p>
+ <div class="bar"><button class="pri" id="add">📝 포스트잇 붙이기</button><span class="hint" id="cnt"></span><span class="sp"></span><select id="size" title="게시판 크기"><option value="1">📐 보통</option><option value="1.6">📐 크게</option><option value="2.4">📐 아주 크게</option><option value="3.5">📐 매우 크게</option><option value="full">⛶ 화면 가득</option></select><select id="sort"><option value="">붙인 자리 그대로</option><option value="new">🕒 최신순으로 정리</option><option value="color">🎨 색깔별로 정리</option></select></div>
+ <div class="board" id="board"></div><div class="grip" id="grip" title="끌어서 게시판 늘리기">⇕ 끌어서 늘리기</div>
+ <p class="hint">포스트잇을 누르면 메모를 보고 고치거나 지울 수 있어요. 두 번 빠르게 누르면(더블클릭) 바로 고쳐요. 끌어서 원하는 자리로 옮길 수 있어요. 메모는 이 기기에 저장돼요.</p>
 </main>
 <div class="toast" id="toast"></div>
 <script>
@@ -93,13 +97,19 @@ function draw(){$('#cnt').textContent=N.length?`포스트잇 ${N.length}장`:'';
   let maxY=0;board.innerHTML=N.length?'':'<div class="empty">📌<br>아직 붙인 포스트잇이 없어요<br><span style="font-size:16px">‘📝 포스트잇 붙이기’를 눌러 첫 메모를 붙여 보세요</span></div>';
   N.forEach((n,i)=>{const el=document.createElement('div');el.className='note';el.dataset.id=n.id;el.style.background=n.color;el.style.left=`calc(${n.x}% )`;el.style.top=n.y+'px';el.style.transform=`rotate(${n.rot||0}deg)`;el.style.zIndex=1+i;
     el.innerHTML=`<span class="pin">📌</span><div class="body">${n.html||'<span style="opacity:.5">(빈 메모)</span>'}</div><span class="when">${when(n.updated||n.created)}</span>`;board.appendChild(el);maxY=Math.max(maxY,n.y+230);bindNote(el,n)});
-  board.style.minHeight=Math.max(window.innerHeight*.7,maxY)+'px'}
+  board.style.minHeight=Math.max(boardH(),maxY)+'px'}
+/* 📐 게시판 크기: 고르거나 아래 손잡이를 끌어서 늘려요 (이 기기에 기억) */
+let SZ={k:'1',h:0};try{SZ=Object.assign(SZ,JSON.parse(localStorage.getItem('note-board-size')||'{}'))}catch(e){}
+const saveSZ=()=>{try{localStorage.setItem('note-board-size',JSON.stringify(SZ))}catch(e){}};
+function boardH(){const vh=window.innerHeight;if(SZ.h)return SZ.h;if(SZ.k==='full')return vh-140;return vh*.7*(+SZ.k||1)}
+function applySize(){document.querySelector('main').classList.toggle('wide',SZ.k==='full'||+SZ.k>=2.4);$('#size').value=SZ.h?'':SZ.k;if(SZ.h&&!$('#size').value){let o=$('#size').querySelector('[value=""]');if(!o){o=document.createElement('option');o.value='';$('#size').prepend(o)}o.textContent=`📐 직접 늘린 크기`;$('#size').value=''}}
 function bindNote(el,n){el.onpointerdown=e=>{if(e.button)return;const sx=e.clientX,sy=e.clientY,bx=board.getBoundingClientRect(),ox=n.x/100*board.clientWidth,oy=n.y;let moved=false;
   el.setPointerCapture(e.pointerId);
   el.onpointermove=ev=>{const dx=ev.clientX-sx,dy=ev.clientY-sy;if(!moved&&Math.hypot(dx,dy)<6)return;moved=true;el.classList.add('drag');
     const x=Math.min(Math.max(0,ox+dx),board.clientWidth-el.offsetWidth),y=Math.max(0,oy+dy);el.style.left=x+'px';el.style.top=y+'px';n.x=x/board.clientWidth*100;n.y=y};
   el.onpointerup=()=>{el.onpointermove=el.onpointerup=null;el.classList.remove('drag');
-    if(moved){N=N.filter(x=>x!==n);N.push(n);save();draw();$('#sort').value=''}else openView(n)}}}
+    if(moved){N=N.filter(x=>x!==n);N.push(n);save();draw();$('#sort').value=''}else{/* 한 번 누르면 보기, 두 번 빠르게 누르면 바로 고치기 */if(CLK.n===n&&Date.now()-CLK.t<320){clearTimeout(CLK.tm);CLK={};openEdit(n)}else{clearTimeout(CLK.tm);CLK={n,t:Date.now(),tm:setTimeout(()=>{CLK={};openView(n)},300)}}}}}}
+let CLK={};
 
 /* ---------- 보기 ---------- */
 function modal(html,bg){const m=document.createElement('div');m.className='modal';m.innerHTML=`<div class="sheet" style="background:${bg}">${html}</div>`;document.body.appendChild(m);
@@ -137,6 +147,11 @@ function openEdit(n){const isNew=!n;let color=n?n.color:COLORS[Math.floor(Math.r
   setTimeout(()=>{ed.focus();const r=document.createRange();r.selectNodeContents(ed);r.collapse(false);const s=getSelection();s.removeAllRanges();s.addRange(r)},50)}
 $('#add').onclick=()=>openEdit(null);
 $('#sort').onchange=e=>{if(e.target.value)layout(e.target.value)};
+$('#size').onchange=e=>{if(!e.target.value)return;SZ={k:e.target.value,h:0};saveSZ();applySize();draw();if(SZ.k==='full')board.scrollIntoView({block:'start'})};
+$('#grip').onpointerdown=e=>{e.preventDefault();const g=$('#grip');try{g.setPointerCapture(e.pointerId)}catch(_){}const sy=e.clientY,oh=board.offsetHeight;
+  g.onpointermove=ev=>{const h=Math.max(300,oh+ev.clientY-sy);board.style.minHeight=h+'px'};
+  g.onpointerup=ev=>{g.onpointermove=g.onpointerup=null;SZ.h=Math.max(300,oh+ev.clientY-sy)-32;saveSZ();applySize();draw()}};
+applySize();
 addEventListener('resize',()=>{clearTimeout(window.__rz);window.__rz=setTimeout(draw,150)});
 draw();
 })();
