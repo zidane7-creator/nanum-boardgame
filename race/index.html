@@ -271,6 +271,8 @@ function step(dt){const t=R.t,base=1/R.D,M=R.M;
     if(s.ev){const e=s.ev;
       if(t>=e.until){if(e.type==="dq"){s.dq=true;s.ev=null;addTick(s);return}s.ev=null;s.hole=null}
       else{if(e.type==="back"){s.p=Math.max(0,s.p-base*.55*dt);s.leg+=dt*10}else if(e.type==="dq"){s.leg+=dt*12}else if(e.type==="fight"){s.leg+=dt*16}return}}
+    // 남은 거리가 20%가 되는 순간, 30% 확률로 경기장 이탈(실격)
+    if(!s.chk80&&s.p>=.8){s.chk80=true;if(Math.random()<.3&&R.sheep.length-R.dqN-1>=Math.max(2,SET.pod)){R.dqN++;startEv(s,"dq",t);cast(`🚫 결승선 앞에서 ${sName(s)} 양이 경기장을 벗어났어요! 실격`);return}}
     s.v+=(s.tv-s.v)*Math.min(1,dt*3);let v=s.v;const sm=s.p*M;
     for(const o of R.obs){const d=OB[o.type];if(!d.flat||Math.abs(sm-o.m)>=o.len/2||s.yf<=o.t0||s.yf>=o.t1)continue;
       if(d.trig&&!s.passed.has(o.id)){s.passed.add(o.id);if(Math.random()<d.chance){
