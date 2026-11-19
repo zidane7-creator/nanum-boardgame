@@ -72,6 +72,8 @@ main{max-width:920px;margin:0 auto;padding:14px 12px 80px}
 .lot{border:3px solid var(--ink);border-radius:16px;padding:14px 8px;text-align:center;background:#fff;font-family:Jua,sans-serif;font-size:24px;transition:transform .08s}
 .lot.hl{background:var(--gold);transform:scale(1.06)}
 .lot.win{background:var(--accent);color:#fff;transform:scale(1.1)}
+.slipb{display:flex;flex-direction:column;align-items:center;gap:2px;border:2px dashed #c9a46b;background:#fffdf5;border-radius:14px;cursor:pointer}.slipb:hover:not(:disabled){transform:translateY(-4px) rotate(-3deg)}
+.slipb.drop{animation:unfold .5s ease-out}@keyframes unfold{50%{transform:scale(1.25) rotate(8deg)}}
 .lot .w{display:block;font-size:14px;color:var(--muted)}.lot.win .w,.lot.hl .w{color:inherit}
 .winner{text-align:center;padding:18px;border-radius:20px;background:linear-gradient(#fff6d8,#fff);border:3px solid var(--gold)}
 .winner .nm{font-family:Jua,sans-serif;font-size:46px;color:var(--red)}
@@ -131,40 +133,39 @@ function vSetup(){const e=E();
    <div class="row"><input id="cName" placeholder="추천받은 사람 이름" list="rosterList" style="width:170px"><datalist id="rosterList">${(e.roster||[]).map(n=>`<option value="${esc(n)}">`).join('')}</datalist><input id="cBy" placeholder="추천한 사람 (선택)" style="width:150px"><input id="cWhy" placeholder="추천 이유 (선택)" style="flex:1;min-width:160px"><button class="pri" data-act="addCand">+ 추천</button></div>
    <p class="hint" style="margin:6px 0">같은 이름을 또 추천하면 추천 수가 늘어나요. 본인이 원하지 않으면 ×로 빼 주세요.</p>
    ${e.cands.length?`<div class="cands">${e.cands.map((c,i)=>`<div class="cand"><div class="row"><span class="badge">${i+1}번</span><span class="n">${esc(c.name)}</span><span class="sp"></span><button class="x" data-act="delCand" data-v="${c.id}" title="빼기">✕</button></div><div class="hint">추천 ${c.recs.length}표${c.recs.filter(r=>r.by).length?' · '+c.recs.filter(r=>r.by).map(r=>esc(r.by)).join(', '):''}</div>${c.recs.filter(r=>r.why).map(r=>`<div style="font-size:14px">💬 ${esc(r.why)}</div>`).join('')}</div>`).join('')}</div>`:'<div class="empty">추천받은 후보를 등록해 주세요</div>'}</div>
-  <div class="card"><div class="row"><h2 style="margin:0">👥 투표할 사람 <span class="hint" style="font-family:inherit">(선택)</span></h2><span class="sp"></span><button class="go" data-act="rosterLoad">📋 팀원명부에서 불러오기</button></div>
-   <p class="hint" style="margin:6px 0">명단을 넣어 두면 기표소·부재자 투표에서 이름을 눌러 고르고, 누가 투표했는지(무기명이어도 투표 여부만) 확인할 수 있어요. 한 사람이 두 번 투표하지 못해요.</p>
-   <div class="row"><input id="rAdd" placeholder="이름 추가 후 Enter" style="width:170px">${(e.roster||[]).length?`<span class="badge">${e.roster.length}명</span><button class="sm" data-act="rosterClear">명단 비우기</button>`:''}</div>
+  <div class="card"><div class="row"><h2 style="margin:0">👥 유권자 명단 ${e.method==='lot'?'<span class="hint" style="font-family:inherit">(제비뽑기는 필요 없어요)</span>':''}</h2><span class="sp"></span><button class="go" data-act="rosterLoad">📋 팀원명부에서 불러오기</button></div>
+   <p class="hint" style="margin:6px 0">투표할 사람 이름을 모두 넣어 주세요. 투표할 때 이 순서대로 ‘○○님 투표 차례’가 나오고, 다 투표하면 투표가 끝나요. 여러 명을 한 번에 넣으려면 쉼표나 띄어쓰기로 나눠 적어요.</p>
+   <div class="row"><input id="rAdd" placeholder="예) 김철수, 이영희, 박민수" style="flex:1;min-width:200px"><button class="sm" data-act="rosterAdd">+ 추가</button>${(e.roster||[]).length?`<span class="badge">${e.roster.length}명</span><button class="sm" data-act="rosterClear">명단 비우기</button>`:''}</div>
    <div style="margin-top:6px">${(e.roster||[]).map(n=>`<span class="badge" style="font-size:15px;margin:2px">${esc(n)} <button class="x" data-act="rosterDel" data-v="${esc(n)}">✕</button></span>`).join('')}</div></div>
   <div class="card"><h2>③ 어떻게 뽑을까요?</h2><div class="pick">${Object.entries(METHODS).map(([k,[l,d]])=>`<button class="${e.method===k?'on':''}" data-act="method" data-v="${k}"><b>${l}</b><span>${d}</span></button>`).join('')}</div>
    ${e.method!=='lot'?`<h3 style="margin:14px 0 6px">투표 방식</h3><div class="pick"><button class="${e.ballot==='secret'?'on':''}" data-act="ballot" data-v="secret"><b>🙈 무기명</b><span>누가 누구를 찍었는지 남기지 않아요</span></button><button class="${e.ballot==='named'?'on':''}" data-act="ballot" data-v="named"><b>✍️ 기명</b><span>투표할 때 내 이름을 적어요 (개표 때 보여요)</span></button></div>
    <h3 style="margin:14px 0 6px">득표수 공개</h3><div class="pick"><button class="${e.showCount?'on':''}" data-act="show" data-v="1"><b>👀 공개</b><span>바를 정(正)자로 하나씩 개표하고 표 수를 보여 줘요</span></button><button class="${!e.showCount?'on':''}" data-act="show" data-v="0"><b>🤐 비공개</b><span>${e.method==='votelot'?'표 수를 숨기고 그 비율대로 제비만 뽑아요':'표 수는 숨기고 뽑힌 사람만 알려 줘요'}</span></button></div>`:''}</div>
-  <div class="row" style="justify-content:center"><button class="pri big" data-act="start" ${e.cands.length<1?'disabled':''}>${e.method==='lot'?'🎲 제비뽑기 하러 가기':'🗳️ 투표 시작'}</button></div>`;
+  <div class="row" style="justify-content:center">${e.method!=='lot'&&!(e.roster||[]).length?'<div class="hint" style="width:100%;text-align:center">투표하려면 유권자 명단을 먼저 넣어 주세요</div>':''}<button class="pri big" data-act="start" ${e.cands.length<1||(e.method!=='lot'&&!(e.roster||[]).length)?'disabled':''}>${e.method==='lot'?'🎲 제비뽑기 하러 가기':'🗳️ 투표 시작'}</button></div>`;
   const ent=$('#cWhy'),nm=$('#cName');[nm,$('#cBy'),ent].forEach(x=>x.addEventListener('keydown',ev=>{if(ev.key==='Enter'&&!ev.isComposing)ACT.addCand()}));
   $('#title').oninput=ev=>{e.title=clip(ev.target.value,40);save()};
-  const ra=$('#rAdd');ra.onkeydown=ev=>{if(ev.key==='Enter'&&!ev.isComposing){const n=clip(ra.value,12);if(n&&!R_().roster.includes(n)){e.roster.push(n);save();render();$('#rAdd').focus()}}}}
+  const ra=$('#rAdd');ra.onkeydown=ev=>{if(ev.key==='Enter'&&!ev.isComposing)ACT.rosterAdd()}}
 
-/* ---------- 투표 (기표소) ---------- */
-function vVoting(){const e=E(),n=e.votes.length,remote=e.votes.filter(v=>v.remote).length;
+/* ---------- 투표 (유권자 차례대로) ---------- */
+const nextVoter=()=>{const e=R_();return e.roster.find(n=>!e.voted.includes(n)&&!(e.skipped||[]).includes(n))||null};
+function vVoting(){const e=R_(),n=e.votes.length,remote=e.votes.filter(v=>v.remote).length;
   if(BOOTH){vBooth();return}
+  const all=e.roster.length&&e.voted.length>=e.roster.length,nv=nextVoter(),left=e.roster.filter(x=>!e.voted.includes(x));
   const url=location.origin+location.pathname+'?v='+e.room;let qr='';try{const q=qrcode(0,'M');q.addData(url);q.make();qr=q.createSvgTag(5,2)}catch(_){}
-  app.innerHTML=`<div class="card" style="text-align:center"><h2>🗳️ ${esc(e.title||'투표')} <span class="badge">${e.ballot==='named'?'✍️ 기명':'🙈 무기명'}</span></h2>
-   <div style="font-family:Jua,sans-serif;font-size:42px;color:var(--red)">📮 ${n}표</div><div class="hint">지금까지 들어온 표${remote?` (부재자 ${remote}표 포함)`:''} · 누구를 찍었는지는 개표 전까지 보이지 않아요</div>
-   ${(e.roster||[]).length?`<div style="margin-top:8px"><b>투표한 사람 ${e.voted.length}/${e.roster.length}</b><div style="margin-top:4px">${e.roster.map(n=>`<span class="badge" style="margin:2px;${e.voted.includes(n)?'background:#dff3e4;border-color:#9ccfa9':'opacity:.7'}">${e.voted.includes(n)?'✔ ':''}${esc(n)}</span>`).join('')}</div></div>`:''}
-   <div class="row" style="justify-content:center;margin-top:14px"><button class="go big" data-act="booth">✍️ 기표소 들어가기</button></div>
-   <p class="hint">한 사람씩 기표소에 들어가 투표하고, 투표함에 넣은 뒤 다음 사람에게 넘겨요.</p></div>
-  <div class="card"><div class="row"><h2 style="margin:0">📱 부재자 투표 (QR)</h2><span class="sp"></span><span class="badge" id="netSt">연결 준비 중…</span></div>
-   <div class="row" style="align-items:flex-start;margin-top:8px"><div class="qr">${qr}</div><div style="flex:1;min-width:220px"><p style="margin:0 0 6px">이 자리에 없는 사람은 QR을 찍거나 링크를 받아 자기 휴대폰으로 투표해요. <b>이 화면(진행 기기)이 켜져 있어야</b> 표가 들어와요.</p>
-   <input readonly value="${esc(url)}" style="width:100%;font-size:13px" onclick="this.select()"><div class="row" style="margin-top:6px"><button class="sm" data-act="copyUrl">🔗 링크 복사</button></div><p class="hint">한 휴대폰에서는 한 번만 투표할 수 있어요.</p></div></div></div>
-  <div class="row" style="justify-content:center"><button class="sm" data-act="back">← 설정으로</button><span class="sp"></span><button class="pri big" data-act="endVote" ${n?'':'disabled'}>🔒 투표 종료하고 개표하기</button></div>`;
-  hostNet()}
+  const top=all?`<div class="card" style="text-align:center;border-color:var(--red)"><div style="font-size:60px">🔒</div><h2 style="margin:4px 0">투표가 종료되었어요</h2><p>유권자 ${e.roster.length}명이 모두 투표했어요 · 📮 ${n}표${remote?` (부재자 ${remote}표)`:''}</p><button class="pri big" data-act="count">📊 개표하기</button></div>`
+    :nv?`<div class="card turn" style="text-align:center"><div class="hint">${esc(e.title||'투표')} · ${e.ballot==='named'?'✍️ 기명':'🙈 무기명'}</div><div style="font-size:20px;margin-top:6px">지금은</div><div style="font-family:Jua,sans-serif;font-size:48px;color:var(--blue)">🙋 ${esc(nv)}님</div><div style="font-size:20px">투표 차례예요. 나와서 투표해 주세요!</div>
+      <div class="row" style="justify-content:center;margin-top:14px"><button class="go big" data-act="voteNow">✍️ 투표하기</button><button data-act="skip">⏭ 자리에 없어요 (부재자로)</button></div></div>`
+    :`<div class="card" style="text-align:center"><div style="font-size:48px">⏳</div><h2 style="margin:4px 0">현장 투표가 끝났어요</h2><p>아직 투표하지 않은 사람: <b>${left.map(esc).join(', ')}</b><br><span class="hint">부재자 투표(QR)를 기다리고 있어요. 다 들어오면 저절로 투표가 끝나요.</span></p>
+      <div class="row" style="justify-content:center"><button class="sm" data-act="unskip">⏪ 건너뛴 사람 다시 부르기</button><button class="sm pri" data-act="endVote">🔒 기다리지 않고 지금 투표 끝내기</button></div></div>`;
+  app.innerHTML=top+`<div class="card"><div class="row"><b>👥 투표한 사람 ${e.voted.length}/${e.roster.length}</b><span class="sp"></span><span class="badge">📮 ${n}표</span></div>
+   <div style="margin-top:6px">${e.roster.map(x=>{const v=e.voted.includes(x),sk=(e.skipped||[]).includes(x);return `<span class="badge" style="margin:2px;font-size:15px;${v?'background:#dff3e4;border-color:#9ccfa9':x===nv?'background:#e3efff;border-color:#2f6fb0':sk?'background:#fff1cc':''}">${v?'✔ ':x===nv?'👉 ':sk?'📱 ':''}${esc(x)}</span>`}).join('')}</div>
+   <p class="hint" style="margin:6px 0 0">✔ 투표함 · 👉 지금 차례 · 📱 자리에 없어 부재자로 기다리는 중</p></div>
+  ${all?'':`<div class="card"><div class="row"><h2 style="margin:0">📱 부재자 투표 (QR)</h2><span class="sp"></span><span class="badge" id="netSt">연결 준비 중…</span></div>
+   <div class="row" style="align-items:flex-start;margin-top:8px"><div class="qr">${qr}</div><div style="flex:1;min-width:220px"><p style="margin:0 0 6px">자리에 없는 사람은 QR을 찍거나 링크를 받아, <b>자기 이름을 적고</b> 투표해요. <b>이 화면이 켜져 있어야</b> 표가 들어와요.</p>
+   <input readonly value="${esc(url)}" style="width:100%;font-size:13px" onclick="this.select()"><div class="row" style="margin-top:6px"><button class="sm" data-act="copyUrl">🔗 링크 복사</button></div></div></div></div>`}
+  <div class="row"><button class="sm" data-act="back">← 설정으로</button></div>`;
+  if(!all)hostNet()}
 function vBooth(){const e=E(),b=BOOTH;
-  if(b.step==='pick'){const R=e.roster;app.innerHTML=`<div class="booth"><div class="paper"><h3>🙋 누가 투표하나요?</h3><p class="hint" style="text-align:center">${e.ballot==='named'?'내 이름을 눌러요 (기명 투표라 개표 때 이름이 보여요)':'내 이름을 눌러요 (무기명이라 누구를 찍었는지는 남지 않고, 투표했다는 것만 체크돼요)'}</p>
-     <div class="row" style="justify-content:center;gap:6px">${R.map(n=>{const v=e.voted.includes(n);return `<button class="${v?'':'go'}" data-act="pickName" data-v="${esc(n)}" ${v?'disabled':''}>${v?'✔ ':''}${esc(n)}</button>`}).join('')}</div>
-     <div class="row" style="justify-content:center;margin-top:12px"><button data-act="boothOut">취소</button></div></div></div>`;return}
-  if(b.step==='name'){app.innerHTML=`<div class="booth"><div class="paper"><h3>✍️ 기명 투표</h3><p style="text-align:center">투표하는 사람의 이름을 적어 주세요</p><input id="voter" placeholder="내 이름" style="width:100%;font-size:22px;text-align:center"><div class="row" style="justify-content:center;margin-top:12px"><button data-act="boothOut">취소</button><button class="pri" data-act="boothName">다음 →</button></div></div></div>`;
-    const v=$('#voter');v.focus();v.onkeydown=ev=>{if(ev.key==='Enter'&&!ev.isComposing)ACT.boothName()};return}
-  if(b.step==='done'){app.innerHTML=`<div class="booth" style="text-align:center;padding:40px 16px"><div style="font-size:70px">📮</div><h2 style="margin:6px 0">투표함에 넣었어요!</h2><p>다음 사람에게 넘겨 주세요 🙏</p><div class="row" style="justify-content:center;gap:12px;margin-top:16px"><button class="go big" data-act="booth">다음 사람 투표</button><button class="big" data-act="boothOut">투표 현황으로</button></div></div>`;return}
-  app.innerHTML=`<div class="booth"><div class="paper" id="paper"><h3>${esc(e.title||'투표용지')}</h3><p class="hint" style="text-align:center;margin:0">뽑고 싶은 사람의 칸을 눌러 도장을 찍어요 (한 명만)${b.voter?` · 투표자: <b>${esc(b.voter)}</b>`:''}</p>
+  app.innerHTML=`<div class="booth"><div class="paper" id="paper"><h3>${esc(e.title||'투표용지')}</h3><p class="hint" style="text-align:center;margin:0">🙋 <b>${esc(b.voter)}</b>님 투표 · 뽑고 싶은 사람의 칸을 눌러 도장을 찍어요 (한 명만)</p>
    <div class="slips">${e.cands.map((c,i)=>`<div class="slip" data-act="stamp" data-v="${c.id}"><div class="no">${i+1}</div><div class="nm">${esc(c.name)}</div><div class="st">${b.cand===c.id?STAMP:''}</div></div>`).join('')}</div>
    <label style="display:block;margin-top:10px">💬 뽑은 이유 (선택)<textarea id="why" rows="2" maxlength="200" placeholder="이 사람을 뽑은 이유를 적어도 돼요">${esc(b.why||'')}</textarea></label>
    <div class="row" style="margin-top:10px"><button data-act="boothOut">취소</button><span class="sp"></span><button class="pri big" data-act="cast" ${b.cand?'':'disabled'}>📮 투표함에 넣기</button></div></div></div>`;
@@ -182,19 +183,16 @@ function vCounting(){const e=E();if(!COUNT){const order=e.votes.map((v,i)=>i);fo
    <div class="row" style="justify-content:center;margin-top:14px">${done?`<button class="pri big" data-act="afterCount">${e.method==='votelot'?'🎲 득표수만큼 제비뽑기':'🏆 결과 보기'}</button>`:`<button class="go big" data-act="openOne">📮 한 표 열기</button>`}</div></div>`}
 
 /* ---------- 제비뽑기 ---------- */
-function startDraw(pool,note){DRAW={pool,note,hl:null,win:null,running:false};E().phase='draw';save();render()}
-function vDrawView(){const e=E(),d=DRAW;if(!d){if(e.method==='lot'){DRAW={pool:e.cands.map(c=>({id:c.id,name:c.name,w:1})),note:'후보 모두 같은 확률이에요 (1:1)',hl:null,win:null,running:false};return vDrawView()}e.phase='counting';COUNT=null;save();render();return}
-  const tot=d.pool.reduce((s,x)=>s+x.w,0),showW=d.pool.some(x=>x.w!==1)?(e.showCount!==false):false;
-  app.innerHTML=`<div class="card" style="text-align:center"><h2>🎲 제비뽑기</h2><p class="hint" style="margin:0">${esc(d.note||'')}</p>
-   ${showW?`<div class="j" style="font-size:20px;margin:6px 0">${d.pool.map(x=>esc(x.name)).join(' : ')} = ${d.pool.map(x=>x.w).join(' : ')}</div>`:''}
-   <div class="lots">${d.pool.map(x=>`<div class="lot ${d.win===x.id?'win':d.hl===x.id?'hl':''}" data-id="${x.id}">${esc(x.name)}${showW?`<span class="w">제비 ${x.w}개 · ${Math.round(x.w/tot*100)}%</span>`:''}</div>`).join('')}</div>
-   ${d.win?`<div class="winner"><div class="hint">뽑힌 사람</div><div class="nm">🎉 ${esc(d.pool.find(x=>x.id===d.win).name)}</div></div><div class="row" style="justify-content:center;margin-top:12px"><button class="pri big" data-act="toDone">결과 정리</button></div>`:`<button class="pri big" data-act="spin" ${d.running?'disabled':''}>${d.running?'두구두구…':'🎲 제비 뽑기!'}</button>`}</div>`}
-function spin(){const d=DRAW;if(!d||d.running)return;d.running=true;
-  const tot=d.pool.reduce((s,x)=>s+x.w,0);let r=rnd(tot),win=d.pool[d.pool.length-1].id;for(const x of d.pool){if(r<x.w){win=x.id;break}r-=x.w}
-  let i=Math.floor(rnd(d.pool.length)),delay=60,steps=26+Math.floor(rnd(d.pool.length*2));
-  const tick=()=>{d.hl=d.pool[i%d.pool.length].id;vDrawView();steps--;
-    if(steps<=0&&d.hl===win){d.win=win;d.running=false;setTimeout(vDrawView,450);return}
-    if(steps<=0)delay=Math.min(delay*1.08,380);else if(steps<10)delay*=1.18;i++;setTimeout(tick,delay)};tick()}
+function startDraw(pool,note){const slips=[];pool.forEach(x=>{for(let i=0;i<x.w;i++)slips.push(x.id)});for(let i=slips.length-1;i>0;i--){const j=Math.floor(rnd(i+1));[slips[i],slips[j]]=[slips[j],slips[i]]}
+  DRAW={pool,note,slips,picked:null,win:null};E().phase='draw';save();render()}
+const SLIP=`<svg viewBox="0 0 80 60" style="width:70px;height:52px"><path d="M6 14 L40 4 L74 14 L74 50 L40 58 L6 50Z" fill="#fff6d8" stroke="#3b2a20" stroke-width="3" stroke-linejoin="round"/><path d="M40 4V58M6 14L40 24L74 14" fill="none" stroke="#c9a46b" stroke-width="2"/></svg>`;
+function vDrawView(){const e=E(),d=DRAW;if(!d){if(e.method==='lot'){startDraw(e.cands.map(c=>({id:c.id,name:c.name,w:1})),'후보 모두 같은 확률이에요 (1:1)');return}e.phase='counting';COUNT=null;save();render();return}
+  const tot=d.slips.length,showW=d.pool.some(x=>x.w!==1)?(e.showCount!==false):true,nm=id=>(d.pool.find(x=>x.id===id)||{}).name||'';
+  app.innerHTML=`<div class="card" style="text-align:center"><h2>🎲 제비뽑기</h2><p style="margin:0">${esc(d.note||'')}</p>
+   <div class="row" style="justify-content:center;margin:8px 0">${d.pool.map(x=>`<span class="badge" style="font-size:16px">${esc(x.name)}${showW?` · 제비 ${x.w}개`:''}</span>`).join('')}</div>
+   <p class="hint" style="margin:0">제비 ${tot}개를 접어서 섞어 두었어요. ${d.win?'':'<b>한 사람이 나와서 제비를 하나 골라 눌러 주세요!</b>'}</p>
+   <div class="lots" style="grid-template-columns:repeat(auto-fill,minmax(96px,1fr))">${d.slips.map((id,i)=>`<button class="lot slipb ${d.picked===i?'win':''}" data-act="pickSlip" data-v="${i}" ${d.win?'disabled':''} style="padding:8px 4px;box-shadow:none">${d.picked===i?`<span style="font-size:22px">${esc(nm(id))}</span>`:d.win&&showW?`<span class="w" style="opacity:.6">${esc(nm(id))}</span>${SLIP}`:SLIP}<span class="w">${i+1}번</span></button>`).join('')}</div>
+   ${d.win?`<div class="winner"><div class="hint">${d.picked+1}번 제비를 펼쳤어요</div><div class="nm">🎉 ${esc(nm(d.win))}</div></div><div class="row" style="justify-content:center;margin-top:12px"><button class="pri big" data-act="toDone">결과 정리</button></div>`:''}</div>`}
 
 /* ---------- 결과 ---------- */
 function finishTo(win,summary){const e=E();e.winner=win;e.summary=summary||'';e.phase='done';save();render()}
@@ -213,11 +211,15 @@ const ACT={
     save();render();$('#cName').focus();toast(c?`${n} 추천 ${c.recs.length}표`:`${n}님을 후보로 등록했어요`)},
   delCand:t=>{const e=E(),c=e.cands.find(x=>x.id===t.dataset.v);if(confirm(`${c.name}님을 후보에서 뺄까요?`)){e.cands=e.cands.filter(x=>x!==c);save();render()}},
   method:t=>{E().method=t.dataset.v;save();render()},ballot:t=>{E().ballot=t.dataset.v;save();render()},show:t=>{E().showCount=t.dataset.v==='1';save();render()},
-  start:()=>{const e=E();if(!e.cands.length)return;
+  start:()=>{const e=R_();if(!e.cands.length)return;if(e.method!=='lot'&&!e.roster.length){toast('유권자 명단을 먼저 넣어 주세요');return}e.skipped=[];
     if(e.method==='lot'){startDraw(e.cands.map(c=>({id:c.id,name:c.name,w:1})),'후보 모두 같은 확률이에요 (1:1)');return}
     if(e.cands.length<2&&!confirm('후보가 한 명이에요. 그래도 투표할까요?'))return;e.phase='voting';e.votes=e.votes||[];save();render()},
   back:()=>{const e=R_();if(e.votes.length&&!confirm(`이미 ${e.votes.length}표가 들어왔어요. 설정으로 돌아가면 표가 지워져요. 돌아갈까요?`))return;e.votes=[];e.voted=[];e.phase='setup';save();render()},
-  booth:()=>{const e=R_();BOOTH={step:e.roster.length?'pick':e.ballot==='named'?'name':'vote',cand:null,why:'',voter:''};render();scrollTo(0,0)},
+  voteNow:()=>{const nv=nextVoter();if(!nv)return;BOOTH={cand:null,why:'',voter:nv};render();scrollTo(0,0)},
+  skip:()=>{const e=R_(),nv=nextVoter();if(!nv)return;(e.skipped=e.skipped||[]).push(nv);save();render();toast(`${nv}님은 부재자 투표(QR)로 기다릴게요`)},
+  unskip:()=>{R_().skipped=[];save();render()},
+  count:()=>ACT.endVote(null,true),
+  rosterAdd:()=>{const e=R_(),ra=$('#rAdd'),add=String(ra.value).split(/[\s,，、\/]+/).map(n=>clip(n,12)).filter(n=>n&&!e.roster.includes(n));if(!add.length){ra.focus();return}e.roster.push(...[...new Set(add)]);save();render();$('#rAdd').focus();toast(`${add.length}명을 넣었어요`)},
   pickName:t=>{BOOTH.voter=t.dataset.v;BOOTH.step='vote';render()},
   rosterLoad:()=>{const T=teamList();if(!T.length){toast('이 기기의 [사역팀 관리부]에 팀원명부가 없어요',3500);return}
     const m=document.createElement('div');m.style.cssText='position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;padding:14px';
@@ -232,9 +234,9 @@ const ACT={
   boothName:()=>{const v=clip($('#voter').value,12);if(!v){toast('이름을 적어 주세요');return}if(E().votes.some(x=>x.voter===v)&&!confirm(`${v}님은 이미 투표했어요. 그래도 한 번 더 투표할까요?`))return;BOOTH.voter=v;BOOTH.step='vote';render()},
   stamp:t=>{BOOTH.cand=t.dataset.v;render()},
   cast:()=>{const b=BOOTH;if(!b.cand)return;const p=$('#paper');if(p)p.classList.add('drop');
-    setTimeout(()=>{const e=R_();e.votes.push({id:uid(),cand:b.cand,reason:clip(b.why,200),voter:e.ballot==='named'?b.voter:'',at:Date.now()});if(b.voter&&e.roster.includes(b.voter)&&!e.voted.includes(b.voter))e.voted.push(b.voter);save();BOOTH={step:'done'};render()},650)},
+    setTimeout(()=>{const e=R_();e.votes.push({id:uid(),cand:b.cand,reason:clip(b.why,200),voter:e.ballot==='named'?b.voter:'',at:Date.now()});if(b.voter&&e.roster.includes(b.voter)&&!e.voted.includes(b.voter))e.voted.push(b.voter);save();BOOTH=null;render();scrollTo(0,0);toast(`📮 ${b.voter}님 투표 완료!`)},650)},
   copyUrl:()=>{const u=location.origin+location.pathname+'?v='+E().room;navigator.clipboard.writeText(u).then(()=>toast('링크를 복사했어요. 카톡으로 보내 주세요'),()=>toast('복사하지 못했어요'))},
-  endVote:()=>{const e=E();if(!confirm(`투표를 끝내고 개표할까요? (지금까지 ${e.votes.length}표) 끝내면 더 투표할 수 없어요.`))return;
+  endVote:(t,auto)=>{const e=E();if(!e.votes.length){toast('아직 들어온 표가 없어요');return}if(!auto&&!confirm(`투표를 끝내고 개표할까요? (지금까지 ${e.votes.length}표) 끝내면 더 투표할 수 없어요.`))return;
     e.phase='counting';e.closed=Date.now();save();COUNT=null;
     if(!e.showCount){const t=tallyAll();ACT.afterCount(null,t);return}render()},
   openOne:()=>{const C=COUNT,e=E();if(C.idx>=e.votes.length)return;const v=e.votes[C.order[C.idx]];C.last=C.order[C.idx];C.idx++;if(v.cand&&e.cands.some(c=>c.id===v.cand))C.tally[v.cand]=(C.tally[v.cand]||0)+1;else C.bad++;render()},
@@ -246,7 +248,7 @@ const ACT={
     const max=Math.max(...cs.map(c=>tally[c.id])),top=cs.filter(c=>tally[c.id]===max);
     if(top.length===1){finishTo(top[0].id,sumTxt);return}
     toast(`${top.map(c=>c.name).join(', ')} 동점이에요! 제비뽑기로 정해요`,3500);startDraw(top.map(c=>({id:c.id,name:c.name,w:1})),'동점이라 1:1 제비뽑기로 정해요');DRAW.summary=sumTxt+' · 동점 제비뽑기'},
-  spin:()=>spin(),
+  pickSlip:t=>{const d=DRAW;if(!d||d.win)return;const i=+t.dataset.v;t.classList.add('drop');setTimeout(()=>{d.picked=i;d.win=d.slips[i];vDrawView()},500)},
   toDone:()=>finishTo(DRAW.win,DRAW.summary||(E().method==='lot'?'1:1 제비뽑기':'')),
   copyRes:()=>{const e=E();navigator.clipboard.writeText(`🗳️ ${e.title||'선출 결과'}\n방법: ${METHODS[e.method][0]}\n뽑힌 사람: ${CN(e.winner)}${e.summary?'\n'+e.summary:''}`).then(()=>toast('복사했어요'))},
   archive:()=>{const e=E();D.hist.push({title:e.title,method:e.method,winner:CN(e.winner),summary:e.summary,at:Date.now()});D.cur=null;DRAW=null;COUNT=null;save();render();toast('기록에 남겼어요')},
@@ -259,7 +261,7 @@ function mqttOpen(url,ms){return new Promise(res=>{if(typeof mqtt=='undefined')r
   const cl=mqtt.connect(url,{connectTimeout:ms,reconnectPeriod:3000,clientId:'el'+Math.random().toString(36).slice(2,12)});
   cl.on('connect',()=>{if(!done){done=true;res(cl)}});setTimeout(()=>{if(!done){done=true;try{cl.end(true)}catch(e){}res(null)}},ms)})}
 const base=room=>'chiyoung-elect/v1/'+room;
-function ballotMsg(){const e=R_();return{t:'ballot',title:e.title,ballot:e.ballot,open:e.phase==='voting',cands:e.cands.map(c=>({id:c.id,name:c.name})),roster:e.roster.filter(n=>!e.voted.includes(n))}}
+function ballotMsg(){const e=R_();return{t:'ballot',title:e.title,ballot:e.ballot,open:e.phase==='voting',cands:e.cands.map(c=>({id:c.id,name:c.name})),roster:[]}}
 function hostNet(){const st=()=>{const b=$('#netSt');if(b)b.textContent=NET&&NET.n?'📡 부재자 투표 받는 중':'연결 준비 중…'};
   if(NET&&NET.room===E().room){st();return}NET={room:E().room,n:0,seen:{}};const myRoom=NET.room;
   BROKERS.forEach(async url=>{const cl=await mqttOpen(url,8000);if(!cl||!NET||NET.room!==myRoom){try{cl&&cl.end(true)}catch(_){}return}NET.n++;st();
@@ -272,10 +274,10 @@ function hostNet(){const st=()=>{const b=$('#netSt');if(b)b.textContent=NET&&NET
         if(e.phase!=='voting')return reply({t:'err',msg:'투표가 이미 끝났어요'});
         if(e.votes.some(v=>v.dev===from)||(vid&&e.votes.some(v=>v.id===vid)))return reply({t:'ok',dup:true});
         if(!e.cands.some(c=>c.id===m.cand))return reply({t:'err',msg:'후보를 다시 골라 주세요'});
-        const nm=clip(m.name,12),voter=e.ballot==='named'?nm:'';if((e.ballot==='named'||(e.roster||[]).length)&&!nm)return reply({t:'err',msg:'이름을 골라 주세요'});
-        if((e.roster||[]).length){if(!e.roster.includes(nm))return reply({t:'err',msg:'투표할 사람 명단에 없는 이름이에요'});if(e.voted.includes(nm))return reply({t:'err',msg:nm+'님은 이미 투표했어요'})}
+        const nm=clip(m.name,12),voter=e.ballot==='named'?nm:'';if(!nm)return reply({t:'err',msg:'이름을 적어 주세요'});
+        if((e.roster||[]).length){if(!e.roster.includes(nm))return reply({t:'err',msg:'유권자 명단에 없는 이름이에요. 이름을 정확히 적어 주세요'});if(e.voted.includes(nm))return reply({t:'err',msg:nm+'님은 이미 투표했어요'})}
         e.votes.push({id:vid||uid(),cand:m.cand,reason:clip(m.reason,200),voter,remote:true,dev:from,at:Date.now()});if(nm&&(e.roster||[]).includes(nm))e.voted.push(nm);save();reply({t:'ok'});
-        toast('📱 부재자 표가 한 장 들어왔어요');if(e.phase==='voting'&&!BOOTH)render()}})})}
+        toast(`📱 ${nm||'부재자'}님 표가 들어왔어요`);if(e.phase==='voting'&&!BOOTH)render()}})})}
 
 /* ---------- 부재자 화면 ---------- */
 const RV={st:'conn',b:null,cand:null,why:'',name:'',cl:null,dev:null};
@@ -286,7 +288,7 @@ function vRemote(){const b=RV.b;const done=(()=>{try{return localStorage.getItem
   if(RV.st==='sent'){app.innerHTML=`<div class="card" style="text-align:center"><div style="font-size:70px">📮</div><h2>투표함에 들어갔어요!</h2><p class="hint">개표는 진행하는 곳에서 해요. 고마워요 🙏</p></div>`;return}
   if(RV.st==='closed'||!b.open){app.innerHTML=`<div class="card" style="text-align:center"><div style="font-size:54px">🔒</div><h2>지금은 투표할 수 없어요</h2><p class="hint">투표가 아직 시작되지 않았거나 이미 끝났어요</p></div>`;return}
   app.innerHTML=`<div class="booth"><div class="paper" id="paper"><h3>${esc(b.title||'투표용지')}</h3><p class="hint" style="text-align:center;margin:0">📱 부재자 투표 · ${b.ballot==='named'?'✍️ 기명':'🙈 무기명'} · 한 명만 골라 도장을 찍어요</p>
-   ${(b.roster||[]).length?`<select id="rName" style="width:100%;margin-top:10px;font-size:18px"><option value="">🙋 내 이름 고르기</option>${b.roster.map(n=>`<option${RV.name===n?' selected':''}>${esc(n)}</option>`).join('')}</select>${b.ballot==='named'?'':'<div class="hint" style="text-align:center">무기명이라 누구를 찍었는지는 남지 않고, 투표했다는 것만 체크돼요</div>'}`:b.ballot==='named'?`<input id="rName" placeholder="내 이름" value="${esc(RV.name)}" style="width:100%;margin-top:10px;text-align:center;font-size:18px">`:''}
+   <input id="rName" placeholder="🙋 내 이름을 적어 주세요" value="${esc(RV.name)}" style="width:100%;margin-top:10px;text-align:center;font-size:18px">${b.ballot==='named'?'':'<div class="hint" style="text-align:center">무기명이라 누구를 찍었는지는 남지 않고, 투표했다는 것만 체크돼요</div>'}
    <div class="slips">${b.cands.map((c,i)=>`<div class="slip" data-rc="${c.id}"><div class="no">${i+1}</div><div class="nm">${esc(c.name)}</div><div class="st">${RV.cand===c.id?STAMP:''}</div></div>`).join('')}</div>
    <label style="display:block;margin-top:10px">💬 뽑은 이유 (선택)<textarea id="rWhy" rows="2" maxlength="200">${esc(RV.why)}</textarea></label>
    <div class="row" style="margin-top:10px;justify-content:flex-end"><button class="pri big" id="rSend" ${RV.cand?'':'disabled'}>📮 투표함에 넣기</button></div></div></div>`;
@@ -305,7 +307,7 @@ async function remoteConnect(){try{RV.dev=localStorage.getItem('elect-dev')}catc
     setTimeout(hello,300);for(let i=0;i<30&&!heard;i++){await new Promise(r=>setTimeout(r,300));if(i===10||i===20)hello()}
     if(heard){RV.cl=cl;return}try{cl.end(true)}catch(_){}}
   RV.st='fail';vRemote()}
-function sendVote(){if(!RV.cl||!RV.cand)return;const name=$('#rName')?clip($('#rName').value,12):'';if((RV.b.ballot==='named'||(RV.b.roster||[]).length)&&!name){toast('이름을 골라 주세요');return}
+function sendVote(){if(!RV.cl||!RV.cand)return;const name=$('#rName')?clip($('#rName').value,12):'';if(!name){toast('내 이름을 먼저 적어 주세요');$('#rName').focus();return}
   if(!confirm(`${RV.b.cands.find(c=>c.id===RV.cand).name}님에게 투표할까요? 넣으면 바꿀 수 없어요.`))return;
   $('#rSend').disabled=true;RV.vid=RV.vid||uid();
   RV.cl.publish(base(VOTE_ROOM)+'/h',JSON.stringify({from:RV.dev,m:{t:'vote',vid:RV.vid,cand:RV.cand,reason:clip($('#rWhy').value,200),name}}),{qos:1});
