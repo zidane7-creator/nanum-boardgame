@@ -78,7 +78,7 @@ html.sc-night .parade{filter:brightness(1.35)}
 .sign b{display:block;font-weight:normal;background:var(--wood);color:var(--cream);border:3px solid var(--wood2);border-radius:10px;padding:calc(.3em + 1.5px) .9em calc(.3em - 1.5px);line-height:1;font-size:clamp(18px,4.6vw,26px);box-shadow:0 3px 0 var(--wood2);white-space:nowrap;text-shadow:1px 1px 0 var(--wood2)}
 .sign i{display:block;width:8px;height:16px;background:var(--wood2)}
 .pen:nth-child(2) .sign{transform:translateX(-50%) rotate(2deg)}
-.flock{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-end;gap:6px 4px}
+.flock{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-end;gap:10px 16px}
 /* sheep */
 .sheep{position:relative;background:none;border:0;padding:0;font:inherit;color:var(--ink);cursor:pointer;width:clamp(74px,19vw,128px);display:flex;flex-direction:column;align-items:center;-webkit-tap-highlight-color:transparent}
 .sheep svg{width:100%;display:block;overflow:visible;animation:graze var(--d,3s) ease-in-out var(--dl,0s) infinite}
@@ -118,7 +118,7 @@ html.sc-night .parade{filter:brightness(1.35)}
 .grp .gx{position:absolute;top:10px;right:12px;z-index:4;width:34px;height:34px;border-radius:50%;border:2px solid var(--ink);background:var(--cream);font-size:16px;cursor:pointer;box-shadow:0 2px 0 var(--ink)}
 #toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,40px);opacity:0;background:var(--cream);border:2px solid var(--ink);border-radius:18px;padding:10px 18px;font-size:16px;box-shadow:0 4px 0 var(--ink);transition:.25s;z-index:20;white-space:nowrap}
 #toast.show{opacity:1;transform:translate(-50%,0)}
-@media (max-width:560px){.sky{height:300px}.ranch{padding:30px 14px 16px}.pen{padding:42px 4px 22px;min-height:0}.flock{gap:8px 0}.sun{width:120px;height:120px}}
+@media (max-width:560px){.sky{height:300px}.ranch{padding:30px 14px 16px}.pen{padding:42px 4px 22px;min-height:0}.flock{gap:10px 8px}.sun{width:120px;height:120px}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
 /* day / night (BMNT·EENT, daynight.js) */
 .sky .skyL{position:absolute;inset:0;opacity:0;transition:opacity 2.5s;pointer-events:none}
@@ -305,7 +305,7 @@ function makeSheep(label,href,kids){
   };
   return b}
 function openGroup(label,kids){const g=$("grp");g.querySelector(".sign b").textContent=label;const fl=g.querySelector(".flock");fl.innerHTML="";
-  kids.forEach(([l,h,k])=>fl.appendChild(makeSheep(l,h,k)));g.classList.add("show");g.querySelector(".gx").focus()}
+  kids.forEach(([l,h,k])=>fl.appendChild(makeSheep(l,h,k)));g.classList.add("show");g.querySelector(".gx").focus();if(window.__fitLabels)window.__fitLabels()}
 function closeGroup(){$("grp").classList.remove("show")}
 $("grp").addEventListener("click",e=>{if(e.target.id=="grp")closeGroup()});
 $("grp").querySelector(".gx").onclick=closeGroup;
@@ -331,7 +331,7 @@ $("list").innerHTML=ZONES.map(z=>'<li><b>'+z.name+'</b> — '+(z.items.length?z.
     if(l.offsetWidth>max){l.style.paddingLeft=l.style.paddingRight=".4em"}
     while(l.offsetWidth>max&&fs>8){fs-=.25;l.style.fontSize=fs+"px"}l.style.minHeight=H0+"px"})}
  let t;const go=()=>{clearTimeout(t);t=setTimeout(fit,60)};
- go();addEventListener("resize",go);if(document.fonts)document.fonts.ready.then(go);setTimeout(go,1200)})();
+ window.__fitLabels=go;go();addEventListener("resize",go);if(document.fonts)document.fonts.ready.then(go);setTimeout(go,1200)})();
 </script>
 <script src="assets/daynight.js?v=20261116d"></script>
 <script>
