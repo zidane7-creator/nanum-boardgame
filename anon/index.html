@@ -3,7 +3,7 @@
 <meta name="referrer" content="strict-origin-when-cross-origin"><script async src="https://www.googletagmanager.com/gtag/js?id=G-0WTWY3TPES"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-0WTWY3TPES");</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>익명질문 | 치영의 교회 생활 즐기기 · 셀모임 익명 질문 나눔</title>
-<meta name="description" content="QR로 들어와 '누군가'라는 이름으로 익명 질문을 올려요. 방장이 질문 받을 사람을 고르면 모두가 그 사람에게 질문하고, 그 사람은 말로 대답해요. 셀모임·소그룹 나눔에 딱이에요.">
+<meta name="description" content="QR로 들어와 '누군가'라는 이름으로 포스트잇에 익명 질문을 적어 게시판에 붙여요. 방장이 질문 받을 사람을 고르면 모두가 그 사람에게 질문하고, 그 사람은 말로 대답해요. 셀모임·소그룹 나눔에 딱이에요.">
 <meta name="keywords" content="익명 질문, 셀모임 나눔, 소그룹 아이스브레이킹, 질문 게임, 교회 모임">
 <link rel="canonical" href="https://zidane7-creator.github.io/nanum-boardgame/anon/">
 <meta property="og:title" content="익명질문 — 치영의 교회 생활 즐기기">
@@ -11,7 +11,7 @@
 <meta property="og:url" content="https://zidane7-creator.github.io/nanum-boardgame/anon/">
 <meta property="og:image" content="https://zidane7-creator.github.io/nanum-boardgame/assets/og.jpg">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>❓</text></svg>">
-<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Nanum+Pen+Script&family=Gaegu:wght@400;700&family=Do+Hyeon&family=Black+Han+Sans&family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@400;700&family=Hi+Melody&family=Poor+Story&family=Gamja+Flower&family=Sunflower:wght@300;500&family=Dongle&family=Yeon+Sung&display=swap" rel="stylesheet">
 <script src="../assets/jua.js"></script>
 <style>
 :root{--ink:#3b2a20;--cream:#fffaf0;--accent:#e8503a;--gold:#f5b82e;--green:#5aa957;--blue:#3b82c4}
@@ -60,12 +60,47 @@ h2{font-weight:normal;margin:0 0 10px;font-size:22px}
 .toast.show{opacity:1;transform:translateX(-50%) scale(1)}
 .fs-on .top,.fs-on .hide-fs{display:none!important}.fs-on main{max-width:none}
 #fsBtn{position:fixed;right:12px;bottom:12px;z-index:30}
+
+/* 📌 포스트잇 게시판 */
+.board{position:relative;width:100%;height:max(420px,62vh);margin-top:14px;border-radius:10px;overflow:hidden;touch-action:pan-y;
+  border:14px solid #8a5f43;box-shadow:inset 0 0 60px rgba(0,0,0,.45),0 0 0 3px #6e4626,0 8px 24px rgba(0,0,0,.18);
+  background:radial-gradient(ellipse at 30% 20%,rgba(255,255,255,.07),transparent 60%),radial-gradient(ellipse at 80% 90%,rgba(255,255,255,.04),transparent 55%),repeating-linear-gradient(115deg,rgba(255,255,255,.014) 0 2px,transparent 2px 7px),#2e4a43}
+.fs-on .board{height:calc(100vh - 150px)}
+.board-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(240,244,236,.7);font-family:'Nanum Pen Script','Gaegu',cursive;font-size:clamp(24px,3.4vw,34px);text-align:center;padding:20px;line-height:1.4}
+.pnote{position:absolute;width:clamp(118px,15vw,170px);min-height:clamp(104px,13vw,140px);padding:24px 12px 12px;color:#1f2933;font-size:clamp(15px,1.7vw,19px);line-height:1.4;
+  transform:rotate(var(--rot));box-shadow:0 1px 2px rgba(0,0,0,.25),0 8px 14px -6px rgba(0,0,0,.45);cursor:pointer;user-select:none;overflow-wrap:anywhere;white-space:pre-wrap;transition:transform .12s,box-shadow .12s,opacity .2s;animation:pin .35s ease-out}
+.host .pnote{cursor:grab;touch-action:none}
+.pnote::before{content:"";position:absolute;top:6px;left:50%;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff8a7a,#c0392b);box-shadow:0 2px 2px rgba(0,0,0,.35)}
+.pnote:hover{transform:rotate(var(--rot)) scale(1.04);box-shadow:0 2px 4px rgba(0,0,0,.25),0 14px 22px -8px rgba(0,0,0,.5)}
+.pnote.dragging{cursor:grabbing;transform:rotate(0) scale(1.07);transition:none;z-index:9999!important}
+.pnote .nb{max-height:9.8em;overflow:hidden;-webkit-mask-image:linear-gradient(#000 78%,transparent);mask-image:linear-gradient(#000 78%,transparent)}
+.pnote.done{opacity:.5}.pnote.hid{opacity:.3;outline:3px dashed #fff}
+.stamp{position:absolute;right:6px;bottom:6px;transform:rotate(-12deg);border:2.5px solid #c0392b;color:#c0392b;border-radius:8px;padding:0 6px;font-family:'Jua',sans-serif;font-size:15px;background:rgba(255,255,255,.55)}
+@keyframes pin{from{transform:rotate(var(--rot)) translateY(-14px) scale(1.15);opacity:0}}
+.nvwrap{position:fixed;inset:0;z-index:80;background:rgba(20,16,12,.6);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:16px}
+.nvwrap[hidden]{display:none}
+.nvnote{position:relative;width:min(460px,92vw);min-height:min(320px,50vh);max-height:68vh;overflow:auto;padding:40px 28px 28px;color:#1f2933;font-size:clamp(22px,4.4vw,30px);line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;box-shadow:0 6px 34px rgba(0,0,0,.45)}
+.nvnote::before{content:"";position:absolute;top:12px;left:50%;width:16px;height:16px;margin-left:-8px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff8a7a,#c0392b)}
+.nvwho{position:absolute;left:14px;top:10px;font-family:'Jua',sans-serif;font-size:14px;opacity:.55}
+.nvbtns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.cmp{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;margin:10px 0}
+.cnote{flex:1 1 240px;max-width:340px;padding:26px 14px 12px;position:relative;box-shadow:0 1px 2px rgba(0,0,0,.2),0 8px 14px -6px rgba(0,0,0,.35);transform:rotate(-1deg)}
+.cnote::before{content:"";position:absolute;top:7px;left:50%;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff8a7a,#c0392b)}
+.ask .cnote textarea{width:100%;min-height:120px;border:0;background:transparent;font-size:20px;resize:none;padding:0;outline:none;line-height:1.45;color:#1f2933}
+.ctools{display:flex;flex-direction:column;gap:8px;flex:1 1 180px}
+.sws{display:flex;gap:6px;flex-wrap:wrap}
+.sws button.sw{width:30px;height:30px;border-radius:50%;padding:0;background:var(--c);border:2px solid #fff;box-shadow:0 0 0 1.5px var(--ink)}
+.sws button.sw.on{box-shadow:0 0 0 3px var(--accent)}
+.ctools select{font:inherit;border:2px solid var(--ink);border-radius:12px;padding:6px 8px;background:#fff}
+@media (max-width:600px){.board{height:max(380px,58vh);border-width:10px}}
+@media (prefers-reduced-motion:reduce){.pnote{transition:none;animation:none}}
 </style>
 </head><body>
 <div class="top"><a href="../">← 목장</a><div class="ttl" id="ttl">❓ 익명질문</div></div>
 <main id="app"></main>
 <button class="sm" id="fsBtn" hidden>⛶ 전체화면</button>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="nvwrap" id="nv" hidden role="dialog" aria-modal="true" aria-label="질문 포스트잇 크게 보기"><div class="nvnote" id="nvNote"><span class="nvwho" id="nvWho"></span><div id="nvBody"></div></div><div class="nvbtns" id="nvBtns"></div></div>
 <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js" integrity="sha384-nlUQ8ZqCbvStErob+biJNzSgltf6urV3VGqhfIfzhmg9RXmpeRm76ELw0pYnKlTR" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js" integrity="sha384-8FWZA6BGMXhsfO+BLtrJK0We6gg5o1JyO8xQm6peWDEUs17ACA5ziE/NIAkl9z2k" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js" integrity="sha384-u4uqeACkFcoKl57rBQJHVGDd1pqhW4w8X3WjTu1ZksPdxoLqdt34jpoNkJisE25W" crossorigin="anonymous"></script>
@@ -90,7 +125,11 @@ function fsToggle(){const d=document;if(!d.fullscreenElement&&!d.webkitFullscree
 function fsLabel(){const on=!!(document.fullscreenElement||document.webkitFullscreenElement);document.body.classList.toggle("fs-on",on);$("#fsBtn").textContent=on?"✕ 전체화면 끝":"⛶ 전체화면"}
 document.addEventListener("fullscreenchange",fsLabel);$("#fsBtn").onclick=fsToggle;
 
-const C={phase:"home",me:null,name:ANON,st:null,lastAsk:0};
+const COLORS=[['#fff6a5','노랑'],['#ffd8a8','살구'],['#ffc9d6','분홍'],['#f8c8f0','라일락'],['#d9ccff','연보라'],['#c6dcff','하늘'],['#bfeff0','민트'],['#cdf3c2','연두'],['#e8f5a8','라임'],['#f2e6d8','베이지']];
+const FONTS=[['','기본'],['Jua','주아'],['Gowun Batang','고운바탕'],['Gowun Dodum','고운돋움'],['Nanum Pen Script','나눔손글씨 펜'],['Gaegu','개구'],['Hi Melody','하이멜로디'],['Poor Story','푸어스토리'],['Gamja Flower','감자꽃'],['Yeon Sung','연성'],['Dongle','동글'],['Sunflower','해바라기'],['Do Hyeon','도현'],['Black Han Sans','검은고딕'],['Nanum Myeongjo','나눔명조'],['Noto Sans KR','본고딕']];
+const C={phase:"home",me:null,name:ANON,st:null,lastAsk:0,col:Math.floor(Math.random()*10),font:4};
+let DRAG=false,pendR=false;
+const fontOf=i=>(FONTS[i]||FONTS[0])[0];const colOf=i=>(COLORS[i]||COLORS[0])[0];
 let peer=null,conn=null,isHost=false,retry=0;
 function toHost(msg){if(isHost)hostHandle("host",msg);else if(conn&&conn.open)conn.send(msg);else toast("연결이 끊겼어요. 다시 연결하는 중…")}
 
@@ -103,8 +142,8 @@ function sendTo(p,msg){if(!p||!p.conn||!p.conn.open)return;try{p.conn.send(msg)}
 const broadcast=msg=>H.players.forEach(p=>sendTo(p,msg));
 const tName=()=>{const t=H.targets.find(x=>x.id===H.cur);return t?t.name:null};
 /* 참가자에게는 지금 대상과 그 대상에게 온 질문만 보내요 (누가 썼는지는 보내지 않아요) */
-function stateMsg(){const tg=H.cur;return{t:"state",target:tName(),qs:H.qs.filter(q=>q.to===tg&&!q.hide).map(q=>({id:q.id,text:q.text,done:q.done})),people:H.players.length+1}}
-function push(){broadcast(stateMsg());if(C.phase==="host")renderHost()}
+function stateMsg(){const tg=H.cur;return{t:"state",target:tName(),qs:H.qs.filter(q=>q.to===tg&&!q.hide).map(q=>({id:q.id,text:q.text,done:q.done,color:q.color,font:q.font,x:q.x,y:q.y,rot:q.rot,z:q.z})),people:H.players.length+1}}
+function push(){broadcast(stateMsg());if(C.phase==="host"){if(DRAG)pendR=true;else renderHost()}}
 function createRoom(code,tries){
   isHost=true;C.me="host";ROOM=code||Array.from({length:4},()=>"ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.floor(Math.random()*32)]).join("");
   renderMsg("방을 만들고 있어요…");
@@ -122,7 +161,8 @@ function hostHandle(from,m){if(!m||!m.t)return;
     if(!H.cur){if(from!=="host")sendTo(p,{t:"note",msg:"아직 질문 받을 사람이 정해지지 않았어요"});return}
     const now=Date.now();if(now-(from==="host"?H.hostLast||0:p.last)<4000){if(from!=="host")sendTo(p,{t:"note",msg:"조금만 천천히 보내 주세요"});return}
     if(from==="host")H.hostLast=now;else p.last=now;
-    H.qs.push({id:now.toString(36)+Math.random().toString(36).slice(2,5),to:H.cur,text,at:now,done:false,hide:false});push();
+    const ci=Math.max(0,Math.min(COLORS.length-1,parseInt(m.color,10)||0)),fi=Math.max(0,Math.min(FONTS.length-1,parseInt(m.font,10)||0));
+    H.qs.push({id:now.toString(36)+Math.random().toString(36).slice(2,5),to:H.cur,text,at:now,done:false,hide:false,color:ci,font:fi,x:+(3+Math.random()*68).toFixed(1),y:+(4+Math.random()*58).toFixed(1),rot:+(Math.random()*7-3.5).toFixed(1),z:now});push();
     if(from!=="host")sendTo(p,{t:"ok"})}}
 function PEER_OPTS(){const d=(window.peerjs&&peerjs.util&&peerjs.util.defaultConfig||{}).iceServers||[];
   return{debug:0,config:{iceServers:[{urls:["stun:stun.l.google.com:19302","stun:stun1.l.google.com:19302","stun:stun.cloudflare.com:3478"]},...d.filter(s=>String(s.urls).includes("turn"))],iceCandidatePoolSize:4,sdpSemantics:"unified-plan"}}}
@@ -176,8 +216,43 @@ async function relayDial(id,name){
 function client(m){if(!m||!m.t)return;
   if(m.t=="err"){renderMsg(esc(m.msg),true);return}
   if(m.t=="note"){toast(m.msg);return}
-  if(m.t=="ok"){toast("질문을 보냈어요 🙌");const ta=$("#qIn");if(ta)ta.value="";return}
+  if(m.t=="ok"){toast("게시판에 붙였어요 📌");const ta=$("#qIn");if(ta)ta.value="";return}
   if(m.t=="state"){const prev=C.st&&C.st.target;C.st=m;if(C.phase!=="guest"){C.phase="guest";renderGuest(true)}else renderGuest(prev!==m.target)}}
+
+
+/* ================= 📌 포스트잇 게시판 ================= */
+function noteHTML(q){return `<div class="pnote${q.done?" done":""}${q.hide?" hid":""}" data-n="${esc(q.id)}" tabindex="0" role="button" aria-label="질문 포스트잇 크게 보기" style="left:${+q.x||5}%;top:${+q.y||5}%;z-index:${Math.floor(((+q.z||0)/1000)%100000)};background:${colOf(q.color)};--rot:${+q.rot||0}deg;font-family:'${fontOf(q.font)}','Jua',sans-serif"><div class="nb">${esc(q.text)}</div>${q.done?'<span class="stamp">답함</span>':""}</div>`}
+function boardHTML(list,empty){return `<div class="board" id="board">${list.length?[...list].sort((a,b)=>(a.z||0)-(b.z||0)).map(noteHTML).join(""):`<div class="board-empty">${empty}</div>`}</div>`}
+let NV=null;
+function openView(id){const host=isHost,list=host?H.qs:(C.st&&C.st.qs)||[],q=list.find(x=>x.id===id);if(!q)return;NV=id;
+  const n=$("#nvNote");n.style.background=colOf(q.color);n.style.fontFamily=`'${fontOf(q.font)}','Jua',sans-serif`;
+  $("#nvWho").textContent=ANON+(q.done?" · 답함":"")+(q.hide?" · 숨김":"");$("#nvBody").textContent=q.text;
+  $("#nvBtns").innerHTML=host?`<button class="go" data-v="done">${q.done?"↩ 답함 취소":"✔ 답했어요"}</button><button data-v="hide">${q.hide?"🙈 다시 보이기":"🙈 숨기기"}</button><button data-v="close">닫기</button>`:`<button data-v="close">닫기</button>`;
+  $("#nv").hidden=false;const b=$("#nvBtns button:last-child");if(b)b.focus()}
+function closeView(){$("#nv").hidden=true;NV=null}
+$("#nv").addEventListener("click",e=>{if(e.target.id==="nv"){closeView();return}const b=e.target.closest("[data-v]");if(!b)return;
+  if(b.dataset.v==="close"){closeView();return}const q=H.qs.find(x=>x.id===NV);if(!q||!isHost)return;
+  if(b.dataset.v==="done"){q.done=!q.done;toast(q.done?"답한 질문으로 표시했어요":"답함을 취소했어요")}else{q.hide=!q.hide;toast(q.hide?"참가자 화면에서 숨겼어요":"다시 보이게 했어요")}closeView();push()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#nv").hidden)closeView()});
+function bindBoard(){const b=$("#board");if(!b)return;let d=null;
+  b.onpointerdown=e=>{const el=e.target.closest(".pnote");if(!el||e.button>0)return;const r=b.getBoundingClientRect();
+    d={id:el.dataset.n,el,sx:e.clientX,sy:e.clientY,ox:el.offsetLeft,oy:el.offsetTop,moved:false};if(isHost)try{el.setPointerCapture(e.pointerId)}catch(_){}};
+  b.onpointermove=e=>{if(!d||!isHost)return;const dx=e.clientX-d.sx,dy=e.clientY-d.sy;if(!d.moved&&Math.hypot(dx,dy)<6)return;
+    d.moved=true;DRAG=true;d.el.classList.add("dragging");const W=b.clientWidth,Hh=b.clientHeight,ew=d.el.offsetWidth,eh=d.el.offsetHeight;
+    const x=Math.max(0,Math.min(W-ew,d.ox+dx)),y=Math.max(0,Math.min(Hh-eh,d.oy+dy));d.el.style.left=(x/W*100)+"%";d.el.style.top=(y/Hh*100)+"%"};
+  b.onpointerup=()=>{const x=d;d=null;if(!x)return;
+    if(x.moved){x.el.classList.remove("dragging");const q=H.qs.find(o=>o.id===x.id);if(q){q.x=+parseFloat(x.el.style.left).toFixed(1);q.y=+parseFloat(x.el.style.top).toFixed(1);q.z=Date.now()}DRAG=false;pendR=false;push();return}
+    openView(x.id)};
+  b.onpointercancel=()=>{if(d&&d.moved){d.el.classList.remove("dragging");DRAG=false;if(pendR){pendR=false;renderHost()}}d=null};
+  b.onkeydown=e=>{const el=e.target.closest(".pnote");if(el&&e.key==="Enter"){e.preventDefault();openView(el.dataset.n)}}}
+function composeHTML(id,title,ph,btn){return `<div class="card ask" style="margin-top:14px">${title}
+  <div class="cmp"><div class="cnote" id="${id}Note" style="background:${colOf(C.col)}"><textarea id="${id}" maxlength="200" placeholder="${esc(ph)}" style="font-family:'${fontOf(C.font)}','Jua',sans-serif"></textarea></div>
+  <div class="ctools"><span class="muted">메모지 색</span><div class="sws">${COLORS.map(([c,l],i)=>`<button class="sw${i===C.col?" on":""}" data-col="${i}" style="--c:${c}" title="${l}" aria-label="메모지 ${l}"></button>`).join("")}</div>
+  <span class="muted">글씨체</span><select id="${id}Font" aria-label="글씨체">${FONTS.map(([f,l],i)=>`<option value="${i}" ${i===C.font?"selected":""} style="font-family:'${f||"Jua"}'">${l}</option>`).join("")}</select></div></div>
+  <div class="row" style="justify-content:flex-end"><button class="pri" id="${id}Send">📌 ${btn}</button></div></div>`}
+function bindCompose(id){const ta=$("#"+id);if(!ta)return;
+  app.querySelectorAll("[data-col]").forEach(b=>b.onclick=()=>{C.col=+b.dataset.col;$("#"+id+"Note").style.background=colOf(C.col);app.querySelectorAll("[data-col]").forEach(x=>x.classList.toggle("on",x===b));ta.focus()});
+  $("#"+id+"Font").onchange=e=>{C.font=+e.target.value;ta.style.fontFamily=`'${fontOf(C.font)}','Jua',sans-serif`;ta.focus()}}
 
 /* ================= 화면 ================= */
 function renderMsg(html,back){C.phase="msg";$("#fsBtn").hidden=true;app.innerHTML='<div class="card center"><p style="font-size:20px">'+html+'</p>'+(back?'<button onclick="location.href=location.pathname">처음으로</button>':'<div class="muted">잠시만요…</div>')+'</div>'}
@@ -185,7 +260,7 @@ function renderHome(){C.phase="home";$("#fsBtn").hidden=true;
   if(ROOM&&!HOSTING){app.innerHTML=`<div class="hero"><div class="em">❓</div><h1>익명질문</h1></div><div class="card center"><h2>방 <b style="letter-spacing:4px">${esc(ROOM)}</b> 에 들어가요</h2>
     <p class="muted">이름은 묻지 않아요. 모두 <b>‘${ANON}’</b>로 질문을 올려요.</p><button class="pri" id="join" style="font-size:20px;padding:10px 28px">들어가기</button></div>`;
     $("#join").onclick=()=>joinRoom(ANON);warmPeer();return}
-  app.innerHTML=`<div class="hero"><div class="em">❓</div><h1>익명질문</h1><p class="muted">모두 ‘누군가’가 되어 한 사람에게 질문하고, 그 사람은 말로 대답해요</p></div>
+  app.innerHTML=`<div class="hero"><div class="em">❓</div><h1>익명질문</h1><p class="muted">모두 ‘누군가’가 되어 포스트잇에 질문을 적어 게시판에 붙이고, 그 사람이 보고 대답해요</p></div>
     <div class="card center"><h2>🏠 방장으로 시작</h2><p class="muted">QR·링크로 초대하고, 질문 받을 사람을 차례로 골라요. 참가자는 누가 방장인지 알 수 없어요.</p><button class="pri" id="mk" style="font-size:20px;padding:10px 26px">방 만들기</button></div>
     <div class="card center"><h2>🙋 초대받았어요</h2><div class="row" style="justify-content:center"><input id="rc" maxlength="6" placeholder="방 코드" style="text-transform:uppercase;letter-spacing:4px;width:160px;font-size:20px"><button id="go">들어가기</button></div></div>`;
   $("#mk").onclick=()=>createRoom();$("#go").onclick=()=>{const c=$("#rc").value.toUpperCase().replace(/[^A-Z0-9]/g,"");if(c.length<4){toast("방 코드 4자리를 넣어 주세요");return}location.href="?room="+c}}
@@ -193,11 +268,10 @@ function renderHost(){$("#fsBtn").hidden=false;$("#ttl").textContent="❓ 익명
   const keep=document.activeElement&&document.activeElement.id,val=keep==="hostQ"?$("#hostQ").value:"";
   const url=location.origin+location.pathname+"?room="+ROOM;let qr="";try{const q=qrcode(0,"M");q.addData(url);q.make();qr=q.createSvgTag(5,2)}catch(e){}
   const name=tName(),list=H.qs.filter(q=>q.to===H.cur);
-  app.innerHTML=`<div class="hostgrid"><div>
+  app.innerHTML=`<div class="hostgrid host"><div>
     <div class="target${name?"":" none"}">${name?`<b>[${esc(name)}]</b>님에게 질문해 주세요`:"오른쪽에서 질문 받을 사람을 골라 주세요"}</div>
-    <div class="qs">${list.length?list.map((q,i)=>`<div class="q${q.done?" done":""}${q.hide?" done":""}"><div class="who">${ANON} · ${i+1}번째 질문${q.hide?" · 숨김":""}</div><div class="tx">${esc(q.text)}</div>
-      <div class="qb hide-fs"><button data-q="${q.id}" data-a="done">${q.done?"되돌리기":"✔ 답함"}</button><button data-q="${q.id}" data-a="hide">${q.hide?"보이기":"숨기기"}</button></div></div>`).join(""):name?'<p class="muted center">아직 질문이 없어요. 모두 휴대폰으로 질문을 보내고 있어요…</p>':""}</div>
-    ${name?`<div class="card ask hide-fs" style="margin-top:14px"><b>방장도 ‘${ANON}’로 질문할 수 있어요</b><textarea id="hostQ" maxlength="200" placeholder="질문을 적어 주세요"></textarea><div class="row" style="justify-content:flex-end"><button class="pri" id="hostSend">질문 보내기</button></div></div>`:""}
+    ${name?boardHTML(list,"아직 붙은 질문이 없어요.<br>모두 휴대폰으로 포스트잇에 질문을 적고 있어요…"):""}
+    ${name?`<div class="hide-fs">${composeHTML("hostQ",`<b>방장도 ‘${ANON}’로 포스트잇을 붙일 수 있어요</b>`,"질문을 적어 주세요","게시판에 붙이기")}</div>`:""}
   </div><div>
     <div class="card"><h2>🎯 질문 받을 사람</h2><div class="plist">${H.targets.map(t=>`<div class="pp${t.id===H.cur?" on":""}${t.fin?" fin":""}" data-t="${t.id}"><span class="nm">${esc(t.name)}</span><span class="c">${H.qs.filter(q=>q.to===t.id&&!q.hide).length}</span><button class="hide-fs" data-del="${t.id}" title="빼기">✕</button></div>`).join("")||'<p class="muted">이름을 적어 추가해 주세요</p>'}</div>
       <div class="row hide-fs" style="margin-top:10px"><input id="tIn" maxlength="12" placeholder="이름" style="flex:1"><button class="sm" id="tAdd">추가</button></div>
@@ -206,19 +280,20 @@ function renderHost(){$("#fsBtn").hidden=false;$("#ttl").textContent="❓ 익명
   </div></div>`;
   app.querySelectorAll("[data-t]").forEach(el=>el.onclick=e=>{if(e.target.closest("[data-del]"))return;H.cur=el.dataset.t;push();toast(`${tName()}님 차례예요`)});
   app.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{const id=b.dataset.del;if(H.qs.some(q=>q.to===id)&&!confirm("이 사람에게 온 질문도 함께 지워져요. 뺄까요?"))return;H.targets=H.targets.filter(t=>t.id!==id);H.qs=H.qs.filter(q=>q.to!==id);if(H.cur===id)H.cur=null;saveT();push()});
-  app.querySelectorAll("[data-q]").forEach(b=>b.onclick=()=>{const q=H.qs.find(x=>x.id===b.dataset.q);if(!q)return;if(b.dataset.a==="done")q.done=!q.done;else q.hide=!q.hide;push()});
+  bindBoard();bindCompose("hostQ");
   const add=()=>{const v=clip($("#tIn").value,12);if(!v)return;H.targets.push({id:Math.random().toString(36).slice(2,8),name:v,fin:false});saveT();renderHost();$("#tIn").focus()};
   $("#tAdd").onclick=add;$("#tIn").onkeydown=e=>{if(e.key==="Enter"&&!e.isComposing)add()};
   $("#next").onclick=()=>{const i=H.targets.findIndex(t=>t.id===H.cur);if(i>=0)H.targets[i].fin=true;const nx=H.targets.slice(i+1).find(t=>!t.fin)||H.targets.find(t=>!t.fin);
     if(!nx){H.cur=null;push();toast("모든 사람의 질문 시간이 끝났어요 🎉",3000);return}H.cur=nx.id;push();toast(`${nx.name}님 차례예요`)};
   $("#cp").onclick=async()=>{try{await navigator.clipboard.writeText(url);toast("초대 링크를 복사했어요")}catch(e){prompt("이 링크를 복사해 주세요",url)}};
-  const hq=$("#hostQ");if(hq){if(keep==="hostQ"){hq.value=val;hq.focus()}$("#hostSend").onclick=()=>{const v=hq.value.trim();if(!v)return;hostHandle("host",{t:"ask",text:v});hq.value=""}}}
+  const hq=$("#hostQ");if(hq){if(keep==="hostQ"){hq.value=val;hq.focus()}$("#hostQSend").onclick=()=>{const v=hq.value.trim();if(!v){toast("질문을 적어 주세요");return}hostHandle("host",{t:"ask",text:v,color:C.col,font:C.font});if(Date.now()-(H.hostLast||0)<50){const t=$("#hostQ");if(t)t.value="";toast("게시판에 붙였어요 📌")}else toast("조금만 천천히 보내 주세요")}}}
 function renderGuest(changed){const s=C.st;$("#fsBtn").hidden=true;$("#ttl").textContent="❓ 익명질문";
   const typing=$("#qIn")?$("#qIn").value:"";
   app.innerHTML=`<div class="target${s.target?"":" none"}">${s.target?`<b>[${esc(s.target)}]</b>님에게 질문해 주세요`:"잠시만 기다려 주세요. 곧 질문 받을 사람이 정해져요"}</div>
-    ${s.target?`<div class="card ask" style="margin-top:14px"><div class="muted">내 이름은 보이지 않아요. 모두 <b>‘${ANON}’</b>로 올라가요.</div><textarea id="qIn" maxlength="200" placeholder="${esc(s.target)}님에게 궁금한 것을 적어 주세요"></textarea><div class="row" style="justify-content:flex-end"><button class="pri" id="send">질문 보내기</button></div></div>`:""}
-    <div class="qs">${s.qs.map((q,i)=>`<div class="q${q.done?" done":""}"><div class="who">${ANON} · ${i+1}번째 질문${q.done?" · 답함":""}</div><div class="tx">${esc(q.text)}</div></div>`).join("")}</div>`;
-  const ta=$("#qIn");if(ta){if(!changed)ta.value=typing;$("#send").onclick=()=>{const v=ta.value.trim();if(!v){toast("질문을 적어 주세요");return}if(Date.now()-C.lastAsk<4000){toast("조금만 천천히 보내 주세요");return}C.lastAsk=Date.now();toHost({t:"ask",text:v})}}
+    ${s.target?composeHTML("qIn",`<div class="muted">포스트잇에 질문을 적어 게시판에 붙여요. 내 이름은 보이지 않아요. 모두 <b>‘${ANON}’</b>로 붙어요.</div>`,s.target+"님에게 궁금한 것을 적어 주세요","게시판에 붙이기"):""}
+    ${s.target?boardHTML(s.qs,"아직 붙은 질문이 없어요.<br>첫 포스트잇을 붙여 보세요!"):""}`;
+  bindBoard();bindCompose("qIn");if(NV&&!$("#nv").hidden&&!s.qs.some(q=>q.id===NV))closeView();
+  const ta=$("#qIn");if(ta){if(!changed)ta.value=typing;$("#qInSend").onclick=()=>{const v=ta.value.trim();if(!v){toast("질문을 적어 주세요");return}if(Date.now()-C.lastAsk<4000){toast("조금만 천천히 보내 주세요");return}C.lastAsk=Date.now();toHost({t:"ask",text:v,color:C.col,font:C.font})}}
   if(changed&&s.target)toast(`이제 ${s.target}님에게 질문해요`)}
 if(HOSTING&&ROOM)createRoom(ROOM);else renderHome();
 </script>
