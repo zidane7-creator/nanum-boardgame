@@ -66,6 +66,9 @@ main{max-width:920px;margin:0 auto;padding:14px 12px 80px}
 .stroke{stroke:var(--red);stroke-width:4;stroke-linecap:round;fill:none}
 .stroke.new{stroke-dasharray:40;stroke-dashoffset:40;animation:draw .45s forwards}@keyframes draw{to{stroke-dashoffset:0}}
 .opened{border:3px dashed var(--gold);border-radius:16px;padding:12px;background:#fffaf0;text-align:center;margin:10px 0}
+.opened .paper{max-width:440px;padding:12px}.opened .slip .st{width:72px}.opened .stamp{width:48px;height:48px}
+.opened .why{margin-top:8px;border-top:2px dashed var(--line);padding-top:6px;text-align:left}
+.unfold{animation:unf .45s ease-out}@keyframes unf{0%{transform:scaleY(.1) rotate(-2deg);opacity:.2}100%{transform:none;opacity:1}}
 .opened .who{font-family:Jua,sans-serif;font-size:30px;color:var(--red)}
 /* 제비뽑기 */
 .lots{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:12px 0}
@@ -178,7 +181,11 @@ function vCounting(){const e=E();if(!COUNT){const order=e.votes.map((v,i)=>i);fo
   const C=COUNT,total=e.votes.length,done=C.idx>=total,max=Math.max(0,...Object.values(C.tally));
   const lastV=C.last!=null?e.votes[C.last]:null;
   app.innerHTML=`<div class="card"><div class="row"><h2 style="margin:0">📊 개표 ${C.idx}/${total}</h2><span class="sp"></span>${done?'':`<button class="sm" data-act="countAll">한꺼번에 개표</button>`}</div>
-   ${lastV?`<div class="opened"><div class="hint">${C.idx}번째 표</div><div class="who">${lastV.cand?esc(CN(lastV.cand)):'무효표'}</div>${lastV.reason?`<div>💬 ${esc(lastV.reason)}</div>`:''}${e.ballot==='named'&&lastV.voter?`<div class="hint">✍️ ${esc(lastV.voter)}${lastV.remote?' (부재자)':''}</div>`:lastV.remote?'<div class="hint">📱 부재자 투표</div>':''}</div>`:`<div class="opened"><div class="hint">투표함을 열었어요. ‘한 표 열기’를 눌러 하나씩 읽어요</div></div>`}
+   ${lastV?`<div class="opened"><div class="row" style="justify-content:center"><span class="hint">📮 ${C.idx}번째 투표용지</span>${lastV.remote?'<span class="badge">📱 부재자</span>':''}${e.ballot==='named'&&lastV.voter?`<span class="badge">✍️ ${esc(lastV.voter)}</span>`:''}</div>
+     <div class="paper unfold" style="margin-top:8px;box-shadow:0 4px 12px rgba(0,0,0,.18)"><h3 style="font-size:19px">${esc(e.title||'투표용지')}</h3>
+      <div class="slips">${e.cands.map((c,i)=>`<div class="slip" style="cursor:default;min-height:56px"><div class="no">${i+1}</div><div class="nm" style="font-size:20px">${esc(c.name)}</div><div class="st">${lastV.cand===c.id?STAMP:''}</div></div>`).join('')}</div>
+      <div class="why"><div class="hint">💬 뽑은 이유</div><div style="font-size:18px;white-space:pre-wrap;min-height:1.5em">${lastV.reason?esc(lastV.reason):'<span class="hint">(적지 않았어요)</span>'}</div></div></div>
+     <div class="who" style="margin-top:6px">${lastV.cand&&e.cands.some(c=>c.id===lastV.cand)?esc(CN(lastV.cand))+' 한 표!':'무효표'}</div></div>`:`<div class="opened"><div class="hint">투표함을 열었어요. ‘한 표 열기’를 눌러 하나씩 읽어요</div></div>`}
    <div class="tally">${e.cands.map(c=>{const n=C.tally[c.id]||0;return `<div class="tl ${done&&n===max&&n>0?'win':''}"><div class="row"><span class="n">${esc(c.name)}</span><span class="sp"></span><span class="cnt">${n}표</span></div><div class="marks">${marks(n,lastV&&lastV.cand===c.id)}</div></div>`}).join('')}${C.bad?`<div class="tl"><div class="row"><span class="n">무효</span><span class="sp"></span><span class="cnt">${C.bad}표</span></div><div class="marks">${marks(C.bad)}</div></div>`:''}</div>
    <div class="row" style="justify-content:center;margin-top:14px">${done?`<button class="pri big" data-act="afterCount">${e.method==='votelot'?'🎲 득표수만큼 제비뽑기':'🏆 결과 보기'}</button>`:`<button class="go big" data-act="openOne">📮 한 표 열기</button>`}</div></div>`}
 
