@@ -110,7 +110,7 @@ h1{font-weight:normal;text-align:center;font-size:clamp(30px,7vw,44px);margin:6p
       <div class="acts" style="margin-top:14px"><button class="pri" id="start" style="font-size:20px;padding:10px 28px">🎲 게임 시작</button></div>
     </div>
     <div class="card hint" style="opacity:.9;font-size:15px;line-height:1.6">
-      <b>기본 규칙</b> · 도 1칸 · 개 2칸 · 걸 3칸 · 윷 4칸 · 모 5칸 · <b>빽도</b>는 1칸 뒤로<br>
+      <b>기본 규칙</b> · 도 1칸 · 개 2칸 · 걸 3칸 · 윷 4칸 · 모 5칸 · <b>빽도</b>는 1칸 뒤로 (도 자리에 있는 말이 빽도면 바로 나요)<br>
       · <b>윷·모</b>가 나오거나 상대 말을 <b>잡으면</b> 한 번 더 던져요<br>
       · 우리 팀 말이 같은 칸에 서면 <b>업혀서</b> 함께 움직여요<br>
       · 모서리나 한가운데(방)에 <b>딱 멈추면</b> 다음에 지름길로 가요<br>
@@ -179,14 +179,13 @@ $("nTeams").onclick=e=>{const b=e.target.closest("button");if(!b)return;readSetu
 $("nPieces").onclick=e=>{const b=e.target.closest("button");if(!b)return;readSetup();CFG.pieces=+b.dataset.v;drawSetup()};
 drawSetup();
 
-/* ---------- 윷판: 바깥 20칸(o0=참먹이, 그린 뒤 좌우로 뒤집어 왼쪽 아래) + 대각선 두 줄(a: 모→찌모, b: 뒷모→참먹이), 가운데 C(방) ---------- */
+/* ---------- 윷판: 바깥 20칸(o0=참먹이, 7시 방향 왼쪽 아래) — 반시계 방향: 오른쪽으로 → 위로 → 왼쪽으로 → 아래로 돌아와요
+   대각선 두 줄(a: 모→찌모, b: 뒷모→참먹이), 가운데 C(방) ---------- */
 const P={};const S=96,L=60,R=540;
-for(let k=0;k<20;k++){let x,y;if(k<=5){x=R;y=R-k*S}else if(k<=10){x=R-(k-5)*S;y=L}else if(k<=15){x=L;y=L+(k-10)*S}else{x=L+(k-15)*S;y=R}P["o"+k]={x,y}}
+for(let k=0;k<20;k++){let x,y;if(k<=5){x=L+k*S;y=R}else if(k<=10){x=R;y=R-(k-5)*S}else if(k<=15){x=R-(k-10)*S;y=L}else{x=L;y=L+(k-15)*S}P["o"+k]={x,y}}
 const lerp=(a,b,t)=>({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t});
 ["a1","a2","C","a3","a4"].forEach((n,i)=>P[n]=lerp(P.o5,P.o15,(i+1)/6));
 ["b1","b2",null,"b3","b4"].forEach((n,i)=>{if(n)P[n]=lerp(P.o10,P.o0,(i+1)/6)});
-/* 출발점(참먹이)을 7시 방향(왼쪽 아래)으로: 판을 좌우로 뒤집음 */
-for(const n in P)P[n].x=600-P[n].x;
 const BIG=new Set(["o0","o5","o10","o15","C"]);
 /* 한 칸 앞으로. first=이번 이동의 첫 걸음, prev=바로 전 칸(가운데를 지나는 방향을 정함) */
 function fwd(n,first,prev){
@@ -244,7 +243,8 @@ function nextTeam(){const t=G.teams[G.cur];t.turnNo++;G.cur=(G.cur+1)%G.teams.le
 function choose(gi){if(!G||G.busy||G.throws>0||!G.queue.length)return;const v=G.queue[G.sel],g=movable(G.cur,v)[gi];if(!g)return;
   G.queue.splice(G.sel,1);G.sel=0;G.busy=true;
   const ps=g.home?[g.ps[0]]:g.ps,start=g.home?null:g.node,prev=ps[0].prev;
-  const steps=v===-1?[back(start,prev)]:path(start,v,prev);
+  /* 도(첫 칸)에 있는 말이 빽도면 참먹이로 돌아가 바로 나요 */
+  const steps=v===-1?(start==="o1"?["END"]:[back(start,prev)]):path(start,v,prev);
   let i=0;const label=g.home?"새 말":(ps.length>1?ps.map(p=>p.no).join("·")+"번 말(업힘)":ps[0].no+"번 말");
   const hop=()=>{const nx=steps[i];
     if(nx==="END"){sndHome();ps.forEach(p=>{p.done=true;p.node=null;p.prev=null});addLog(`${G.teams[G.cur].name} ${label} 들어왔어요! 🏁`);toast(`🏁 ${label} 들어왔어요!`);drawBoard();finishMove(false);return}
