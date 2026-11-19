@@ -64,7 +64,8 @@ main.wide{max-width:1300px}
 .legend .chip{font-size:15px;padding:1px 10px 1px 4px}
 /* 전체화면 경주 */
 .stage{position:fixed;inset:0;z-index:1000;background:#6fb35f;overflow:hidden}
-.stage canvas{position:absolute;inset:0;display:block}
+.stage canvas{position:absolute;inset:0;display:block;touch-action:none;cursor:grab}.stage canvas:active{cursor:grabbing}
+.stage .camhint{align-self:flex-start;background:rgba(255,255,255,.8);border-radius:10px;padding:1px 8px;font-size:13px}
 .stage .hud{position:absolute;left:0;right:0;top:0;padding:calc(8px + env(safe-area-inset-top,0px)) 10px 0;display:flex;flex-direction:column;gap:6px;pointer-events:none}
 .stage .hud>*{pointer-events:auto}.stage .legend{margin:0}.stage .cast{margin:0;align-self:flex-start;max-width:min(900px,100%);background:rgba(255,246,216,.95)}
 .stage .ticker{position:absolute;right:10px;bottom:46px;width:220px;max-height:min(46vh,420px);background:rgba(255,255,255,.92);border-width:2px;padding:10px}
@@ -148,14 +149,14 @@ function renderSetup(){stopRace();
     <span class="lbl">중복</span>
     <label class="chk"><input type="checkbox" id="dedup" ${SET.dedup?"checked":""}><span><b>중복 제거 (한 사람은 한 번만 상품 받기)</b><br><span class="hint">같은 사람의 양이 여러 번 순위에 들면 더 높은 순위 하나만 남기고, 다음 사람이 그 자리를 이어받아요.</span></span></label>
     <span class="lbl">경주 거리</span>
-    <div class="row"><select id="dist">${DISTS.map(m=>`<option value="${m}" ${+SET.dist===m?"selected":""}>${m}m</option>`).join("")}</select><span class="hint" id="distHint">${fmtSec(durOf(+SET.dist||300))} 동안 달려요 · 100m마다 허들 4개 정도</span></div>
+    <div class="row"><select id="dist">${DISTS.map(m=>`<option value="${m}" ${+SET.dist===m?"selected":""}>${m}m</option>`).join("")}</select><span class="hint" id="distHint">보통 ${fmtSec(durOf(+SET.dist||300)*3.3)} 걸려요 (돌발 상황에 따라 달라요)</span></div>
   </div>
   <div class="center"><button class="big pri" id="go">🏁 출발!</button></div>`;
   const prev=()=>{const r=parse($("#txt").value);$("#prev").innerHTML=r.total?`<div class="chips">${r.people.map(p=>`<span class="chip">${sheepSVG(p.color,30)}${esc(p.name)} × ${p.count}</span>`).join("")}</div><div class="tot">총 ${r.people.length}명 · 양 ${r.total}마리${r.total>MAXN?` <span style="color:var(--accent)">(최대 ${MAXN}마리까지 달릴 수 있어요)</span>`:""}</div>`:`<div class="hint" style="margin-top:8px">아직 양이 없어요</div>`;return r};
   prev();
   let tm;$("#txt").oninput=()=>{SET.txt=$("#txt").value;saveSet();prev();clearTimeout(tm);tm=setTimeout(()=>{if(R||!$("#pod"))return;const r=parse(SET.txt),mp=Math.max(1,Math.min(r.total||1,30));if($("#pod").options.length!==mp){const a=document.activeElement===$("#txt"),pos=$("#txt").selectionStart;renderSetup();if(a){$("#txt").focus();$("#txt").setSelectionRange(pos,pos)}}},700)};
   $$("[data-dir]").forEach(b=>b.onclick=()=>{SET.dir=b.dataset.dir;saveSet();$$("[data-dir]").forEach(x=>x.classList.toggle("on",x===b))});
-  $("#dist").onchange=e=>{SET.dist=+e.target.value;saveSet();$("#distHint").textContent=`${fmtSec(durOf(SET.dist))} 동안 달려요 · 100m마다 허들 4개 정도`};
+  $("#dist").onchange=e=>{SET.dist=+e.target.value;saveSet();$("#distHint").textContent=`보통 ${fmtSec(durOf(SET.dist)*3.3)} 걸려요 (돌발 상황에 따라 달라요)`};
   $("#pod").onchange=e=>{SET.pod=+e.target.value;saveSet();renderSetup()};
   $("#prizes").oninput=e=>{const i=e.target.dataset.pz;if(i!=null){SET.prizes[+i]=e.target.value;saveSet()}};
   $("#dedup").onchange=e=>{SET.dedup=e.target.checked;saveSet()};
@@ -179,6 +180,7 @@ const OB={
   barrel:{w:7,span:[.08,.12],h:1.1,crash:.28,ico:"🛢️",msg:"나무통에 머리를 쿵 박았어요"},
   cone:{w:7,span:[.25,.5],h:.7,crash:.18,ico:"🚧",msg:"고깔을 와르르 쓰러뜨렸어요"},
   pumpkin:{w:6,span:[.08,.13],h:.7,crash:.24,ico:"🎃",msg:"호박에 걸려 넘어졌어요"},
+  hedgeW:{w:0,ico:"🌳",msg:"산울타리에 쿵 부딪혔어요"},gateW:{w:0,ico:"🚧",msg:"막힌 길로 들어갔다가 쿵! 다른 길로 돌아가요"},rockW:{w:0,ico:"🪨",msg:"바위벽에 쿵 부딪혔어요"},jam:{w:0,ico:"💥",msg:"좁은 길에서 앞 양과 쿵 부딪혔어요"},
   mud:{w:9,flat:true,slow:.42,mc:"#9c7349"},
   water:{w:7,flat:true,slow:.6,mc:"#4ea5e6"},
   pit:{w:7,flat:true,len:[2.5,4],dep:[.1,.16],trig:"trap",chance:.85,ico:"🕳️",msg:"풀로 덮인 구덩이 함정에 쏙 빠졌어요",mc:"#3a2a1a"},
@@ -190,8 +192,8 @@ const OB={
 /* 🛤️ 특별 구간: 25% 좁은 길 3개 · 50% 낭떠러지와 다리 · 75% 좁아지는 길 */
 function makeZones(M){const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
   const n3L=cl(M*.05,9,30),gap=cl(M*.025,6,12),nrL=cl(M*.06,9,40);
-  return{n3:{m0:M*.25,m1:M*.25+n3L,lanes:[[.08,.24],[.42,.58],[.76,.92]]},
-    cliff:{m0:M*.5-gap/2,m1:M*.5+gap/2,b0:.42,b1:.58},
+  return{n3:{m0:M*.25,m1:M*.25+n3L,lanes:[[.08,.24],[.42,.58],[.76,.92]],block:Math.floor(Math.random()*3)},
+    cliff:{m0:M*.5-gap/2,m1:M*.5+gap/2,b0:.455,b1:.545},
     narrow:{m0:M*.75,m1:M*.75+nrL,a:.32,b:.68}}}
 function makeCourse(M,Z){const list=[];let m=rnd(10,16),id=0;const tot=Object.values(OB).reduce((a,o)=>a+o.w,0);
   const busy=[[Z.n3.m0-10,Z.n3.m1+4],[Z.cliff.m0-14,Z.cliff.m1+5],[Z.narrow.m0-9,Z.narrow.m1+4]];
@@ -202,6 +204,10 @@ let k=Math.random()*tot,type="hurdle";for(const [ty,o] of Object.entries(OB)){if
     else if(o.flat){ob.len=o.len?rnd(o.len[0],o.len[1]):rnd(3.5,8);ob.dep=o.dep?rnd(o.dep[0],o.dep[1]):rnd(.07,.14);ob.tc=rnd(ob.dep/2,1-ob.dep/2);ob.t0=ob.tc-ob.dep/2;ob.t1=ob.tc+ob.dep/2}
     else{const w=rnd(o.span[0],o.span[1]);ob.tc=rnd(w/2+.02,1-w/2-.02);ob.t0=ob.tc-w/2;ob.t1=ob.tc+w/2}
     list.push(ob);m+=Math.max(2.5,rnd(6,26)*(1-.7*Math.pow(m/M,1.2))*(Math.random()<.18?.4:1))}  // 들쭉날쭉, 결승선에 가까울수록 촘촘해져요
+  // 75% 좁아지는 길: 함정을 촘촘하게
+  const NZ=Z.narrow,TR=["pit","banana","honey","mud","ice","pit","banana","honey"];
+  for(let q=NZ.m0+1.2;q<NZ.m1-1;q+=rnd(1.8,3.2)){const type=TR[Math.floor(Math.random()*TR.length)],dep=rnd(.1,.17),tc=rnd(NZ.a+dep/2+.01,NZ.b-dep/2-.01);
+    list.push({id:++id,type,m:q,len:rnd(1.6,2.8),dep,tc,t0:tc-dep/2,t1:tc+dep/2})}
   return list}
 function startRace(r){
   stopRace();
@@ -210,19 +216,30 @@ function startRace(r){
   const M=+SET.dist||300,D=durOf(M),n=sheep.length;
   sheep.forEach((s,i)=>{s.lane=i;s.yf=Math.min(.95,Math.max(.05,(i+.5)/n+rnd(-.3,.3)/n));s.ty=s.yf;s.p=0;s.f=rnd(.92,1.08);s.v=0;s.tv=1/D;s.nextT=0;s.passed=new Set();s.tried=0;s.stun=0;s.jump=-9;s.jh=1;s.boost=0;s.done=false;s.dq=false;s.ev=null;s.hole=null;s.cool=rnd(1,3);s.leg=Math.random()*6});
   const Z=makeZones(M),obs=makeCourse(M,Z),clovers=[];
-  for(let k=0;k<Math.round(M/100*8);k++){const x=rnd(4,M-3);if(x>Z.cliff.m0-1&&x<Z.cliff.m1+1)continue;clovers.push({x:x/M,y:rnd(.08,.92),alive:true})}
-  R={people:r.people,sheep,D,M,Z,zAnn:{},obs,clovers,t:0,last:0,fin:[],dqN:0,started:false,speed:1,over:false,camC:0,camMode:SET.dir==="back"?"last":"lead",tkOpen:window.innerWidth>700};
+  for(let k=0;k<Math.round(M/100*8);k++){const x=rnd(4,M*.5-8);clovers.push({x:x/M,y:rnd(.08,.92),alive:true})}
+  R={people:r.people,sheep,D,M,Z,zAnn:{},obs,clovers,t:0,last:0,fin:[],dqN:0,started:false,speed:1,over:false,camC:0,tilt:.5,zoom:1,manual:false,camMode:SET.dir==="back"?"last":"lead",tkOpen:window.innerWidth>700};
   const st=document.createElement("div");st.id="stage";st.className="stage";
   st.innerHTML=`<canvas id="cv"></canvas>
     <div class="hud"><div class="row"><div class="legend sp">${r.people.map(p=>`<span class="chip">${sheepSVG(p.color,24)}${esc(p.name)} ${p.count}</span>`).join("")}<span class="chip">📏 ${M}m</span></div>
-      <button class="sm" id="cam">🎥 ${R.camMode==="lead"?"선두":"꼴찌"} 따라가기</button><button class="sm" id="fast">⏩ 2배속</button><button class="sm" id="fsb">⛶ 전체화면</button><button class="sm" id="stop">■ 그만하기</button></div>
-      <div class="cast" id="cast">🎙️ 곧 출발해요! ${n}마리 양들이 ${M}m 출발선에 섰어요</div></div>
+      <button class="sm" id="cam">🎥 ${R.camMode==="lead"?"선두":"꼴찌"} 따라가기</button><button class="sm" id="zin" title="확대">🔍＋</button><button class="sm" id="zout" title="축소">🔍－</button><button class="sm" id="fast">⏩ 2배속</button><button class="sm" id="fsb">⛶ 전체화면</button><button class="sm" id="stop">■ 그만하기</button></div>
+      <div class="hint camhint">🖱️ 화면을 좌우로 끌면 카메라 이동 · 위아래로 끌면 앵글 높이 · 휠/🔍로 확대</div><div class="cast" id="cast">🎙️ 곧 출발해요! ${n}마리 양들이 ${M}m 출발선에 섰어요</div></div>
     <div class="ticker${R.tkOpen?"":" shut"}" id="tkbox"><h3 id="tkt">🏁 도착 순서 <span class="hint" id="tkc">0/${n}</span></h3><div class="hint">${SET.dir==="back"?"⏪ 뒤에서부터 순위예요. 가장 늦게 도착한 양이 1위!":"⏩ 먼저 도착한 양이 1위예요"}</div><div id="tk"></div></div>
     <div class="cd" id="cd"></div>`;
   document.body.appendChild(st);document.body.style.overflow="hidden";document.body.classList.add("racing");goFull(st);
   $("#stop").onclick=()=>{if(confirm("경주를 그만하고 설정으로 돌아갈까요?"))renderSetup()};
   $("#fast").onclick=()=>{R.speed=R.speed===1?2:1;$("#fast").textContent=R.speed===1?"⏩ 2배속":"▶ 보통 속도"};
-  $("#cam").onclick=()=>{R.camMode=R.camMode==="lead"?"last":"lead";$("#cam").textContent=`🎥 ${R.camMode==="lead"?"선두":"꼴찌"} 따라가기`};
+  const camLbl=()=>{$("#cam").textContent=R.manual?"🎥 자동으로 따라가기":`🎥 ${R.camMode==="lead"?"선두":"꼴찌"} 따라가기`};
+  $("#cam").onclick=()=>{if(R.manual)R.manual=false;else R.camMode=R.camMode==="lead"?"last":"lead";camLbl()};
+  const zoomBy=f=>{R.zoom=Math.max(.6,Math.min(1.8,R.zoom*f));const keep=R.camC/R.ppm;layout();R.camC=keep*R.ppm;draw()};
+  $("#zin").onclick=()=>zoomBy(1.15);$("#zout").onclick=()=>zoomBy(1/1.15);
+  // 화면을 끌면: 좌우 = 카메라 이동, 위아래 = 앵글(높게/낮게)
+  const cvEl=$("#cv");let drag=null;
+  cvEl.onpointerdown=e=>{drag={x:e.clientX,y:e.clientY,c:R.camC,tl:R.tilt,mv:false};try{cvEl.setPointerCapture(e.pointerId)}catch(_){}};
+  cvEl.onpointermove=e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(!drag.mv&&Math.hypot(dx,dy)<4)return;drag.mv=true;
+    if(Math.abs(dx)>2){if(!R.manual){R.manual=true;camLbl()}R.camC=drag.c-dx/kOf(.5)}
+    const nt=Math.max(0,Math.min(1,drag.tl+dy*.004));if(Math.abs(nt-R.tilt)>.002){const keep=R.camC/R.ppm;R.tilt=nt;layout();R.camC=keep*R.ppm}draw()};
+  cvEl.onpointerup=cvEl.onpointercancel=()=>{drag=null};
+  cvEl.addEventListener("wheel",e=>{e.preventDefault();zoomBy(e.deltaY<0?1.1:1/1.1)},{passive:false});
   $("#fsb").onclick=()=>{if(document.fullscreenElement||document.webkitFullscreenElement){try{(document.exitFullscreen||document.webkitExitFullscreen).call(document)}catch(e){}}else goFull(st)};
   $("#tkt").onclick=()=>{R.tkOpen=!R.tkOpen;$("#tkbox").classList.toggle("shut",!R.tkOpen)};
   layout();R.camC=R.camMin;R.ro=new ResizeObserver(()=>{if(R)layout()});R.ro.observe(st);
@@ -230,31 +247,32 @@ function startRace(r){
   raf=requestAnimationFrame(loop);
 }
 /* 📐 낮은 앵글 원근: t=0 먼 쪽, t=1 가까운 쪽 */
-const kOf=t=>1/(1.54-.54*t);
+const kOf=t=>1/(R.pa-(R.pa-1)*t);
 function layout(){const st=$("#stage"),cv=$("#cv");if(!st||!cv||!R)return;const W=st.clientWidth,H=st.clientHeight,n=R.sheep.length;
   const hud=st.querySelector(".hud"),hb=hud?hud.offsetHeight:90;
   const yFar=hb+Math.max(70,H*.1),yNear=H-44;
-  const rN=Math.max(20,Math.min(46,(yNear-yFar)/(Math.sqrt(n)*2.1)));
+  R.pa=1.25+.6*R.tilt;R.sk=.04+.11*R.tilt;const sf=.85-.5*R.tilt;
+  const rN=Math.max(14,Math.min(70,Math.max(20,Math.min(46,(yNear-yFar)/(Math.sqrt(n)*2.1)))*R.zoom));
   const dpr=Math.min(2,window.devicePixelRatio||1);cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+"px";cv.style.height=H+"px";
   const ppm=rN*.8,kA=kOf(-.08),kB=kOf(1.08);
-  const span=yNear-yFar,yF2=yFar+span*.24; // 주로 폭을 60%로 좁혀 화면 가운데쯤에
-  Object.assign(R,{W,H,dpr,rN,ppm,yFar:yF2,yNear:yF2+span*.6,kA,kB,camMin:W*.38,camMax:R.M*ppm+W*.22});draw()}
+  const span=yNear-yFar,yF2=yFar+span*(1-sf)/2; // 앵글이 낮을수록 주로가 납작하게 보여요
+  Object.assign(R,{W,H,dpr,rN,ppm,yFar:yF2,yNear:yF2+span*sf,kA,kB,camMin:W*.38,camMax:R.M*ppm+W*.22});draw()}
 const Yt=t=>R.yFar+Math.pow(Math.max(0,(t+.08)/1.16),1.3)*(R.yNear-R.yFar);
-const Xm=(m,t)=>R.W/2+(m*R.ppm-R.camC)*kOf(t)+(1.08-t)*R.W*.096; // 비스듬한 시점
+const Xm=(m,t)=>R.W/2+(m*R.ppm-R.camC)*kOf(t)+(1.08-t)*R.W*R.sk; // 비스듬한 시점
 const Pt=(m,t,h)=>[Xm(m,t),Yt(t)-(h||0)*R.ppm*1.8*kOf(t)];
 function loop(now){if(!R)return;const rdt=Math.min(.05,(now-R.last)/1000);
   if(R.started&&!R.over){const dt=rdt*R.speed;R.t+=dt;step(dt)}R.last=now;
   camStep(rdt);draw();raf=requestAnimationFrame(loop)}
-function camStep(dt){if(!R||!R.W)return;const run=R.sheep.filter(s=>!s.done&&!s.dq);let tx;
+function camStep(dt){if(!R||!R.W)return;if(R.manual){R.camC=Math.max(R.camMin-R.W*.3,Math.min(R.camMax+R.W*.2,R.camC));return}const run=R.sheep.filter(s=>!s.done&&!s.dq);let tx;
   if(!R.started)tx=R.camMin;
   else if(!run.length)tx=R.camMax;
   else{const ps=run.map(s=>s.p),p=R.camMode==="lead"?Math.max(...ps):Math.min(...ps);tx=p*R.M*R.ppm+R.W*(R.camMode==="lead"?.14:-.1)}
   tx=Math.max(R.camMin,Math.min(R.camMax,tx));R.camC+=(tx-R.camC)*Math.min(1,dt*2.2)}
 /* 🎲 돌발 상황: 먹이 먹기 · 넘어지기 · 함정 · 거꾸로 달리기 · 싸움 · 부딪힘 · 경기장 이탈(실격) */
-const EV={eat:["🌿","풀을 뜯어 먹어요"],fall:["💫","꽈당 넘어졌어요"],trap:["🕳️","함정에 빠졌어요"],back:["↩️","거꾸로 달려요"],bump:["💥","돌부리에 걸려 휘청했어요"],fight:["💢","싸워요"],dq:["🚫","경기장을 벗어났어요! 실격"],hurdle:["💥","장애물에 걸렸어요"],sleep:["💤","쿨쿨 잠들었어요"],love:["💕","눈이 맞았어요"],cliff:["😱","낭떠러지로 떨어졌어요! 실격"],stick:["🍯","꿀에 발이 붙었어요"]};
+const EV={eat:["🌿","풀을 뜯어 먹어요"],fall:["💫","꽈당 넘어졌어요"],trap:["🕳️","함정에 빠졌어요"],back:["↩️","거꾸로 달려요"],bump:["💥","돌부리에 걸려 휘청했어요"],fight:["💢","싸워요"],dq:["🚫","경기장을 벗어났어요! 실격"],hurdle:["💥","장애물에 걸렸어요"],sleep:["💤","쿨쿨 잠들었어요"],love:["💕","눈이 맞았어요"],cliff:["😱","낭떠러지로 떨어졌어요! 실격"],scared:["😨","다리 앞에서 무서워서 5초 동안 머뭇거려요"],stick:["🍯","꿀에 발이 붙었어요"]};
 const sName=s=>`${s.owner} #${s.no}`;
 function cast(txt){const el=$("#cast");if(!el)return;el.textContent=txt;el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash")}
-function startEv(s,type,t,partner,ob){const len={eat:rnd(.9,1.7),fall:rnd(.6,1.1),trap:rnd(1.6,2.6),back:rnd(.9,1.5),bump:rnd(.4,.8),fight:rnd(1.1,1.9),dq:1.3,hurdle:rnd(.5,1),sleep:10,love:rnd(1.5,2.5),cliff:1.5}[type];
+function startEv(s,type,t,partner,ob){const len={eat:rnd(.9,1.7),fall:rnd(.6,1.1),trap:rnd(1.6,2.6),back:rnd(.9,1.5),bump:rnd(.4,.8),fight:rnd(1.1,1.9),dq:1.3,hurdle:rnd(.5,1),sleep:10,love:rnd(1.5,2.5),cliff:1.5,scared:5}[type];
   s.ev={type,start:t,until:t+len,partner,ico:ob?OB[ob.type].ico:null};s.cool=t+len+rnd(1.2,2.4);if(type==="bump")s.p=Math.max(0,s.p-1.8/R.M);
   if(type==="trap")s.hole={p:s.p,y:s.yf};
   if(type==="dq")s.dqDir=s.yf<.5?-1:1;
@@ -290,8 +308,9 @@ function step(dt){const t=R.t,base=1/R.D,M=R.M;
         if(d.trig==="spring"){s.jump=t;s.jh=2.6;s.boost=t+1.2;cast(`${d.ico} ${sName(s)} 양이 ${d.msg}`)}
         else if(d.trig==="stick"){startEv(s,"eat",t,null,o);s.ev.type="stick";s.ev.until=t+rnd(1.2,2.2);return}
         else{startEv(s,d.trig,t,null,o);return}}}
-      if(d.slow)v*=d.slow;break}
-    if(t<s.boost)v*=1.7;
+      if(d.slow&&(d.slow<1||s.p<.5))v*=d.slow;break}
+    if(t<s.boost&&s.p<.5)v*=1.7;
+    v=jam(s,v,t,dt);if(s.ev)return;
     let np=s.p+v*dt;const nm=np*M;
     for(const c of R.clovers)if(c.alive&&Math.abs(c.y-s.yf)<.09&&s.p<c.x+.4/M&&np>=c.x-.4/M){c.alive=false;s.boost=t+.9;break}
     for(const o of R.obs){const d=OB[o.type];if(d.flat||s.passed.has(o.id))continue;if(s.yf<o.t0-.03||s.yf>o.t1+.03)continue;
@@ -302,15 +321,39 @@ function step(dt){const t=R.t,base=1/R.D,M=R.M;
     {const C=R.Z.cliff,pm=np*M;if(pm>=C.m0&&pm<=C.m1&&(s.yf<C.b0-.005||s.yf>C.b1+.005)){R.dqN++;startEv(s,"cliff",t);return}}
     if(s.p>=1){s.done=true;s.p=1;R.fin.push(s);s.rank=R.fin.length;addTick(s)}});
   if(!R.over&&R.fin.length+R.dqN===R.sheep.length&&R.sheep.every(s=>s.done||s.dq)){R.over=true;setTimeout(()=>{if(R&&R.over)showResult()},1300)}}
-function zoneSteer(s,t,dt){const Z=R.Z,M=R.M,sm=s.p*M;let rg=null,hard=false;
+function zoneSteer(s,t,dt){const Z=R.Z,M=R.M,sm=s.p*M;let rg=null,hard=false;s.zm=s.zm||{};
   const ann=(k,txt)=>{if(!R.zAnn[k]){R.zAnn[k]=1;cast(txt)}};
-  if(sm>Z.n3.m0-12&&sm<Z.n3.m1){if(s.l3==null){let best=0;Z.n3.lanes.forEach((L,i)=>{if(Math.abs((L[0]+L[1])/2-s.yf)<Math.abs((Z.n3.lanes[best][0]+Z.n3.lanes[best][1])/2-s.yf))best=i});if(Math.random()<.25)best=Math.floor(Math.random()*3);s.l3=best}
-    const L=Z.n3.lanes[s.l3];rg=[L[0]+.025,L[1]-.025];hard=sm>=Z.n3.m0-.5;if(sm>=Z.n3.m0-2)ann("n3","🛤️ 좁은 길 3개 구간! 양들이 길을 골라 들어가요")}
-  else if(sm>Z.cliff.m0-15&&sm<Z.cliff.m1+1){if(s.bok==null){s.bok=Math.random()>.18||R.sheep.length-R.dqN-1<Math.max(2,SET.pod)}
-    if(s.bok||(s.ev&&s.ev.type==="back")){rg=[Z.cliff.b0+.03,Z.cliff.b1-.03];hard=sm>=Z.cliff.m0-1}if(sm>=Z.cliff.m0-4)ann("cliff","⚠️ 낭떠러지다! 가운데 다리로 건너야 해요")}
-  else if(sm>Z.narrow.m0-10&&sm<Z.narrow.m1){rg=[Z.narrow.a+.03,Z.narrow.b-.03];hard=sm>=Z.narrow.m0-.5;if(sm>=Z.narrow.m0-2)ann("narrow","🚧 길이 확 좁아졌어요! 비켜, 비켜!")}
+  const mid=L=>(L[0]+L[1])/2,near=(lanes,skip)=>{let b=-1;lanes.forEach((L,i)=>{if(i===skip)return;if(b<0||Math.abs(mid(L)-s.yf)<Math.abs(mid(lanes[b])-s.yf))b=i});return b};
+  const crash=(m0,kind)=>{s.p=Math.max(0,(m0-2.2)/M);startEv(s,"hurdle",t,null,{type:kind});s.tried=0};
+  if(sm>Z.n3.m0-12&&sm<Z.n3.m1){const N=Z.n3;
+    if(s.l3==null){s.l3=Math.random()<.3?Math.floor(Math.random()*3):near(N.lanes,-1)}
+    if(s.zm.n3==null)s.zm.n3=Math.random()<.4; // 40%는 한눈팔다 울타리에 부딪혀요
+    const L=N.lanes[s.l3],inL=s.yf>=L[0]+.01&&s.yf<=L[1]-.01;
+    if(!s.zm.n3||sm>=N.m0)rg=[L[0]+.025,L[1]-.025];
+    if(sm>=N.m0-.9&&sm<N.m0){if(s.l3===N.block){crash(N.m0,"gateW");s.l3=near(N.lanes,N.block);s.zm.n3=false;return}
+      if(!inL){crash(N.m0,"hedgeW");s.l3=near(N.lanes,N.block);s.zm.n3=false;return}}
+    hard=sm>=N.m0-.9;if(sm>=N.m0-2)ann("n3","🛤️ 좁은 길 3개! 그런데 하나는 막혀 있어요")}
+  else if(sm>Z.cliff.m0-15&&sm<Z.cliff.m1+1){const C=Z.cliff;
+    if(s.bok==null){s.bok=Math.random()>.18||R.sheep.length-R.dqN-1<Math.max(2,SET.pod)}
+    if(s.bok||(s.ev&&s.ev.type==="back")){rg=[C.b0+.012,C.b1-.012];hard=sm>=C.m0-1}
+    if(s.bok&&s.fear==null&&sm>=C.m0-1.4&&!s.ev){s.fear=Math.random()<.3;
+      if(s.fear){if(Math.random()<.1){startEv(s,"back",t);s.ev.long=true;s.ev.until=Infinity;s.ev.backTo=Math.max(0,s.p-40/M);cast(`😱 ${sName(s)} 양이 다리가 무서워서 뒤로 도망가요!`)}
+        else startEv(s,"scared",t)}}
+    if(sm>=C.m0-4)ann("cliff","⚠️ 낭떠러지다! 좁은 다리로 건너야 해요")}
+  else if(sm>Z.narrow.m0-10&&sm<Z.narrow.m1){const W=Z.narrow;
+    if(s.zm.nr==null)s.zm.nr=Math.random()<.4;
+    if(!s.zm.nr||sm>=W.m0)rg=[W.a+.03,W.b-.03];
+    if(sm>=W.m0-.9&&sm<W.m0&&(s.yf<W.a+.01||s.yf>W.b-.01)){crash(W.m0,"rockW");s.zm.nr=false;return}
+    hard=sm>=W.m0-.9;if(sm>=W.m0-2)ann("narrow","🚧 길이 확 좁아지고 함정이 가득해요!")}
   if(!rg)return;const tg=Math.max(rg[0],Math.min(rg[1],s.yf));s.ty=Math.max(rg[0],Math.min(rg[1],s.ty));
   if(hard)s.yf=tg;else s.yf+=(tg-s.yf)*Math.min(1,dt*3.5)}
+/* 좁은 곳에서는 앞 양을 앞지를 수 없어요: 막히면 멈추고, 가끔 쿵 부딪혀요 */
+function inNarrow(sm){const Z=R.Z;return(sm>Z.n3.m0-1&&sm<Z.n3.m1)||(sm>Z.cliff.m0-1.5&&sm<Z.cliff.m1+.5)||(sm>Z.narrow.m0-1&&sm<Z.narrow.m1)}
+function jam(s,v,t,dt){const M=R.M,sm=s.p*M;if(!inNarrow(sm))return v;let blk=null,bd=9;
+  for(const o of R.sheep){if(o===s||o.done||o.dq)continue;const d=(o.p-s.p)*M;if(d<=0||d>1.5||Math.abs(o.yf-s.yf)>.07)continue;if(d<bd){bd=d;blk=o}}
+  if(!blk)return v;const stopped=!!blk.ev||blk.v<.2/R.D;
+  if(stopped){if(Math.random()<dt*.6&&!s.ev&&t>=s.cool){startEv(s,"hurdle",t,null,{type:"jam"});return 0}return 0}
+  return Math.min(v,blk.v*.92)}
 function addTick(s){const tk=$("#tk");if(!tk)return;const d=document.createElement("div");d.className="tk";
   const tc=$("#tkc");if(tc)tc.textContent=`${R.fin.length+R.dqN}/${R.sheep.length}`;
   d.innerHTML=`<span class="n">${s.dq?"🚫":s.rank+"착"}</span>${sheepSVG(s.color,24)}<span>${esc(s.owner)}</span><span class="hint">#${s.no}${s.dq?" 실격":""}</span>`;tk.appendChild(d);
@@ -441,7 +484,10 @@ function zoneGround(c,mL,mR){const Z=R.Z,C=Z.cliff;
 }
 function zoneSolids(c,L,mL,mR){const Z=R.Z,vis=(a,b)=>b>mL-2&&a<mR+2;
   const N=Z.n3;if(vis(N.m0,N.m1)){const bl=[[-.08,N.lanes[0][0]],[N.lanes[0][1],N.lanes[1][0]],[N.lanes[1][1],N.lanes[2][0]],[N.lanes[2][1],1.08]];
-    bl.forEach(([a,b])=>L.push({t:b,f:()=>hedge(c,N.m0,N.m1,a,b)}))}
+    bl.forEach(([a,b])=>L.push({t:b,f:()=>hedge(c,N.m0,N.m1,a,b)}));
+    const BL=N.lanes[N.block];L.push({t:BL[1],f:()=>{box3(c,N.m0,N.m0+.7,BL[0],BL[1],.75,"#f2f2f2","#d6352e","#c22f29");
+      c.strokeStyle="#fff";c.lineWidth=Math.max(2,4*kOf(BL[1]));for(let q=.15;q<1;q+=.3){const a=Pt(N.m0,BL[1],.75*q),b=Pt(N.m0+.7,BL[1],.75*Math.min(1,q+.25));c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke()}
+      const [x,y]=Pt(N.m0+.35,(BL[0]+BL[1])/2,1.3);c.font=`${Math.max(14,22*kOf(BL[1]))}px sans-serif`;c.textAlign="center";c.textBaseline="middle";c.fillText("⛔",x,y)}})}
   const W=Z.narrow;if(vis(W.m0,W.m1)){[[-.08,W.a],[W.b,1.08]].forEach(([a,b])=>L.push({t:b,f:()=>rockwall(c,W.m0,W.m1,a,b)}))}
   const C=Z.cliff;if(vis(C.m0-1,C.m1+1)){[C.b0,C.b1].forEach(tt=>L.push({t:tt+.0005,f:()=>{c.strokeStyle="#7a4b22";c.lineWidth=Math.max(2,4*kOf(tt));c.lineCap="round";
       const ps=[];for(let m=C.m0-.6;m<=C.m1+.61;m+=(C.m1-C.m0+1.2)/5){const a=Pt(m,tt,0),b=Pt(m,tt,.9);c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke();ps.push(b)}
@@ -453,7 +499,7 @@ function zoneSolids(c,L,mL,mR){const Z=R.Z,vis=(a,b)=>b>mL-2&&a<mR+2;
 function shade(hex,k){const n=parseInt(hex.slice(1),16);const f=v=>Math.max(0,Math.min(255,Math.round(v*k)));return `rgb(${f(n>>16)},${f(n>>8&255)},${f(n&255)})`}
 function drawSheep(c,x,y,R0,s,t,lift){lift=lift||0;const ev=s.ev&&s.ev.type,r=R0*(ev==="trap"?.75:1),dizzy=ev==="fall"||ev==="hurdle"||ev==="bump"||ev==="trap";
   const faceBack=ev==="back"||((ev==="love"||ev==="fight")&&s.ev.partner&&s.ev.partner.p<s.p);
-  const running=!ev&&!s.done&&!(s.dq);if(ev==="trap")y+=r*.5;if(ev==="fight")x+=Math.sin(t*40)*r*.18;
+  const running=!ev&&!s.done&&!(s.dq);if(ev==="trap")y+=r*.5;if(ev==="fight"||ev==="scared")x+=Math.sin(t*40)*r*.18;
   const bob=running||s.done?-Math.abs(Math.sin(s.leg))*r*.12:0;
   // 그림자 (땅에 남아요)
   const sh=1/(1+lift/(r*2));c.fillStyle="rgba(0,0,0,.16)";c.beginPath();c.ellipse(x,y+r*.98,r*1.05*sh,r*.24*sh,0,0,7);c.fill();
