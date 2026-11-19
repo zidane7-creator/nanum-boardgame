@@ -186,6 +186,12 @@ table.spk{width:max-content;min-width:100%}table.spk td input,table.spk td selec
 select.ttp{border:0;border-left:1px dashed #d8c9b0;border-radius:0;background:transparent;font-size:12px;padding:0 2px;width:84px;color:var(--muted)}
 select.ttp.same{color:transparent}select.ttp.same:focus{color:var(--ink)}
 table.spt{width:max-content;min-width:100%}table.spt td input{width:auto}
+table.tt td.mg{vertical-align:middle}
+table.tt td.filled input{text-align:center;font-weight:600}
+table.tt td.mg .ttc{min-height:100%;align-items:center}
+.ttb{display:none;gap:3px;justify-content:center;align-items:center;padding:2px 2px 3px;flex-wrap:wrap}
+.ttb button{font-size:11px;padding:0 6px;background:#fff}
+table.tt td:hover .ttb,table.tt td:focus-within .ttb{display:flex}
 /* supplies */
 .steps{display:flex;flex-wrap:wrap;gap:2px}
 .steps button{font-size:12px;padding:1px 6px;border-radius:7px;background:#fff;border-color:#cdbda6;color:var(--muted)}
@@ -601,12 +607,19 @@ function slots(){const toM=s=>{const[h,m]=String(s).split(':').map(Number);retur
 function vTT(){const days=(+R.nights||0)+1,S=slots(),C=R.tt.cells;
   const head=Array.from({length:days},(_,d)=>`<th>${d+1}일차${R.start?' · '+fmtD(addD(R.start,d)):''}</th>`).join('');
   const times=Array.from({length:S.length+1},(_,i)=>{const m=S[0].split(':').map(Number);const x=m[0]*60+m[1]+i*30;return pad(Math.floor(x/60)%24)+':'+pad(x%60)});
-  const body=S.map((s,i)=>`<tr><td class="tm ${s.endsWith(':00')?'h':''}">${s}~${times[i+1]}</td>${Array.from({length:days},(_,d)=>{const v=C[d+'-'+s]||'',pv=i?C[d+'-'+S[i-1]]||'':'';const cont=v&&v===pv;const pl=(R.tt.places||{})[d+'-'+s]||'',ppl=i?(R.tt.places||{})[d+'-'+S[i-1]]||'':'';return `<td class="${cont?'cont':''}" style="${v?`background:hsl(${hue(v)},70%,90%)`:''}"><div class="ttc"><input data-o="tt.cells" data-k="${d}-${s}" data-rr list="progList" value="${esc(v)}">${R.spaces.length?`<select data-o="tt.places" data-k="${d}-${s}" data-rr class="ttp ${cont&&pl===ppl?'same':''}" title="장소"><option value="">장소</option>${R.spaces.map(x=>`<option value="${x.id}"${pl===x.id?' selected':''}>${esc(x.name||'(이름 없음)')}</option>`).join('')}</select>`:''}</div></td>`}).join('')}</tr>`).join('');
+  /* 같은 일정이 이어지는 칸은 하나로 합쳐서(병합) 가운데에 보여 줘요 */
+  const PL=R.tt.places||{},runs={},skip={};
+  for(let d=0;d<days;d++){let i=0;while(i<S.length){const v=C[d+'-'+S[i]]||'';let n=1;if(v)while(i+n<S.length&&C[d+'-'+S[i+n]]===v)n++;runs[d+'-'+i]=n;for(let j=1;j<n;j++)skip[d+'-'+(i+j)]=1;i+=n}}
+  const spSel=(run,pl)=>R.spaces.length?`<select class="ttp" data-run="${run}" data-rk="place" title="장소"><option value="">장소</option>${R.spaces.map(x=>`<option value="${x.id}"${pl===x.id?' selected':''}>${esc(x.name||'(이름 없음)')}</option>`).join('')}</select>`:'';
+  const body=S.map((s,i)=>`<tr><td class="tm ${s.endsWith(':00')?'h':''}">${s}~${times[i+1]}</td>${Array.from({length:days},(_,d)=>{if(skip[d+'-'+i])return'';const n=runs[d+'-'+i]||1,v=C[d+'-'+s]||'',pl=PL[d+'-'+s]||'',run=`${d}|${i}|${n}`;
+    return `<td${n>1?` rowspan="${n}"`:''} class="${v?'filled':''}${n>1?' mg':''}" style="${v?`background:hsl(${hue(v)},70%,90%)`:''}"><div class="ttc"><input data-run="${run}" data-rk="cell" list="progList" value="${esc(v)}" placeholder="${v?'':''}">${spSel(run,pl)}</div>${v?`<div class="ttb">${i+n<S.length?`<button class="sm" data-act="ttGrow" data-v="${run}" title="아래 30분 칸과 합치기">⬇ 칸 합치기</button>`:''}${n>1?`<button class="sm" data-act="ttShrink" data-v="${run}" title="맨 아래 30분 칸 떼어내기">⬆ 줄이기</button>`:''}${n>1?`<span class="hint">${n*30}분</span>`:''}</div>`:''}</td>`}).join('')}</tr>`).join('');
   return `<datalist id="progList">${[...new Set([...R.programs.map(p=>p.name).filter(Boolean),'기상','아침 식사','점심 식사','저녁 식사','간식','자유시간','개회예배','집회','소그룹 나눔','레크리에이션','세면·정리','취침','폐회예배','이동','출발','도착','QT'])].map(n=>`<option value="${esc(n)}">`).join('')}</datalist>
   <div class="card"><div class="row"><h2 style="margin:0">⏰ 시간표</h2><span class="sp"></span><button data-act="ttCopy">📋 텍스트로 복사</button><button data-act="print">🖨️ 인쇄</button></div>
    <div class="row" style="margin-top:8px"><label class="fld">시작일${inp('.','start',{type:'date',rr:1})}</label><label class="fld">기간${sel('.','nights',[0,1,2,3,4,5].map(n=>[n,n+'박 '+(n+1)+'일']),{rr:1})}</label><label class="fld">하루 시작${inp('tt','from',{type:'time',rr:1})}</label><label class="fld">하루 끝${inp('tt','to',{type:'time',rr:1})}</label></div>
-   <p class="hint">30분 단위 칸에 일정을 적어요. 이어지는 칸에 같은 내용을 적으면 한 덩어리로 묶여 보여요. [프로그램]에 적은 이름도 골라 쓸 수 있어요. ${R.spaces.length?'칸 오른쪽의 ‘장소’에서 [🏠 사용공간]을 골라요. 일정을 고르면 그 프로그램의 첫 장소가 저절로 들어가요.':'[🏠 사용공간]에 공간을 적으면 칸마다 장소도 고를 수 있어요.'}</p>
+   <p class="hint">30분 단위 칸에 일정을 적어요. 칸을 누르면 나오는 <b>⬇ 칸 합치기</b>로 아래 칸과 합치고(<b>⬆ 줄이기</b>로 떼어내요), 합친 칸은 가운데 맞춤으로 보여요. 이어지는 칸에 같은 내용을 적어도 저절로 합쳐져요. [프로그램]에 적은 이름도 골라 쓸 수 있어요. ${R.spaces.length?'칸 오른쪽의 ‘장소’에서 [🏠 사용공간]을 골라요. 일정을 고르면 그 프로그램의 첫 장소가 저절로 들어가요.':'[🏠 사용공간]에 공간을 적으면 칸마다 장소도 고를 수 있어요.'}</p>
    <div class="hs" data-keep="tt"><table class="tt"><tr><th>시간</th>${head}</tr>${body}</table></div></div>`}
+function ttSet(t){const[d,i,n]=t.dataset.run.split('|').map(Number),S=slots(),o=t.dataset.rk==='cell'?R.tt.cells:(R.tt.places=R.tt.places||{});const v=t.dataset.rk==='cell'?t.value:t.value;
+  for(let j=i;j<i+n&&j<S.length;j++){const k=d+'-'+S[j];if(v)o[k]=v;else delete o[k]}save()}
 function ttText(){const days=(+R.nights||0)+1,S=slots(),C=R.tt.cells;let out=`⏰ ${R.name} 시간표\n`;for(let d=0;d<days;d++){out+=`\n[${d+1}일차${R.start?' '+fmtD(addD(R.start,d)):''}]\n`;let i=0;while(i<S.length){const v=C[d+'-'+S[i]];if(!v){i++;continue}let j=i;while(j+1<S.length&&C[d+'-'+S[j+1]]===v)j++;const e=S[j].split(':').map(Number),em=e[0]*60+e[1]+30,pl=spName((R.tt.places||{})[d+'-'+S[i]]);out+=`${S[i]}~${pad(Math.floor(em/60)%24)}:${pad(em%60)} ${v}${pl?' @'+pl:''}\n`;i=j+1}}return out}
 
 /* ---------- 확정사항 ---------- */
@@ -1089,6 +1102,9 @@ const ACT={
   spAdd:()=>{const it={id:uid()};R.spaces.push(it);save();render();setTimeout(()=>{const e=$(`[data-o="spaces#${it.id}"][data-k="name"]`);if(e){e.focus();e.scrollIntoView({block:'center'})}},30)},
   spDel:t=>{const x=R.spaces.find(y=>y.id===t.dataset.v),[tt,pg]=spUse(x.id);if(!confirm(`‘${x.name||'공간'}’을 지울까요?${tt||pg?` 시간표 ${tt}칸·프로그램 ${pg}개에서도 빠져요.`:''}`))return;
     R.spaces=R.spaces.filter(y=>y!==x);for(const k in R.tt.places)if(R.tt.places[k]===x.id)delete R.tt.places[k];R.programs.forEach(p=>{if(p.spaces)p.spaces=p.spaces.filter(i=>i!==x.id)});save();render()},
+  ttGrow:t=>{const[d,i,n]=t.dataset.v.split('|').map(Number),S=slots(),C=R.tt.cells,P=R.tt.places,k0=d+'-'+S[i],nk=d+'-'+S[i+n];if(!S[i+n])return;
+    if(C[nk]&&C[nk]!==C[k0]&&!confirm(`아래 칸의 ‘${C[nk]}’을(를) 지우고 합칠까요?`))return;C[nk]=C[k0];if(P[k0])P[nk]=P[k0];else delete P[nk];save();render()},
+  ttShrink:t=>{const[d,i,n]=t.dataset.v.split('|').map(Number),S=slots();if(n<2)return;const k=d+'-'+S[i+n-1];delete R.tt.cells[k];delete R.tt.places[k];save();render()},
   pSort:t=>{const k=t.dataset.v;if(SUB.ps===k){if(SUB.pd==='desc'){SUB.ps='';SUB.pd=''}else SUB.pd='desc'}else{SUB.ps=k;SUB.pd='asc'}render()},
   pSortDir:()=>{SUB.pd=SUB.pd==='desc'?'asc':'desc';render()},
   pfClear:()=>{SUB.pf={};render()},
@@ -1156,9 +1172,11 @@ document.addEventListener('input',e=>{const t=e.target;
   if(t.id==='mq'){SUB.mq=t.value;clearTimeout(t._t);t._t=setTimeout(render,250);return}
   if(t.id==='nq'){SUB.nq=t.value;clearTimeout(t._t);t._t=setTimeout(render,250);return}
   if(t.id==='pq'){filterPeople(t.value);return}if(t.id==='poolQ'){filterPool(t.value);return}
+  if(t.dataset.run&&t.tagName!=='SELECT'){ttSet(t);return}
   if(t.dataset.o==null||t.tagName==='SELECT'||t.type==='checkbox')return;apply(t);if(t.id==='mbody')updPrev();if(t.id==='ntcBody'){const l=$('#ntcLen');if(l)l.textContent=t.value.length+'자'}
   if(t.dataset.o==='venue.w'){const w=critList().reduce((s,k)=>s+(+R.venue.w[k.id]||0),0);$$('.wsum').forEach(b=>b.outerHTML=wBadge(w))}});
 document.addEventListener('change',e=>{const t=e.target;
+  if(t.dataset&&t.dataset.run){ttSet(t);if(t.dataset.rk==='cell'){const[d,i,n]=t.dataset.run.split('|').map(Number),S=slots(),pg=R.programs.find(x=>x.name&&x.name===t.value.trim());if(pg&&(pg.spaces||[]).length&&!R.tt.places[d+'-'+S[i]]){for(let j=i;j<i+n;j++)R.tt.places[d+'-'+S[j]]=pg.spaces[0];save()}}rr();return}
   if(t.id==='pSortK'){SUB.ps=t.value;SUB.pd=SUB.pd||'asc';render();return}
   if(t.dataset&&t.dataset.pf){SUB.pf=SUB.pf||{};SUB.pf[t.dataset.pf]=t.value;render();return}
   if(t.id==='vFinalSel'){setFinal(t.value);return}
