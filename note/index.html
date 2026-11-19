@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://js.tosspayments.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' data: blob: https://api.github.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://api.open-meteo.com https://api.met.no https://wttr.in https://api.mymemory.translated.net https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.doubleclick.net https://www.google.com https://*.tosspayments.com https://0.peerjs.com wss://0.peerjs.com wss://broker.emqx.io:8084 wss://broker.hivemq.com:8884 https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self' blob:; frame-src 'self' https://www.bskorea.or.kr https://*.tosspayments.com; object-src 'none'; base-uri 'self'; form-action 'self' https://*.tosspayments.com">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>게시판 | 치영의 교회 생활 즐기기 · 포스트잇 메모장</title>
+<meta name="description" content="코르크 게시판에 포스트잇 메모를 붙여요. 색깔 10가지, 굵게·밑줄·취소선·기울임, 무료 한글 폰트와 글자색으로 꾸미는 개인 메모장.">
+<link rel="canonical" href="https://zidane7-creator.github.io/nanum-boardgame/note/">
+<meta property="og:title" content="게시판 — 치영의 교회 생활 즐기기">
+<meta property="og:description" content="포스트잇을 붙이는 나만의 메모 게시판">
+<meta property="og:image" content="https://zidane7-creator.github.io/nanum-boardgame/assets/og.jpg">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📌</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Nanum+Pen+Script&family=Gaegu:wght@400;700&family=Do+Hyeon&family=Black+Han+Sans&family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@400;700&family=Hi+Melody&family=Poor+Story&family=Gamja+Flower&family=Sunflower:wght@300;500&family=Dongle&family=Yeon+Sung&display=swap" rel="stylesheet">
+<script src="../assets/jua.js"></script>
+<style>
+:root{--ink:#3b2a20;--cream:#fffaf0;--line:#e3d6c2;--accent:#e8503a;--muted:#7a6a5c}
+*{box-sizing:border-box}
+html,body{margin:0;color:var(--ink);background:#efe3cf;font:16px/1.5 "Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif}
+.j,h1,h2,.top{font-family:"Jua","Apple SD Gothic Neo",sans-serif;font-weight:normal}
+button{font:inherit;color:var(--ink);border:2px solid var(--ink);background:var(--cream);border-radius:12px;padding:6px 12px;cursor:pointer;box-shadow:0 3px 0 var(--ink)}
+button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+button.pri{background:var(--accent);color:#fff}button.sm{padding:3px 9px;font-size:14px;box-shadow:0 2px 0 var(--ink)}
+select,input{font:inherit;color:var(--ink);border:2px solid #cdbda6;border-radius:10px;padding:4px 8px;background:#fff}
+.top{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:10px;padding:calc(8px + env(safe-area-inset-top,0px)) 14px 8px;background:rgba(255,255,255,.95);border-bottom:4px solid #f5b82e}
+.top a{color:var(--ink);text-decoration:none;border:2px solid var(--ink);border-radius:14px;padding:3px 10px;background:var(--cream)}.top .ttl{flex:1;font-size:19px}
+main{max-width:1200px;margin:0 auto;padding:12px 12px 80px}
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}.sp{flex:1}.hint{font-size:14px;color:var(--muted)}
+/* 코르크 게시판 */
+.board{position:relative;min-height:70vh;border:14px solid #8a5a32;border-radius:14px;box-shadow:inset 0 0 30px rgba(0,0,0,.25),0 6px 0 rgba(0,0,0,.15);
+  background:radial-gradient(circle at 20% 30%,rgba(255,255,255,.14) 0 2px,transparent 3px) 0 0/18px 18px,radial-gradient(circle at 70% 60%,rgba(0,0,0,.12) 0 2px,transparent 3px) 0 0/23px 23px,#c8955c;overflow:hidden;touch-action:pan-y}
+.board .empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.4);font-family:Jua,sans-serif;font-size:22px;text-align:center;padding:20px}
+.note{position:absolute;width:176px;min-height:150px;max-height:200px;padding:22px 12px 12px;box-shadow:2px 6px 10px rgba(0,0,0,.28);cursor:grab;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:none;transition:box-shadow .15s}
+.note:hover{box-shadow:3px 10px 16px rgba(0,0,0,.32)}
+.note.drag{cursor:grabbing;z-index:20;box-shadow:6px 16px 24px rgba(0,0,0,.35)}
+.note .pin{position:absolute;top:4px;left:50%;transform:translateX(-50%);font-size:20px;filter:drop-shadow(0 2px 1px rgba(0,0,0,.3))}
+.note .body{font-size:15px;line-height:1.45;word-break:break-word;pointer-events:none;max-height:150px;overflow:hidden;-webkit-mask-image:linear-gradient(#000 80%,transparent)}
+.note .when{position:absolute;right:8px;bottom:4px;font-size:11px;color:rgba(0,0,0,.45)}
+@media (max-width:600px){.note{width:140px;min-height:120px;max-height:160px}.note .body{font-size:13px;max-height:110px}}
+/* 창 */
+.modal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:12px}
+.sheet{width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:6px;box-shadow:0 12px 40px rgba(0,0,0,.4);padding:16px 18px 14px;position:relative}
+.sheet .view{min-height:220px;font-size:18px;line-height:1.6;word-break:break-word}
+.sheet .ed{min-height:240px;font-size:18px;line-height:1.6;outline:none;border:2px dashed rgba(0,0,0,.2);border-radius:8px;padding:10px;background:rgba(255,255,255,.35);word-break:break-word}
+.sheet .ed:empty:before{content:attr(data-ph);color:rgba(0,0,0,.35)}
+.tools{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin-bottom:8px}
+.tools button{padding:2px 9px;min-width:34px;box-shadow:0 2px 0 var(--ink);font-size:15px;background:#fff}
+.tools button.on{background:var(--ink);color:#fff}
+.tools select{font-size:14px;padding:3px 4px}
+.sw{width:28px;height:28px;border-radius:50%;border:2px solid rgba(0,0,0,.25);cursor:pointer;padding:0;box-shadow:none}
+.sw.on{outline:3px solid var(--ink);outline-offset:1px}
+.cols{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tc{width:22px;height:22px;border-radius:6px;border:2px solid #fff;outline:1px solid rgba(0,0,0,.3);cursor:pointer;padding:0;box-shadow:none}
+.foot{display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#222;color:#fff;padding:10px 18px;border-radius:14px;opacity:0;transition:.25s;z-index:200;pointer-events:none}.toast.show{opacity:1}
+</style>
+</head><body>
+<div class="top"><a href="../">← 목장</a><span class="ttl">📌 게시판</span></div>
+<main>
+ <div class="bar"><button class="pri" id="add">📝 포스트잇 붙이기</button><span class="hint" id="cnt"></span><span class="sp"></span><select id="sort"><option value="">붙인 자리 그대로</option><option value="new">🕒 최신순으로 정리</option><option value="color">🎨 색깔별로 정리</option></select></div>
+ <div class="board" id="board"></div>
+ <p class="hint">포스트잇을 누르면 메모를 보고 고치거나 지울 수 있어요. 끌어서 원하는 자리로 옮길 수 있어요. 메모는 이 기기에 저장돼요.</p>
+</main>
+<div class="toast" id="toast"></div>
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2000)}
+const COLORS=[['#fff6a5','노랑'],['#ffd8a8','살구'],['#ffc9d6','분홍'],['#f8c8f0','라일락'],['#d9ccff','연보라'],['#c6dcff','하늘'],['#bfeff0','민트'],['#cdf3c2','연두'],['#e8f5a8','라임'],['#f2e6d8','베이지']];
+const FONTS=[['','기본'],['Jua','주아'],['Gowun Batang','고운바탕'],['Gowun Dodum','고운돋움'],['Nanum Pen Script','나눔손글씨 펜'],['Gaegu','개구'],['Hi Melody','하이멜로디'],['Poor Story','푸어스토리'],['Gamja Flower','감자꽃'],['Yeon Sung','연성'],['Dongle','동글'],['Sunflower','해바라기'],['Do Hyeon','도현'],['Black Han Sans','검은고딕'],['Nanum Myeongjo','나눔명조'],['Noto Sans KR','본고딕']];
+const TCOL=['#3b2a20','#000000','#d1342a','#e8711f','#c79a00','#2f8a3c','#1f6fb0','#5b3cc4','#c2318f','#7a7a7a'];
+const SIZES=[['2','작게'],['3','보통'],['4','크게'],['5','더 크게'],['6','아주 크게']];
+const KEY='note-board-v1';let N=[];try{N=JSON.parse(localStorage.getItem(KEY)||'[]')||[]}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(N))}catch(e){toast('저장 공간이 부족해요')}};
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const board=$('#board');
+/* 붙여 넣은 글이나 만든 글에서 안전한 꾸밈만 남겨요 */
+function clean(html){const box=document.createElement('div');box.innerHTML=html;
+  const OK={B:1,STRONG:1,I:1,EM:1,U:1,S:1,STRIKE:1,DEL:1,FONT:1,SPAN:1,DIV:1,P:1,BR:1};
+  const walk=el=>{[...el.childNodes].forEach(n=>{if(n.nodeType===3)return;if(n.nodeType!==1){n.remove();return}
+    if(!OK[n.tagName]){const f=document.createDocumentFragment();while(n.firstChild)f.appendChild(n.firstChild);n.replaceWith(f);walk(el);return}
+    const keep={};if(n.tagName==='FONT'){['color','face','size'].forEach(a=>{const v=n.getAttribute(a);if(v&&/^[#\w\s,'"-]{1,60}$/.test(v))keep[a]=v})}
+    let st='';if(n.style){if(n.style.color)st+='color:'+n.style.color+';';if(n.style.fontFamily)st+='font-family:'+n.style.fontFamily.replace(/[;{}<>]/g,'')+';';if(n.style.fontSize)st+='font-size:'+n.style.fontSize+';';
+      if(n.style.textDecoration||n.style.textDecorationLine)st+='text-decoration:'+(n.style.textDecorationLine||n.style.textDecoration)+';';if(n.style.fontWeight)st+='font-weight:'+n.style.fontWeight+';';if(n.style.fontStyle)st+='font-style:'+n.style.fontStyle+';'}
+    [...n.attributes].forEach(a=>n.removeAttribute(a.name));for(const a in keep)n.setAttribute(a,keep[a]);if(st)n.setAttribute('style',st);walk(n)})};
+  walk(box);return box.innerHTML.trim()}
+const plain=h=>{const d=document.createElement('div');d.innerHTML=h;return d.textContent.trim()};
+const when=t=>{const d=new Date(t);return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`};
+
+function layout(mode){const W=board.clientWidth-20,w=board.clientWidth<620?150:186,cols=Math.max(1,Math.floor(W/w));
+  let L=N.slice();if(mode==='new')L.sort((a,b)=>(b.updated||b.created)-(a.updated||a.created));if(mode==='color')L.sort((a,b)=>COLORS.findIndex(c=>c[0]===a.color)-COLORS.findIndex(c=>c[0]===b.color));
+  L.forEach((n,i)=>{n.x=(10+(i%cols)*w)/board.clientWidth*100;n.y=14+Math.floor(i/cols)*(board.clientWidth<620?175:215);n.rot=(Math.random()*6-3)});save();draw()}
+function draw(){$('#cnt').textContent=N.length?`포스트잇 ${N.length}장`:'';
+  let maxY=0;board.innerHTML=N.length?'':'<div class="empty">📌<br>아직 붙인 포스트잇이 없어요<br><span style="font-size:16px">‘📝 포스트잇 붙이기’를 눌러 첫 메모를 붙여 보세요</span></div>';
+  N.forEach((n,i)=>{const el=document.createElement('div');el.className='note';el.dataset.id=n.id;el.style.background=n.color;el.style.left=`calc(${n.x}% )`;el.style.top=n.y+'px';el.style.transform=`rotate(${n.rot||0}deg)`;el.style.zIndex=1+i;
+    el.innerHTML=`<span class="pin">📌</span><div class="body">${n.html||'<span style="opacity:.5">(빈 메모)</span>'}</div><span class="when">${when(n.updated||n.created)}</span>`;board.appendChild(el);maxY=Math.max(maxY,n.y+230);bindNote(el,n)});
+  board.style.minHeight=Math.max(window.innerHeight*.7,maxY)+'px'}
+function bindNote(el,n){el.onpointerdown=e=>{if(e.button)return;const sx=e.clientX,sy=e.clientY,bx=board.getBoundingClientRect(),ox=n.x/100*board.clientWidth,oy=n.y;let moved=false;
+  el.setPointerCapture(e.pointerId);
+  el.onpointermove=ev=>{const dx=ev.clientX-sx,dy=ev.clientY-sy;if(!moved&&Math.hypot(dx,dy)<6)return;moved=true;el.classList.add('drag');
+    const x=Math.min(Math.max(0,ox+dx),board.clientWidth-el.offsetWidth),y=Math.max(0,oy+dy);el.style.left=x+'px';el.style.top=y+'px';n.x=x/board.clientWidth*100;n.y=y};
+  el.onpointerup=()=>{el.onpointermove=el.onpointerup=null;el.classList.remove('drag');
+    if(moved){N=N.filter(x=>x!==n);N.push(n);save();draw();$('#sort').value=''}else openView(n)}}}
+
+/* ---------- 보기 ---------- */
+function modal(html,bg){const m=document.createElement('div');m.className='modal';m.innerHTML=`<div class="sheet" style="background:${bg}">${html}</div>`;document.body.appendChild(m);
+  m.addEventListener('pointerdown',e=>{if(e.target===m)m.dataset.down=1});m.addEventListener('click',e=>{if(e.target===m&&m.dataset.down)close(m)});return m}
+function close(m){m.remove()}
+function openView(n){const m=modal(`<div class="view">${n.html||'<span style="opacity:.5">(빈 메모)</span>'}</div><div class="foot"><span class="hint">${when(n.created)} 붙임${n.updated&&n.updated!==n.created?' · '+when(n.updated)+' 고침':''}</span><span class="sp"></span><button class="sm" id="del">🗑 지우기</button><button class="sm" id="edit">✏️ 고치기</button><button class="sm pri" id="cls">닫기</button></div>`,n.color);
+  m.querySelector('#cls').onclick=()=>close(m);m.querySelector('#edit').onclick=()=>{close(m);openEdit(n)};
+  m.querySelector('#del').onclick=()=>{if(!confirm('이 포스트잇을 떼어 낼까요? 되돌릴 수 없어요.'))return;N=N.filter(x=>x!==n);save();draw();close(m);toast('포스트잇을 떼어 냈어요')}}
+/* ---------- 쓰기·고치기 ---------- */
+function openEdit(n){const isNew=!n;let color=n?n.color:COLORS[Math.floor(Math.random()*COLORS.length)][0];
+  const m=modal(`<div class="cols" style="margin-bottom:8px"><b class="j" style="margin-right:4px">메모지 색</b>${COLORS.map(([c,l])=>`<button class="sw ${c===color?'on':''}" data-c="${c}" title="${l}" style="background:${c}"></button>`).join('')}</div>
+   <div class="tools"><button data-cmd="bold" title="굵게"><b>가</b></button><button data-cmd="italic" title="기울임"><i>가</i></button><button data-cmd="underline" title="밑줄"><u>가</u></button><button data-cmd="strikeThrough" title="취소선"><s>가</s></button>
+    <select id="font" title="글꼴">${FONTS.map(([f,l])=>`<option value="${esc(f)}" style="font-family:'${esc(f)}'">${l}</option>`).join('')}</select>
+    <select id="size" title="글자 크기"><option value="">크기</option>${SIZES.map(([v,l])=>`<option value="${v}">${l}</option>`).join('')}</select>
+    <button data-cmd="removeFormat" title="꾸밈 지우기">⌫ 꾸밈 지우기</button></div>
+   <div class="cols" style="margin-bottom:8px"><span class="hint">글자색</span>${TCOL.map(c=>`<button class="tc" data-tc="${c}" title="${c}" style="background:${c}"></button>`).join('')}</div>
+   <div class="ed" id="ed" contenteditable="true" data-ph="여기에 메모를 적어요…">${n?n.html:''}</div>
+   <div class="foot"><span class="hint">글자를 고른 뒤 꾸밈 버튼을 눌러요</span><span class="sp"></span><button class="sm" id="cancel">취소</button><button class="pri" id="ok">📌 ${isNew?'붙이기':'고친 내용 저장'}</button></div>`,color);
+  const sheet=m.querySelector('.sheet'),ed=m.querySelector('#ed');
+  try{document.execCommand('styleWithCSS',false,false)}catch(_){}
+  let saved=null;const keep=()=>{const s=getSelection();if(s.rangeCount&&ed.contains(s.anchorNode))saved=s.getRangeAt(0).cloneRange()};
+  const back=()=>{ed.focus();if(saved){const s=getSelection();s.removeAllRanges();s.addRange(saved)}};
+  ed.addEventListener('keyup',keep);ed.addEventListener('mouseup',keep);ed.addEventListener('input',()=>{keep();state()});document.addEventListener('selectionchange',function sc(){if(!document.body.contains(ed)){document.removeEventListener('selectionchange',sc);return}keep();state()});
+  const state=()=>m.querySelectorAll('[data-cmd]').forEach(b=>{if(b.dataset.cmd==='removeFormat')return;let on=false;try{on=document.queryCommandState(b.dataset.cmd)}catch(_){}b.classList.toggle('on',on)});
+  m.querySelectorAll('[data-cmd]').forEach(b=>{b.onmousedown=e=>e.preventDefault();b.onclick=()=>{back();document.execCommand(b.dataset.cmd,false,null);keep();state()}});
+  m.querySelectorAll('[data-tc]').forEach(b=>{b.onmousedown=e=>e.preventDefault();b.onclick=()=>{back();document.execCommand('foreColor',false,b.dataset.tc);keep()}});
+  m.querySelector('#font').onchange=e=>{back();if(e.target.value)document.execCommand('fontName',false,e.target.value);else document.execCommand('fontName',false,'inherit');keep();e.target.value=e.target.value};
+  m.querySelector('#size').onchange=e=>{back();if(e.target.value)document.execCommand('fontSize',false,e.target.value);keep();e.target.value=''};
+  m.querySelectorAll('[data-c]').forEach(b=>{b.onmousedown=e=>e.preventDefault();b.onclick=()=>{color=b.dataset.c;sheet.style.background=color;m.querySelectorAll('[data-c]').forEach(x=>x.classList.toggle('on',x===b))}});
+  ed.addEventListener('paste',e=>{e.preventDefault();const t=(e.clipboardData||window.clipboardData).getData('text/plain');document.execCommand('insertText',false,t)});
+  m.querySelector('#cancel').onclick=()=>{if(ed.innerHTML!==(n?n.html:'')&&!confirm('적은 내용을 버릴까요?'))return;close(m)};
+  m.querySelector('#ok').onclick=()=>{const html=clean(ed.innerHTML);if(!plain(html)){toast('메모를 적어 주세요');ed.focus();return}const now=Date.now();
+    if(isNew){const w=board.clientWidth,cw=board.clientWidth<620?150:186;N.push({id:uid(),html,color,created:now,updated:now,x:Math.random()*Math.max(1,(w-cw-20))/w*100+1,y:14+Math.random()*Math.max(40,Math.min(board.clientHeight-240,360)),rot:Math.random()*8-4})}
+    else{n.html=html;n.color=color;n.updated=now}save();draw();close(m);toast(isNew?'📌 포스트잇을 붙였어요':'고쳤어요')};
+  setTimeout(()=>{ed.focus();const r=document.createRange();r.selectNodeContents(ed);r.collapse(false);const s=getSelection();s.removeAllRanges();s.addRange(r)},50)}
+$('#add').onclick=()=>openEdit(null);
+$('#sort').onchange=e=>{if(e.target.value)layout(e.target.value)};
+addEventListener('resize',()=>{clearTimeout(window.__rz);window.__rz=setTimeout(draw,150)});
+draw();
+})();
+</script>
+<script src="../assets/scene.js?v=20261116d"></script>
+<script src="../assets/home.js?v=20261118"></script>
+</body></html>
