@@ -184,7 +184,7 @@ function makeCourse(M){const list=[];let m=rnd(10,16),id=0;const tot=Object.valu
     if(o.full){ob.t0=0;ob.t1=1}
     else if(o.flat){ob.len=rnd(3.5,8);ob.dep=rnd(.07,.14);ob.tc=rnd(ob.dep/2,1-ob.dep/2);ob.t0=ob.tc-ob.dep/2;ob.t1=ob.tc+ob.dep/2}
     else{const w=rnd(o.span[0],o.span[1]);ob.tc=rnd(w/2+.02,1-w/2-.02);ob.t0=ob.tc-w/2;ob.t1=ob.tc+w/2}
-    list.push(ob);m+=rnd(5,24)*(Math.random()<.18?.35:1)}  // 간격이 들쭉날쭉해요
+    list.push(ob);m+=Math.max(2.5,rnd(6,26)*(1-.7*Math.pow(m/M,1.2))*(Math.random()<.18?.4:1))}  // 들쭉날쭉, 결승선에 가까울수록 촘촘해져요
   return list}
 function startRace(r){
   stopRace();
