@@ -149,14 +149,14 @@ function renderSetup(){stopRace();
     <span class="lbl">중복</span>
     <label class="chk"><input type="checkbox" id="dedup" ${SET.dedup?"checked":""}><span><b>중복 제거 (한 사람은 한 번만 상품 받기)</b><br><span class="hint">같은 사람의 양이 여러 번 순위에 들면 더 높은 순위 하나만 남기고, 다음 사람이 그 자리를 이어받아요.</span></span></label>
     <span class="lbl">경주 거리</span>
-    <div class="row"><select id="dist">${DISTS.map(m=>`<option value="${m}" ${+SET.dist===m?"selected":""}>${m}m</option>`).join("")}</select><span class="hint" id="distHint">보통 ${fmtSec(durOf(+SET.dist||300)*3.3)} 걸려요 (돌발 상황에 따라 달라요)</span></div>
+    <div class="row"><select id="dist">${DISTS.map(m=>`<option value="${m}" ${+SET.dist===m?"selected":""}>${m}m</option>`).join("")}</select><span class="hint" id="distHint">보통 ${fmtSec(durOf(+SET.dist||300)*5)} 걸려요 (돌발 상황에 따라 달라요)</span></div>
   </div>
   <div class="center"><button class="big pri" id="go">🏁 출발!</button></div>`;
   const prev=()=>{const r=parse($("#txt").value);$("#prev").innerHTML=r.total?`<div class="chips">${r.people.map(p=>`<span class="chip">${sheepSVG(p.color,30)}${esc(p.name)} × ${p.count}</span>`).join("")}</div><div class="tot">총 ${r.people.length}명 · 양 ${r.total}마리${r.total>MAXN?` <span style="color:var(--accent)">(최대 ${MAXN}마리까지 달릴 수 있어요)</span>`:""}</div>`:`<div class="hint" style="margin-top:8px">아직 양이 없어요</div>`;return r};
   prev();
   let tm;$("#txt").oninput=()=>{SET.txt=$("#txt").value;saveSet();prev();clearTimeout(tm);tm=setTimeout(()=>{if(R||!$("#pod"))return;const r=parse(SET.txt),mp=Math.max(1,Math.min(r.total||1,30));if($("#pod").options.length!==mp){const a=document.activeElement===$("#txt"),pos=$("#txt").selectionStart;renderSetup();if(a){$("#txt").focus();$("#txt").setSelectionRange(pos,pos)}}},700)};
   $$("[data-dir]").forEach(b=>b.onclick=()=>{SET.dir=b.dataset.dir;saveSet();$$("[data-dir]").forEach(x=>x.classList.toggle("on",x===b))});
-  $("#dist").onchange=e=>{SET.dist=+e.target.value;saveSet();$("#distHint").textContent=`보통 ${fmtSec(durOf(SET.dist)*3.3)} 걸려요 (돌발 상황에 따라 달라요)`};
+  $("#dist").onchange=e=>{SET.dist=+e.target.value;saveSet();$("#distHint").textContent=`보통 ${fmtSec(durOf(SET.dist)*5)} 걸려요 (돌발 상황에 따라 달라요)`};
   $("#pod").onchange=e=>{SET.pod=+e.target.value;saveSet();renderSetup()};
   $("#prizes").oninput=e=>{const i=e.target.dataset.pz;if(i!=null){SET.prizes[+i]=e.target.value;saveSet()}};
   $("#dedup").onchange=e=>{SET.dedup=e.target.checked;saveSet()};
@@ -299,7 +299,8 @@ function step(dt){const t=R.t,base=1/R.D,M=R.M;
     maybeEvent(s,t,dt);
     if(s.ev){const e=s.ev;
       if(t>=e.until){if(e.type==="dq"||e.type==="cliff"){s.dq=true;s.ev=null;addTick(s);return}if(e.long){const sm=s.p*R.M;R.obs.forEach(o=>{if(o.m>sm)s.passed.delete(o.id)});s.tried=0;s.cool=t+2}s.ev=null;s.hole=null}
-      else{if(e.type==="back"){if(e.long){s.p=Math.max(e.backTo,s.p-base*1.4*dt);if(s.p<=e.backTo)e.until=t}else s.p=Math.max(0,s.p-base*.55*dt);s.leg+=dt*10}else if(e.type==="dq"){s.leg+=dt*12}else if(e.type==="fight"){s.leg+=dt*16}return}}
+      else{if(e.type==="back"&&!e.c10){e.c10=true;if(Math.random()<.5&&s.p>.1){e.long=true;e.until=Infinity;e.backTo=.1;cast(`↩️ ${sName(s)} 양이 멈추지 않고 10% 지점까지 거꾸로 달려가요!`)}}
+        if(e.type==="back"){if(e.long){s.p=Math.max(e.backTo,s.p-base*1.4*dt);if(s.p<=e.backTo)e.until=t}else s.p=Math.max(0,s.p-base*.55*dt);s.leg+=dt*10}else if(e.type==="dq"){s.leg+=dt*12}else if(e.type==="fight"){s.leg+=dt*16}return}}
     // 균형: 70%를 넘어 2등보다 압도적으로(거리의 10%·최소 20m) 앞서면, 한 번 60% 확률로 뒤로 500m
     if(!s.ld&&s.p>=.7&&!s.ev){const rest=R.sheep.filter(o=>o!==s&&!o.dq&&!o.done);if(rest.length){const sec=Math.max(...rest.map(o=>o.p));
       if((s.p-sec)*M>=Math.max(20,M*.1)){s.ld=true;if(Math.random()<.6){startEv(s,"back",t);s.ev.long=true;s.ev.until=Infinity;s.ev.backTo=Math.max(0,s.p-500/M);cast(`🌀 ${sName(s)} 양이 너무 앞서 나가다 정신이 쏙 빠져서 뒤로 500m를 달려가요!`);return}}}}
