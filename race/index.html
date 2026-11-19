@@ -213,16 +213,17 @@ function startRace(r){
   raf=requestAnimationFrame(loop);
 }
 /* 📐 낮은 앵글 원근: t=0 먼 쪽, t=1 가까운 쪽 */
-const kOf=t=>1/(1.9-.9*t);
+const kOf=t=>1/(1.54-.54*t);
 function layout(){const st=$("#stage"),cv=$("#cv");if(!st||!cv||!R)return;const W=st.clientWidth,H=st.clientHeight,n=R.sheep.length;
   const hud=st.querySelector(".hud"),hb=hud?hud.offsetHeight:90;
   const yFar=hb+Math.max(70,H*.1),yNear=H-44;
   const rN=Math.max(20,Math.min(46,(yNear-yFar)/(Math.sqrt(n)*2.1)));
   const dpr=Math.min(2,window.devicePixelRatio||1);cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+"px";cv.style.height=H+"px";
   const ppm=rN*.8,kA=kOf(-.08),kB=kOf(1.08);
-  Object.assign(R,{W,H,dpr,rN,ppm,yFar,yNear,kA,kB,camMin:W*.38,camMax:R.M*ppm+W*.22});draw()}
+  const span=yNear-yFar,yF2=yFar+span*.24; // 주로 폭을 60%로 좁혀 화면 가운데쯤에
+  Object.assign(R,{W,H,dpr,rN,ppm,yFar:yF2,yNear:yF2+span*.6,kA,kB,camMin:W*.38,camMax:R.M*ppm+W*.22});draw()}
 const Yt=t=>R.yFar+Math.pow(Math.max(0,(t+.08)/1.16),1.3)*(R.yNear-R.yFar);
-const Xm=(m,t)=>R.W/2+(m*R.ppm-R.camC)*kOf(t)+(1.08-t)*R.W*.16; // 비스듬한 시점
+const Xm=(m,t)=>R.W/2+(m*R.ppm-R.camC)*kOf(t)+(1.08-t)*R.W*.096; // 비스듬한 시점
 const Pt=(m,t,h)=>[Xm(m,t),Yt(t)-(h||0)*R.ppm*1.8*kOf(t)];
 function loop(now){if(!R)return;const rdt=Math.min(.05,(now-R.last)/1000);
   if(R.started&&!R.over){const dt=rdt*R.speed;R.t+=dt;step(dt)}R.last=now;
