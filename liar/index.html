@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://js.tosspayments.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' data: blob: https://api.github.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://api.open-meteo.com https://api.met.no https://wttr.in https://api.mymemory.translated.net https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.doubleclick.net https://www.google.com https://*.tosspayments.com https://0.peerjs.com wss://0.peerjs.com wss://broker.emqx.io:8084 wss://broker.hivemq.com:8884 https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self' blob:; frame-src 'self' https://www.bskorea.or.kr https://*.tosspayments.com; object-src 'none'; base-uri 'self'; form-action 'self' https://*.tosspayments.com">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>라이어게임 | 치영의 교회 생활 즐기기 · 라이어게임·바보라이어게임</title>
+<meta name="description" content="QR로 초대해 휴대폰으로 하는 라이어게임과 바보라이어게임. 운동·음식·과일·나라·직업·인물·교회·성경 8개 분야, 분야마다 제시어 40개.">
+<link rel="canonical" href="https://zidane7-creator.github.io/nanum-boardgame/liar/">
+<meta property="og:title" content="라이어게임 — 치영의 교회 생활 즐기기">
+<meta property="og:description" content="누가 라이어일까? 라이어게임 · 바보라이어게임">
+<meta property="og:image" content="https://zidane7-creator.github.io/nanum-boardgame/assets/og.jpg">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤥</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<script src="../assets/jua.js"></script>
+<style>
+:root{--ink:#3b2a20;--cream:#fffaf0;--line:#e3d6c2;--accent:#e8503a;--gold:#f5b82e;--green:#3f9a55;--blue:#2f6fb0;--muted:#7a6a5c;--soft:#f6efe2;--red:#c8322a;--pur:#7a4fb0}
+*{box-sizing:border-box}
+html,body{margin:0;color:var(--ink);background:#f7f1e6;font:16px/1.55 "Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif}
+h1,h2,h3,.j,.top{font-family:"Jua","Apple SD Gothic Neo",sans-serif;font-weight:normal}
+button{font:inherit;color:var(--ink);border:2px solid var(--ink);background:var(--cream);border-radius:14px;padding:8px 14px;cursor:pointer;box-shadow:0 3px 0 var(--ink)}
+button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}button:disabled{opacity:.45;cursor:default;transform:none}
+button.pri{background:var(--accent);color:#fff}button.ok{background:var(--green);color:#fff}button.go{background:var(--blue);color:#fff}
+button.sm{padding:3px 10px;font-size:14px;border-radius:10px;box-shadow:0 2px 0 var(--ink)}button.big{font-size:21px;padding:12px 24px;font-family:Jua,sans-serif}
+input,select{font:inherit;color:var(--ink);border:2px solid #cdbda6;border-radius:12px;padding:7px 10px;background:#fff;min-width:0;max-width:100%}
+.top{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:10px;padding:calc(8px + env(safe-area-inset-top,0px)) 14px 8px;background:rgba(255,255,255,.95);border-bottom:4px solid var(--gold)}
+.top a{color:var(--ink);text-decoration:none;border:2px solid var(--ink);border-radius:14px;padding:3px 10px;background:var(--cream)}.top .ttl{flex:1;font-size:19px}
+main{max-width:780px;margin:0 auto;padding:14px 12px 90px}
+.card{background:#fff;border:3px solid var(--ink);border-radius:20px;padding:16px;margin-bottom:14px;box-shadow:0 5px 0 rgba(0,0,0,.12)}
+.card h2{margin:0 0 8px;font-size:23px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.sp{flex:1}.hint{font-size:14px;color:var(--muted)}.center{text-align:center}
+.big-ico{font-size:62px;line-height:1.1}
+.pick{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.pick button{display:flex;flex-direction:column;align-items:flex-start;text-align:left;background:#fff;border-color:#cdbda6;box-shadow:0 3px 0 #cdbda6}
+.pick button b{font-family:Jua,sans-serif;font-weight:normal;font-size:18px}.pick button span{font-size:13px;color:var(--muted)}
+.pick button.on{background:#fff4e0;border-color:var(--ink);box-shadow:0 3px 0 var(--ink)}
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
+.cats button{font-family:Jua,sans-serif;font-size:18px;background:#fff}.cats button.on{background:var(--gold)}
+.pl{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
+.pp{border:2px solid var(--ink);border-radius:14px;padding:9px 6px;background:#fffdf7;text-align:center;font-family:Jua,sans-serif;font-size:19px;position:relative}
+.pp.pick{cursor:pointer}.pp.pick:hover{background:#fff1cc}.pp.mine{outline:4px solid var(--gold)}.pp.turn{background:#e3efff;border-color:var(--blue)}.pp.liar{background:#ffe0dc;border-color:var(--red)}
+.pp .tag{display:block;font-family:inherit;font-size:12px;opacity:.8}.pp .cnt{position:absolute;top:-8px;right:-6px;background:var(--red);color:#fff;border-radius:999px;font-size:13px;padding:0 7px}
+.word{border-radius:22px;padding:22px 16px;text-align:center;color:#fff;background:linear-gradient(#2f6fb0,#1c3f6a)}
+.word.liar{background:linear-gradient(#c8322a,#7a1d18)}
+.word .w{font-family:Jua,sans-serif;font-size:46px;line-height:1.2}
+.talk{display:flex;flex-direction:column;gap:6px;max-height:340px;overflow:auto}
+.talk .t{background:var(--soft);border-radius:14px;padding:6px 10px}.talk .t b{font-family:Jua,sans-serif;font-weight:normal;color:var(--blue)}
+.qr{background:#fff;padding:8px;border-radius:12px;display:inline-block}.qr svg{width:170px;height:170px;display:block}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#222;color:#fff;padding:10px 18px;border-radius:14px;opacity:0;transition:.25s;z-index:200;pointer-events:none;max-width:90vw;text-align:center}.toast.show{opacity:1}
+.badge{display:inline-block;border-radius:10px;padding:0 8px;font-size:13px;background:var(--soft);border:1px solid var(--line)}
+.ann{font-family:Jua,sans-serif;font-size:24px;text-align:center;padding:12px;border-radius:16px;background:#fff6d8;border:2px solid var(--gold);margin-bottom:12px}
+.win{font-family:Jua,sans-serif;font-size:36px}
+</style>
+</head><body>
+<div class="top"><a href="../">← 목장</a><span class="ttl">🤥 라이어게임</span></div>
+<main id="app"><div class="card center">불러오는 중…</div></main>
+<div class="toast" id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js" integrity="sha384-8FWZA6BGMXhsfO+BLtrJK0We6gg5o1JyO8xQm6peWDEUs17ACA5ziE/NIAkl9z2k" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js" integrity="sha384-u4uqeACkFcoKl57rBQJHVGDd1pqhW4w8X3WjTu1ZksPdxoLqdt34jpoNkJisE25W" crossorigin="anonymous"></script>
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clip=(s,n)=>String(s??'').replace(/[\u0000-\u001f]/g,' ').trim().slice(0,n);
+const rnd=n=>{const a=new Uint32Array(1);crypto.getRandomValues(a);return Math.floor(a[0]/4294967296*n)};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
+let tt;function toast(m,ms){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),ms||2400)}
+const app=$('#app');
+/* 분야마다 제시어 40개 (비슷한 것끼리 4개씩 묶음 — 바보라이어는 같은 묶음의 다른 단어를 받아요) */
+const W={
+ 운동:[['축구','야구','농구','배구'],['테니스','배드민턴','탁구','스쿼시'],['수영','다이빙','서핑','조정'],['스키','스노보드','스케이트','컬링'],['태권도','유도','복싱','레슬링'],['골프','당구','볼링','양궁'],['마라톤','등산','사이클','철인3종'],['요가','필라테스','에어로빅','줌바'],['펜싱','검도','씨름','아이스하키'],['줄넘기','피구','발야구','족구']],
+ 음식:[['김치찌개','된장찌개','부대찌개','순두부찌개'],['짜장면','짬뽕','탕수육','마라탕'],['피자','햄버거','핫도그','치킨'],['떡볶이','순대','튀김','어묵'],['비빔밥','김밥','볶음밥','주먹밥'],['불고기','갈비','삼겹살','닭갈비'],['라면','우동','냉면','칼국수'],['초밥','돈가스','라멘','카레'],['파스타','스테이크','리조또','샐러드'],['삼계탕','설렁탕','갈비탕','곰탕']],
+ 과일:[['사과','배','복숭아','자두'],['딸기','블루베리','라즈베리','체리'],['수박','참외','멜론','파파야'],['바나나','파인애플','망고','코코넛'],['귤','오렌지','한라봉','자몽'],['포도','샤인머스캣','청포도','건포도'],['감','곶감','홍시','대추'],['키위','용과','패션프루트','리치'],['레몬','라임','유자','석류'],['밤','호두','땅콩','아몬드']],
+ 나라:[['한국','일본','중국','몽골'],['미국','캐나다','멕시코','쿠바'],['영국','프랑스','독일','이탈리아'],['스페인','포르투갈','그리스','네덜란드'],['브라질','아르헨티나','칠레','페루'],['인도','태국','베트남','필리핀'],['이집트','이스라엘','튀르키예','사우디아라비아'],['호주','뉴질랜드','피지','파푸아뉴기니'],['러시아','우크라이나','폴란드','핀란드'],['케냐','남아프리카공화국','나이지리아','에티오피아']],
+ 직업:[['의사','간호사','약사','수의사'],['선생님','교수','학원강사','유치원교사'],['경찰관','소방관','군인','경호원'],['요리사','제빵사','바리스타','소믈리에'],['가수','배우','개그맨','아나운서'],['변호사','판사','검사','회계사'],['프로그래머','디자이너','유튜버','웹툰작가'],['농부','어부','광부','목수'],['비행기 조종사','승무원','버스 기사','택배 기사'],['목사','선교사','전도사','지휘자']],
+ 인물:[['세종대왕','이순신','신사임당','유관순'],['아인슈타인','에디슨','뉴턴','갈릴레이'],['모차르트','베토벤','바흐','쇼팽'],['레오나르도 다빈치','피카소','고흐','미켈란젤로'],['손흥민','김연아','박지성','류현진'],['스티브 잡스','빌 게이츠','일론 머스크','마크 저커버그'],['링컨','워싱턴','처칠','간디'],['마더 테레사','슈바이처','나이팅게일','헬렌 켈러'],['셰익스피어','안데르센','톨스토이','윤동주'],['방탄소년단','아이유','싸이','블랙핑크']],
+ 교회:[['예배','기도','찬양','헌금'],['성경공부','큐티','설교','간증'],['주보','헌금봉투','찬송가','성경책'],['목사님','장로님','권사님','집사님'],['성가대','찬양팀','주일학교','청년부'],['세례','성찬식','부활절','성탄절'],['수련회','부흥회','여름성경학교','선교여행'],['강대상','십자가','종탑','세례대'],['새벽기도','금요철야','수요예배','구역예배'],['전도','심방','봉사','교제']],
+ 성경:[['아브라함','이삭','야곱','요셉'],['모세','여호수아','갈렙','아론'],['다윗','솔로몬','사울','사무엘'],['엘리야','엘리사','이사야','예레미야'],['베드로','요한','야고보','안드레'],['바울','바나바','디모데','실라'],['노아의 방주','바벨탑','홍해','여리고성'],['마리아','마르다','룻','에스더'],['다니엘','요나','삼손','기드온'],['오병이어','물 위를 걸으심','가나 혼인잔치','나사로']]};
+const CAT_ICO={운동:'⚽',음식:'🍜',과일:'🍎',나라:'🌏',직업:'👩‍⚕️',인물:'🧑',교회:'⛪',성경:'📖'};
+const BROKERS=["wss://broker.emqx.io:8084/mqtt","wss://broker.hivemq.com:8884/mqtt"];
+const params=new URLSearchParams(location.search);
+let ROOM=(params.get('room')||params.get('host')||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6);
+const HOSTING=!!params.get('host');
+const base=()=>'chiyoung-liar/v1/'+ROOM;
+function mqttOpen(url,ms){return new Promise(res=>{if(typeof mqtt=='undefined')return res(null);let done=false;
+  const cl=mqtt.connect(url,{connectTimeout:ms,reconnectPeriod:3000,clientId:'lr'+Math.random().toString(36).slice(2,12)});
+  cl.on('connect',()=>{if(!done){done=true;res(cl)}});setTimeout(()=>{if(!done){done=true;try{cl.end(true)}catch(e){}res(null)}},ms)})}
+const norm=s=>String(s||'').replace(/[\s·.,!?~'"-]/g,'').toLowerCase();
+
+/* =================== 방장(호스트) 기기 =================== */
+let G=null,isHost=false,MY=null;
+const HK=()=>'liar-host-'+ROOM;
+const saveG=()=>{try{localStorage.setItem(HK(),JSON.stringify(G))}catch(e){}};
+const P=id=>G.players.find(p=>p.id===id);const nm=id=>(P(id)||{}).name||'?';
+function newGame(hostName){ROOM=Array.from({length:4},()=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[rnd(32)]).join('');
+  MY='host-'+Math.random().toString(36).slice(2,8);
+  G={room:ROOM,phase:'lobby',set:{mode:'liar',cat:'음식',talk:'off',rounds:1},players:[{id:MY,name:hostName,host:true}],round:0,score:{liar:0,others:0}};
+  history.replaceState(null,'','?host='+ROOM);isHost=true;saveG();hostNet();render()}
+function viewFor(pid){const me=P(pid),ph=G.phase,R=G.r||{},end=ph==='end';
+  const v={ph,room:G.room,set:G.set,players:G.players.map(p=>({id:p.id,name:p.name})),me:me?{id:me.id,name:me.name,host:!!me.host}:null,score:G.score};
+  if(ph!=='lobby'){v.cat=R.cat;v.mode=R.mode;
+    const liar=pid===R.liar;
+    v.card=R.mode==='liar'?(liar?{liar:true}:{word:R.word}):{word:liar?R.fake:R.word};
+    v.talks=R.talks;v.order=R.order;v.turn=R.order&&R.order[R.ti];v.round=R.rd;v.rounds=G.set.rounds;v.talkMode=R.talkMode}
+  if(ph==='vote'){v.voted=Object.keys(R.votes).length;v.myVote=R.votes[pid]||null;v.cands=R.cands}
+  if(['reveal','guess','end'].includes(ph)){v.votes=R.votes;v.accused=R.accused;v.accusedIsLiar=R.accused===R.liar}
+  if(ph==='guess'){v.liarId=R.liar;if(pid===R.liar)v.youAreLiar=true}
+  if(end){v.result=R.result;v.word=R.word;v.fake=R.fake;v.liarId=R.liar;v.guess=R.guess}
+  return v}
+const CONNS={};
+function send(p,m){const c=CONNS[p.id];if(c)try{c.cl.publish(base()+'/c/'+p.id,JSON.stringify(m),{qos:1})}catch(e){}}
+function broadcast(){G.players.forEach(p=>{if(!p.host)send(p,{t:'state',v:viewFor(p.id)})});saveG();render()}
+function hostNet(){BROKERS.forEach(async url=>{const cl=await mqttOpen(url,8000);if(!cl)return;const b=base();
+  cl.subscribe(b+'/h',{qos:1});cl.on('connect',()=>cl.subscribe(b+'/h',{qos:1}));
+  cl.on('message',(tp,buf)=>{let d;try{d=JSON.parse(buf.toString())}catch(_){return}if(!d||!d.from||!d.m)return;
+    const from=String(d.from).replace(/[^a-z0-9-]/gi,'').slice(0,24);CONNS[from]={cl};hostHandle(from,d.m)});
+  const s=$('#netSt');if(s)s.textContent='📡 초대 받는 중'})}
+function reply(id,m){const c=CONNS[id];if(c)c.cl.publish(base()+'/c/'+id,JSON.stringify(m),{qos:1})}
+function hostHandle(from,m){
+  if(m.t==='join'){const name=clip(m.name,10);let p=P(from);
+    if(!p){if(G.phase!=='lobby')return reply(from,{t:'err',msg:'이미 게임 중이에요. 이번 판이 끝나면 들어와 주세요'});if(!name)return reply(from,{t:'err',msg:'이름을 적어 주세요'});
+      if(G.players.some(x=>x.name===name))return reply(from,{t:'err',msg:'같은 이름이 있어요. 다르게 적어 주세요'});if(G.players.length>=20)return reply(from,{t:'err',msg:'방이 꽉 찼어요'});
+      p={id:from,name};G.players.push(p)}
+    reply(from,{t:'state',v:viewFor(from)});broadcast();return}
+  const p=P(from);if(!p)return reply(from,{t:'err',msg:'방에 다시 들어와 주세요'});
+  if(m.t==='ping')return reply(from,{t:'state',v:viewFor(from)});act(p,m)}
+function act(p,m){const R=G.r,ph=G.phase;if(!R)return;
+  if(m.t==='say'&&ph==='talk'&&R.talkMode==='on'&&R.order[R.ti]===p.id){const text=clip(m.text,80);if(!text)return;R.talks.push({pid:p.id,name:p.name,text,rd:R.rd});nextTurn();return}
+  if(m.t==='vote'&&ph==='vote'){if(m.target===p.id||!R.cands.includes(m.target))return;R.votes[p.id]=m.target;
+    if(G.players.every(x=>R.votes[x.id]))setTimeout(()=>{if(G.phase==='vote')endVote()},1200);broadcast();return}
+  if(m.t==='guess'&&ph==='guess'&&p.id===R.liar){R.guess=clip(m.text,30);finish(norm(R.guess)===norm(R.word)?'liar':'others',`라이어가 ‘${R.guess}’(이)라고 답했어요`);return}}
+/* --- 진행 --- */
+function startRound(){if(G.players.length<3){toast('3명 이상이 들어와야 해요');return}
+  const s=G.set,cat=s.cat==='랜덤'?Object.keys(W)[rnd(8)]:s.cat,grp=W[cat][rnd(10)],word=grp[rnd(4)];const fakes=grp.filter(w=>w!==word);
+  const liar=G.players[rnd(G.players.length)].id;
+  G.r={cat,mode:s.mode,word,fake:fakes[rnd(fakes.length)],liar,talks:[],order:shuffle(G.players.map(p=>p.id)),ti:0,rd:1,talkMode:s.talk,votes:{},cands:null,accused:null,guess:null,result:null};
+  G.round++;G.phase='talk';broadcast()}
+function nextTurn(){const R=G.r;R.ti++;if(R.ti>=R.order.length){if(R.rd<G.set.rounds){R.rd++;R.ti=0}else{startVote();return}}broadcast()}
+function startVote(cands){const R=G.r;R.votes={};R.cands=cands||G.players.map(p=>p.id);G.phase='vote';broadcast()}
+function endVote(){const R=G.r,c={};Object.values(R.votes).forEach(x=>c[x]=(c[x]||0)+1);const max=Math.max(0,...Object.values(c)),top=Object.keys(c).filter(k=>c[k]===max);
+  if(!max){toast('아무도 지목하지 않았어요');return}
+  if(top.length>1&&R.cands.length>top.length){toast(`동점! ${top.map(nm).join(', ')} 중에서 다시 지목해요`,3500);startVote(top);return}
+  R.accused=top.length>1?top[rnd(top.length)]:top[0];G.phase='reveal';broadcast();
+  setTimeout(()=>{if(G.phase!=='reveal')return;if(R.accused!==R.liar)finish('liar',`${nm(R.accused)}님은 라이어가 아니었어요!`);else{G.phase='guess';broadcast()}},4500)}
+function finish(w,why){const R=G.r;R.result={w,why};G.score[w]=(G.score[w]||0)+1;G.phase='end';broadcast()}
+
+/* =================== 화면 =================== */
+let LV=null;
+function render(){if(isHost&&G){LV=viewFor(MY);vGame(true);return}if(CL.joined&&LV){vGame(false);return}vEntry()}
+function vEntry(){if(ROOM&&!HOSTING){app.innerHTML=`<div class="card center"><div class="big-ico">🤥</div><h2>라이어게임 방 ${esc(ROOM)}</h2><p>내 이름을 적고 들어와요</p><input id="jName" placeholder="내 이름" maxlength="10" style="font-size:22px;text-align:center;width:100%;max-width:300px" value="${esc(CL.name||'')}"><div class="row" style="justify-content:center;margin-top:10px"><button class="pri big" id="jGo">들어가기</button></div><p class="hint" id="jSt"></p></div>`;
+    $('#jGo').onclick=()=>{const n=clip($('#jName').value,10);if(!n){toast('이름을 적어 주세요');return}joinRoom(n)};$('#jName').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing)$('#jGo').click()};return}
+  app.innerHTML=`<div class="card center"><div class="big-ico">🤥</div><h1 style="margin:0">라이어게임</h1><p>모두 같은 제시어를 받는데 <b>한 명만</b> 달라요. 이야기를 나누며 라이어를 찾아요!</p></div>
+  <div class="card"><h2>🏠 방 만들기</h2><div class="row"><input id="hName" placeholder="내 이름" maxlength="10" style="flex:1;min-width:160px"><button class="pri" id="mk">방 만들기</button></div><p class="hint">방을 만든 사람(호스트)도 함께 게임해요. 다른 사람은 QR이나 링크로 초대해요.</p></div>
+  <div class="card"><h2>🚪 방에 들어가기</h2><div class="row"><input id="code" placeholder="방 코드 4자리" maxlength="6" style="text-transform:uppercase;width:150px"><button id="goCode">들어가기</button></div></div>`;
+  $('#mk').onclick=()=>{const n=clip($('#hName').value,10);if(!n){toast('이름을 적어 주세요');$('#hName').focus();return}newGame(n)};
+  $('#goCode').onclick=()=>{const c=$('#code').value.toUpperCase().replace(/[^A-Z0-9]/g,'');if(c)location.href='?room='+c}}
+const plist=(v,o)=>`<div class="pl">${v.players.map(p=>{const pick=o&&o.pick&&o.pick(p),cnt=o&&o.cnt?o.cnt(p):0;return `<div class="pp ${pick?'pick':''} ${o&&o.mine===p.id?'mine':''} ${o&&o.turn===p.id?'turn':''} ${o&&o.liar===p.id?'liar':''}" ${pick?`data-pick="${p.id}"`:''}>${esc(p.name)}${o&&o.tag?o.tag(p):''}${cnt?`<span class="cnt">${cnt}</span>`:''}</div>`}).join('')}</div>`;
+function wordCard(v){const c=v.card;if(!c)return'';return c.liar?`<div class="word liar"><div class="hint" style="color:#ffd">분야: ${CAT_ICO[v.cat]} ${esc(v.cat)}</div><div style="font-size:48px">🤥</div><div class="w">당신은 라이어!</div><div>들키지 않게 제시어를 아는 척해요</div></div>`
+  :`<div class="word"><div class="hint" style="color:#dde">분야: ${CAT_ICO[v.cat]} ${esc(v.cat)}</div><div style="font-size:14px;margin-top:4px">제시어</div><div class="w">${esc(c.word)}</div>${v.mode==='fool'?'<div style="font-size:14px;opacity:.85">혹시 나만 다른 단어일 수도…? 🤔</div>':''}</div>`}
+function vGame(host){const v=LV,ph=v.ph;let h='';
+  if(ph==='lobby'){const url=location.origin+location.pathname+'?room='+v.room;let qr='';try{const q=qrcode(0,'M');q.addData(url);q.make();qr=q.createSvgTag(5,2)}catch(_){}
+    h+=`<div class="card"><div class="row"><h2 style="margin:0">🙋 대기실 · 방 ${esc(v.room)}</h2><span class="sp"></span>${host?'<span class="badge" id="netSt">연결 준비 중…</span>':''}</div>
+     ${host?`<div class="row" style="align-items:flex-start;margin-top:8px"><div class="qr">${qr}</div><div style="flex:1;min-width:200px"><p style="margin:0">QR을 찍거나 링크로 들어와서 이름을 적으면 돼요.</p><input readonly value="${esc(url)}" style="width:100%;font-size:13px;margin-top:6px" onclick="this.select()"><div class="row" style="margin-top:6px"><button class="sm" data-a="copy">🔗 링크 복사</button></div></div></div>`:'<p>호스트가 시작하기를 기다리고 있어요…</p>'}
+     <h3 style="margin:12px 0 6px">들어온 사람 ${v.players.length}명</h3>${plist(v,{})}</div>`;
+    if(G&&G.round)h+=`<div class="card center"><b class="j" style="font-size:19px">🏆 지금까지 · 라이어 ${v.score.liar||0}승 · 시민 ${v.score.others||0}승</b></div>`;
+    if(host){const s=G.set;h+=`<div class="card"><h2>⚙️ 게임 설정</h2>
+      <div class="pick"><button class="${s.mode==='liar'?'on':''}" data-set="mode" data-v="liar"><b>🤥 라이어게임</b><span>라이어는 자기가 라이어인 걸 알아요 (제시어를 못 받아요)</span></button><button class="${s.mode==='fool'?'on':''}" data-set="mode" data-v="fool"><b>🤪 바보라이어게임</b><span>라이어만 비슷한 다른 단어를 받아서, 자기가 라이어인 줄 몰라요</span></button></div>
+      <h3 style="margin:14px 0 6px">단어 분야</h3><div class="cats">${[...Object.keys(W),'랜덤'].map(c=>`<button class="${s.cat===c?'on':''}" data-set="cat" data-v="${c}">${CAT_ICO[c]||'🎲'} ${c}</button>`).join('')}</div>
+      <h3 style="margin:14px 0 6px">제시어 설명</h3><div class="pick"><button class="${s.talk==='off'?'on':''}" data-set="talk" data-v="off"><b>🗣️ 오프라인</b><span>모여서 말로 한 명씩 설명해요</span></button><button class="${s.talk==='on'?'on':''}" data-set="talk" data-v="on"><b>💬 온라인</b><span>순서대로 한 명씩 화면에 설명을 적어요</span></button></div>
+      ${s.talk==='on'?`<div class="row" style="margin-top:8px"><span>몇 바퀴 돌까요?</span>${[1,2].map(n=>`<button class="sm ${s.rounds==n?'go':''}" data-set="rounds" data-v="${n}">${n}바퀴</button>`).join('')}</div>`:''}
+      <div class="row" style="justify-content:center;margin-top:14px"><button class="pri big" data-a="start" ${v.players.length<3?'disabled':''}>🎮 게임 시작</button></div>${v.players.length<3?'<p class="hint center">3명 이상이 들어와야 해요</p>':''}</div>`}
+    app.innerHTML=h;bind();return}
+  h+=`<div class="row" style="margin-bottom:8px"><span class="badge">${v.mode==='fool'?'🤪 바보라이어':'🤥 라이어게임'}</span><span class="badge">${CAT_ICO[v.cat]} ${esc(v.cat)}</span><span class="sp"></span><span class="badge">👤 ${esc(v.me.name)}</span></div>`;
+  if(ph==='talk'){h+=wordCard(v);
+    if(v.talkMode==='on'){const myTurn=v.turn===v.me.id;
+      h+=`<div class="card" style="margin-top:14px"><h2>💬 제시어 설명 · ${v.round}/${v.rounds}바퀴</h2>${plist(v,{turn:v.turn,tag:p=>{const i=v.order.indexOf(p.id);return `<span class="tag">${i+1}번째</span>`}})}
+       <div class="talk" style="margin-top:10px">${v.talks.map(t=>`<div class="t"><b>${esc(t.name)}</b> ${t.rd>1?'<span class="hint">(2바퀴)</span>':''} ${esc(t.text)}</div>`).join('')||'<div class="hint">아직 설명이 없어요</div>'}</div>
+       ${myTurn?`<div class="row" style="margin-top:10px"><input id="say" placeholder="제시어를 설명하는 한마디 (너무 쉽게 말하면 라이어가 알아채요!)" maxlength="80" style="flex:1"><button class="pri" data-a="say">말하기</button></div>`:`<p class="center" style="margin-top:10px">🙋 <b>${esc((v.players.find(p=>p.id===v.turn)||{}).name)}</b>님 차례예요</p>`}
+       ${host?'<div class="row" style="margin-top:6px"><button class="sm" data-a="skip">⏭ 이 사람 건너뛰기</button><button class="sm" data-a="toVote">👉 바로 지목하기</button></div>':''}</div>`}
+    else h+=`<div class="card center" style="margin-top:14px"><h2>🗣️ 돌아가며 제시어를 설명해요</h2><p>한 명씩 제시어에 대해 한마디씩! 라이어는 들키지 않게, 다른 사람은 라이어가 눈치채지 못하게 말해요.</p>${host?'<button class="pri big" data-a="toVote">👉 라이어 지목하기</button>':'<p class="hint">다 말하면 호스트가 지목을 시작해요</p>'}</div>`}
+  if(ph==='vote'){h+=`<div class="card"><h2>👉 누가 라이어 같나요?</h2><p class="hint">${v.cands.length<v.players.length?'동점이 나와서 이 사람들 중에서 다시 골라요. ':''}이름을 눌러 지목해요 (바꿀 수 있어요) · ${v.voted}/${v.players.length}명 지목</p>
+     ${plist(v,{pick:p=>p.id!==v.me.id&&v.cands.includes(p.id),mine:v.myVote})}${host?'<div class="row" style="margin-top:8px"><button class="sm" data-a="endVote">지목 마감하기</button></div>':''}</div>`;
+    if(v.talks&&v.talks.length)h+=`<div class="card"><h3 style="margin:0 0 6px">💬 나온 설명</h3><div class="talk">${v.talks.map(t=>`<div class="t"><b>${esc(t.name)}</b> ${esc(t.text)}</div>`).join('')}</div></div>`;
+    h+=`<details class="card"><summary class="j" style="cursor:pointer">내 제시어 다시 보기</summary>${wordCard(v)}</details>`}
+  if(ph==='reveal'){const a=v.players.find(p=>p.id===v.accused);const c={};Object.values(v.votes).forEach(x=>c[x]=(c[x]||0)+1);
+    h+=`<div class="card center"><div class="big-ico">🫵</div><h2>가장 많이 지목된 사람은…</h2><div class="win">${esc(a&&a.name)}님!</div><p>과연 라이어일까요? 두구두구…</p>${plist(v,{cnt:p=>c[p.id]||0,mine:v.accused})}</div>`}
+  if(ph==='guess'){const a=v.players.find(p=>p.id===v.accused);
+    h+=`<div class="ann">🎯 ${esc(a&&a.name)}님이 라이어였어요!</div>`;
+    if(v.youAreLiar)h+=`<div class="card center"><h2>${v.mode==='fool'?'🤪 사실 당신이 라이어였어요!':'🤥 들켰어요!'}</h2><p>하지만 제시어를 맞히면 라이어가 이겨요! 진짜 제시어는 무엇일까요? (분야: ${esc(v.cat)})</p><div class="row" style="justify-content:center"><input id="guess" placeholder="정답 제시어" maxlength="30" style="font-size:20px;text-align:center"><button class="pri big" data-a="guess">정답 내기</button></div></div>`;
+    else h+=`<div class="card center"><div class="big-ico">✍️</div><p>라이어가 진짜 제시어를 맞히는 중이에요…<br>맞히면 라이어 승리, 틀리면 우리 승리!</p></div>`}
+  if(ph==='end'){const R=v.result,lw=R.w==='liar',me=v.me.id,iWin=lw?me===v.liarId:me!==v.liarId;
+    h+=`<div class="card center"><div class="big-ico">${lw?'🤥':'🎉'}</div><div class="win" style="color:${lw?'var(--red)':'var(--green)'}">${lw?'라이어 승리!':'시민 승리!'}</div><p>${esc(R.why)}</p><p style="font-size:20px">${iWin?'🏆 내가 이긴 편이에요!':'😢 아쉽게 졌어요'}</p>
+     <div class="row" style="justify-content:center;gap:14px;margin:10px 0"><div><div class="hint">진짜 제시어</div><div class="j" style="font-size:28px">${esc(v.word)}</div></div>${v.mode==='fool'?`<div><div class="hint">라이어가 받은 단어</div><div class="j" style="font-size:28px">${esc(v.fake)}</div></div>`:''}${v.guess?`<div><div class="hint">라이어의 답</div><div class="j" style="font-size:28px">${esc(v.guess)}</div></div>`:''}</div>
+     ${plist(v,{liar:v.liarId,tag:p=>p.id===v.liarId?'<span class="tag">🤥 라이어</span>':''})}
+     ${host?'<div class="row" style="justify-content:center;margin-top:12px"><button class="pri big" data-a="again">🔁 한 판 더</button><button data-a="lobby">⚙️ 설정 바꾸기</button></div>':'<p class="hint">호스트가 다음 판을 시작해요</p>'}</div>`}
+  app.innerHTML=h;bind()}
+function doAct(m){if(isHost){const p=P(MY);if(p)act(p,m)}else CL.send(m)}
+function bind(){$$('[data-pick]').forEach(b=>b.onclick=()=>doAct({t:'vote',target:b.dataset.pick}));
+  $$('[data-set]').forEach(b=>b.onclick=()=>{const k=b.dataset.set;G.set[k]=k==='rounds'?+b.dataset.v:b.dataset.v;broadcast()});
+  const sy=$('#say');if(sy){sy.onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing)$('[data-a=say]').click()};setTimeout(()=>sy.focus(),50)}
+  const gs=$('#guess');if(gs)gs.onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing)$('[data-a=guess]').click()};
+  $$('[data-a]').forEach(b=>b.onclick=()=>{const a=b.dataset.a;
+    if(a==='copy'){navigator.clipboard.writeText(location.origin+location.pathname+'?room='+G.room).then(()=>toast('링크를 복사했어요'));return}
+    if(a==='start'||a==='again')return startRound();
+    if(a==='lobby'){G.phase='lobby';G.r=null;broadcast();return}
+    if(a==='toVote')return startVote();if(a==='endVote')return endVote();if(a==='skip')return nextTurn();
+    if(a==='say'){const t=clip($('#say').value,80);if(!t){toast('한마디 적어 주세요');return}doAct({t:'say',text:t});return}
+    if(a==='guess'){const t=clip($('#guess').value,30);if(!t){toast('정답을 적어 주세요');return}if(!confirm(`‘${t}’(으)로 낼까요?`))return;doAct({t:'guess',text:t});return}})}
+
+/* =================== 참가자 기기 =================== */
+const CL={joined:false,name:'',id:null,cl:null,send(m){if(this.cl)this.cl.publish(base()+'/h',JSON.stringify({from:this.id,m}),{qos:1})}};
+async function joinRoom(name){CL.name=name;try{CL.id=sessionStorage.getItem('lr-id-'+ROOM)}catch(_){}if(!CL.id){CL.id='p'+Math.random().toString(36).slice(2,10);try{sessionStorage.setItem('lr-id-'+ROOM,CL.id)}catch(_){}}try{sessionStorage.setItem('lr-name-'+ROOM,name)}catch(_){}
+  const st=$('#jSt');if(st)st.textContent='방에 연결하는 중…';
+  for(const url of BROKERS){const cl=await mqttOpen(url,7000);if(!cl)continue;let heard=false;
+    cl.subscribe(base()+'/c/'+CL.id,{qos:1});cl.on('connect',()=>{cl.subscribe(base()+'/c/'+CL.id,{qos:1});if(CL.joined)CL.send({t:'join',name:CL.name})});
+    cl.on('message',(tp,buf)=>{let m;try{m=JSON.parse(buf.toString())}catch(_){return}heard=true;
+      if(m.t==='state'){const ch=!LV||LV.ph!==m.v.ph;LV=m.v;CL.joined=true;render();if(ch&&navigator.vibrate)try{navigator.vibrate(100)}catch(_){}}
+      else if(m.t==='err'){toast(m.msg,3500);const s=$('#jSt');if(s)s.textContent=m.msg}});
+    CL.cl=cl;CL.send({t:'join',name});for(let i=0;i<25&&!heard;i++){await new Promise(r=>setTimeout(r,300));if(i===10)CL.send({t:'join',name})}
+    if(heard){setInterval(()=>CL.send({t:'ping'}),15000);return}try{cl.end(true)}catch(_){}CL.cl=null}
+  const s=$('#jSt');if(s)s.textContent='방에 연결하지 못했어요. 방 코드와 호스트 화면이 켜져 있는지 확인해 주세요'}
+
+if(HOSTING&&ROOM){try{G=JSON.parse(localStorage.getItem(HK())||'null')}catch(_){}if(G){isHost=true;MY=(G.players.find(p=>p.host)||{}).id;hostNet()}else{history.replaceState(null,'','./');ROOM=''}}
+else if(ROOM){let n='';try{n=sessionStorage.getItem('lr-name-'+ROOM)||''}catch(_){}if(n)joinRoom(n)}
+render();
+})();
+</script>
+<script src="../assets/scene.js?v=20261116d"></script>
+<script src="../assets/home.js?v=20261118"></script>
+</body></html>
