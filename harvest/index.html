@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://js.tosspayments.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' data: blob: https://api.github.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://api.open-meteo.com https://api.met.no https://wttr.in https://api.mymemory.translated.net https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.doubleclick.net https://www.google.com https://*.tosspayments.com https://0.peerjs.com wss://0.peerjs.com wss://broker.emqx.io:8084 wss://broker.hivemq.com:8884 https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self' blob:; frame-src 'self' https://www.bskorea.or.kr https://*.tosspayments.com; object-src 'none'; base-uri 'self'; form-action 'self' https://*.tosspayments.com">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>추수꾼게임 | 치영의 교회 생활 즐기기 · 교회판 마피아 게임</title>
+<meta name="description" content="교회 레크리에이션 마피아 게임. 추수꾼·성도·제사장·선지자. QR로 초대해 휴대폰으로 하고, 사회자가 있어도 없어도 돼요.">
+<link rel="canonical" href="https://zidane7-creator.github.io/nanum-boardgame/harvest/">
+<meta property="og:title" content="추수꾼게임 — 치영의 교회 생활 즐기기">
+<meta property="og:description" content="추수꾼을 찾아라! 교회판 마피아 게임">
+<meta property="og:image" content="https://zidane7-creator.github.io/nanum-boardgame/assets/og.jpg">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌾</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<script src="../assets/jua.js"></script>
+<style>
+:root{--ink:#3b2a20;--cream:#fffaf0;--line:#e3d6c2;--accent:#e8503a;--gold:#f5b82e;--green:#3f9a55;--blue:#2f6fb0;--muted:#7a6a5c;--soft:#f6efe2;--red:#c8322a;--night:#1d2340}
+*{box-sizing:border-box}
+html,body{margin:0;color:var(--ink);background:#f7f1e6;font:16px/1.55 "Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif}
+body.night{background:#151a33;color:#eef}
+h1,h2,h3,.j,.top{font-family:"Jua","Apple SD Gothic Neo",sans-serif;font-weight:normal}
+button{font:inherit;color:var(--ink);border:2px solid var(--ink);background:var(--cream);border-radius:14px;padding:8px 14px;cursor:pointer;box-shadow:0 3px 0 var(--ink)}
+button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}button:disabled{opacity:.45;cursor:default;transform:none}
+button.pri{background:var(--accent);color:#fff}button.ok{background:var(--green);color:#fff}button.go{background:var(--blue);color:#fff}
+button.sm{padding:3px 10px;font-size:14px;border-radius:10px;box-shadow:0 2px 0 var(--ink)}button.big{font-size:21px;padding:12px 24px;font-family:Jua,sans-serif}
+input,select,textarea{font:inherit;color:var(--ink);border:2px solid #cdbda6;border-radius:12px;padding:7px 10px;background:#fff;min-width:0;max-width:100%}
+textarea{width:100%}
+.top{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:10px;padding:calc(8px + env(safe-area-inset-top,0px)) 14px 8px;background:rgba(255,255,255,.95);border-bottom:4px solid var(--gold);color:var(--ink)}
+.top a{color:var(--ink);text-decoration:none;border:2px solid var(--ink);border-radius:14px;padding:3px 10px;background:var(--cream)}.top .ttl{flex:1;font-size:19px}
+main{max-width:820px;margin:0 auto;padding:14px 12px 90px}
+.card{background:#fff;color:var(--ink);border:3px solid var(--ink);border-radius:20px;padding:16px;margin-bottom:14px;box-shadow:0 5px 0 rgba(0,0,0,.12)}
+body.night .card{background:#232a4d;color:#eef;border-color:#8890c8}body.night .hint{color:#aab}
+.card h2{margin:0 0 8px;font-size:23px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.sp{flex:1}.hint{font-size:14px;color:var(--muted)}
+.center{text-align:center}
+.big-ico{font-size:64px;line-height:1.1}
+.pl{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.pp{border:2px solid var(--ink);border-radius:14px;padding:8px;background:#fffdf7;text-align:center;font-family:Jua,sans-serif;font-size:19px;position:relative;cursor:default}
+body.night .pp{background:#2d3560;border-color:#8890c8;color:#eef}
+.pp.dead{opacity:.45;text-decoration:line-through}
+.pp.pick{cursor:pointer}.pp.pick:hover{background:#fff1cc}body.night .pp.pick:hover{background:#3d4680}
+.pp.mine{outline:4px solid var(--gold)}.pp.locked{background:var(--red)!important;color:#fff!important}
+.pp .tag{display:block;font-family:inherit;font-size:12px;opacity:.85}
+.pp .cnt{position:absolute;top:-8px;right:-6px;background:var(--red);color:#fff;border-radius:999px;font-size:13px;padding:0 7px}
+.role{border-radius:22px;padding:20px;text-align:center;color:#fff}
+.role.h{background:linear-gradient(#7a2e1f,#3b1a12)}.role.c{background:linear-gradient(#3f9a55,#22603a)}.role.p{background:linear-gradient(#2f6fb0,#1c3f6a)}.role.s{background:linear-gradient(#7a4fb0,#402766)}
+.role .nm{font-family:Jua,sans-serif;font-size:40px}
+.timer{font-family:Jua,sans-serif;font-size:46px;text-align:center}
+.log{max-height:220px;overflow:auto;font-size:15px}.log div{padding:3px 0;border-bottom:1px dashed var(--line)}
+.qr{background:#fff;padding:8px;border-radius:12px;display:inline-block}.qr svg{width:170px;height:170px;display:block}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#222;color:#fff;padding:10px 18px;border-radius:14px;opacity:0;transition:.25s;z-index:200;pointer-events:none;max-width:90vw;text-align:center}.toast.show{opacity:1}
+.badge{display:inline-block;border-radius:10px;padding:0 8px;font-size:13px;background:#f6efe2;color:var(--ink);border:1px solid var(--line)}
+.peek{user-select:none;-webkit-user-select:none}
+.ann{font-family:Jua,sans-serif;font-size:24px;text-align:center;padding:10px;border-radius:16px;background:#fff6d8;color:var(--ink);border:2px solid var(--gold);margin-bottom:12px}
+</style>
+</head><body>
+<div class="top"><a href="../">← 목장</a><span class="ttl">🌾 추수꾼게임</span></div>
+<main id="app"><div class="card center">불러오는 중…</div></main>
+<div class="toast" id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js" integrity="sha384-8FWZA6BGMXhsfO+BLtrJK0We6gg5o1JyO8xQm6peWDEUs17ACA5ziE/NIAkl9z2k" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js" integrity="sha384-u4uqeACkFcoKl57rBQJHVGDd1pqhW4w8X3WjTu1ZksPdxoLqdt34jpoNkJisE25W" crossorigin="anonymous"></script>
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clip=(s,n)=>String(s??'').replace(/[\u0000-\u001f]/g,' ').trim().slice(0,n);
+const rnd=n=>{const a=new Uint32Array(1);crypto.getRandomValues(a);return Math.floor(a[0]/4294967296*n)};
+let tt;function toast(m,ms){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),ms||2400)}
+const app=$('#app');
+const ROLE={h:['추수꾼','🌾','추수꾼끼리 의논해 밤마다 한 명을 데려가요'],c:['성도','🙏','추수꾼을 모두 찾아내면 이겨요'],p:['제사장','📜','밤마다 한 명이 추수꾼인지 알아봐요 (성도 편)'],s:['선지자','🕊️','밤마다 한 명을 지켜 살릴 수 있어요 (성도 편)']};
+const BROKERS=["wss://broker.emqx.io:8084/mqtt","wss://broker.hivemq.com:8884/mqtt"];
+const params=new URLSearchParams(location.search);
+let ROOM=(params.get('room')||params.get('host')||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6);
+const HOSTING=!!params.get('host');
+const base=()=>'chiyoung-harvest/v1/'+ROOM;
+function mqttOpen(url,ms){return new Promise(res=>{if(typeof mqtt=='undefined')return res(null);let done=false;
+  const cl=mqtt.connect(url,{connectTimeout:ms,reconnectPeriod:3000,clientId:'hv'+Math.random().toString(36).slice(2,12)});
+  cl.on('connect',()=>{if(!done){done=true;res(cl)}});setTimeout(()=>{if(!done){done=true;try{cl.end(true)}catch(e){}res(null)}},ms)})}
+const fmtT=ms=>{const s=Math.max(0,Math.ceil(ms/1000));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
+const PH={lobby:'대기실',roles:'역할 정하기',day:'아침 · 이야기 나누기',accuse:'의심 가는 사람 지목',trial:'심판 투표',night_h:'추수꾼의 밤',night_p:'제사장의 밤',night_s:'선지자의 밤',morning:'아침',end:'게임 끝'};
+
+/* =====================================================================
+   방장(진행) 기기: 게임 상태를 모두 가지고, 사람마다 보여 줄 것만 보내요
+   ===================================================================== */
+let G=null,isHost=false,MY=null; /* MY: 이 기기의 참가자 id (사회자면 null) */
+const HK=()=>'harvest-host-'+ROOM;
+const saveG=()=>{try{const c=JSON.parse(JSON.stringify(G,(k,v)=>k==='cl'?undefined:v));localStorage.setItem(HK(),JSON.stringify(c))}catch(e){}};
+const P=id=>G.players.find(p=>p.id===id);
+const alive=()=>G.players.filter(p=>p.alive);
+const aliveRole=r=>G.players.filter(p=>p.alive&&p.role===r);
+const nm=id=>(P(id)||{}).name||'?';
+function newGame(mod,hostName){ROOM=Array.from({length:4},()=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[rnd(32)]).join('');
+  G={room:ROOM,mod,phase:'lobby',set:{reveal:true,h:1,p:1,s:1,talk:3},players:[],day:0,log:[],votes:{},trial:null,night:{h:{},p:{},s:{}},lock:{},pres:null,mission:null,hint:null,winner:null,timerEnd:0};
+  if(!mod){MY='host-'+Math.random().toString(36).slice(2,8);G.players.push({id:MY,name:hostName,role:null,alive:true,host:true})}
+  history.replaceState(null,'','?host='+ROOM);isHost=true;saveG();hostNet();render()}
+function addLog(t){G.log.push(t);if(G.log.length>80)G.log.shift()}
+/* --- 사람마다 보이는 상태 --- */
+function viewFor(pid){const me=pid?P(pid):null,role=me&&me.role,ph=G.phase,isMod=!pid,dead=me&&!me.alive;
+  const seeAll=isMod||G.phase==='end';
+  const v={ph,day:G.day,mod:G.mod,set:{reveal:G.set.reveal},timerLeft:G.timerEnd?G.timerEnd-Date.now():0,log:G.log.slice(-30),hint:G.hint,winner:G.winner,room:G.room,
+    me:me?{id:me.id,name:me.name,role:(ph==='lobby'||(ph==='roles'&&!G.rolesSent))?null:role,alive:me.alive,host:!!me.host}:null,
+    players:G.players.map(p=>({id:p.id,name:p.name,alive:p.alive,shown:p.shown||null,role:seeAll?p.role:null}))};
+  if(role&&ph!=='lobby'&&ph!=='roles'||(role&&ph==='roles'&&G.rolesSent)){
+    v.allies=(role==='c'?[]:G.players.filter(p=>p.role===role&&p.id!==pid).map(p=>({id:p.id,name:p.name,alive:p.alive})))}
+  if(ph==='accuse'){v.votes=G.votes;v.myVote=pid?G.votes[pid]||null:null}
+  if(ph==='trial'){v.trial={target:G.trial.target,name:nm(G.trial.target),my:pid?(G.trial.v[pid]||null):null,done:Object.keys(G.trial.v).length,need:alive().filter(p=>p.id!==G.trial.target).length}}
+  if(ph.startsWith('night_')){const g=ph.slice(6);v.turn=g;
+    if(isMod||dead||role===g){v.picks=G.night[g];v.lock=G.lock[g]||null}
+    if(isMod||dead){v.allNight={h:G.night.h,p:G.night.p,s:G.night.s,lock:G.lock}}}
+  if(role==='p'||isMod)v.checks=(G.checks||[]).filter(c=>isMod||true);
+  if(role==='h'||isMod||dead){if(G.mission)v.mission={text:G.mission.text,done:isMod||dead?G.mission.done:{[pid]:!!G.mission.done[pid]}}}
+  if(G.pres)v.pres=G.pres;
+  if(isMod)v.full=true;
+  return v}
+function broadcast(){if(!G)return;G.players.forEach(p=>{if(p.host)return;send(p,{t:'state',v:viewFor(p.id)})});saveG();render()}
+const CONNS={};
+function send(p,m){const c=CONNS[p.id];if(c)try{c.cl.publish(base()+'/c/'+p.id,JSON.stringify(m),{qos:1})}catch(e){}}
+function hostNet(){BROKERS.forEach(async url=>{const cl=await mqttOpen(url,8000);if(!cl)return;const b=base();
+  cl.subscribe(b+'/h',{qos:1});cl.on('connect',()=>cl.subscribe(b+'/h',{qos:1}));
+  cl.on('message',(tp,buf)=>{let d;try{d=JSON.parse(buf.toString())}catch(_){return}if(!d||!d.from||!d.m)return;
+    const from=String(d.from).replace(/[^a-z0-9-]/gi,'').slice(0,24);CONNS[from]={cl};hostHandle(from,d.m)});
+  const s=$('#netSt');if(s)s.textContent='📡 초대 받는 중'})}
+function reply(id,m){const c=CONNS[id];if(c)c.cl.publish(base()+'/c/'+id,JSON.stringify(m),{qos:1})}
+function hostHandle(from,m){const t=m.t;
+  if(t==='join'){const name=clip(m.name,10);let p=P(from);
+    if(!p){if(G.phase!=='lobby')return reply(from,{t:'err',msg:'이미 게임이 시작됐어요'});if(!name)return reply(from,{t:'err',msg:'이름을 적어 주세요'});
+      if(G.players.some(x=>x.name===name))return reply(from,{t:'err',msg:'같은 이름이 있어요. 성까지 적어 주세요'});
+      if(G.players.length>=30)return reply(from,{t:'err',msg:'방이 꽉 찼어요'});
+      p={id:from,name,role:null,alive:true};G.players.push(p);addLog(`🙋 ${name}님이 들어왔어요`)}
+    reply(from,{t:'state',v:viewFor(from)});broadcast();return}
+  const p=P(from);if(!p)return reply(from,{t:'err',msg:'방에 다시 들어와 주세요'});
+  if(t==='ping')return reply(from,{t:'state',v:viewFor(from)});act(p,m)}
+/* --- 참가자 행동 (방장 기기의 참가자도 이 함수로) --- */
+function act(p,m){if(!p.alive)return;const ph=G.phase;
+  if(m.t==='accuse'&&ph==='accuse'){const tg=P(m.target);if(m.target&&(!tg||!tg.alive))return;G.votes[p.id]=m.target||'skip';
+    if(alive().every(x=>G.votes[x.id]))setTimeout(()=>{if(G.phase==='accuse')endAccuse()},1200);broadcast();return}
+  if(m.t==='trial'&&ph==='trial'){if(p.id===G.trial.target)return;G.trial.v[p.id]=m.v==='kill'?'kill':'save';
+    if(alive().filter(x=>x.id!==G.trial.target).every(x=>G.trial.v[x.id]))setTimeout(()=>{if(G.phase==='trial')endTrial()},1200);broadcast();return}
+  if(m.t==='night'&&ph.startsWith('night_')){const g=ph.slice(6);if(p.role!==g||G.lock[g])return;const tg=P(m.target);if(!tg||!tg.alive)return;
+    G.night[g][p.id]=m.target;const team=aliveRole(g);const vals=team.map(x=>G.night[g][x.id]);
+    if(vals.length&&vals.every(v=>v&&v===vals[0])){G.lock[g]=vals[0];setTimeout(nextNight,2200)}broadcast();return}}
+/* --- 진행 --- */
+function canStart(){const n=G.players.length,s=G.set;return n>=3&&s.h>=1&&s.h+s.p+s.s<n&&s.h<n-s.h}
+function startGame(){if(!canStart()){toast('인원과 역할 수를 확인해 주세요 (추수꾼은 성도 쪽보다 적어야 해요)',3500);return}
+  G.players.forEach(p=>{p.role=null;p.alive=true;p.shown=null});G.day=0;G.log=[];G.mission=null;G.hint=null;G.winner=null;G.checks=[];
+  G.phase='roles';G.rolesSent=false;addLog('🌙 밤이 되었어요. 역할을 정해요');
+  if(!G.mod)assignRandom();broadcast()}
+function assignRandom(){const ids=G.players.map(p=>p.id);for(let i=ids.length-1;i>0;i--){const j=rnd(i+1);[ids[i],ids[j]]=[ids[j],ids[i]]}
+  const s=G.set;let k=0;ids.forEach(id=>{const p=P(id);p.role=k<s.h?'h':k<s.h+s.p?'p':k<s.h+s.p+s.s?'s':'c';k++});G.rolesSent=true;addLog('🎭 역할이 정해졌어요. 내 역할을 확인하세요')}
+function sendRoles(){const s=G.set,cnt=r=>G.players.filter(p=>p.role===r).length;
+  if(G.players.some(p=>!p.role))G.players.forEach(p=>{if(!p.role)p.role='c'});
+  if(cnt('h')!==s.h||cnt('p')!==s.p||cnt('s')!==s.s){toast(`추수꾼 ${s.h}·제사장 ${s.p}·선지자 ${s.s}명에 맞춰 주세요`,3000);return}
+  G.rolesSent=true;addLog('🎭 역할이 정해졌어요. 내 역할을 확인하세요');broadcast()}
+function startDay(){G.day++;G.phase='day';G.votes={};G.trial=null;G.pres=null;const m=+G.set.talk||0;G.timerEnd=m?Date.now()+m*60000:0;
+  addLog(`☀️ ${G.day}일째 아침이에요. 추수꾼을 찾아 이야기를 나눠요`);broadcast()}
+function startAccuse(){G.phase='accuse';G.votes={};G.timerEnd=0;addLog('👉 의심 가는 사람을 지목해요');broadcast()}
+function endAccuse(){const c={};Object.values(G.votes).forEach(v=>{if(v&&v!=='skip')c[v]=(c[v]||0)+1});const max=Math.max(0,...Object.values(c)),top=Object.keys(c).filter(k=>c[k]===max);
+  if(!max||top.length>1){addLog(max?`⚖️ ${top.map(nm).join(', ')} 동점이라 심판 없이 밤이 와요`:'🤷 지목된 사람이 없어 밤이 와요');G.pres={t:'notrial',text:max?'동점이라 심판 없이 밤이 와요':'지목된 사람이 없어요'};startNight();return}
+  G.phase='trial';G.trial={target:top[0],v:{}};addLog(`⚖️ ${nm(top[0])}님이 ${max}표로 심판대에 올랐어요`);broadcast()}
+function endTrial(){const t=G.trial,k=Object.values(t.v).filter(v=>v==='kill').length,s=Object.values(t.v).filter(v=>v==='save').length,p=P(t.target);
+  if(k>s){p.alive=false;if(G.set.reveal)p.shown=p.role==='h'?'추수꾼':'성도';
+    addLog(`⚰️ 죽이자 ${k} : 살리자 ${s} — ${p.name}님이 심판받았어요${G.set.reveal?` (${p.shown}${p.shown==='추수꾼'?'이었어요':'였어요'})`:''}`);G.pres={t:'exec',text:`${p.name}님이 심판받았어요${G.set.reveal?` · ${p.shown}${p.shown==='추수꾼'?'이었어요':'였어요'}`:''}`}}
+  else{addLog(`🕊️ 죽이자 ${k} : 살리자 ${s} — ${p.name}님은 살았어요`);G.pres={t:'spare',text:`${p.name}님은 살았어요`}}
+  if(checkWin())return;startNight()}
+function startNight(){G.phase='night_h';G.night={h:{},p:{},s:{}};G.lock={};G.timerEnd=0;addLog('🌙 추수꾼의 밤이 찾아왔어요');
+  if(G.mod&&G.mission&&G.mission.day<G.day){const hs=aliveRole('h');G.missionFail=hs.length&&!hs.every(h=>G.mission.done[h.id])}else G.missionFail=false;
+  broadcast();emptyTurn()}
+function emptyTurn(){const g=G.phase.slice(6);if(!aliveRole(g).length){const ph=G.phase;setTimeout(()=>{if(G.phase===ph)nextNight()},7000+rnd(6000))}}
+function nextNight(){if(G.phase==='night_h'){G.phase='night_p';addLog('📜 제사장의 차례예요')}
+  else if(G.phase==='night_p'){if(G.lock.p){const t=P(G.lock.p);(G.checks=G.checks||[]).push({day:G.day,id:t.id,name:t.name,h:t.role==='h'})}G.phase='night_s';addLog('🕊️ 선지자의 차례예요')}
+  else if(G.phase==='night_s'){morning();return}else return;broadcast();emptyTurn()}
+function morning(){const k=G.lock.h,sv=G.lock.s;G.phase='morning';
+  if(k&&k!==sv){const p=P(k);p.alive=false;addLog(`🌅 밤사이 ${p.name}님이 추수꾼에게 데려가졌어요`);G.pres={t:'night',text:`밤사이 ${p.name}님이 쓰러졌어요`}}
+  else{addLog('🌅 밤사이 아무 일도 일어나지 않았어요');G.pres={t:'night',text:'밤사이 아무 일도 일어나지 않았어요'}}
+  if(checkWin())return;broadcast();setTimeout(()=>{if(G.phase==='morning')startDay()},5000)}
+function checkWin(){const h=aliveRole('h').length,o=alive().length-h;let w=null;if(h===0)w='c';else if(h>=o)w='h';
+  if(!w)return false;G.phase='end';G.winner=w;G.timerEnd=0;addLog(w==='h'?'🌾 추수꾼이 이겼어요!':'🙏 성도가 이겼어요! 추수꾼을 모두 찾았어요');broadcast();return true}
+/* 시간 다 되면 지목으로 */
+setInterval(()=>{if(isHost&&G&&G.phase==='day'&&G.timerEnd&&Date.now()>=G.timerEnd)startAccuse();const t=$('#tmr');if(t&&LV&&LV.timerEnd)t.textContent=fmtT(LV.timerEnd-Date.now())},500);
+
+/* =====================================================================
+   화면
+   ===================================================================== */
+let LV=null; /* 지금 화면에 그릴 상태 */
+function render(){const phn=(isHost&&G?G.phase:LV&&LV.ph)||'';document.body.classList.toggle('night',phn.startsWith('night_'));
+  if(isHost&&G){LV=viewFor(MY);LV.timerEnd=G.timerEnd||0;if(G.mod){vMod();return}vPlayer(true);return}
+  if(CL.joined&&LV){vPlayer(false);return}vEntry()}
+function vEntry(){if(ROOM&&!HOSTING){app.innerHTML=`<div class="card center"><div class="big-ico">🌾</div><h2>추수꾼게임 방 ${esc(ROOM)}</h2><p>실명으로 들어와 주세요</p><input id="jName" placeholder="내 이름 (실명)" maxlength="10" style="font-size:22px;text-align:center;width:100%;max-width:300px" value="${esc(CL.name||'')}"><div class="row" style="justify-content:center;margin-top:10px"><button class="pri big" id="jGo">들어가기</button></div><p class="hint" id="jSt"></p></div>`;
+    $('#jGo').onclick=()=>{const n=clip($('#jName').value,10);if(!n){toast('이름을 적어 주세요');return}joinRoom(n)};$('#jName').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing)$('#jGo').click()};return}
+  app.innerHTML=`<div class="card center"><div class="big-ico">🌾</div><h1 style="margin:0">추수꾼게임</h1><p>교회판 마피아 게임! 성도들 사이에 숨은 <b>추수꾼</b>을 찾아내요.</p></div>
+  <div class="card"><h2>방 만들기</h2><div class="row" style="gap:10px;align-items:stretch">
+   <div style="flex:1;min-width:220px;border:2px solid var(--line);border-radius:14px;padding:10px"><b class="j" style="font-size:19px">🎤 사회자가 진행</b><p class="hint">이 기기는 사회자 화면이 돼요(게임에는 참여 안 해요). 역할을 직접 정하고, 추수꾼에게 미션을 줄 수 있어요.</p><button class="go" id="mkMod">사회자로 방 만들기</button></div>
+   <div style="flex:1;min-width:220px;border:2px solid var(--line);border-radius:14px;padding:10px"><b class="j" style="font-size:19px">🎲 사회자 없이</b><p class="hint">역할은 무작위로 정해져요. 방을 만든 사람도 함께 게임해요.</p><input id="hName" placeholder="내 이름 (실명)" maxlength="10" style="width:100%"><button class="pri" id="mkSelf" style="margin-top:6px">방 만들고 참여하기</button></div></div></div>
+  <div class="card"><h2>방에 들어가기</h2><div class="row"><input id="code" placeholder="방 코드 4자리" maxlength="6" style="text-transform:uppercase;width:150px"><button id="goCode">들어가기</button></div><p class="hint">방장 화면의 QR을 찍어도 돼요</p></div>`;
+  $('#mkMod').onclick=()=>newGame(true);$('#mkSelf').onclick=()=>{const n=clip($('#hName').value,10);if(!n){toast('이름을 적어 주세요');$('#hName').focus();return}newGame(false,n)};
+  $('#goCode').onclick=()=>{const c=$('#code').value.toUpperCase().replace(/[^A-Z0-9]/g,'');if(c)location.href='?room='+c}}
+const roleCard=(r,big)=>`<div class="role ${r}"><div style="font-size:${big?60:36}px">${ROLE[r][1]}</div><div class="nm" style="font-size:${big?40:26}px">${ROLE[r][0]}</div><div>${ROLE[r][2]}</div></div>`;
+const plist=(v,opt)=>`<div class="pl">${v.players.map(p=>{const pick=opt&&opt.pick&&opt.pick(p);const cnt=opt&&opt.cnt?opt.cnt(p):0;return `<div class="pp ${p.alive?'':'dead'} ${pick?'pick':''} ${opt&&opt.mine===p.id?'mine':''} ${opt&&opt.locked===p.id?'locked':''}" ${pick?`data-pick="${p.id}"`:''}>${esc(p.name)}${p.role&&opt&&opt.showRole?`<span class="tag">${ROLE[p.role][1]} ${ROLE[p.role][0]}</span>`:''}${!p.alive?`<span class="tag">⚰️ ${p.shown?esc(p.shown):'죽음'}</span>`:''}${opt&&opt.tag?opt.tag(p):''}${cnt?`<span class="cnt">${cnt}</span>`:''}</div>`}).join('')}</div>`;
+const logCard=v=>`<div class="card"><h3 style="margin:0 0 6px">📜 지난 일</h3><div class="log">${v.log.slice().reverse().map(l=>`<div>${esc(l)}</div>`).join('')}</div></div>`;
+function lobbyCard(v,host){const url=location.origin+location.pathname+'?room='+v.room;let qr='';try{const q=qrcode(0,'M');q.addData(url);q.make();qr=q.createSvgTag(5,2)}catch(_){}
+  return `<div class="card"><div class="row"><h2 style="margin:0">🙋 대기실 · 방 ${esc(v.room)}</h2><span class="sp"></span><span class="badge" id="netSt">${host?'연결 준비 중…':''}</span></div>
+   ${host?`<div class="row" style="align-items:flex-start;margin-top:8px"><div class="qr">${qr}</div><div style="flex:1;min-width:200px"><p style="margin:0">QR을 찍거나 링크로 들어와서 <b>실명</b>을 적으면 돼요.</p><input readonly value="${esc(url)}" style="width:100%;font-size:13px;margin-top:6px" onclick="this.select()"><div class="row" style="margin-top:6px"><button class="sm" data-a="copy">🔗 링크 복사</button></div></div></div>`:'<p>방장이 시작하기를 기다리고 있어요…</p>'}
+   <h3 style="margin:12px 0 6px">들어온 사람 ${v.players.length}명</h3>${plist(v,{})}</div>`}
+function settingsCard(){const s=G.set,n=G.players.length;
+  return `<div class="card"><h2>⚙️ 설정</h2><div class="row" style="gap:14px">
+   <label>🌾 추수꾼 <select data-s="h">${[1,2,3,4,5].map(x=>`<option${s.h==x?' selected':''}>${x}</option>`).join('')}</select>명</label>
+   <label>📜 제사장 <select data-s="p">${[0,1,2,3].map(x=>`<option${s.p==x?' selected':''}>${x}</option>`).join('')}</select>명</label>
+   <label>🕊️ 선지자 <select data-s="s">${[0,1,2,3].map(x=>`<option${s.s==x?' selected':''}>${x}</option>`).join('')}</select>명</label></div>
+   <div class="hint" style="margin-top:4px">나머지 ${Math.max(0,n-s.h-s.p-s.s)}명은 🙏 성도예요 · 전체 ${n}명</div>
+   <div class="row" style="gap:14px;margin-top:10px"><label>💬 이야기 시간 <select data-s="talk">${[[0,'제한 없음'],[1,'1분'],[2,'2분'],[3,'3분'],[5,'5분'],[7,'7분'],[10,'10분']].map(([x,l])=>`<option value="${x}"${s.talk==x?' selected':''}>${l}</option>`).join('')}</select></label>
+   <label><input type="checkbox" data-s="reveal" ${s.reveal?'checked':''}> 심판받아 죽은 사람이 성도인지 추수꾼인지 공개</label></div>
+   <div class="hint">공개해도 제사장·선지자인지는 알려 주지 않고 ‘성도’로만 보여요.</div>
+   <div class="row" style="justify-content:center;margin-top:12px"><button class="pri big" data-a="start" ${canStart()?'':'disabled'}>🌙 게임 시작</button></div>${canStart()?'':'<div class="hint center">3명 이상이 들어와야 하고, 추수꾼은 나머지보다 적어야 해요</div>'}</div>`}
+/* ---------- 사회자 화면 ---------- */
+function vMod(){const v=LV,ph=G.phase;let h='';
+  if(G.pres&&(ph==='morning'||ph==='night_h'||ph==='end'))h+=`<div class="ann">${esc(G.pres.text)}</div>`;
+  h+=`<div class="card"><div class="row"><h2 style="margin:0">🎤 사회자 · ${esc(PH[ph])}${G.day?` · ${G.day}일째`:''}</h2><span class="sp"></span><span class="badge">방 ${esc(G.room)}</span></div></div>`;
+  if(ph==='lobby'){app.innerHTML=h+lobbyCard(v,true)+settingsCard();bindCommon();hostNet2();return}
+  if(ph==='roles'&&!G.rolesSent){app.innerHTML=h+`<div class="card"><h2>🌙 밤이 되었어요 — 역할을 정해 주세요</h2><p class="hint">추수꾼 ${G.set.h} · 제사장 ${G.set.p} · 선지자 ${G.set.s}명 · 나머지는 성도</p>
+     ${G.players.map(p=>`<div class="row" style="margin:4px 0"><b style="min-width:100px">${esc(p.name)}</b>${['c','h','p','s'].map(r=>`<label class="badge" style="font-size:15px;cursor:pointer;${(p.role||'c')===r?'background:#fff1cc;border-color:var(--gold)':''}"><input type="radio" name="r_${p.id}" data-role="${p.id}" value="${r}" ${(p.role||'c')===r?'checked':''} style="display:none">${ROLE[r][1]} ${ROLE[r][0]}</label>`).join('')}</div>`).join('')}
+     <div class="row" style="margin-top:10px"><button class="sm" data-a="randRole">🎲 무작위로 채우기</button><span class="sp"></span><button class="pri big" data-a="sendRoles">🎭 역할 보내기</button></div></div>`;bindCommon();return}
+  h+=`<div class="card"><h3 style="margin:0 0 6px">👥 참가자</h3>${plist(v,{showRole:true,cnt:p=>ph==='accuse'?Object.values(G.votes).filter(x=>x===p.id).length:0})}</div>`;
+  if(ph==='roles'){h+=`<div class="card center"><p>역할을 보냈어요. 모두 확인했으면 아침을 시작해요.</p><button class="pri big" data-a="day">☀️ 아침 시작</button></div>`}
+  if(ph==='day')h+=`<div class="card center"><div class="hint">이야기 나누는 시간</div>${G.timerEnd?`<div class="timer" id="tmr">${fmtT(G.timerEnd-Date.now())}</div>`:'<div class="j" style="font-size:22px">제한 시간 없음</div>'}<button class="pri big" data-a="accuse">👉 지목하자!</button></div>`;
+  if(ph==='accuse')h+=`<div class="card center"><p>지목 ${Object.keys(G.votes).length}/${alive().length}명</p><button class="pri" data-a="endAccuse">지목 마감하기</button></div>`;
+  if(ph==='trial')h+=`<div class="card center"><h2>⚖️ ${esc(nm(G.trial.target))}님 심판</h2><p>투표 ${Object.keys(G.trial.v).length}/${alive().length-1} · 죽이자 ${Object.values(G.trial.v).filter(x=>x==='kill').length} · 살리자 ${Object.values(G.trial.v).filter(x=>x==='save').length}</p><button class="pri" data-a="endTrial">심판 마감하기</button></div>`;
+  if(ph.startsWith('night_')){const g=ph.slice(6);h+=`<div class="card"><h3 style="margin:0">${ROLE[g][1]} ${ROLE[g][0]}의 차례 ${aliveRole(g).length?'':'<span class="hint">(살아 있는 사람이 없어요 · 잠시 기다린 척해요)</span>'}</h3>
+     ${['h','p','s'].map(r=>`<div style="margin-top:6px"><b>${ROLE[r][1]} ${ROLE[r][0]}</b>: ${Object.entries(G.night[r]).map(([a,b])=>`${esc(nm(a))}→${esc(nm(b))}`).join(', ')||'-'}${G.lock[r]?` · <b style="color:var(--gold)">결정: ${esc(nm(G.lock[r]))}</b>`:''}</div>`).join('')}</div>`;
+    if(G.missionFail)h+=`<div class="card"><h3 style="margin:0">💡 추수꾼이 미션을 다 못 했어요 — 힌트를 줄 수 있어요</h3><div class="row" style="margin-top:6px"><input id="hintT" placeholder="예) 추수꾼 중 한 명은 안경을 썼어요" style="flex:1"><button class="go" data-a="hint">모두에게 힌트 보내기</button></div></div>`}
+  if(['day','accuse','trial','night_h','night_p','night_s','morning'].includes(ph)){const M=G.mission,hs=G.players.filter(p=>p.role==='h');
+    h+=`<div class="card"><h3 style="margin:0 0 6px">🎯 추수꾼 미션</h3>${M?`<div>📌 ${esc(M.text)}</div><div class="row" style="margin-top:6px">${hs.map(p=>`<label class="badge" style="font-size:15px"><input type="checkbox" data-mdone="${p.id}" ${M.done[p.id]?'checked':''}> ${esc(p.name)} 수행 ${p.alive?'':'(죽음)'}</label>`).join('')}</div><p class="hint">아침이 온 뒤 미션을 한 추수꾼을 체크하면 그 추수꾼 화면에 성공으로 떠요.</p>`:''}
+     <div class="row"><input id="misT" placeholder="예) 아무도 모르게 ‘할렐루야’를 3번 말하기" style="flex:1"><button class="go" data-a="mission">${M?'새 미션 보내기':'미션 보내기'}</button></div></div>`}
+  if(ph==='end')h+=`<div class="card center"><div class="big-ico">${G.winner==='h'?'🌾':'🙏'}</div><h2>${G.winner==='h'?'추수꾼 승리!':'성도 승리!'}</h2><button class="pri" data-a="again">같은 사람들로 다시 하기</button></div>`;
+  app.innerHTML=h+logCard(v);bindCommon()}
+/* ---------- 참가자 화면 (방장 참가자 포함) ---------- */
+function vPlayer(host){const v=LV,me=v.me,ph=v.ph;let h='';
+  if(!me){app.innerHTML='<div class="card center">연결 중…</div>';return}
+  if(v.hint)h+=`<div class="ann">💡 사회자 힌트: ${esc(v.hint)}</div>`;
+  if(v.pres&&(ph==='morning'||ph==='night_h'||ph==='end'))h+=`<div class="ann">${esc(v.pres.text)}</div>`;
+  if(ph==='lobby'){h+=lobbyCard(v,host);if(host)h+=settingsCard();app.innerHTML=h;bindCommon();if(host)hostNet2();return}
+  const myRole=me.role;
+  const roleBox=myRole?`<div class="card"><div class="row"><b class="j" style="font-size:19px">${me.alive?'':'⚰️ '}${esc(me.name)}</b><span class="sp"></span><button class="sm peek" id="peek">👁 내 역할 보기 (누르고 있기)</button></div><div id="peekBox" style="display:none;margin-top:8px">${roleCard(myRole)}${v.allies&&v.allies.length?`<p style="margin:8px 0 0">같은 ${ROLE[myRole][0]}: <b>${v.allies.map(a=>esc(a.name)+(a.alive?'':'(죽음)')).join(', ')}</b></p>`:''}</div></div>`:'';
+  if(ph==='roles'){if(!v.allies&&!myRole){h+=`<div class="card center"><div class="big-ico">🌙</div><h2>밤이 되었어요</h2><p>${v.mod?'사회자가 역할을 정하고 있어요…':'역할을 정하는 중…'}</p></div>`}
+    else{h+=`<div class="card center"><h2>🌙 내 역할이 정해졌어요</h2><p class="hint">다른 사람에게 보이지 않게 확인하세요</p>${roleCard(myRole,true)}${v.allies&&v.allies.length?`<p style="font-size:18px;margin-top:10px">같은 ${ROLE[myRole][0]}: <b>${v.allies.map(a=>esc(a.name)).join(', ')}</b></p>`:myRole!=='c'?`<p class="hint">같은 ${ROLE[myRole][0]}은 없어요</p>`:''}${host?'<button class="pri big" data-a="day" style="margin-top:12px">☀️ 모두 확인했어요, 아침 시작</button>':'<p class="hint">모두 확인하면 아침이 와요</p>'}</div>`}
+    app.innerHTML=h;bindCommon();return}
+  h+=roleBox;
+  if(myRole==='h'&&v.mission)h+=`<div class="card"><b>🎯 미션</b>: ${esc(v.mission.text)}<div style="margin-top:4px">${v.mission.done&&v.mission.done[me.id]?'<span class="badge" style="background:#dff3e4">✅ 미션 성공!</span>':'<span class="hint">아직 성공 표시가 없어요</span>'}</div></div>`;
+  if(myRole==='p'&&v.checks&&v.checks.length)h+=`<div class="card"><b>📜 제사장이 알아본 결과</b>${v.checks.map(c=>`<div>${c.day}일째 밤: ${esc(c.name)} → ${c.h?'<b style="color:var(--red)">🌾 추수꾼이에요!</b>':'🙏 추수꾼이 아니에요'}</div>`).join('')}</div>`;
+  const deadNote=!me.alive?'<p class="hint center">죽은 사람은 아무것도 할 수 없어요. 조용히 지켜봐 주세요 🙏</p>':'';
+  if(ph==='day'){h+=`<div class="card center"><h2>☀️ ${v.day}일째 아침</h2><p>오프라인으로 이야기하며 추수꾼을 찾아요!</p>${v.timerEnd?`<div class="timer" id="tmr">${fmtT(v.timerEnd-Date.now())}</div><div class="hint">시간이 다 되면 지목해요</div>`:'<div class="hint">제한 시간 없음</div>'}${host&&!v.mod?'<button class="pri" data-a="accuse" style="margin-top:8px">👉 지목하자!</button>':''}${deadNote}</div>${plist(v,{})}`}
+  if(ph==='accuse'){const c={};Object.values(v.votes||{}).forEach(x=>{if(x&&x!=='skip')c[x]=(c[x]||0)+1});
+    h+=`<div class="card"><h2>👉 의심 가는 사람을 지목해요</h2>${me.alive?'<p class="hint">이름을 눌러요. 바꿀 수도 있어요.</p>':deadNote}${plist(v,{pick:p=>me.alive&&p.alive&&p.id!==me.id,mine:v.myVote,cnt:p=>c[p.id]||0})}
+     ${me.alive?`<div class="row" style="margin-top:8px"><button class="sm" data-pick="skip">🤐 아무도 지목 안 해요</button>${v.myVote==='skip'?'<span class="badge">기권</span>':''}</div>`:''}<p class="hint">지목 ${Object.keys(v.votes||{}).length}/${v.players.filter(p=>p.alive).length}명 · 다 지목하면 가장 많이 받은 사람이 심판대에 올라요</p>${host&&!v.mod?'<button class="sm" data-a="endAccuse">지목 마감하기</button>':''}</div>`}
+  if(ph==='trial'){const T=v.trial;h+=`<div class="card center"><h2>⚖️ ${esc(T.name)}님 심판</h2>${T.target===me.id?'<p>변론해 주세요! (심판받는 사람은 투표하지 않아요)</p>':me.alive?`<p>죽일까요, 살릴까요?</p><div class="row" style="justify-content:center"><button class="${T.my==='kill'?'pri':''} big" data-tv="kill">⚰️ 죽이자</button><button class="${T.my==='save'?'ok':''} big" data-tv="save">🕊️ 살리자</button></div>`:deadNote}<p class="hint">투표 ${T.done}/${T.need}명</p>${host&&!v.mod?'<button class="sm" data-a="endTrial">심판 마감하기</button>':''}</div>`}
+  if(ph.startsWith('night_')){const g=v.turn,mine=myRole===g&&me.alive;
+    if(mine){const picks=v.picks||{},cnt={};Object.values(picks).forEach(x=>cnt[x]=(cnt[x]||0)+1);
+      h+=`<div class="card"><h2>${ROLE[g][1]} ${ROLE[g][0]}의 차례</h2><p>${g==='h'?'누구를 데려갈까요?':g==='p'?'누가 추수꾼인지 알아볼까요?':'누구를 지켜 살릴까요?'} ${v.allies&&v.allies.filter(a=>a.alive).length?'모두 같은 사람을 찍어야 정해져요.':''}</p>
+       ${plist(v,{pick:p=>p.alive&&!v.lock,mine:picks[me.id],locked:v.lock,cnt:p=>cnt[p.id]||0,tag:p=>{const who=Object.entries(picks).filter(([a,b])=>b===p.id).map(([a])=>(v.players.find(x=>x.id===a)||{}).name);return who.length?`<span class="tag">👉 ${who.map(esc).join(', ')}</span>`:''}})}
+       ${v.lock?`<p class="center j" style="font-size:20px">✔ ${esc((v.players.find(p=>p.id===v.lock)||{}).name)}(으)로 정했어요</p>`:''}</div>`}
+    else if(!me.alive&&v.allNight){const A=v.allNight,line=r=>Object.entries(A[r]).map(([a,b])=>`${esc((v.players.find(x=>x.id===a)||{}).name)}→${esc((v.players.find(x=>x.id===b)||{}).name)}`).join(', ')||'-';
+      h+=`<div class="card"><h2>👻 ${ROLE[g][0]}의 밤을 지켜봐요</h2>${['h','p','s'].map(r=>`<div><b>${ROLE[r][1]} ${ROLE[r][0]}</b>: ${line(r)}${A.lock[r]?` → <b>${esc((v.players.find(x=>x.id===A.lock[r])||{}).name)}</b>`:''}</div>`).join('')}</div>`}
+    else h+=`<div class="card center"><div class="big-ico">🌙</div><h2>${ROLE[g][1]} ${ROLE[g][0]}의 차례예요</h2><p>눈을 감고 조용히 기다려요…</p></div>`}
+  if(ph==='morning')h+=`<div class="card center"><div class="big-ico">🌅</div><h2>아침이 밝아요</h2></div>`;
+  if(ph==='end')h+=`<div class="card center"><div class="big-ico">${v.winner==='h'?'🌾':'🙏'}</div><h2>${v.winner==='h'?'추수꾼 승리!':'성도 승리!'}</h2>${plist(v,{showRole:true})}${host?'<button class="pri" data-a="again" style="margin-top:10px">같은 사람들로 다시 하기</button>':''}</div>`;
+  app.innerHTML=h+logCard(v);bindCommon();
+  const pk=$('#peek');if(pk){const show=on=>{$('#peekBox').style.display=on?'block':'none'};['pointerdown'].forEach(e=>pk.addEventListener(e,()=>show(true)));['pointerup','pointerleave','pointercancel'].forEach(e=>pk.addEventListener(e,()=>show(false)))}}
+/* ---------- 버튼 ---------- */
+function doAct(m){if(isHost){const p=P(MY);if(p)act(p,m)}else CL.send(m)}
+function bindCommon(){
+  $$('[data-pick]').forEach(b=>b.onclick=()=>{const id=b.dataset.pick,ph=LV.ph;if(ph==='accuse')doAct({t:'accuse',target:id==='skip'?null:id});else if(ph.startsWith('night_'))doAct({t:'night',target:id})});
+  $$('[data-tv]').forEach(b=>b.onclick=()=>doAct({t:'trial',v:b.dataset.tv}));
+  $$('[data-a]').forEach(b=>b.onclick=()=>{const a=b.dataset.a;
+    if(a==='copy'){navigator.clipboard.writeText(location.origin+location.pathname+'?room='+G.room).then(()=>toast('링크를 복사했어요'));return}
+    if(a==='start')return startGame();if(a==='sendRoles')return sendRoles();if(a==='day')return startDay();if(a==='accuse')return startAccuse();
+    if(a==='endAccuse')return endAccuse();if(a==='endTrial')return endTrial();
+    if(a==='randRole'){G.players.forEach(p=>p.role=null);assignRandom();G.rolesSent=false;broadcast();return}
+    if(a==='mission'){const t=clip($('#misT').value,120);if(!t){toast('미션을 적어 주세요');return}G.mission={text:t,day:G.day,done:{}};addLog('🎯 사회자가 추수꾼에게 미션을 보냈어요');broadcast();toast('추수꾼에게 미션을 보냈어요');return}
+    if(a==='hint'){const t=clip($('#hintT').value,120);if(!t)return;G.hint=t;G.missionFail=false;addLog('💡 사회자 힌트: '+t);broadcast();return}
+    if(a==='again'){G.phase='lobby';G.players.forEach(p=>{p.role=null;p.alive=true;p.shown=null});G.pres=null;G.hint=null;G.mission=null;broadcast();return}});
+  $$('[data-s]').forEach(el=>el.onchange=()=>{const k=el.dataset.s;G.set[k]=el.type==='checkbox'?el.checked:+el.value;broadcast()});
+  $$('[data-role]').forEach(el=>el.onchange=()=>{P(el.dataset.role).role=el.value;saveG();render()});
+  $$('[data-mdone]').forEach(el=>el.onchange=()=>{G.mission.done[el.dataset.mdone]=el.checked;broadcast()})}
+let netOnce=false;function hostNet2(){if(netOnce)return;netOnce=true}
+
+/* =====================================================================
+   참가자 기기
+   ===================================================================== */
+const CL={joined:false,name:'',id:null,cl:null,send(m){if(this.cl)this.cl.publish(base()+'/h',JSON.stringify({from:this.id,m}),{qos:1})}};
+async function joinRoom(name){CL.name=name;try{CL.id=sessionStorage.getItem('hv-id-'+ROOM)}catch(_){}if(!CL.id){CL.id='p'+Math.random().toString(36).slice(2,10);try{sessionStorage.setItem('hv-id-'+ROOM,CL.id);sessionStorage.setItem('hv-name-'+ROOM,name)}catch(_){}}
+  const st=$('#jSt');if(st)st.textContent='방에 연결하는 중…';
+  for(const url of BROKERS){const cl=await mqttOpen(url,7000);if(!cl)continue;let heard=false;
+    cl.subscribe(base()+'/c/'+CL.id,{qos:1});cl.on('connect',()=>{cl.subscribe(base()+'/c/'+CL.id,{qos:1});if(CL.joined)CL.send({t:'join',name:CL.name})});
+    cl.on('message',(tp,buf)=>{let m;try{m=JSON.parse(buf.toString())}catch(_){return}heard=true;
+      if(m.t==='state'){const first=!LV||LV.ph!==m.v.ph;LV=m.v;LV.timerEnd=m.v.timerLeft>0?Date.now()+m.v.timerLeft:0;CL.joined=true;render();if(first&&navigator.vibrate)try{navigator.vibrate(120)}catch(_){}}
+      else if(m.t==='err'){toast(m.msg,3500);const s=$('#jSt');if(s)s.textContent=m.msg}});
+    CL.cl=cl;CL.send({t:'join',name});for(let i=0;i<25&&!heard;i++){await new Promise(r=>setTimeout(r,300));if(i===10)CL.send({t:'join',name})}
+    if(heard){setInterval(()=>CL.send({t:'ping'}),15000);return}try{cl.end(true)}catch(_){}CL.cl=null}
+  const s=$('#jSt');if(s)s.textContent='방에 연결하지 못했어요. 방 코드와 방장 화면이 켜져 있는지 확인해 주세요'}
+
+/* ---------- 시작 ---------- */
+if(HOSTING&&ROOM){try{G=JSON.parse(localStorage.getItem(HK())||'null')}catch(_){}if(G){isHost=true;MY=(G.players.find(p=>p.host)||{}).id||null;hostNet()}else{history.replaceState(null,'','./');ROOM=''}}
+else if(ROOM){let n='';try{n=sessionStorage.getItem('hv-name-'+ROOM)||''}catch(_){}if(n){CL.name=n;joinRoom(n)}}
+render();
+})();
+</script>
+<script src="../assets/scene.js?v=20261116d"></script>
+<script src="../assets/home.js?v=20261118"></script>
+</body></html>
