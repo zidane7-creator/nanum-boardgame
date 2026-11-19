@@ -300,6 +300,9 @@ function step(dt){const t=R.t,base=1/R.D,M=R.M;
     if(s.ev){const e=s.ev;
       if(t>=e.until){if(e.type==="dq"||e.type==="cliff"){s.dq=true;s.ev=null;addTick(s);return}if(e.long){const sm=s.p*R.M;R.obs.forEach(o=>{if(o.m>sm)s.passed.delete(o.id)});s.tried=0;s.cool=t+2}s.ev=null;s.hole=null}
       else{if(e.type==="back"){if(e.long){s.p=Math.max(e.backTo,s.p-base*1.4*dt);if(s.p<=e.backTo)e.until=t}else s.p=Math.max(0,s.p-base*.55*dt);s.leg+=dt*10}else if(e.type==="dq"){s.leg+=dt*12}else if(e.type==="fight"){s.leg+=dt*16}return}}
+    // 균형: 70%를 넘어 2등보다 압도적으로(거리의 10%·최소 20m) 앞서면, 한 번 60% 확률로 뒤로 500m
+    if(!s.ld&&s.p>=.7&&!s.ev){const rest=R.sheep.filter(o=>o!==s&&!o.dq&&!o.done);if(rest.length){const sec=Math.max(...rest.map(o=>o.p));
+      if((s.p-sec)*M>=Math.max(20,M*.1)){s.ld=true;if(Math.random()<.6){startEv(s,"back",t);s.ev.long=true;s.ev.until=Infinity;s.ev.backTo=Math.max(0,s.p-500/M);cast(`🌀 ${sName(s)} 양이 너무 앞서 나가다 정신이 쏙 빠져서 뒤로 500m를 달려가요!`);return}}}}
     // 남은 거리가 20%가 되는 순간, 30% 확률로 경기장 이탈(실격)
     if(!s.chk80&&s.p>=.8){s.chk80=true;if(Math.random()<.3&&R.sheep.length-R.dqN-1>=Math.max(2,SET.pod)){R.dqN++;startEv(s,"dq",t);cast(`🚫 결승선 앞에서 ${sName(s)} 양이 경기장을 벗어났어요! 실격`);return}}
     s.v+=(s.tv-s.v)*Math.min(1,dt*3);let v=s.v;const sm=s.p*M;
