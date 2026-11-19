@@ -275,7 +275,7 @@ function renderHost(){$("#fsBtn").hidden=false;$("#ttl").textContent="❓ 익명
   </div><div>
     <div class="card"><h2>🎯 질문 받을 사람</h2><div class="plist">${H.targets.map(t=>`<div class="pp${t.id===H.cur?" on":""}${t.fin?" fin":""}" data-t="${t.id}"><span class="nm">${esc(t.name)}</span><span class="c">${H.qs.filter(q=>q.to===t.id&&!q.hide).length}</span><button class="hide-fs" data-del="${t.id}" title="빼기">✕</button></div>`).join("")||'<p class="muted">이름을 적어 추가해 주세요</p>'}</div>
       <div class="row hide-fs" style="margin-top:10px"><input id="tIn" maxlength="12" placeholder="이름" style="flex:1"><button class="sm" id="tAdd">추가</button></div>
-      <div class="row" style="margin-top:10px;justify-content:center"><button class="go" id="next" ${H.targets.length?"":"disabled"}>▶ 다음 사람</button></div></div>
+      <div class="row" style="margin-top:10px;justify-content:center"><button class="hide-fs" id="shuf" ${H.targets.length>1?"":"disabled"} title="질문 받을 사람 순서를 무작위로 섞어요">🔀 순서 섞기</button><button class="go" id="next" ${H.targets.length?"":"disabled"}>▶ 다음 사람</button></div></div>
     <div class="card center hide-fs"><h2>📷 초대하기</h2><div class="qr">${qr}</div><div class="code">${esc(ROOM)}</div><button class="sm" id="cp">🔗 초대 링크 복사</button><p class="muted">들어온 사람 ${H.players.length}명 · 이 화면을 켜 두세요</p></div>
   </div></div>`;
   app.querySelectorAll("[data-t]").forEach(el=>el.onclick=e=>{if(e.target.closest("[data-del]"))return;H.cur=el.dataset.t;push();toast(`${tName()}님 차례예요`)});
@@ -283,6 +283,7 @@ function renderHost(){$("#fsBtn").hidden=false;$("#ttl").textContent="❓ 익명
   bindBoard();bindCompose("hostQ");
   const add=()=>{const v=clip($("#tIn").value,12);if(!v)return;H.targets.push({id:Math.random().toString(36).slice(2,8),name:v,fin:false});saveT();renderHost();$("#tIn").focus()};
   $("#tAdd").onclick=add;$("#tIn").onkeydown=e=>{if(e.key==="Enter"&&!e.isComposing)add()};
+  $("#shuf").onclick=()=>{const a=H.targets;for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}saveT();renderHost();toast("순서를 섞었어요 🔀 "+a.map(t=>t.name).join(" → "),3500)};
   $("#next").onclick=()=>{const i=H.targets.findIndex(t=>t.id===H.cur);if(i>=0)H.targets[i].fin=true;const nx=H.targets.slice(i+1).find(t=>!t.fin)||H.targets.find(t=>!t.fin);
     if(!nx){H.cur=null;push();toast("모든 사람의 질문 시간이 끝났어요 🎉",3000);return}H.cur=nx.id;push();toast(`${nx.name}님 차례예요`)};
   $("#cp").onclick=async()=>{try{await navigator.clipboard.writeText(url);toast("초대 링크를 복사했어요")}catch(e){prompt("이 링크를 복사해 주세요",url)}};
