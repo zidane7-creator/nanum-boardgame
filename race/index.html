@@ -49,7 +49,6 @@ main.wide{max-width:1300px}
 .chk input{width:22px;height:22px;flex:none;margin-top:2px;accent-color:var(--accent)}
 .chk b{font-family:Jua,sans-serif;font-weight:normal;font-size:17px}
 /* race */
-.rgrid{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:12px;align-items:start}
 @media (max-width:860px){.rgrid{grid-template-columns:minmax(0,1fr)}}
 .track{position:relative;border:3px solid var(--ink);border-radius:18px;overflow:hidden;background:#7cc36b;box-shadow:0 5px 0 rgba(0,0,0,.12)}
 .track canvas{display:block}
@@ -63,6 +62,16 @@ main.wide{max-width:1300px}
 @keyframes tin{from{opacity:0;transform:translateX(10px)}}
 .legend{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
 .legend .chip{font-size:15px;padding:1px 10px 1px 4px}
+/* 전체화면 경주 */
+.stage{position:fixed;inset:0;z-index:1000;background:#6fb35f;overflow:hidden}
+.stage canvas{position:absolute;inset:0;display:block}
+.stage .hud{position:absolute;left:0;right:0;top:0;padding:calc(8px + env(safe-area-inset-top,0px)) 10px 0;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.stage .hud>*{pointer-events:auto}.stage .legend{margin:0}.stage .cast{margin:0;align-self:flex-start;max-width:min(900px,100%);background:rgba(255,246,216,.95)}
+.stage .ticker{position:absolute;right:10px;bottom:46px;width:220px;max-height:min(46vh,420px);background:rgba(255,255,255,.92);border-width:2px;padding:10px}
+.stage .ticker h3{cursor:pointer;display:flex;gap:6px;align-items:baseline}.stage .ticker.shut{max-height:none;overflow:hidden}.stage .ticker.shut>:not(h3){display:none}.stage .ticker.shut h3{margin:0}
+.stage .cd{position:absolute;inset:0}
+@media (max-width:600px){.stage .ticker{width:170px}.stage .hud .chip{font-size:13px}}
+body.racing #homeFab{display:none!important}
 /* result */
 .podium{display:flex;align-items:flex-end;justify-content:center;gap:10px;margin:10px 0 4px;min-height:260px}
 .pcol{flex:1;max-width:220px;display:flex;flex-direction:column;align-items:center;text-align:center}
@@ -104,7 +113,7 @@ const rnd=(a,b)=>a+Math.random()*(b-a);
 const WOOL=["#fbf7ec","#ffb3c7","#9fd0ff","#b6eda4","#ffd27f","#d3b6ff","#fff07a","#8fe5d4","#ffae8a","#c8ccd2","#a9b9ff","#e5c49b","#f7a6e9","#c2e86d","#7fd9ff","#ff9f9f"];
 const MAXN=150;
 /* ---------- 설정 ---------- */
-let SET={txt:"A * 3, B * 4, C * 5",dir:"front",pod:3,prizes:["10,000원","5,000원","3,000원"],dedup:true,dur:"mid"};
+let SET={txt:"A * 3, B * 4, C * 5",dir:"front",pod:3,prizes:["10,000원","5,000원","3,000원"],dedup:true,dist:300};
 try{Object.assign(SET,JSON.parse(localStorage.getItem("race-setup")||"{}"))}catch(e){}
 const saveSet=()=>{try{localStorage.setItem("race-setup",JSON.stringify(SET))}catch(e){}};
 /* "A * 3, B * 4" → [{name,count,color}] (같은 이름은 합쳐요) */
@@ -116,10 +125,12 @@ function parse(txt){const out=[],map={};let total=0;
   out.forEach((p,i)=>{p.color=WOOL[i%WOOL.length]});
   total=out.reduce((a,p)=>a+p.count,0);return{people:out,total}}
 const sheepSVG=(c,s)=>`<svg width="${s||28}" height="${(s||28)*.82}" viewBox="0 0 44 36" aria-hidden="true"><g fill="#4a3a30"><rect x="10" y="25" width="3.4" height="8" rx="1.7"/><rect x="16" y="26" width="3.4" height="8" rx="1.7"/><rect x="23" y="26" width="3.4" height="8" rx="1.7"/><rect x="28" y="25" width="3.4" height="8" rx="1.7"/></g><g fill="${c}" stroke="#6b5444" stroke-width="1.4"><circle cx="9" cy="18" r="6.5"/><circle cx="15" cy="11" r="7"/><circle cx="23" cy="10" r="7"/><circle cx="29" cy="17" r="6.5"/><circle cx="22" cy="23" r="7"/><circle cx="13" cy="23" r="6.5"/></g><ellipse cx="19" cy="17" rx="10" ry="7.5" fill="${c}"/><ellipse cx="27.5" cy="14" rx="3" ry="1.8" fill="#e9c3a6" stroke="#6b5444" stroke-width="1"/><ellipse cx="34" cy="16" rx="7" ry="7.4" fill="#fde7d2" stroke="#6b5444" stroke-width="1.4"/><g fill="${c}" stroke="#6b5444" stroke-width="1"><circle cx="31.5" cy="9.5" r="3"/><circle cx="35.5" cy="9" r="3"/></g><circle cx="32.2" cy="16" r="1.4" fill="#2b1d14"/><circle cx="37" cy="16" r="1.4" fill="#2b1d14"/><circle cx="32.6" cy="15.5" r=".5" fill="#fff"/><circle cx="37.4" cy="15.5" r=".5" fill="#fff"/><circle cx="31" cy="19.3" r="1.5" fill="#ff9fb0" opacity=".8"/><circle cx="38.6" cy="19.3" r="1.5" fill="#ff9fb0" opacity=".8"/><path d="M33.6 19.6q1 1 2 0" stroke="#6b5444" stroke-width=".9" fill="none" stroke-linecap="round"/></svg>`;
-const DUR={short:[12,"짧게","약 12초"],mid:[20,"보통","약 20초"],long:[32,"길게","약 30초"]};
+const DISTS=Array.from({length:20},(_,i)=>(i+1)*100);
+const durOf=m=>6+m*.075; // 경주 거리(m) → 대략 걸리는 시간(초)
+const fmtSec=x=>x<60?`약 ${Math.round(x)}초`:`약 ${Math.floor(x/60)}분${Math.round(x%60)?" "+Math.round(x%60)+"초":""}`;
 
 /* ---------- 설정 화면 ---------- */
-function renderSetup(){stopRace();app.classList.remove("wide");
+function renderSetup(){stopRace();
   const {people,total}=parse(SET.txt),maxPod=Math.max(1,Math.min(total||1,30));if(SET.pod>maxPod)SET.pod=maxPod;
   while(SET.prizes.length<SET.pod)SET.prizes.push("");
   app.innerHTML=`<div class="hero"><div class="em">🐑🏁</div><h1>양 달리기</h1><div class="hint">양들의 장애물 달리기로 순위와 상품을 정해요</div></div>
@@ -136,73 +147,113 @@ function renderSetup(){stopRace();app.classList.remove("wide");
     <div class="prizes" id="prizes">${Array.from({length:SET.pod},(_,i)=>`<label><span>${i+1}위</span><input data-pz="${i}" maxlength="30" value="${esc(SET.prizes[i]||"")}" placeholder="예: 문화상품권"></label>`).join("")}</div>
     <span class="lbl">중복</span>
     <label class="chk"><input type="checkbox" id="dedup" ${SET.dedup?"checked":""}><span><b>중복 제거 (한 사람은 한 번만 상품 받기)</b><br><span class="hint">같은 사람의 양이 여러 번 순위에 들면 더 높은 순위 하나만 남기고, 다음 사람이 그 자리를 이어받아요.</span></span></label>
-    <span class="lbl">경기 시간</span>
-    <div class="seg seg3">${Object.entries(DUR).map(([k,v])=>`<button data-dur="${k}" class="${SET.dur===k?"on":""}"><b>${v[1]}</b><span>${v[2]}</span></button>`).join("")}</div>
+    <span class="lbl">경주 거리</span>
+    <div class="row"><select id="dist">${DISTS.map(m=>`<option value="${m}" ${+SET.dist===m?"selected":""}>${m}m</option>`).join("")}</select><span class="hint" id="distHint">${fmtSec(durOf(+SET.dist||300))} 동안 달려요 · 100m마다 허들 4개 정도</span></div>
   </div>
   <div class="center"><button class="big pri" id="go">🏁 출발!</button></div>`;
   const prev=()=>{const r=parse($("#txt").value);$("#prev").innerHTML=r.total?`<div class="chips">${r.people.map(p=>`<span class="chip">${sheepSVG(p.color,30)}${esc(p.name)} × ${p.count}</span>`).join("")}</div><div class="tot">총 ${r.people.length}명 · 양 ${r.total}마리${r.total>MAXN?` <span style="color:var(--accent)">(최대 ${MAXN}마리까지 달릴 수 있어요)</span>`:""}</div>`:`<div class="hint" style="margin-top:8px">아직 양이 없어요</div>`;return r};
   prev();
-  let tm;$("#txt").oninput=()=>{SET.txt=$("#txt").value;saveSet();prev();clearTimeout(tm);tm=setTimeout(()=>{if(!$("#pod"))return;const r=parse(SET.txt),mp=Math.max(1,Math.min(r.total||1,30));if($("#pod").options.length!==mp){const a=document.activeElement===$("#txt"),pos=$("#txt").selectionStart;renderSetup();if(a){$("#txt").focus();$("#txt").setSelectionRange(pos,pos)}}},700)};
+  let tm;$("#txt").oninput=()=>{SET.txt=$("#txt").value;saveSet();prev();clearTimeout(tm);tm=setTimeout(()=>{if(R||!$("#pod"))return;const r=parse(SET.txt),mp=Math.max(1,Math.min(r.total||1,30));if($("#pod").options.length!==mp){const a=document.activeElement===$("#txt"),pos=$("#txt").selectionStart;renderSetup();if(a){$("#txt").focus();$("#txt").setSelectionRange(pos,pos)}}},700)};
   $$("[data-dir]").forEach(b=>b.onclick=()=>{SET.dir=b.dataset.dir;saveSet();$$("[data-dir]").forEach(x=>x.classList.toggle("on",x===b))});
-  $$("[data-dur]").forEach(b=>b.onclick=()=>{SET.dur=b.dataset.dur;saveSet();$$("[data-dur]").forEach(x=>x.classList.toggle("on",x===b))});
+  $("#dist").onchange=e=>{SET.dist=+e.target.value;saveSet();$("#distHint").textContent=`${fmtSec(durOf(SET.dist))} 동안 달려요 · 100m마다 허들 4개 정도`};
   $("#pod").onchange=e=>{SET.pod=+e.target.value;saveSet();renderSetup()};
   $("#prizes").oninput=e=>{const i=e.target.dataset.pz;if(i!=null){SET.prizes[+i]=e.target.value;saveSet()}};
   $("#dedup").onchange=e=>{SET.dedup=e.target.checked;saveSet()};
-  $("#go").onclick=()=>{const r=parse(SET.txt);if(!r.total){toast("이름 * 숫자를 적어 주세요");$("#txt").focus();return}
+  $("#go").onclick=()=>{clearTimeout(tm);const r=parse(SET.txt);if(!r.total){toast("이름 * 숫자를 적어 주세요");$("#txt").focus();return}
     if(r.total>MAXN){toast(`양은 최대 ${MAXN}마리까지예요`);return}if(r.total<2){toast("양이 2마리 이상이어야 해요");return}startRace(r)}}
 
 /* ---------- 경주 ---------- */
 let R=null,raf=0;
-function stopRace(){cancelAnimationFrame(raf);raf=0;if(R&&R.ro)R.ro.disconnect();R=null}
+function stopRace(){cancelAnimationFrame(raf);raf=0;if(R&&R.ro)R.ro.disconnect();R=null;closeStage()}
+function closeStage(){const st=$("#stage");if(st)st.remove();document.body.style.overflow="";document.body.classList.remove("racing");
+  try{if(document.fullscreenElement)(document.exitFullscreen||function(){}).call(document);else if(document.webkitFullscreenElement)document.webkitExitFullscreen()}catch(e){}}
+function goFull(el){try{const f=el.requestFullscreen||el.webkitRequestFullscreen;if(f){const r=f.call(el);if(r&&r.catch)r.catch(()=>{})}}catch(e){}}
+/* 🚧 장애물 종류 (h: 높이 m, crash: 걸려 넘어질 확률, span: 주로 폭 중 차지하는 비율) */
+const OB={
+  hurdle:{w:20,full:true,h:1.0,crash:.2,ico:"💥",msg:"허들에 걸려 넘어졌어요"},
+  log:{w:16,span:[.3,.6],h:.6,crash:.16,ico:"🪵",msg:"통나무에 걸려 데굴데굴 굴렀어요"},
+  hay:{w:15,span:[.12,.22],h:1.0,crash:.25,ico:"💥",msg:"건초더미에 쿵 부딪혔어요"},
+  rock:{w:13,span:[.08,.14],h:.75,crash:.3,ico:"🪨",msg:"바위에 쿵 부딪혔어요"},
+  bush:{w:11,span:[.1,.18],h:.85,crash:.22,ico:"🌳",msg:"덤불에 걸려 버둥거려요"},
+  tire:{w:9,span:[.1,.16],h:.55,crash:.2,ico:"🛞",msg:"타이어에 발이 걸렸어요"},
+  mud:{w:13,flat:true,slow:.42},
+  water:{w:10,flat:true,slow:.6}};
+function makeCourse(M){const list=[];let m=rnd(10,16),id=0;const tot=Object.values(OB).reduce((a,o)=>a+o.w,0);
+  while(m<M-8){let k=Math.random()*tot,type="hurdle";for(const [ty,o] of Object.entries(OB)){if((k-=o.w)<0){type=ty;break}}
+    const o=OB[type],ob={id:++id,type,m};
+    if(o.full){ob.t0=0;ob.t1=1}
+    else if(o.flat){ob.len=rnd(3.5,8);ob.dep=rnd(.07,.14);ob.tc=rnd(ob.dep/2,1-ob.dep/2);ob.t0=ob.tc-ob.dep/2;ob.t1=ob.tc+ob.dep/2}
+    else{const w=rnd(o.span[0],o.span[1]);ob.tc=rnd(w/2+.02,1-w/2-.02);ob.t0=ob.tc-w/2;ob.t1=ob.tc+w/2}
+    list.push(ob);m+=rnd(5,24)*(Math.random()<.18?.35:1)}  // 간격이 들쭉날쭉해요
+  return list}
 function startRace(r){
-  stopRace();app.classList.add("wide");
+  stopRace();
   const sheep=[];r.people.forEach(p=>{for(let i=0;i<p.count;i++)sheep.push({owner:p.name,color:p.color,no:i+1})});
   for(let i=sheep.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[sheep[i],sheep[j]]=[sheep[j],sheep[i]]}
-  const D=DUR[SET.dur][0],HUR=[.2,.4,.6,.8],n=sheep.length;
-  // 하나의 주로: 양마다 세로 위치(yf)만 달라요
-  sheep.forEach((s,i)=>{s.lane=i;s.yf=Math.min(.95,Math.max(.05,(i+.5)/n+rnd(-.3,.3)/n));s.ty=s.yf;s.p=0;s.f=rnd(.92,1.08);s.v=0;s.tv=1/D;s.nextT=0;s.passed=[];s.stun=0;s.jump=-9;s.boost=0;s.done=false;s.dq=false;s.ev=null;s.hole=null;s.cool=rnd(1,3)*D/20;s.leg=Math.random()*6});
-  const muds=[],clovers=[];const okX=x=>!HUR.some(h=>Math.abs(h-x)<.06);
-  for(let k=0;k<7;k++){let x;do{x=rnd(.08,.9)}while(!okX(x));muds.push({x,y:rnd(.12,.88),rx:rnd(.045,.065),ry:rnd(.07,.1)})}
-  for(let k=0;k<12;k++){let x;do{x=rnd(.08,.93)}while(!okX(x));clovers.push({x,y:rnd(.08,.92),alive:true})}
-  R={people:r.people,sheep,D,HUR,muds,clovers,t:0,last:0,fin:[],dqN:0,started:false,speed:1,over:false};
-  app.innerHTML=`<div class="row" style="margin-bottom:8px"><div class="legend sp">${r.people.map(p=>`<span class="chip">${sheepSVG(p.color,26)}${esc(p.name)} ${p.count}</span>`).join("")}</div>
-    <button class="sm" id="fast">⏩ 2배속</button><button class="sm" id="stop">■ 그만하기</button></div>
-    <div class="cast" id="cast">🎙️ 곧 출발해요! 양들이 출발선에 섰어요</div><div class="rgrid"><div class="track" id="track"><canvas id="cv"></canvas><div class="cd" id="cd"></div></div>
-    <div class="ticker"><h3>🏁 도착 순서</h3><div class="hint" id="tkh">${SET.dir==="back"?"⏪ 뒤에서부터 순위예요. 가장 늦게 도착한 양이 1위!":"⏩ 먼저 도착한 양이 1위예요"}</div><div id="tk"></div></div></div>`;
+  const M=+SET.dist||300,D=durOf(M),n=sheep.length;
+  sheep.forEach((s,i)=>{s.lane=i;s.yf=Math.min(.95,Math.max(.05,(i+.5)/n+rnd(-.3,.3)/n));s.ty=s.yf;s.p=0;s.f=rnd(.92,1.08);s.v=0;s.tv=1/D;s.nextT=0;s.passed=new Set();s.tried=0;s.stun=0;s.jump=-9;s.jh=1;s.boost=0;s.done=false;s.dq=false;s.ev=null;s.hole=null;s.cool=rnd(1,3);s.leg=Math.random()*6});
+  const obs=makeCourse(M),clovers=[];
+  for(let k=0;k<Math.round(M/100*8);k++)clovers.push({x:rnd(4,M-3)/M,y:rnd(.08,.92),alive:true});
+  R={people:r.people,sheep,D,M,obs,clovers,t:0,last:0,fin:[],dqN:0,started:false,speed:1,over:false,camC:0,camMode:SET.dir==="back"?"last":"lead",tkOpen:window.innerWidth>700};
+  const st=document.createElement("div");st.id="stage";st.className="stage";
+  st.innerHTML=`<canvas id="cv"></canvas>
+    <div class="hud"><div class="row"><div class="legend sp">${r.people.map(p=>`<span class="chip">${sheepSVG(p.color,24)}${esc(p.name)} ${p.count}</span>`).join("")}<span class="chip">📏 ${M}m</span></div>
+      <button class="sm" id="cam">🎥 ${R.camMode==="lead"?"선두":"꼴찌"} 따라가기</button><button class="sm" id="fast">⏩ 2배속</button><button class="sm" id="fsb">⛶ 전체화면</button><button class="sm" id="stop">■ 그만하기</button></div>
+      <div class="cast" id="cast">🎙️ 곧 출발해요! ${n}마리 양들이 ${M}m 출발선에 섰어요</div></div>
+    <div class="ticker${R.tkOpen?"":" shut"}" id="tkbox"><h3 id="tkt">🏁 도착 순서 <span class="hint" id="tkc">0/${n}</span></h3><div class="hint">${SET.dir==="back"?"⏪ 뒤에서부터 순위예요. 가장 늦게 도착한 양이 1위!":"⏩ 먼저 도착한 양이 1위예요"}</div><div id="tk"></div></div>
+    <div class="cd" id="cd"></div>`;
+  document.body.appendChild(st);document.body.style.overflow="hidden";document.body.classList.add("racing");goFull(st);
   $("#stop").onclick=()=>{if(confirm("경주를 그만하고 설정으로 돌아갈까요?"))renderSetup()};
   $("#fast").onclick=()=>{R.speed=R.speed===1?2:1;$("#fast").textContent=R.speed===1?"⏩ 2배속":"▶ 보통 속도"};
-  layout();R.ro=new ResizeObserver(()=>{if(R)layout()});R.ro.observe($("#track"));
+  $("#cam").onclick=()=>{R.camMode=R.camMode==="lead"?"last":"lead";$("#cam").textContent=`🎥 ${R.camMode==="lead"?"선두":"꼴찌"} 따라가기`};
+  $("#fsb").onclick=()=>{if(document.fullscreenElement||document.webkitFullscreenElement){try{(document.exitFullscreen||document.webkitExitFullscreen).call(document)}catch(e){}}else goFull(st)};
+  $("#tkt").onclick=()=>{R.tkOpen=!R.tkOpen;$("#tkbox").classList.toggle("shut",!R.tkOpen)};
+  layout();R.camC=R.camMin;R.ro=new ResizeObserver(()=>{if(R)layout()});R.ro.observe(st);
   const cd=$("#cd");let c=3;cd.textContent=c;const iv=setInterval(()=>{if(!R){clearInterval(iv);return}c--;if(c>0)cd.textContent=c;else if(c===0)cd.textContent="출발!";else{clearInterval(iv);cd.textContent="";}if(c===0){R.started=true;R.last=performance.now()}},750);
   raf=requestAnimationFrame(loop);
 }
-function layout(){const tr=$("#track"),cv=$("#cv");if(!tr||!cv)return;const W=Math.max(320,tr.clientWidth),n=R.sheep.length;
-  const H=Math.round(Math.max(330,Math.min(window.innerHeight*.66,620)));
-  let r=n<=8?30:n<=16?26:n<=30?22:n<=60?18:15;r=Math.min(r,W/26);
+/* 📐 낮은 앵글 원근: t=0 먼 쪽, t=1 가까운 쪽 */
+const kOf=t=>1/(1.9-.9*t);
+function layout(){const st=$("#stage"),cv=$("#cv");if(!st||!cv||!R)return;const W=st.clientWidth,H=st.clientHeight,n=R.sheep.length;
+  const hud=st.querySelector(".hud"),hb=hud?hud.offsetHeight:90;
+  const yFar=hb+Math.max(70,H*.1),yNear=H-44;
+  const rN=Math.max(20,Math.min(46,(yNear-yFar)/(Math.sqrt(n)*2.1)));
   const dpr=Math.min(2,window.devicePixelRatio||1);cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+"px";cv.style.height=H+"px";
-  R.W=W;R.H=H;R.r=r;R.dpr=dpr;R.x0=r*1.8+12;R.xF=W-r*3.4-14;R.top=34+r*.9;R.bot=H-18-r*1.1;draw()}
-function loop(now){if(!R)return;
-  if(R.started&&!R.over){const dt=Math.min(.05,(now-R.last)/1000)*R.speed;R.last=now;R.t+=dt;step(dt)}else R.last=now;
-  draw();raf=requestAnimationFrame(loop)}
+  const ppm=rN*.8,kA=kOf(-.08),kB=kOf(1.08);
+  Object.assign(R,{W,H,dpr,rN,ppm,yFar,yNear,kA,kB,camMin:W*.38,camMax:R.M*ppm+W*.22});draw()}
+const Yt=t=>R.yFar+Math.pow(Math.max(0,(t+.08)/1.16),1.3)*(R.yNear-R.yFar);
+const Xm=(m,t)=>R.W/2+(m*R.ppm-R.camC)*kOf(t)+(1.08-t)*R.W*.16; // 비스듬한 시점
+const Pt=(m,t,h)=>[Xm(m,t),Yt(t)-(h||0)*R.ppm*1.8*kOf(t)];
+function loop(now){if(!R)return;const rdt=Math.min(.05,(now-R.last)/1000);
+  if(R.started&&!R.over){const dt=rdt*R.speed;R.t+=dt;step(dt)}R.last=now;
+  camStep(rdt);draw();raf=requestAnimationFrame(loop)}
+function camStep(dt){if(!R||!R.W)return;const run=R.sheep.filter(s=>!s.done&&!s.dq);let tx;
+  if(!R.started)tx=R.camMin;
+  else if(!run.length)tx=R.camMax;
+  else{const ps=run.map(s=>s.p),p=R.camMode==="lead"?Math.max(...ps):Math.min(...ps);tx=p*R.M*R.ppm+R.W*(R.camMode==="lead"?.14:-.1)}
+  tx=Math.max(R.camMin,Math.min(R.camMax,tx));R.camC+=(tx-R.camC)*Math.min(1,dt*2.2)}
 /* 🎲 돌발 상황: 먹이 먹기 · 넘어지기 · 함정 · 거꾸로 달리기 · 싸움 · 부딪힘 · 경기장 이탈(실격) */
-const EV={eat:["🌿","풀을 뜯어 먹어요"],fall:["💫","꽈당 넘어졌어요"],trap:["🕳️","함정에 빠졌어요"],back:["↩️","거꾸로 달려요"],bump:["💥","바위에 쿵 부딪혔어요"],fight:["💢","싸워요"],dq:["🚫","경기장을 벗어났어요! 실격"],hurdle:["💥","허들에 걸려 넘어졌어요"]};
+const EV={eat:["🌿","풀을 뜯어 먹어요"],fall:["💫","꽈당 넘어졌어요"],trap:["🕳️","함정에 빠졌어요"],back:["↩️","거꾸로 달려요"],bump:["💥","돌부리에 걸려 휘청했어요"],fight:["💢","싸워요"],dq:["🚫","경기장을 벗어났어요! 실격"],hurdle:["💥","장애물에 걸렸어요"],sleep:["💤","쿨쿨 잠들었어요"],love:["💕","눈이 맞았어요"]};
 const sName=s=>`${s.owner} #${s.no}`;
 function cast(txt){const el=$("#cast");if(!el)return;el.textContent=txt;el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash")}
-function startEv(s,type,t,partner){const K=R.D/20,len={eat:rnd(.9,1.7),fall:rnd(.6,1.1),trap:rnd(1.6,2.6),back:rnd(.9,1.5),bump:rnd(.4,.8),fight:rnd(1.1,1.9),dq:1.3,hurdle:rnd(.4,.9)}[type]*K;
-  s.ev={type,start:t,until:t+len,partner};s.cool=t+len+rnd(1.2,2.4)*K;if(type==="bump")s.p=Math.max(0,s.p-.018);
+function startEv(s,type,t,partner,ob){const len={eat:rnd(.9,1.7),fall:rnd(.6,1.1),trap:rnd(1.6,2.6),back:rnd(.9,1.5),bump:rnd(.4,.8),fight:rnd(1.1,1.9),dq:1.3,hurdle:rnd(.5,1),sleep:rnd(2,3.6),love:rnd(1.5,2.5)}[type];
+  s.ev={type,start:t,until:t+len,partner,ico:ob?OB[ob.type].ico:null};s.cool=t+len+rnd(1.2,2.4);if(type==="bump")s.p=Math.max(0,s.p-1.8/R.M);
   if(type==="trap")s.hole={p:s.p,y:s.yf};
   if(type==="dq")s.dqDir=s.yf<.5?-1:1;
-  if(type!=="fight")cast(`${EV[type][0]} ${sName(s)} 양이 ${EV[type][1]}`)}
+  if(type==="hurdle"&&ob)cast(`${OB[ob.type].ico} ${sName(s)} 양이 ${OB[ob.type].msg}`);
+  else if(type!=="fight"&&type!=="love")cast(`${EV[type][0]} ${sName(s)} 양이 ${EV[type][1]}`)}
 function maybeEvent(s,t,dt){if(s.ev||s.done||s.dq||t<s.cool||s.p<.05||s.p>.95)return;
-  if(Math.random()>dt*.11*20/R.D)return;
+  if(Math.random()>dt*.1)return;
   const n=R.sheep.length,dqMax=Math.floor(n*.08),alive=n-R.dqN;
-  const opts=[["eat",22],["fall",18],["trap",14],["back",14],["bump",14],["fight",14]];if(R.dqN<dqMax&&alive-1>=Math.max(2,SET.pod))opts.push(["dq",4]);
+  const opts=[["eat",22],["fall",18],["trap",14],["back",14],["bump",12],["fight",12],["sleep",12],["love",10]];if(R.dqN<dqMax&&alive-1>=Math.max(2,SET.pod))opts.push(["dq",4]);
   let k=Math.random()*opts.reduce((a,o)=>a+o[1],0),type="eat";for(const [o,w] of opts){if((k-=w)<0){type=o;break}}
-  if(type==="fight"){const foe=R.sheep.find(o=>o!==s&&!o.ev&&!o.done&&!o.dq&&Math.abs(o.yf-s.yf)<.16&&Math.abs(o.p-s.p)<.05);
-    if(!foe){type="fall"}else{startEv(s,"fight",t,foe);startEv(foe,"fight",t,s);foe.ev.until=s.ev.until;cast(`💢 ${sName(s)} 양과 ${sName(foe)} 양이 싸워요`);return}}
+  if(type==="fight"||type==="love"){const foe=R.sheep.find(o=>o!==s&&!o.ev&&!o.done&&!o.dq&&Math.abs(o.yf-s.yf)<.18&&Math.abs(o.p-s.p)*R.M<5);
+    if(!foe){type=type==="fight"?"fall":"sleep"}else{startEv(s,type,t,foe);startEv(foe,type,t,s);foe.ev.until=s.ev.until;
+      cast(type==="fight"?`💢 ${sName(s)} 양과 ${sName(foe)} 양이 싸워요`:`💕 ${sName(s)} 양과 ${sName(foe)} 양이 눈이 맞았어요`);return}}
   if(type==="dq")R.dqN++;
   startEv(s,type,t)}
-function step(dt){const t=R.t,base=1/R.D;
-  R.sheep.forEach(s=>{if(s.done){if(s.p<1.03)s.p+=dt*base*.6;s.leg+=dt*6;return}
+function step(dt){const t=R.t,base=1/R.D,M=R.M;
+  R.sheep.forEach(s=>{if(s.done){if(s.p<1+14/M)s.p+=dt*base*.6;s.leg+=dt*6;return}
     if(s.dq)return;
     if(t>=s.nextT){s.tv=base*s.f*rnd(.62,1.38);s.nextT=t+rnd(.3,.8);s.ty=Math.min(.95,Math.max(.05,s.yf+rnd(-.1,.1)))}
     s.yf+=(s.ty-s.yf)*Math.min(1,dt*1.5);
@@ -210,57 +261,116 @@ function step(dt){const t=R.t,base=1/R.D;
     if(s.ev){const e=s.ev;
       if(t>=e.until){if(e.type==="dq"){s.dq=true;s.ev=null;addTick(s);return}s.ev=null;s.hole=null}
       else{if(e.type==="back"){s.p=Math.max(0,s.p-base*.55*dt);s.leg+=dt*10}else if(e.type==="dq"){s.leg+=dt*12}else if(e.type==="fight"){s.leg+=dt*16}return}}
-    if(t<s.stun){s.v=0;return}
-    s.v+=(s.tv-s.v)*Math.min(1,dt*3);let v=s.v;
-    if(R.muds.some(m=>Math.abs(s.p-m.x)<m.rx&&Math.abs(s.yf-m.y)<m.ry))v*=.42;
+    s.v+=(s.tv-s.v)*Math.min(1,dt*3);let v=s.v;const sm=s.p*M;
+    for(const o of R.obs){const d=OB[o.type];if(d.flat&&Math.abs(sm-o.m)<o.len/2&&s.yf>o.t0&&s.yf<o.t1){v*=d.slow;break}}
     if(t<s.boost)v*=1.7;
-    let np=s.p+v*dt;
-    for(const c of R.clovers)if(c.alive&&Math.abs(c.y-s.yf)<.09&&s.p<c.x+.004&&np>=c.x-.004){c.alive=false;s.boost=t+.9;break}
-    for(let k=0;k<R.HUR.length;k++){const h=R.HUR[k]-.012;if(!s.passed[k]&&np>=h){
-      if(!s.tried&&Math.random()<.22){np=h;s.tried=true;s.p=np;startEv(s,"hurdle",t);return}else{s.passed[k]=true;s.tried=false;s.jump=t}break}}
+    let np=s.p+v*dt;const nm=np*M;
+    for(const c of R.clovers)if(c.alive&&Math.abs(c.y-s.yf)<.09&&s.p<c.x+.4/M&&np>=c.x-.4/M){c.alive=false;s.boost=t+.9;break}
+    for(const o of R.obs){const d=OB[o.type];if(d.flat||s.passed.has(o.id))continue;if(s.yf<o.t0-.03||s.yf>o.t1+.03)continue;
+      const edge=o.m-1;if(sm<edge+.001&&nm>=edge||sm>=edge&&sm<o.m+.5){
+        if(s.tried!==o.id&&Math.random()<d.crash){s.tried=o.id;s.p=edge/M;startEv(s,"hurdle",t,null,o);return}
+        s.passed.add(o.id);s.tried=0;s.jump=t;s.jh=d.h;break}}
     s.p=np;s.leg+=dt*(8+v*R.D*6);
     if(s.p>=1){s.done=true;s.p=1;R.fin.push(s);s.rank=R.fin.length;addTick(s)}});
   if(!R.over&&R.fin.length+R.dqN===R.sheep.length&&R.sheep.every(s=>s.done||s.dq)){R.over=true;setTimeout(()=>{if(R&&R.over)showResult()},1300)}}
 function addTick(s){const tk=$("#tk");if(!tk)return;const d=document.createElement("div");d.className="tk";
+  const tc=$("#tkc");if(tc)tc.textContent=`${R.fin.length+R.dqN}/${R.sheep.length}`;
   d.innerHTML=`<span class="n">${s.dq?"🚫":s.rank+"착"}</span>${sheepSVG(s.color,24)}<span>${esc(s.owner)}</span><span class="hint">#${s.no}${s.dq?" 실격":""}</span>`;tk.appendChild(d);
   const box=tk.parentElement;box.scrollTop=box.scrollHeight}
-function draw(){const cv=$("#cv");if(!cv||!R)return;const c=cv.getContext("2d"),{W,H,r,x0,xF,top,bot,dpr}=R;c.setTransform(dpr,0,0,dpr,0,0);
-  const X=p=>x0+p*(xF-x0),Y=f=>top+f*(bot-top);
-  // 잔디 + 주로
-  c.fillStyle="#6fb35f";c.fillRect(0,0,W,H);
-  c.fillStyle="#8fd27c";c.fillRect(0,22,W,H-38);
-  for(let x=0;x<W;x+=46){c.fillStyle="rgba(255,255,255,.06)";c.fillRect(x,22,23,H-38)}
-  // 울타리 (위·아래)
-  [[16,22],[H-20,H-16]].forEach(([y1])=>{c.fillStyle="#fff";c.fillRect(0,y1,W,4);for(let x=6;x<W;x+=28){c.fillRect(x,y1-6,4,14)}});
-  // 출발선 · 결승선
-  c.fillStyle="#fff";c.fillRect(X(0)-2,24,4,H-42);
-  const cs=9;for(let y=24;y<H-18;y+=cs)for(let k=0;k<2;k++){c.fillStyle=((y/cs|0)+k)%2?"#222":"#fff";c.fillRect(X(1)+k*cs,y,cs,Math.min(cs,H-18-y))}
-  c.font="14px Jua, sans-serif";c.textAlign="center";c.textBaseline="alphabetic";c.fillStyle="#24401b";c.fillText("출발",X(0),13);c.fillText("🏁 도착",X(1)+cs,13);
-  // 진흙 · 클로버
-  R.muds.forEach(m=>{const cx=X(m.x),cy=Y(m.y),rx=m.rx*(xF-x0),ry=m.ry*(bot-top);c.fillStyle="#8a6239";c.beginPath();c.ellipse(cx,cy,rx,ry,0,0,7);c.fill();c.fillStyle="#9c7349";c.beginPath();c.ellipse(cx-rx*.15,cy-ry*.1,rx*.7,ry*.6,0,0,7);c.fill();c.fillStyle="rgba(255,255,255,.22)";c.beginPath();c.ellipse(cx-rx*.35,cy-ry*.35,rx*.25,ry*.12,0,0,7);c.fill()});
-  R.clovers.forEach(k=>{if(!k.alive)return;const x=X(k.x),y=Y(k.y),q=Math.max(4,r*.22);c.fillStyle="#1f8a35";[[0,-1],[1,0],[0,1],[-1,0]].forEach(([a,b])=>{c.beginPath();c.arc(x+a*q*.85,y+b*q*.85,q,0,7);c.fill()});c.fillStyle="#7fe08e";c.beginPath();c.arc(x,y,q*.45,0,7);c.fill()});
-  // 허들 (주로 전체를 가로질러요)
-  R.HUR.forEach(h=>{const x=X(h);c.fillStyle="#7a4b22";for(let y=28;y<H-24;y+=Math.max(26,r*1.6))c.fillRect(x-2,y,4,Math.max(14,r*.8));
-    c.fillStyle="#e8b06e";c.fillRect(x-4,28,8,H-52);c.fillStyle="#c9302c";for(let y=30;y<H-26;y+=18)c.fillRect(x-4,y,8,8)});
-  // 함정 구멍
-  R.sheep.forEach(s=>{if(s.hole){c.fillStyle="#3a2a1a";c.beginPath();c.ellipse(X(s.hole.p),Y(s.hole.y)+r*.55,r*1.2,r*.45,0,0,7);c.fill()}});
-  // 양 (위에 있는 양부터 그려서 겹쳐 보이게)
-  const t=R.t;[...R.sheep].sort((a,b)=>a.yf-b.yf).forEach(s=>{let x=X(s.p),y=Y(s.yf);const js=t-s.jump;if(js>=0&&js<.38)y-=Math.sin(Math.PI*js/.38)*r*1.3;
-    if(s.dq&&!s.ev)return;
-    if(s.ev&&s.ev.type==="dq"){const k=(t-s.ev.start)/(s.ev.until-s.ev.start);c.globalAlpha=Math.max(0,1-k*k);y+=s.dqDir*k*(r*4);x+=Math.sin(k*18)*r*.3}
-    drawSheep(c,x,y,r,s,t);c.globalAlpha=1});
+/* ---------- 그리기 ---------- */
+function poly(c,pts,fill,stroke,lw){c.beginPath();pts.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();if(fill){c.fillStyle=fill;c.fill()}if(stroke){c.strokeStyle=stroke;c.lineWidth=lw||1;c.stroke()}}
+function drawObstacle(c,o,ta,tb){const d=OB[o.type],m=o.m,k=kOf((ta+tb)/2),ppm=R.ppm,ol="rgba(60,40,20,.55)";
+  if(o.type==="hurdle"){const h=d.h,post=(t)=>{const a=Pt(m,t,0),b=Pt(m,t,h*1.05);c.strokeStyle="#7a4b22";c.lineWidth=Math.max(2,4*kOf(t));c.lineCap="round";c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke()};
+    post(ta);[[.55,.72],[.85,1.02]].forEach(([h1,h2],j)=>{const seg=Math.round(ta*10)%2;poly(c,[Pt(m,ta,h*h2),Pt(m,tb,h*h2),Pt(m,tb,h*h1),Pt(m,ta,h*h1)],(seg+j)%2?"#fff":"#d6352e",ol,1)});
+    // 그림자
+    poly(c,[Pt(m-.15,ta,0),Pt(m+.5,ta,0),Pt(m+.5,tb,0),Pt(m-.15,tb,0)],"rgba(0,0,0,.12)");if(tb>=1)post(tb);return}
+  if(o.type==="log"){const h=d.h,r0=h*.9;
+    poly(c,[Pt(m+.6,o.t0,0),Pt(m+.6,o.t1,0),Pt(m-.2,o.t1,0),Pt(m-.2,o.t0,0)],"rgba(0,0,0,.15)");
+    poly(c,[Pt(m-r0,o.t0,r0*.2),Pt(m-r0,o.t1,r0*.2),Pt(m,o.t1,h),Pt(m,o.t0,h)],"#8a5a2e",ol,1);
+    poly(c,[Pt(m,o.t0,h),Pt(m,o.t1,h),Pt(m+r0,o.t1,r0*.2),Pt(m+r0,o.t0,r0*.2)],"#a8713d",ol,1);
+    const [cx,cy]=Pt(m,o.t1,h/2),rx=r0*ppm*kOf(o.t1),ry=h/2*ppm*1.8*kOf(o.t1);c.fillStyle="#e2b980";c.strokeStyle="#7a4b22";c.lineWidth=2;c.beginPath();c.ellipse(cx,cy,rx,ry,0,0,7);c.fill();c.stroke();
+    c.strokeStyle="rgba(122,75,34,.6)";c.lineWidth=1;[.65,.35].forEach(q=>{c.beginPath();c.ellipse(cx,cy,rx*q,ry*q,0,0,7);c.stroke()});return}
+  if(o.type==="hay"){const h=d.h,w=1.5;
+    poly(c,[Pt(m-w,o.t1,0),Pt(m+w+.6,o.t1,0),Pt(m+w+.6,o.t0,0),Pt(m-w,o.t0,0)],"rgba(0,0,0,.14)");
+    poly(c,[Pt(m-w,o.t0,h),Pt(m+w,o.t0,h),Pt(m+w,o.t1,h),Pt(m-w,o.t1,h)],"#f3d36b",ol,1);
+    poly(c,[Pt(m-w,o.t1,0),Pt(m+w,o.t1,0),Pt(m+w,o.t1,h),Pt(m-w,o.t1,h)],"#e2b843",ol,1);
+    c.strokeStyle="#b5852a";c.lineWidth=Math.max(1,2*kOf(o.t1));[.3,.7].forEach(q=>{const a=Pt(m-w+2*w*q,o.t1,0),b=Pt(m-w+2*w*q,o.t1,h),e=Pt(m-w+2*w*q,o.t0,h);c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.lineTo(e[0],e[1]);c.stroke()});
+    c.strokeStyle="rgba(181,133,42,.5)";c.lineWidth=1;for(let q=.15;q<1;q+=.2){const a=Pt(m-w,o.t1,h*q),b=Pt(m+w,o.t1,h*q);c.beginPath();c.moveTo(a[0],a[1]+2);c.lineTo(b[0],b[1]-2);c.stroke()}return}
+  const tc=o.tc,[x,y]=Pt(m,tc,0),kk=kOf(tc),S=ppm*kk;
+  c.fillStyle="rgba(0,0,0,.15)";c.beginPath();c.ellipse(x+S*.2,y,S*.9,S*.25,0,0,7);c.fill();
+  if(o.type==="rock"){c.fillStyle="#8e949a";c.strokeStyle="#5d6267";c.lineWidth=2;c.beginPath();c.moveTo(x-S*.8,y);c.quadraticCurveTo(x-S*.85,y-S*.6,x-S*.25,y-S*d.h*.95);c.quadraticCurveTo(x+S*.35,y-S*d.h*1.1,x+S*.7,y-S*.35);c.quadraticCurveTo(x+S*.95,y,x+S*.75,y);c.closePath();c.fill();c.stroke();
+    c.fillStyle="rgba(255,255,255,.3)";c.beginPath();c.ellipse(x-S*.25,y-S*.5,S*.22,S*.1,-.4,0,7);c.fill();return}
+  if(o.type==="bush"){[[-.45,.35,.45],[.4,.35,.45],[0,.6,.55],[-.2,.25,.4],[.25,.75,.35]].forEach(([a,b,q],i)=>{c.fillStyle=i%2?"#3f9a4a":"#2f7f3a";c.beginPath();c.arc(x+a*S,y-b*S,q*S,0,7);c.fill()});
+    c.fillStyle="#e8503a";[[-.3,.6],[.3,.8],[.1,.4]].forEach(([a,b])=>{c.beginPath();c.arc(x+a*S,y-b*S,S*.06,0,7);c.fill()});return}
+  if(o.type==="tire"){for(let j=0;j<2;j++){const yy=y-S*(.15+j*.27);c.fillStyle="#2b2b2b";c.beginPath();c.ellipse(x,yy,S*.55,S*.2,0,0,7);c.fill();c.fillStyle="#444";c.beginPath();c.ellipse(x,yy-S*.08,S*.55,S*.2,0,0,7);c.fill();c.fillStyle="#7cc36b";c.beginPath();c.ellipse(x,yy-S*.08,S*.22,S*.08,0,0,7);c.fill()}return}
+}
+function draw(){const cv=$("#cv");if(!cv||!R||!R.W)return;const c=cv.getContext("2d"),{W,H,dpr,M,ppm,rN}=R;c.setTransform(dpr,0,0,dpr,0,0);
+  const yA=Yt(-.08),yB=Yt(1.08);
+  // 하늘 · 먼 언덕
+  const g=c.createLinearGradient(0,0,0,yA);g.addColorStop(0,"#8fd0ff");g.addColorStop(1,"#d9f1ff");c.fillStyle=g;c.fillRect(0,0,W,yA+2);
+  const hx=-((R.camC*.12)%600);c.fillStyle="#a8d98f";for(let x=hx-600;x<W+600;x+=300){c.beginPath();c.ellipse(x,yA+8,190,60,0,Math.PI,0);c.fill()}
+  c.fillStyle="#93cc79";for(let x=hx*1.6-500;x<W+500;x+=230){c.beginPath();c.ellipse(x+90,yA+6,140,34,0,Math.PI,0);c.fill()}
+  // 땅
+  c.fillStyle="#6fb35f";c.fillRect(0,yA,W,H-yA);
+  const mL=(R.camC-W/2/kOf(-.08))/ppm-14,mR=(R.camC+W/2/kOf(-.08))/ppm+8;
+  poly(c,[[0,yA],[W,yA],[W,yB],[0,yB]],"#8fd27c");
+  for(let m=Math.floor(mL/10)*10;m<mR;m+=10){if(Math.floor(m/10)%2)continue;poly(c,[Pt(m,-.08),Pt(m+10,-.08),Pt(m+10,1.08),Pt(m,1.08)],"rgba(255,255,255,.07)")}
+  // 출발선 · 거리선 · 결승선
+  poly(c,[Pt(-.15,-.08),Pt(.15,-.08),Pt(.15,1.08),Pt(-.15,1.08)],"#fff");
+  for(let m=50;m<M;m+=50)if(m>mL&&m<mR)poly(c,[Pt(m-.06,-.08),Pt(m+.06,-.08),Pt(m+.06,1.08),Pt(m-.06,1.08)],"rgba(255,255,255,.4)");
+  if(M>mL&&M<mR+2){const q=.6,rows=14;for(let i=0;i<rows;i++)for(let j=0;j<2;j++){const ta=-.08+i*(1.16/rows),tb=ta+1.16/rows;poly(c,[Pt(M+j*q,ta),Pt(M+(j+1)*q,ta),Pt(M+(j+1)*q,tb),Pt(M+j*q,tb)],(i+j)%2?"#222":"#fff")}}
+  // 바닥 장애물(진흙·물웅덩이) · 함정
+  R.obs.forEach(o=>{const d=OB[o.type];if(!d.flat||o.m<mL-8||o.m>mR+8)return;const [x,y]=Pt(o.m,o.tc),rx=o.len/2*ppm*kOf(o.tc),ry=(Yt(o.t1)-Yt(o.t0))/2;
+    if(o.type==="mud"){c.fillStyle="#7d5732";c.beginPath();c.ellipse(x,y,rx,ry,0,0,7);c.fill();c.fillStyle="#9c7349";c.beginPath();c.ellipse(x-rx*.1,y-ry*.12,rx*.72,ry*.6,0,0,7);c.fill();c.fillStyle="rgba(255,255,255,.18)";c.beginPath();c.ellipse(x-rx*.35,y-ry*.35,rx*.22,ry*.12,0,0,7);c.fill()}
+    else{c.fillStyle="#3d8fd1";c.beginPath();c.ellipse(x,y,rx,ry,0,0,7);c.fill();c.fillStyle="#7cc4f5";c.beginPath();c.ellipse(x-rx*.05,y-ry*.1,rx*.8,ry*.7,0,0,7);c.fill();c.strokeStyle="rgba(255,255,255,.7)";c.lineWidth=2;c.beginPath();c.ellipse(x-rx*.3,y-ry*.3,rx*.25,ry*.15,0,Math.PI*1.1,Math.PI*1.9);c.stroke()}});
+  R.sheep.forEach(s=>{if(s.hole){const [x,y]=Pt(s.hole.p*M,s.hole.y),k=kOf(s.hole.y);c.fillStyle="#3a2a1a";c.beginPath();c.ellipse(x,y,rN*k*1.1,rN*k*.38,0,0,7);c.fill()}});
+  // 먼 쪽 울타리 + 거리 표지판
+  fence(c,-.08,mL,mR);
+  c.textAlign="center";c.textBaseline="middle";
+  for(let m=0;m<=M;m+=50){if(m<mL||m>mR)continue;const [x,y]=Pt(m,-.08,0),[,yt]=Pt(m,-.08,1.5),k=kOf(-.08);c.fillStyle="#7a4b22";c.fillRect(x-2,yt,4,y-yt);
+    const bw=58*Math.max(.7,k*1.6),bh=24*Math.max(.7,k*1.6);c.fillStyle="#fff7e0";c.strokeStyle="#7a4b22";c.lineWidth=2;c.beginPath();c.roundRect?c.roundRect(x-bw/2,yt-bh,bw,bh,7):c.rect(x-bw/2,yt-bh,bw,bh);c.fill();c.stroke();
+    c.fillStyle="#3b2a20";c.font=`${Math.round(bh*.62)}px Jua, sans-serif`;c.fillText(m===0?"출발":m===M?"도착":m+"m",x,yt-bh/2+1)}
+  // 깊이 순서대로: 장애물 · 클로버 · 양
+  const L=[];
+  R.obs.forEach(o=>{const d=OB[o.type];if(d.flat||o.m<mL-4||o.m>mR+4)return;
+    if(d.full){for(let i=0;i<10;i++){const ta=i/10,tb=(i+1)/10;L.push({t:tb-.001,f:()=>drawObstacle(c,o,ta,tb)})}}
+    else L.push({t:o.t1,f:()=>drawObstacle(c,o,o.t0,o.t1)})});
+  R.clovers.forEach(k=>{if(!k.alive||k.x*M<mL||k.x*M>mR)return;L.push({t:k.y,f:()=>{const [x,y]=Pt(k.x*M,k.y),q=Math.max(4,rN*.2*kOf(k.y));c.fillStyle="#1f8a35";[[0,-1],[1,0],[0,1],[-1,0]].forEach(([a,b])=>{c.beginPath();c.ellipse(x+a*q*.9,y-q*.6+b*q*.45,q,q*.6,0,0,7);c.fill()});c.fillStyle="#7fe08e";c.beginPath();c.arc(x,y-q*.6,q*.35,0,7);c.fill()}})});
+  const t=R.t;
+  R.sheep.forEach(s=>{if(s.dq&&!s.ev)return;let tv=s.yf,alpha=1;if(s.ev&&s.ev.type==="dq"){const q=(t-s.ev.start)/(s.ev.until-s.ev.start);tv=s.yf+s.dqDir*q*.35;alpha=Math.max(0,1-q*q)}
+    const [x,y]=Pt(s.p*M,tv);if(x<-rN*3||x>W+rN*3)return;const k=kOf(tv),r=rN*k;let lift=0;const js=t-s.jump;if(js>=0&&js<.42)lift=Math.sin(Math.PI*js/.42)*(s.jh*ppm*1.8*k+r*.4);
+    L.push({t:tv,f:()=>{c.globalAlpha=alpha;drawSheep(c,x,y-r*.95,r,s,t,lift);c.globalAlpha=1}})});
+  L.sort((a,b)=>a.t-b.t).forEach(o=>o.f());
+  // 가까운 쪽 울타리
+  fence(c,1.08,mL,mR);
+  // 결승 아치
+  if(M>mL-4&&M<mR+4){const q=.6,[ax,ay]=Pt(M+q,-.08,0),[,aty]=Pt(M+q,-.08,3.4),[bx,by]=Pt(M+q,1.08,0),[,bty]=Pt(M+q,1.08,3.4);
+    c.strokeStyle="#c9302c";c.lineCap="round";c.lineWidth=6*kOf(-.08)*1.5;c.beginPath();c.moveTo(ax,ay);c.lineTo(ax,aty);c.stroke();c.lineWidth=8*kOf(1.08);c.beginPath();c.moveTo(bx,by);c.lineTo(bx,bty);c.stroke();
+    const bh=30*kOf(.5)*1.4;poly(c,[[ax,aty-bh],[bx,bty-bh*1.5],[bx,bty],[ax,aty]],"#c9302c","#7a1d18",2);
+    c.save();c.fillStyle="#fff";c.font=`${Math.round(bh*.8)}px Jua, sans-serif`;c.textAlign="center";c.textBaseline="middle";const mx=(ax+bx)/2,my=(aty+bty)/2-bh*.62;c.translate(mx,my);c.rotate(Math.atan2(bty-aty,bx-ax));c.fillText("🏁 GOAL",0,0);c.restore()}
+  // 미니맵
+  const mx=20,mw=W-40,my=H-22;c.fillStyle="rgba(255,255,255,.88)";c.beginPath();c.roundRect?c.roundRect(mx-8,my-14,mw+16,28,14):c.rect(mx-8,my-14,mw+16,28);c.fill();
+  c.fillStyle="#d9ecd2";c.fillRect(mx,my-3,mw,6);R.obs.forEach(o=>{const d=OB[o.type];c.fillStyle=d.flat?(o.type==="mud"?"#9c7349":"#4ea5e6"):"#c9302c";c.fillRect(mx+o.m/M*mw-1,my-(d.flat?3:6),d.flat?3:2,d.flat?6:12)});
+  c.fillStyle="#222";c.fillRect(mx+mw-2,my-8,4,16);
+  const v0=(R.camC-W/2)/ppm/M,v1=(R.camC+W/2)/ppm/M;c.strokeStyle="rgba(232,80,58,.9)";c.lineWidth=2;c.strokeRect(mx+Math.max(0,v0)*mw,my-11,Math.max(6,(Math.min(1,v1)-Math.max(0,v0))*mw),22);
+  R.sheep.forEach(s=>{if(s.dq)return;const px=mx+Math.min(1,s.p)*mw;c.fillStyle=s.color;c.strokeStyle="#3b2a20";c.lineWidth=1;c.beginPath();c.arc(px,my+(s.yf-.5)*8,4,0,7);c.fill();c.stroke()});
   c.textBaseline="alphabetic"}
+function fence(c,t,mL,mR){const k=kOf(t),h=1.1;c.fillStyle="#fff";c.strokeStyle="rgba(0,0,0,.15)";
+  const a=Pt(mL,t,h*.8),b=Pt(mR,t,h*.8),a2=Pt(mL,t,h*.45),b2=Pt(mR,t,h*.45),bw=Math.max(2,5*k);
+  c.fillRect(Math.min(a[0],b[0]),a[1]-bw/2,Math.abs(b[0]-a[0]),bw);c.fillRect(Math.min(a2[0],b2[0]),a2[1]-bw/2,Math.abs(b2[0]-a2[0]),bw);
+  for(let m=Math.floor(mL/3)*3;m<mR;m+=3){const [x,y]=Pt(m,t,0),[,yt]=Pt(m,t,h);c.fillRect(x-bw*.6,yt,bw*1.2,y-yt)}}
 function shade(hex,k){const n=parseInt(hex.slice(1),16);const f=v=>Math.max(0,Math.min(255,Math.round(v*k)));return `rgb(${f(n>>16)},${f(n>>8&255)},${f(n&255)})`}
-function drawSheep(c,x,y,R0,s,t){const ev=s.ev&&s.ev.type,r=R0*(ev==="trap"?.75:1),dizzy=ev==="fall"||ev==="hurdle"||ev==="bump"||ev==="trap";
+function drawSheep(c,x,y,R0,s,t,lift){lift=lift||0;const ev=s.ev&&s.ev.type,r=R0*(ev==="trap"?.75:1),dizzy=ev==="fall"||ev==="hurdle"||ev==="bump"||ev==="trap";
+  const faceBack=ev==="back"||((ev==="love"||ev==="fight")&&s.ev.partner&&s.ev.partner.p<s.p);
   const running=!ev&&!s.done&&!(s.dq);if(ev==="trap")y+=r*.5;if(ev==="fight")x+=Math.sin(t*40)*r*.18;
   const bob=running||s.done?-Math.abs(Math.sin(s.leg))*r*.12:0;
-  c.save();c.translate(x,y+bob);if(dizzy&&ev!=="trap")c.rotate(-.75);if(ev==="back")c.scale(-1,1);
+  // 그림자 (땅에 남아요)
+  const sh=1/(1+lift/(r*2));c.fillStyle="rgba(0,0,0,.16)";c.beginPath();c.ellipse(x,y+r*.98,r*1.05*sh,r*.24*sh,0,0,7);c.fill();
+  c.save();c.translate(x,y+bob-lift);if(dizzy&&ev!=="trap")c.rotate(-.75);if(ev==="sleep"){c.translate(0,r*.3);c.rotate(.12)}if(faceBack)c.scale(-1,1);
   const ol="#6b5444";c.lineJoin="round";
-  // 그림자
-  c.fillStyle="rgba(0,0,0,.14)";c.beginPath();c.ellipse(0,r*.98-bob,r*1.05,r*.22,0,0,7);c.fill();
   // 다리 4개
   const lg=Math.sin(s.leg)*r*.18;c.fillStyle="#4a3a30";
-  [[-.55,lg],[-.2,-lg],[.25,lg],[.55,-lg]].forEach(([a,d])=>{c.beginPath();c.roundRect?c.roundRect(a*r-r*.09+d,r*.35,r*.18,r*.55,r*.09):c.rect(a*r-r*.09+d,r*.35,r*.18,r*.55);c.fill()});
+  if(ev!=="sleep")[[-.55,lg],[-.2,-lg],[.25,lg],[.55,-lg]].forEach(([a,d])=>{c.beginPath();c.roundRect?c.roundRect(a*r-r*.09+d,r*.35,r*.18,r*.55,r*.09):c.rect(a*r-r*.09+d,r*.35,r*.18,r*.55);c.fill()});
   // 꼬리
   c.fillStyle=s.color;c.strokeStyle=ol;c.lineWidth=Math.max(1,r*.07);c.beginPath();c.arc(-r*1.02,-r*.12,r*.22,0,7);c.fill();c.stroke();
   // 몽실몽실 털
@@ -270,7 +380,7 @@ function drawSheep(c,x,y,R0,s,t){const ev=s.ev&&s.ev.type,r=R0*(ev==="trap"?.75:
   c.beginPath();c.ellipse(0,-r*.05,r*.78,r*.52,0,0,7);c.fill();
   c.fillStyle="rgba(255,255,255,.45)";c.beginPath();c.ellipse(-r*.3,-r*.32,r*.26,r*.13,-.3,0,7);c.fill();
   // 머리
-  const hx=r*.92,hy=(ev==="eat"?r*.28:-r*.18);
+  const hx=r*.92,hy=(ev==="eat"?r*.28:ev==="sleep"?r*.15:-r*.18);
   c.fillStyle="#e9c3a6";c.strokeStyle=ol;c.lineWidth=Math.max(1,r*.06);c.beginPath();c.ellipse(hx-r*.38,hy-r*.08,r*.22,r*.12,-.5,0,7);c.fill();c.stroke();
   c.fillStyle="#fde7d2";c.beginPath();c.ellipse(hx,hy,r*.46,r*.48,0,0,7);c.fill();c.stroke();
   c.fillStyle=s.color;c.strokeStyle=ol;[[-.16,-.42],[.1,-.46],[.3,-.36]].forEach(([a,b])=>{c.beginPath();c.arc(hx+a*r,hy+b*r,r*.17,0,7);c.fill();c.stroke()});
@@ -278,6 +388,8 @@ function drawSheep(c,x,y,R0,s,t){const ev=s.ev&&s.ev.type,r=R0*(ev==="trap"?.75:
   const ex1=hx-r*.12,ex2=hx+r*.2,ey=hy+r*.02;c.strokeStyle="#2b1d14";c.fillStyle="#2b1d14";c.lineWidth=Math.max(1,r*.07);c.lineCap="round";
   if(dizzy||ev==="fight"){[ex1,ex2].forEach(ex=>{const q=r*.07;c.beginPath();c.moveTo(ex-q,ey-q);c.lineTo(ex+q,ey+q);c.moveTo(ex+q,ey-q);c.lineTo(ex-q,ey+q);c.stroke()})}
   else if(ev==="eat"){[ex1,ex2].forEach(ex=>{c.beginPath();c.arc(ex,ey,r*.07,Math.PI*1.1,Math.PI*1.9);c.stroke()})}
+  else if(ev==="sleep"){[ex1,ex2].forEach(ex=>{c.beginPath();c.arc(ex,ey-r*.03,r*.07,.15,Math.PI-.15);c.stroke()})}
+  else if(ev==="love"){c.fillStyle="#e8336b";[ex1,ex2].forEach(ex=>{const q=r*.075;c.beginPath();c.moveTo(ex,ey+q*1.1);c.bezierCurveTo(ex-q*1.6,ey-q*.2,ex-q*.6,ey-q*1.4,ex,ey-q*.4);c.bezierCurveTo(ex+q*.6,ey-q*1.4,ex+q*1.6,ey-q*.2,ex,ey+q*1.1);c.fill()})}
   else{[ex1,ex2].forEach(ex=>{c.beginPath();c.arc(ex,ey,r*.075,0,7);c.fill();c.fillStyle="#fff";c.beginPath();c.arc(ex+r*.025,ey-r*.03,r*.028,0,7);c.fill();c.fillStyle="#2b1d14"})}
   c.fillStyle="rgba(255,140,165,.75)";[hx-r*.26,hx+r*.36].forEach(bx=>{c.beginPath();c.ellipse(bx,hy+r*.2,r*.09,r*.06,0,0,7);c.fill()});
   c.strokeStyle="#6b5444";c.lineWidth=Math.max(.8,r*.05);c.beginPath();c.arc(hx+r*.04,hy+r*.2,r*.07,.2,Math.PI-.2);c.stroke();
@@ -285,19 +397,21 @@ function drawSheep(c,x,y,R0,s,t){const ev=s.ev&&s.ev.type,r=R0*(ev==="trap"?.75:
   c.restore();
   // 이름표
   const fs=Math.max(10,Math.min(15,r*.52)),label=(s.owner.length>5?s.owner.slice(0,5)+"…":s.owner);c.font=`${fs}px Jua, sans-serif`;
-  const tw=c.measureText(label).width+10,ly=y+bob-r*1.05;c.fillStyle="rgba(255,255,255,.9)";c.strokeStyle=s.color==="#fbf7ec"?"#bba":shade(s.color,.75);c.lineWidth=2;
+  const tw=c.measureText(label).width+10,ly=y+bob-lift-r*1.05;c.fillStyle="rgba(255,255,255,.9)";c.strokeStyle=s.color==="#fbf7ec"?"#bba":shade(s.color,.75);c.lineWidth=2;
   c.beginPath();c.roundRect?c.roundRect(x-tw/2,ly-fs*.62,tw,fs*1.24,fs*.6):c.rect(x-tw/2,ly-fs*.62,tw,fs*1.24);c.fill();c.stroke();
   c.fillStyle="#3b2a20";c.textAlign="center";c.textBaseline="middle";c.fillText(label,x,ly+.5);
-  if(ev&&ev!=="dq"){c.font=`${Math.max(14,r*.85)}px sans-serif`;c.fillText(EV[ev][0],x+r*.95,ly-fs*.9)}
+  if(ev&&ev!=="dq"){c.font=`${Math.max(14,r*.85)}px sans-serif`;const ic=ev==="hurdle"&&s.ev.ico?s.ev.ico:EV[ev][0];
+    if(ev==="sleep"){const q=(t*1.3)%1;c.globalAlpha=1-q;c.fillText("💤",x+r*.9+q*r*.4,ly-fs*.6-q*r*.8);c.globalAlpha=1}
+    else if(ev==="love"){const q=(t*1.1)%1;c.fillText("💕",x+(faceBack?-1:1)*r*.6,ly-fs*.8-q*r*.5)}else c.fillText(ic,x+r*.95,ly-fs*.9)}
   if(t<s.boost){c.font=`${Math.max(12,r*.7)}px sans-serif`;c.fillText("💨",x-r*1.55,y)}
-  if(s.done){const rr=Math.max(9,r*.42),bx=x+r*1.55,by=y+bob+r*.1;c.fillStyle=s.rank<=3?["#e9a91c","#9aa6b4","#c47a3d"][s.rank-1]:"#fff";c.strokeStyle="#3b2a20";c.lineWidth=2;c.beginPath();c.arc(bx,by,rr,0,7);c.fill();c.stroke();
+  if(s.done){const rr=Math.max(9,r*.42),bx=x+r*1.55,by=y+bob-lift+r*.1;c.fillStyle=s.rank<=3?["#e9a91c","#9aa6b4","#c47a3d"][s.rank-1]:"#fff";c.strokeStyle="#3b2a20";c.lineWidth=2;c.beginPath();c.arc(bx,by,rr,0,7);c.fill();c.stroke();
     c.fillStyle=s.rank<=3?"#fff":"#3b2a20";c.font=`${Math.max(10,rr*1.05)}px Jua, sans-serif`;c.fillText(s.rank,bx,by+.5)}}
 /* ---------- 결과 ---------- */
 function computeResult(fin,dir,pod,dedup){const order=dir==="back"?[...fin].reverse():[...fin];
   const ranked=order.map((s,i)=>({s,rank:i+1}));const picks=[],seen=new Set();
   for(const r of ranked){if(picks.length>=pod)break;if(dedup&&seen.has(r.s.owner)){r.skip=true;continue}seen.add(r.s.owner);r.place=picks.length+1;picks.push(r)}
   return{ranked,picks}}
-function showResult(){if(!R)return;const fin=R.fin,people=R.people;cancelAnimationFrame(raf);raf=0;if(R.ro)R.ro.disconnect();
+function showResult(){if(!R)return;const fin=R.fin,people=R.people;cancelAnimationFrame(raf);raf=0;if(R.ro)R.ro.disconnect();closeStage();
   const dqs=R.sheep.filter(s=>s.dq),{ranked,picks}=computeResult(fin,SET.dir,SET.pod,SET.dedup),pz=i=>(SET.prizes[i]||"").trim();
   const lab=r=>`${sheepSVG(r.s.color,30)}<span>${esc(r.s.owner)}</span>`;
   const col=(i,cls)=>{const r=picks[i];if(!r)return`<div class="pcol ${cls}"><div class="who">　</div><div class="blk">${i+1}</div></div>`;
@@ -312,7 +426,7 @@ function showResult(){if(!R)return;const fin=R.fin,people=R.people;cancelAnimati
   <div class="card"><h2>📋 상품 받는 사람</h2><div class="plist">${picks.map(r=>`<div class="prow"><span class="rk">${r.place}위</span>${lab(r)}<span class="pz">${esc(pz(r.place-1))||"—"}</span></div>`).join("")}</div></div>
   <details class="card"><summary class="j" style="cursor:pointer;font-size:19px">전체 순위 보기 (도착 ${ranked.length}마리${dqs.length?` · 실격 ${dqs.length}마리`:""})</summary>
     <table class="all"><thead><tr><th>순위</th><th>양</th><th>도착</th><th></th></tr></thead><tbody>${ranked.concat(dqs.map(s=>({s,dq:true}))).map(r=>`<tr class="${r.place?"win":""}"><td>${r.dq?"실격":r.rank+"위"}</td><td><span class="row" style="gap:6px">${sheepSVG(r.s.color,22)}${esc(r.s.owner)} <span class="hint">#${r.s.no}</span></span></td><td>${r.dq?"🚫":r.s.rank+"착"}</td><td class="x">${r.place?`🏆 ${r.place}위${pz(r.place-1)?" · "+esc(pz(r.place-1)):""}`:r.skip?"중복이라 제외":""}</td></tr>`).join("")}</tbody></table></details>`;
-  app.classList.remove("wide");window.scrollTo(0,0);confetti();
+  window.scrollTo(0,0);confetti();
   const text=`[🐑 양 달리기 결과]\n${SET.dir==="back"?"뒤에서부터":"앞에서부터"} · ${SET.pod}위까지${SET.dedup?" · 중복 제거":""}\n\n`+picks.map(r=>`${r.place}위 ${r.s.owner}${pz(r.place-1)?" "+pz(r.place-1):""}`).join("\n");
   $("#again").onclick=()=>startRace({people,total:people.reduce((a,p)=>a+p.count,0)});
   $("#setup").onclick=renderSetup;
@@ -321,7 +435,7 @@ function showResult(){if(!R)return;const fin=R.fin,people=R.people;cancelAnimati
 function confetti(){const box=document.createElement("div");box.className="confetti";const em=["🎉","🎊","✨","🐑","⭐"];
   for(let i=0;i<40;i++){const e=document.createElement("i");e.textContent=em[i%em.length];e.style.left=Math.random()*100+"%";e.style.animationDuration=rnd(2.2,4)+"s";e.style.animationDelay=rnd(0,1.2)+"s";box.appendChild(e)}
   document.body.appendChild(box);setTimeout(()=>box.remove(),5600)}
-window.__raceTest={parse,computeResult,sim:sec=>{if(!R)return null;R.started=true;for(let i=0;i<sec*30&&R&&!R.over;i++){R.t+=1/30;step(1/30)}draw();return R&&{fin:R.fin.length,dq:R.dqN,over:R.over}}};
+window.__raceTest={parse,computeResult,peek:()=>R,redraw:()=>draw(),sim:sec=>{if(!R)return null;R.started=true;for(let i=0;i<sec*30&&R&&!R.over;i++){R.t+=1/30;step(1/30)}if(R){camStep(1);draw()}return R&&{fin:R.fin.length,dq:R.dqN,over:R.over}}};
 renderSetup();
 })();
 </script>
