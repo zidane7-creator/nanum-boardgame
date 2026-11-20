@@ -71,7 +71,7 @@ main.wide{max-width:1300px}
 .stage .ticker{position:absolute;right:10px;bottom:46px;width:220px;max-height:min(46vh,420px);background:rgba(255,255,255,.92);border-width:2px;padding:10px}
 .stage .ticker h3{cursor:pointer;display:flex;gap:6px;align-items:baseline}.stage .ticker.shut{max-height:none;overflow:hidden}.stage .ticker.shut>:not(h3){display:none}.stage .ticker.shut h3{margin:0}
 .stage .cd{position:absolute;inset:0}
-.stage .chip.clock{font-size:17px;background:#fff;border-color:var(--ink)}.stage .chip.clock.hurry{background:#e8503a;color:#fff;animation:fl .6s ease-out infinite alternate}
+.stage .chip.clock{font-size:17px;background:#fff;border-color:var(--ink)}.stage .chip.clock.run{background:#fff6d8}.stage .chip.clock.hurry{background:#e8503a;color:#fff;animation:fl .6s ease-out infinite alternate}
 @media (max-width:600px){.stage .ticker{width:170px}.stage .hud .chip{font-size:13px}}
 body.racing #homeFab{display:none!important}
 /* result */
@@ -153,7 +153,7 @@ function renderSetup(){stopRace();
     <span class="lbl">중복</span>
     <label class="chk"><input type="checkbox" id="dedup" ${SET.dedup?"checked":""}><span><b>중복 제거 (한 사람은 한 번만 상품 받기)</b><br><span class="hint">같은 사람의 양이 여러 번 순위에 들면 더 높은 순위 하나만 남기고, 다음 사람이 그 자리를 이어받아요.</span></span></label>
     <span class="lbl">제한 시간</span>
-    <div class="row"><select id="limit">${LIMITS.map(x=>`<option value="${x}" ${+SET.limit===x?"selected":""}>${limLabel(x)}</option>`).join("")}</select><span class="hint">이 시간 안에 결승선을 못 넘은 양은 실격이고, 그때까지 들어온 양으로 순위를 확정해요</span></div>
+    <div class="row"><select id="limit">${LIMITS.map(x=>`<option value="${x}" ${+SET.limit===x?"selected":""}>${limLabel(x)}</option>`).join("")}</select><span class="hint">포디움에 오를 양(${SET.pod}위까지)이 다 들어온 뒤부터 시간을 재요. 그 안에 못 들어온 양은 실격이고, 그때까지 들어온 양으로 순위를 확정해요</span></div>
     <span class="lbl">경주 거리</span>
     <div class="row"><select id="dist">${DISTS.map(m=>`<option value="${m}" ${+SET.dist===m?"selected":""}>${m}m</option>`).join("")}</select><span class="hint" id="distHint">보통 ${fmtSec(durOf(+SET.dist||300)*5)} 걸려요 (돌발 상황에 따라 달라요)</span></div>
   </div>
@@ -223,10 +223,10 @@ function startRace(r){
   const M=+SET.dist||300,D=durOf(M),n=sheep.length;
   sheep.forEach((s,i)=>{s.lane=i;s.yf=Math.min(.95,Math.max(.05,(i+.5)/n+rnd(-.3,.3)/n));s.ty=s.yf;s.p=0;s.f=rnd(.92,1.08);s.v=0;s.tv=1/D;s.nextT=0;s.passed=new Set();s.tried=0;s.stun=0;s.jump=-9;s.jh=1;s.boost=0;s.done=false;s.dq=false;s.ev=null;s.hole=null;s.cool=rnd(1,3);s.leg=Math.random()*6});
   const Z=makeZones(M),obs=makeCourse(M,Z),clovers=[];
-  R={limit:+SET.limit||0,people:r.people,sheep,D,M,Z,zAnn:{},obs,clovers,t:0,last:0,fin:[],dqN:0,started:false,speed:1,over:false,camC:0,tilt:.5,zoom:1,manual:false,camMode:SET.dir==="back"?"last":"lead",tkOpen:window.innerWidth>700};
+  R={limit:+SET.limit||0,limitStart:null,people:r.people,sheep,D,M,Z,zAnn:{},obs,clovers,t:0,last:0,fin:[],dqN:0,started:false,speed:1,over:false,camC:0,tilt:.5,zoom:1,manual:false,camMode:SET.dir==="back"?"last":"lead",tkOpen:window.innerWidth>700};
   const st=document.createElement("div");st.id="stage";st.className="stage";
   st.innerHTML=`<canvas id="cv"></canvas>
-    <div class="hud"><div class="row"><div class="legend sp">${r.people.map(p=>`<span class="chip">${sheepSVG(p.color,24)}${esc(p.name)} ${p.count}</span>`).join("")}<span class="chip">📏 ${M}m</span>${+SET.limit?`<span class="chip clock" id="clock">⏱ ${fmtClock(+SET.limit)}</span>`:""}</div>
+    <div class="hud"><div class="row"><div class="legend sp">${r.people.map(p=>`<span class="chip">${sheepSVG(p.color,24)}${esc(p.name)} ${p.count}</span>`).join("")}<span class="chip">📏 ${M}m</span>${+SET.limit?`<span class="chip clock" id="clock">⏱ ${fmtClock(+SET.limit)} · ${SET.pod}위까지 들어오면 시작</span>`:""}</div>
       <button class="sm" id="cam">🎥 ${R.camMode==="lead"?"선두":"꼴찌"} 따라가기</button><button class="sm" id="zin" title="확대">🔍＋</button><button class="sm" id="zout" title="축소">🔍－</button><button class="sm" id="fast">⏩ 2배속</button><button class="sm" id="fsb">⛶ 전체화면</button><button class="sm" id="stop">■ 그만하기</button></div>
       <div class="hint camhint">🖱️ 화면을 좌우로 끌면 카메라 이동 · 위아래로 끌면 앵글 높이 · 휠/🔍로 확대</div><div class="cast" id="cast">🎙️ 곧 출발해요! ${n}마리 양들이 ${M}m 출발선에 섰어요</div></div>
     <div class="ticker${R.tkOpen?"":" shut"}" id="tkbox"><h3 id="tkt">🏁 도착 순서 <span class="hint" id="tkc">0/${n}</span></h3><div class="hint">${SET.dir==="back"?"⏪ 뒤에서부터 순위예요. 가장 늦게 도착한 양이 1위!":"⏩ 먼저 도착한 양이 1위예요"}</div><div id="tk"></div></div>
@@ -268,7 +268,7 @@ const Xm=(m,t)=>R.W/2+(m*R.ppm-R.camC)*kOf(t)+(1.08-t)*R.W*R.sk; // 비스듬한
 const Pt=(m,t,h)=>[Xm(m,t),Yt(t)-(h||0)*R.ppm*1.8*kOf(t)];
 function loop(now){if(!R)return;const rdt=Math.min(.05,(now-R.last)/1000);
   if(R.started&&!R.over){const dt=rdt*R.speed;R.t+=dt;step(dt)}R.last=now;
-  if(R&&R.limit){const txt="⏱ "+fmtClock(R.limit-R.t);if(txt!==R.clk){R.clk=txt;const el=$("#clock");if(el){el.textContent=txt;el.classList.toggle("hurry",R.limit-R.t<=30)}}}
+  if(R&&R.limit){const left=R.limitStart==null?null:R.limit-(R.t-R.limitStart),txt=left==null?`⏱ ${fmtClock(R.limit)} · ${SET.pod}위까지 들어오면 시작`:"⏱ 남은 시간 "+fmtClock(left);if(txt!==R.clk){R.clk=txt;const el=$("#clock");if(el){el.textContent=txt;el.classList.toggle("hurry",left!=null&&left<=30);el.classList.toggle("run",left!=null)}}}
   if(!R)return;camStep(rdt);draw();raf=requestAnimationFrame(loop)}
 function camStep(dt){if(!R||!R.W)return;if(R.manual){R.camC=Math.max(R.camMin-R.W*.3,Math.min(R.camMax+R.W*.2,R.camC));return}const run=R.sheep.filter(s=>!s.done&&!s.dq);let tx;
   if(!R.started)tx=R.camMin;
@@ -339,7 +339,9 @@ function step(dt){const t=R.t,base=1/R.D,M=R.M;
     s.p=np;s.leg+=dt*(8+v*R.D*6);
     {const C=R.Z.cliff,pm=np*M;if(pm>=C.m0&&pm<=C.m1&&(s.yf<C.b0-.005||s.yf>C.b1+.005)){R.dqN++;startEv(s,"cliff",t);return}}
     if(s.p>=1){s.done=true;s.p=1;R.fin.push(s);s.rank=R.fin.length;addTick(s)}});
-  if(!R.over&&R.limit&&R.t>=R.limit){timeUp();return}
+  // ⏱ 제한 시간은 포디움에 오를 양(○위까지)이 다 들어온 순간부터 재요
+  if(R.limit&&R.limitStart==null&&!R.over&&computeResult(R.fin,"front",SET.pod,SET.dedup).picks.length>=SET.pod){R.limitStart=R.t;cast(`⏱ ${SET.pod}위까지 다 들어왔어요! 지금부터 제한 시간 ${limLabel(R.limit)} 시작!`)}
+  if(!R.over&&R.limit&&R.limitStart!=null&&R.t-R.limitStart>=R.limit){timeUp();return}
   if(!R.over&&R.fin.length+R.dqN===R.sheep.length&&R.sheep.every(s=>s.done||s.dq)){R.over=true;setTimeout(()=>{if(R&&R.over)showResult()},1300)}}
 function zoneSteer(s,t,dt){const Z=R.Z,M=R.M,sm=s.p*M;let rg=null,hard=false;s.zm=s.zm||{};
   const ann=(k,txt)=>{if(!R.zAnn[k]){R.zAnn[k]=1;cast(txt)}};
