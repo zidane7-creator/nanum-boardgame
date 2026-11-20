@@ -1,6 +1,6 @@
 /* 모든 메뉴 공용: 홈(목장)으로 돌아가는 버튼 */
 /* 사용가이드(오른쪽 위 📖)도 모든 메뉴에 함께 불러와요 */
-(function () { try { const me = document.currentScript; if (!me || window.__siteGuide) return; window.__siteGuide = 1; const g = document.createElement("script"); g.src = me.src.replace(/home\.js.*$/, "guide.js?v=20261121x"); document.head.appendChild(g); } catch (e) {} })();
+(function () { try { const me = document.currentScript; if (!me || window.__siteGuide) return; window.__siteGuide = 1; const g = document.createElement("script"); g.src = me.src.replace(/home\.js.*$/, "guide.js?v=20261121y"); document.head.appendChild(g); } catch (e) {} })();
 (function () {
   if (document.getElementById("homeFab")) return;
   const href = (document.currentScript && document.currentScript.dataset.home) || "../";

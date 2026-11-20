@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://js.tosspayments.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' data: blob: https://api.github.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://api.open-meteo.com https://api.met.no https://wttr.in https://api.mymemory.translated.net https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.doubleclick.net https://www.google.com https://*.tosspayments.com https://0.peerjs.com wss://0.peerjs.com wss://broker.emqx.io:8084 wss://broker.hivemq.com:8884 https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self' blob:; frame-src 'self' https://www.bskorea.or.kr https://*.tosspayments.com; object-src 'none'; base-uri 'self'; form-action 'self' https://*.tosspayments.com">
+<meta name="referrer" content="strict-origin-when-cross-origin"><script async src="https://www.googletagmanager.com/gtag/js?id=G-0WTWY3TPES"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-0WTWY3TPES");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>팀짜기 · 취향셔플 | 치영의 교회 생활 즐기기 · 취향 방 고르기로 조 짜기</title>
+<meta name="description" content="취향 방을 만들고(예: 코미디방·공포방·SF방·로맨스방) 순서대로 방을 골라 팀을 짜요. 방마다 제한인원과 형제·자매 인원을 정할 수 있고, 한 기기로도 친구를 초대해서도 할 수 있어요. 다 고르면 모든 방문이 열려요.">
+<meta name="keywords" content="팀짜기, 조짜기, 취향셔플, 조 편성, 교회 레크리에이션, 수련회 조짜기">
+<link rel="canonical" href="https://zidane7-creator.github.io/nanum-boardgame/teams/">
+<meta property="og:title" content="팀짜기 · 취향셔플 — 치영의 교회 생활 즐기기">
+<meta property="og:description" content="취향 방을 골라 팀을 짜요. 다 고르면 모든 방문이 열려요!">
+<meta property="og:image" content="https://zidane7-creator.github.io/nanum-boardgame/assets/og.jpg">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚪</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<script src="../assets/jua.js"></script>
+<style>
+:root{--ink:#3b2a20;--cream:#fffaf0;--line:#e3d6c2;--accent:#e8503a;--gold:#f5b82e;--green:#3f9a55;--blue:#2f6fb0;--muted:#7a6a5c;--soft:#f6efe2;--red:#c8322a}
+*{box-sizing:border-box}
+html,body{margin:0;color:var(--ink);background:#f7f1e6;font:16px/1.55 "Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif}
+h1,h2,h3,.j,.top{font-family:"Jua","Apple SD Gothic Neo",sans-serif;font-weight:normal}
+button{font:inherit;color:var(--ink);border:2px solid var(--ink);background:var(--cream);border-radius:14px;padding:8px 14px;cursor:pointer;box-shadow:0 3px 0 var(--ink)}
+button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}button:disabled{opacity:.45;cursor:default;transform:none}
+button.pri{background:var(--accent);color:#fff}button.ok{background:var(--green);color:#fff}button.go{background:var(--blue);color:#fff}
+button.sm{padding:3px 10px;font-size:14px;border-radius:10px;box-shadow:0 2px 0 var(--ink)}button.big{font-size:22px;padding:12px 28px;font-family:Jua,sans-serif}
+input,select,textarea{font:inherit;color:var(--ink);border:2px solid #cdbda6;border-radius:12px;padding:7px 10px;background:#fff;min-width:0;max-width:100%}
+textarea{width:100%;resize:vertical}
+.top{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:10px;padding:calc(8px + env(safe-area-inset-top,0px)) 14px 8px;background:rgba(255,255,255,.95);border-bottom:4px solid var(--gold)}
+.top a{color:var(--ink);text-decoration:none;border:2px solid var(--ink);border-radius:14px;padding:3px 10px;background:var(--cream)}.top .ttl{flex:1;font-size:19px}
+main{max-width:980px;margin:0 auto;padding:14px 12px 90px}
+.card{background:#fff;border:3px solid var(--ink);border-radius:20px;padding:16px;margin-bottom:14px;box-shadow:0 5px 0 rgba(0,0,0,.12)}
+.card h2{margin:0 0 8px;font-size:23px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.sp{flex:1}.hint{font-size:14px;color:var(--muted)}.center{text-align:center}
+.hero{text-align:center;padding:4px 0 10px}.hero .em{font-size:56px;line-height:1.1}.hero h1{margin:4px 0 0;font-size:clamp(30px,7vw,42px)}
+.steps{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:12px}.steps span{font-family:Jua,sans-serif;font-size:14px;padding:3px 12px;border-radius:999px;background:#fff;border:2px solid var(--line);color:var(--muted)}.steps span.on{border-color:var(--ink);background:var(--gold);color:var(--ink)}
+/* 방 설정 카드 */
+.rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.rset{border:2px solid var(--ink);border-radius:16px;padding:10px;background:var(--soft)}
+.rset .img{position:relative;height:110px;border-radius:12px;background:#fff center/cover no-repeat;border:2px dashed #cdbda6;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;cursor:pointer;overflow:hidden;margin-bottom:8px}
+.rset .img.has{border-style:solid;border-color:var(--ink)}
+.rset .img .rm{position:absolute;top:4px;right:4px;padding:0 7px;font-size:12px;box-shadow:none}
+.rset input.nm{width:100%;font-family:Jua,sans-serif;font-size:18px;margin-bottom:6px}
+.lim{display:grid;grid-template-columns:auto 1fr;gap:4px 8px;align-items:center;font-size:14px}.lim input{width:100%;padding:4px 8px}
+/* 사람 목록 */
+.plist{display:flex;flex-direction:column;gap:6px}
+.prow{display:flex;align-items:center;gap:6px;background:var(--soft);border-radius:12px;padding:5px 8px}
+.prow .no{font-family:Jua,sans-serif;width:2em;text-align:center;color:var(--muted)}
+.prow .nm{flex:1;font-family:Jua,sans-serif;font-size:17px}
+.gtog button{padding:1px 10px;font-size:14px;box-shadow:none;border-width:1.5px}.gtog button.m.on{background:#dcebff;color:var(--blue)}.gtog button.f.on{background:#ffe0e0;color:var(--red)}
+.sx-m{color:var(--blue)}.sx-f{color:var(--red)}
+/* 문(방 고르기) */
+.doors{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.door{position:relative;border:3px solid var(--ink);border-radius:16px 16px 8px 8px;background:#fff;overflow:hidden;cursor:pointer;text-align:center;padding:0;box-shadow:0 4px 0 rgba(0,0,0,.15);display:flex;flex-direction:column}
+.door:disabled{cursor:not-allowed;filter:grayscale(.85);opacity:.6}
+.door .pic{height:110px;background:linear-gradient(135deg,#ffe9b8,#ffd0c4) center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:44px}
+.door .nm{font-family:Jua,sans-serif;font-size:20px;padding:6px 6px 0}
+.door .st{font-size:13px;color:var(--muted);padding:0 6px 8px}
+.door .st b{color:var(--green);font-weight:normal}.door .st .full{color:var(--red)}
+.door:not(:disabled):hover{transform:translateY(-3px)}
+.door.mine{outline:4px solid var(--gold)}
+.turn{font-family:Jua,sans-serif;font-size:clamp(22px,5vw,32px);text-align:center;padding:10px;border-radius:16px;background:#fff6d8;border:2px solid var(--gold);margin-bottom:12px}
+.turn b{font-weight:normal;color:var(--accent)}
+.olist{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-bottom:10px}
+.ochip{border:2px solid var(--line);border-radius:999px;padding:1px 10px;font-family:Jua,sans-serif;font-size:14px;background:#fff}
+.ochip.now{border-color:var(--ink);background:var(--gold)}.ochip.did{opacity:.45}
+.myroom{border:3px solid var(--gold);border-radius:18px;padding:12px;background:#fffaf0;text-align:center}
+.myroom .rn{font-family:Jua,sans-serif;font-size:28px}
+.mates{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px}
+.mate{border:2px solid var(--ink);border-radius:999px;padding:2px 12px;background:#fff;font-family:Jua,sans-serif}
+/* 결과: 문 열기 */
+.reveal{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.rv{position:relative;border:3px solid var(--ink);border-radius:18px;background:#fff;overflow:hidden;min-height:220px;perspective:900px}
+.rv .head{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--soft);border-bottom:2px solid var(--line)}
+.rv .head .th{width:44px;height:44px;border-radius:10px;background:#ffe9b8 center/cover no-repeat;flex:none;display:flex;align-items:center;justify-content:center;font-size:22px}
+.rv .head b{font-family:Jua,sans-serif;font-weight:normal;font-size:20px;flex:1}
+.rv .body{padding:10px;display:flex;flex-wrap:wrap;gap:6px;align-content:flex-start}
+.rv .lf,.rv .rt{position:absolute;top:0;bottom:0;width:50%;background:repeating-linear-gradient(0deg,#b8763b 0 26px,#a5652f 26px 28px);border:2px solid #5a3412;z-index:3;transition:transform 1.2s cubic-bezier(.6,0,.3,1)}
+.rv .lf{left:0;transform-origin:left center}.rv .rt{right:0;transform-origin:right center}
+.rv .lf::after,.rv .rt::after{content:"";position:absolute;top:50%;width:10px;height:10px;border-radius:50%;background:var(--gold);border:2px solid #5a3412}
+.rv .lf::after{right:8px}.rv .rt::after{left:8px}
+.rv.open .lf{transform:rotateY(-105deg)}.rv.open .rt{transform:rotateY(105deg)}
+.qr{background:#fff;padding:8px;border-radius:12px;display:inline-block;border:2px solid var(--line)}.qr svg{width:160px;height:160px;display:block}
+.badge{display:inline-block;border-radius:10px;padding:0 8px;font-size:13px;background:var(--soft);border:1px solid var(--line)}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:50;overflow:hidden}
+.confetti i{position:absolute;top:-30px;font-style:normal;font-size:24px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+.cover{position:fixed;inset:0;z-index:60;background:rgba(40,28,18,.92);display:flex;align-items:center;justify-content:center;padding:20px}
+.cover .box{background:#fff;border:3px solid var(--ink);border-radius:20px;padding:20px;max-width:420px;width:100%;text-align:center}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#222;color:#fff;padding:10px 18px;border-radius:14px;opacity:0;transition:.25s;z-index:200;pointer-events:none;max-width:90vw;text-align:center}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion:reduce){.rv .lf,.rv .rt{transition:none}}
+</style>
+</head><body>
+<div class="top"><a href="../">← 목장</a><span class="ttl">🚪 팀짜기 · 취향셔플</span></div>
+<main id="app"><div class="card center">불러오는 중…</div></main>
+<div class="toast" id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js" integrity="sha384-8FWZA6BGMXhsfO+BLtrJK0We6gg5o1JyO8xQm6peWDEUs17ACA5ziE/NIAkl9z2k" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js" integrity="sha384-u4uqeACkFcoKl57rBQJHVGDd1pqhW4w8X3WjTu1ZksPdxoLqdt34jpoNkJisE25W" crossorigin="anonymous"></script>
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],app=$("#app");
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const clip=(s,n)=>String(s??"").replace(/[\u0000-\u001f]/g," ").trim().slice(0,n);
+const rnd=n=>{const a=new Uint32Array(1);crypto.getRandomValues(a);return Math.floor(a[0]/4294967296*n)};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
+const uid=()=>Math.random().toString(36).slice(2,9);
+let tt;function toast(m,ms){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("show"),ms||2400)}
+const sxC=g=>g==="남"?"sx-m":g==="여"?"sx-f":"";
+const ICONS=["🎬","🎭","🚀","💘","🍕","⚽","🎵","📚","🌊","⛰️","🎮","☕"];
+/* =========== 방 설정 (이 기기에 저장) =========== */
+let SET={topic:"",rooms:[]};try{Object.assign(SET,JSON.parse(localStorage.getItem("teams-setup")||"{}"))}catch(e){}
+const saveSet=()=>{try{localStorage.setItem("teams-setup",JSON.stringify(SET))}catch(e){toast("이미지가 너무 커서 저장하지 못했어요")}};
+function ensureRooms(n){while(SET.rooms.length<n)SET.rooms.push({id:uid(),name:"",img:"",cap:"",m:"",f:""});SET.rooms.length=n}
+if(!SET.rooms.length)ensureRooms(4);
+const numOrNull=v=>{const n=parseInt(v,10);return Number.isFinite(n)&&n>0?n:null};
+const useGender=rooms=>rooms.some(r=>r.m!=null||r.f!=null);
+function finalRooms(){return SET.rooms.map((r,i)=>({id:r.id,name:clip(r.name,16)||`${i+1}번 방`,img:r.img||"",ico:ICONS[i%ICONS.length],cap:numOrNull(r.cap),m:numOrNull(r.m),f:numOrNull(r.f)}))}
+/* 사진 → 작게 줄여서 저장 (친구 기기로 보내기 좋게) */
+function shrink(file){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>{const im=new Image();im.onload=()=>{const W=240,s=Math.min(1,W/im.width),cv=document.createElement("canvas");cv.width=Math.round(im.width*s);cv.height=Math.round(im.height*s);cv.getContext("2d").drawImage(im,0,0,cv.width,cv.height);res(cv.toDataURL("image/jpeg",.72))};im.onerror=rej;im.src=fr.result};fr.onerror=rej;fr.readAsDataURL(file)})}
+/* =========== 게임 공통 =========== */
+let G=null;            // 이 기기가 진행하는 게임 (한 기기 모드 또는 초대 모드의 방장)
+const LK="teams-local";
+const P=id=>G.players.find(p=>p.id===id);
+const members=rid=>G.pickSeq.filter(id=>G.picks[id]===rid).map(P).filter(Boolean);
+function avail(r,g){const ms=members(r.id),cnt=ms.length,mc=ms.filter(p=>p.gender==="남").length,fc=ms.filter(p=>p.gender==="여").length;
+  if(r.cap!=null&&cnt>=r.cap)return{ok:false,why:"꽉 찼어요",cnt};
+  if(g==="남"&&r.m!=null&&mc>=r.m)return{ok:false,why:"형제 자리 마감",cnt};
+  if(g==="여"&&r.f!=null&&fc>=r.f)return{ok:false,why:"자매 자리 마감",cnt};
+  const left=[];if(r.cap!=null)left.push(`${r.cap-cnt}자리 남음`);if(r.m!=null)left.push(`형제 ${r.m-mc}`);if(r.f!=null)left.push(`자매 ${r.f-fc}`);
+  return{ok:true,left:left.join(" · ")||"자리 넉넉해요",cnt}}
+const curId=()=>G.order[G.ti];
+function advance(){do{G.ti++}while(G.ti<G.order.length&&G.picks[G.order[G.ti]]);
+  // 어떤 방도 갈 수 없는 사람은 미배정으로 넘겨요
+  while(G.ti<G.order.length){const p=P(curId());if(G.rooms.some(r=>avail(r,p.gender).ok))break;G.picks[p.id]="__none";G.pickSeq.push(p.id);G.ti++}
+  if(G.ti>=G.order.length){G.phase="done";G.doneAt=Date.now()}}
+function doPick(pid,rid){if(G.phase!=="pick"||curId()!==pid)return"차례가 아니에요";const p=P(pid),r=G.rooms.find(x=>x.id===rid);if(!r)return"없는 방이에요";
+  const a=avail(r,p.gender);if(!a.ok)return a.why;G.picks[pid]=rid;G.pickSeq.push(pid);advance();return null}
+function startPick(){G.phase="pick";G.picks={};G.pickSeq=[];G.ti=-1;advance()}
+function capCheck(){const caps=G.rooms.map(r=>r.cap);if(caps.some(c=>c==null))return"";const t=caps.reduce((a,b)=>a+b,0);return t<G.players.length?`⚠️ 방 제한인원 합계(${t}명)가 참가자(${G.players.length}명)보다 적어요. 자리가 없는 사람은 ‘미배정’이 돼요.`:""}
+function resultText(){return `[🚪 취향셔플 결과${G.topic?" · "+G.topic:""}]\n\n`+G.rooms.map(r=>`${r.name} (${members(r.id).length}명)\n`+(members(r.id).map(p=>p.name).join(", ")||"-")).join("\n\n")+(G.pickSeq.some(id=>G.picks[id]==="__none")?`\n\n미배정: ${G.pickSeq.filter(id=>G.picks[id]==="__none").map(id=>P(id).name).join(", ")}`:"")}
+/* =========== 화면: 1) 방 만들기 =========== */
+let STEP="rooms";
+function steps(on){const L=[["rooms","① 취향 방 만들기"],["mode","② 운영 방식"],["people","③ 참가자·순서"],["pick","④ 방 고르기"],["done","⑤ 문 열기"]];return `<div class="steps">${L.map(([k,l])=>`<span class="${k===on?"on":""}">${l}</span>`).join("")}</div>`}
+function vRooms(){const R=SET.rooms;
+  app.innerHTML=`<div class="hero"><div class="em">🚪🎲</div><h1>팀짜기 · 취향셔플</h1><div class="hint">취향 방을 만들고, 순서대로 방을 골라 팀을 짜요. 다 고르면 모든 문이 열려요!</div></div>${steps("rooms")}
+  <div class="card"><h2>🛋️ 취향 방 만들기</h2>
+    <div class="row"><label class="row">주제 <input id="topic" placeholder="예: 영화 장르" value="${esc(SET.topic)}" style="width:200px"></label>
+      <label class="row">방(조) 개수 <select id="cnt">${Array.from({length:11},(_,i)=>i+2).map(n=>`<option ${n===R.length?"selected":""}>${n}</option>`).join("")}</select></label></div>
+    <p class="hint" style="margin:6px 0 10px">예) 주제가 영화 장르, 방 4개면 → 코미디방 · 공포방 · SF방 · 로맨스방. 사진을 누르면 이미지를 올릴 수 있어요. 인원 칸은 비워 두면 제한 없음이에요.</p>
+    <div class="rgrid">${R.map((r,i)=>`<div class="rset">
+      <div class="img ${r.img?"has":""}" data-up="${i}" style="${r.img?`background-image:url(${r.img})`:""}">${r.img?`<button class="sm rm" data-rmimg="${i}">✕</button>`:`<span>${ICONS[i%ICONS.length]} 📷 이미지 올리기</span>`}</div>
+      <input class="nm" data-k="name" data-i="${i}" placeholder="${i+1}번 방 이름" value="${esc(r.name)}" maxlength="16">
+      <div class="lim"><span>제한인원</span><input type="number" min="1" data-k="cap" data-i="${i}" value="${esc(r.cap)}" placeholder="제한 없음">
+        <span class="sx-m">형제</span><input type="number" min="0" data-k="m" data-i="${i}" value="${esc(r.m)}" placeholder="제한 없음">
+        <span class="sx-f">자매</span><input type="number" min="0" data-k="f" data-i="${i}" value="${esc(r.f)}" placeholder="제한 없음"></div></div>`).join("")}</div>
+    <p class="hint">형제·자매 인원을 정하면 참가자 성별을 꼭 정해야 해요. 예) 형제 3 · 자매 3 · 제한 6명이면, 형제가 3명 들어간 뒤로는 형제는 더 못 들어가요.</p>
+    <input type="file" id="file" accept="image/*" hidden>
+    <div class="row" style="justify-content:flex-end"><button class="pri big" id="next">다음 ▶</button></div></div>`;
+  $("#topic").oninput=e=>{SET.topic=e.target.value;saveSet()};
+  $("#cnt").onchange=e=>{ensureRooms(+e.target.value);saveSet();vRooms()};
+  $$("[data-k]").forEach(el=>el.oninput=()=>{SET.rooms[+el.dataset.i][el.dataset.k]=el.value;saveSet()});
+  let upI=null;$$("[data-up]").forEach(el=>el.onclick=e=>{if(e.target.closest("[data-rmimg]"))return;upI=+el.dataset.up;$("#file").value="";$("#file").click()});
+  $$("[data-rmimg]").forEach(b=>b.onclick=()=>{SET.rooms[+b.dataset.rmimg].img="";saveSet();vRooms()});
+  $("#file").onchange=async e=>{const f=e.target.files[0];if(!f||upI==null)return;try{SET.rooms[upI].img=await shrink(f);saveSet();vRooms()}catch(_){toast("이미지를 읽지 못했어요")}};
+  $("#next").onclick=()=>{const rs=finalRooms();if(rs.some(r=>r.m!=null&&r.f!=null&&r.cap!=null&&r.m+r.f<r.cap)){/* 그대로 둬도 괜찮아요 */}STEP="mode";render()}}
+/* =========== 2) 운영 방식 =========== */
+function vMode(){app.innerHTML=`${steps("mode")}<div class="card"><h2>🕹️ 어떻게 할까요?</h2>
+  <div class="rgrid"><button class="rset" id="mLocal" style="text-align:left;cursor:pointer"><div style="font-size:40px">📱</div><b class="j" style="font-size:21px">한 기기로</b><div class="hint">참여자 이름을 다 적고 순서를 정해요. 이 기기를 돌려 가며 차례대로 방을 골라요.</div></button>
+  <button class="rset" id="mOnline" style="text-align:left;cursor:pointer"><div style="font-size:40px">📡</div><b class="j" style="font-size:21px">친구 초대</b><div class="hint">QR·링크로 초대하면 각자 휴대폰에서 실명으로 들어와요. 순서가 되면 자기 휴대폰으로 방을 골라요. 같은 방 사람끼리만 서로 알 수 있어요.</div></button></div>
+  <div class="row" style="margin-top:12px"><button id="back">◀ 방 다시 고치기</button></div></div>`;
+  $("#back").onclick=()=>{STEP="rooms";render()};
+  $("#mLocal").onclick=()=>{G={mode:"local",topic:clip(SET.topic,20),rooms:finalRooms(),players:[],order:[],phase:"people",picks:{},pickSeq:[],ti:0};saveL();render()};
+  $("#mOnline").onclick=()=>newRoom()}
+/* =========== 3) 한 기기: 참가자·순서 =========== */
+const saveL=()=>{if(G&&G.mode==="local")try{localStorage.setItem(LK,JSON.stringify(G))}catch(e){}};
+function vPeopleLocal(){const ug=useGender(G.rooms);
+  app.innerHTML=`${steps("people")}<div class="card"><h2>👥 참가자와 순서</h2>
+   <textarea id="names" rows="3" placeholder="이름을 한 줄에 한 명씩, 또는 쉼표로 적고 ‘추가’를 눌러요&#10;성별도 같이 적을 수 있어요 (예: 철수 남, 영희 여)"></textarea>
+   <div class="row" style="margin:6px 0 10px"><button class="go" id="addN">＋ 추가</button><span class="sp"></span><button class="sm" id="shuf">🔀 순서 섞기</button><button class="sm" id="clr">비우기</button></div>
+   ${ug?'<p class="hint">이 방들에는 형제·자매 인원 제한이 있어서, 모두 성별을 골라야 시작할 수 있어요.</p>':''}
+   <div class="plist">${G.order.map((id,i)=>{const p=P(id);return `<div class="prow"><span class="no">${i+1}</span><span class="nm ${sxC(p.gender)}">${esc(p.name)}</span>
+     <span class="gtog"><button class="m ${p.gender==="남"?"on":""}" data-g="남" data-id="${id}">형제</button><button class="f ${p.gender==="여"?"on":""}" data-g="여" data-id="${id}">자매</button></span>
+     <button class="sm" data-up="${i}" ${i?"":"disabled"}>▲</button><button class="sm" data-dn="${i}" ${i<G.order.length-1?"":"disabled"}>▼</button><button class="sm" data-del="${id}">✕</button></div>`}).join("")||'<div class="hint center">아직 참가자가 없어요</div>'}</div>
+   ${G.players.length?`<p class="hint">${capCheck()}</p>`:""}
+   <div class="row" style="margin-top:12px"><button id="back">◀ 운영 방식</button><span class="sp"></span><button class="pri big" id="go" ${G.players.length<2?"disabled":""}>🚪 방 고르기 시작</button></div></div>`;
+  const add=()=>{const L=$("#names").value.split(/[\n,，、]+/).map(x=>x.trim()).filter(Boolean);let n=0;
+    L.forEach(t=>{let g="";const m=t.match(/^(.*?)[\s(]*(남|여|형제|자매)\)?$/);let name=t;if(m&&m[1].trim()){name=m[1].trim();g=/남|형제/.test(m[2])?"남":"여"}
+      name=clip(name,12);if(!name)return;const p={id:uid(),name,gender:g};G.players.push(p);G.order.push(p.id);n++});
+    $("#names").value="";saveL();vPeopleLocal();if(n)toast(`${n}명 추가했어요`)};
+  $("#addN").onclick=add;$("#names").onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing){e.preventDefault();add()}};
+  $("#shuf").onclick=()=>{G.order=shuffle(G.order);saveL();vPeopleLocal();toast("순서를 섞었어요 🔀")};
+  $("#clr").onclick=()=>{if(G.players.length&&!confirm("참가자를 모두 지울까요?"))return;G.players=[];G.order=[];saveL();vPeopleLocal()};
+  $$("[data-g]").forEach(b=>b.onclick=()=>{const p=P(b.dataset.id);p.gender=p.gender===b.dataset.g?"":b.dataset.g;saveL();vPeopleLocal()});
+  $$("[data-up]").forEach(b=>b.onclick=()=>{const i=+b.dataset.up;[G.order[i-1],G.order[i]]=[G.order[i],G.order[i-1]];saveL();vPeopleLocal()});
+  $$("[data-dn]").forEach(b=>b.onclick=()=>{const i=+b.dataset.dn;[G.order[i+1],G.order[i]]=[G.order[i],G.order[i+1]];saveL();vPeopleLocal()});
+  $$("[data-del]").forEach(b=>b.onclick=()=>{const id=b.dataset.del;G.players=G.players.filter(p=>p.id!==id);G.order=G.order.filter(x=>x!==id);saveL();vPeopleLocal()});
+  $("#back").onclick=()=>{STEP="mode";G=null;try{localStorage.removeItem(LK)}catch(_){}render()};
+  $("#go").onclick=()=>{if(ug&&G.players.some(p=>!p.gender)){toast("모두 형제·자매를 골라 주세요");return}startPick();saveL();render()}}
+/* =========== 4) 한 기기: 차례대로 고르기 =========== */
+function doorHTML(r,g,mine){const a=avail(r,g);return `<button class="door ${mine?"mine":""}" data-room="${r.id}" ${a.ok?"":"disabled"}><div class="pic" style="${r.img?`background-image:url(${r.img})`:""}">${r.img?"":r.ico}</div><div class="nm">${esc(r.name)}</div><div class="st">${a.ok?`<b>${a.left}</b>`:`<span class="full">🔒 ${a.why}</span>`}</div></button>`}
+function orderChips(){return `<div class="olist">${G.order.map((id,i)=>{const p=P(id);return `<span class="ochip ${i===G.ti&&G.phase==="pick"?"now":""} ${G.picks[id]?"did":""}">${i+1}. ${esc(p.name)}</span>`}).join("")}</div>`}
+function vPickLocal(){const p=P(curId());
+  app.innerHTML=`${steps("pick")}${orderChips()}<div class="turn">🙋 <b>${esc(p.name)}</b>님 차례예요! <span class="hint" style="font-size:15px">(${G.ti+1}/${G.order.length})</span></div>
+  <div class="card"><div class="doors">${G.rooms.map(r=>doorHTML(r,p.gender)).join("")}</div><p class="hint center" style="margin:10px 0 0">들어갈 방의 문을 눌러요. 다른 방에 누가 있는지는 마지막에 문이 열릴 때 알 수 있어요.</p></div>
+  <div class="row"><button class="sm" id="reset">↺ 처음부터 다시 고르기</button><span class="sp"></span><button class="sm" id="toPeople">◀ 참가자 고치기</button></div>`;
+  $$("[data-room]").forEach(b=>b.onclick=()=>{const r=G.rooms.find(x=>x.id===b.dataset.room);if(!confirm(`${p.name}님, ‘${r.name}’에 들어갈까요?`))return;
+    const before=members(r.id).map(x=>x.name);const err=doPick(p.id,r.id);if(err){toast(err);vPickLocal();return}saveL();
+    const nx=G.phase==="pick"?P(curId()):null;
+    const cv=document.createElement("div");cv.className="cover";cv.innerHTML=`<div class="box"><div style="font-size:46px">🚪</div><h2 style="margin:4px 0">${esc(p.name)}님, ‘${esc(r.name)}’에 들어왔어요!</h2>
+      <p>${before.length?`이 방에 먼저 와 있는 사람: <b>${before.map(esc).join(", ")}</b>`:"이 방에 처음 들어왔어요"}</p><p class="hint">확인했으면 화면을 가리고 다음 사람에게 넘겨 주세요</p>
+      <button class="pri big" id="nx">${nx?`👉 다음: ${esc(nx.name)}님`:"🎉 모두 골랐어요!"}</button></div>`;
+    document.body.appendChild(cv);$("#nx").onclick=()=>{cv.remove();render()}});
+  $("#reset").onclick=()=>{if(!confirm("지금까지 고른 방을 모두 지우고 처음부터 다시 고를까요?"))return;startPick();saveL();render()};
+  $("#toPeople").onclick=()=>{if(G.pickSeq.length&&!confirm("고른 방이 지워져요. 참가자를 고칠까요?"))return;G.phase="people";G.picks={};G.pickSeq=[];saveL();render()}}
+/* =========== 5) 문 열기 =========== */
+function revealHTML(rooms,mem,none){return `<div class="reveal">${rooms.map(r=>`<div class="rv" data-rv><div class="head"><div class="th" style="${r.img?`background-image:url(${r.img})`:""}">${r.img?"":r.ico}</div><b>${esc(r.name)}</b><span class="badge">${mem[r.id].length}명</span></div>
+  <div class="body">${mem[r.id].map(p=>`<span class="mate ${sxC(p.gender)}">${esc(p.name)}</span>`).join("")||'<span class="hint">아무도 없어요</span>'}</div><div class="lf"></div><div class="rt"></div></div>`).join("")}</div>
+  ${none&&none.length?`<div class="card" style="margin-top:12px"><b>😢 미배정</b> <span class="hint">갈 수 있는 방이 없었어요</span> ${none.map(p=>`<span class="mate ${sxC(p.gender)}">${esc(p.name)}</span>`).join(" ")}</div>`:""}`}
+function openDoors(){const L=$$("[data-rv]");L.forEach((el,i)=>setTimeout(()=>el.classList.add("open"),400+i*250));setTimeout(confetti,400+L.length*250)}
+function vDoneLocal(){const mem={};G.rooms.forEach(r=>mem[r.id]=members(r.id));const none=G.pickSeq.filter(id=>G.picks[id]==="__none").map(P);
+  app.innerHTML=`${steps("done")}<div class="turn">${G.revealed?"🎉 모든 문이 열렸어요!":"🎉 모두 방에 들어갔어요! 이제 문을 열어 볼까요?"}</div>
+  ${G.revealed?"":`<div class="center" style="margin-bottom:12px"><button class="pri big" id="open">🚪 모든 문 열기</button></div>`}
+  ${revealHTML(G.rooms,mem,none)}
+  <div class="row" style="justify-content:center;margin-top:14px"><button id="copy">📋 결과 복사</button><button id="again">🔁 같은 사람들로 다시</button><button id="home">🏠 처음으로</button></div>`;
+  if(G.revealed)$$("[data-rv]").forEach(el=>el.classList.add("open"));
+  const o=$("#open");if(o)o.onclick=()=>{G.revealed=true;saveL();o.parentElement.remove();const t=$(".turn");if(t)t.textContent="🎉 모든 문이 열렸어요!";openDoors()};
+  $("#copy").onclick=()=>copy(resultText());
+  $("#again").onclick=()=>{if(!confirm("같은 참가자로 방을 다시 고를까요?"))return;G.revealed=false;G.phase="people";G.picks={};G.pickSeq=[];saveL();render()};
+  $("#home").onclick=()=>{if(!confirm("처음 화면으로 갈까요? (방 설정은 남아 있어요)"))return;G=null;try{localStorage.removeItem(LK)}catch(_){}STEP="rooms";render()}}
+function copy(t){(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast("결과를 복사했어요"),()=>prompt("이 내용을 복사해 주세요",t))}
+function confetti(){const box=document.createElement("div");box.className="confetti";const em=["🎉","🎊","✨","🚪","⭐"];
+  for(let i=0;i<36;i++){const e=document.createElement("i");e.textContent=em[i%em.length];e.style.left=Math.random()*100+"%";e.style.animationDuration=(2+Math.random()*2)+"s";e.style.animationDelay=(Math.random()*.8)+"s";box.appendChild(e)}
+  document.body.appendChild(box);setTimeout(()=>box.remove(),5000)}
+/* =========== 친구 초대 (방장 = 이 기기) =========== */
+const BROKERS=["wss://broker.emqx.io:8084/mqtt","wss://broker.hivemq.com:8884/mqtt"];
+const params=new URLSearchParams(location.search);
+let ROOM=(params.get("room")||params.get("host")||"").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6);
+let HOSTING=!!params.get("host");
+const base=()=>"chiyoung-teams/v1/"+ROOM;
+const HK=()=>"teams-host-"+ROOM;
+const saveH=()=>{if(G&&G.mode==="online")try{localStorage.setItem(HK(),JSON.stringify(G))}catch(e){}};
+function mqttOpen(url,ms){return new Promise(res=>{if(typeof mqtt=="undefined")return res(null);let done=false;
+  const cl=mqtt.connect(url,{connectTimeout:ms,reconnectPeriod:3000,clientId:"tm"+Math.random().toString(36).slice(2,12)});
+  cl.on("connect",()=>{if(!done){done=true;res(cl)}});setTimeout(()=>{if(!done){done=true;try{cl.end(true)}catch(e){}res(null)}},ms)})}
+const CONNS={};
+function newRoom(){HOSTING=true;ROOM=Array.from({length:4},()=>"ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[rnd(32)]).join("");
+  G={mode:"online",room:ROOM,topic:clip(SET.topic,20),rooms:finalRooms(),players:[],order:[],phase:"lobby",picks:{},pickSeq:[],ti:0};
+  history.replaceState(null,"","?host="+ROOM);saveH();hostNet();render()}
+function send(id,m){const c=CONNS[id];if(c)try{c.cl.publish(base()+"/c/"+id,JSON.stringify(m),{qos:1})}catch(e){}}
+function viewFor(pid){const me=P(pid),ph=G.phase,v={ph,topic:G.topic,me:me?{id:me.id,name:me.name,gender:me.gender}:null,n:G.players.length,useG:useGender(G.rooms)};
+  v.rooms=G.rooms.map(r=>{const a=avail(r,me&&me.gender);return{id:r.id,name:r.name,ico:r.ico,ok:a.ok,why:a.why||"",left:a.left||""}});
+  if(ph==="lobby"){v.names=G.players.map(p=>p.name);v.pos=G.order.indexOf(pid)}
+  if(ph==="pick"){const c=P(curId());v.turnName=c&&c.name;v.myTurn=curId()===pid;v.myPos=G.order.indexOf(pid);v.ti=G.ti;v.total=G.order.length;v.wait=Math.max(0,v.myPos-G.ti)}
+  const my=G.picks[pid];if(my&&my!=="__none"){const r=G.rooms.find(x=>x.id===my);v.myRoom={id:r.id,name:r.name,ico:r.ico,mates:members(r.id).map(p=>({name:p.name,gender:p.gender,me:p.id===pid}))}}
+  if(my==="__none")v.noRoom=true;
+  if(ph==="done"&&G.revealed){v.reveal=G.rooms.map(r=>({id:r.id,name:r.name,ico:r.ico,mem:members(r.id).map(p=>({name:p.name,gender:p.gender}))}));v.none=G.pickSeq.filter(id=>G.picks[id]==="__none").map(id=>({name:P(id).name,gender:P(id).gender}))}
+  return v}
+function broadcast(){G.players.forEach(p=>send(p.id,{t:"state",v:viewFor(p.id)}));saveH();render()}
+function sendImgs(id){G.rooms.forEach(r=>{if(r.img)send(id,{t:"img",id:r.id,src:r.img})})}
+function hostNet(){BROKERS.forEach(async url=>{const cl=await mqttOpen(url,8000);if(!cl)return;const b=base();
+  cl.subscribe(b+"/h",{qos:1});cl.on("connect",()=>cl.subscribe(b+"/h",{qos:1}));
+  cl.on("message",(tp,buf)=>{let d;try{d=JSON.parse(buf.toString())}catch(_){return}if(!d||!d.from||!d.m)return;
+    const from=String(d.from).replace(/[^a-z0-9-]/gi,"").slice(0,24);CONNS[from]={cl};hostHandle(from,d.m)});
+  const s=$("#netSt");if(s)s.textContent="📡 초대 받는 중"})}
+function hostHandle(from,m){if(!G||!m||!m.t)return;let p=P(from);
+  if(m.t==="join"){const name=clip(m.name,12),gender=m.gender==="남"||m.gender==="여"?m.gender:"";if(!name)return;
+    if(!p){if(G.phase!=="lobby"){send(from,{t:"err",msg:"이미 방 고르기가 시작됐어요. 방장에게 말해 주세요"});return}
+      if(G.players.length>=80){send(from,{t:"err",msg:"인원이 꽉 찼어요"});return}
+      p={id:from,name,gender};G.players.push(p);G.order.push(from)}else{p.name=name;if(gender)p.gender=gender}
+    sendImgs(from);broadcast();return}
+  if(!p)return;
+  if(m.t==="ping"){send(from,{t:"state",v:viewFor(from)});return}
+  if(m.t==="pick"){const err=doPick(from,String(m.room||""));if(err){send(from,{t:"err",msg:err});send(from,{t:"state",v:viewFor(from)});return}
+    if(G.phase==="done")setTimeout(()=>{if(G&&G.phase==="done"&&!G.revealed){G.revealed=true;broadcast()}},1500);
+    broadcast();return}}
+function vLobbyHost(){const url=location.origin+location.pathname+"?room="+G.room;let qr="";try{const q=qrcode(0,"M");q.addData(url);q.make();qr=q.createSvgTag(5,2)}catch(_){}
+  const ug=useGender(G.rooms),noG=G.players.filter(p=>!p.gender);
+  app.innerHTML=`${steps("people")}<div class="card"><div class="row"><h2 style="margin:0">📡 친구 초대 · 방 ${esc(G.room)}</h2><span class="sp"></span><span class="badge" id="netSt">연결 준비 중…</span></div>
+   <div class="row" style="align-items:flex-start;margin-top:8px"><div class="qr">${qr}</div><div style="flex:1;min-width:220px"><p style="margin:0">QR을 찍거나 링크로 들어와서 <b>실명</b>${ug?"과 형제·자매":""}를 고르면 돼요.</p><input readonly value="${esc(url)}" style="width:100%;font-size:13px;margin-top:6px" onclick="this.select()"><div class="row" style="margin-top:6px"><button class="sm" id="cp">🔗 링크 복사</button></div>
+     <p class="hint">방장 화면은 진행용이에요. 방장도 참여하려면 자기 휴대폰으로 들어와요.</p></div></div></div>
+   <div class="card"><div class="row"><h2 style="margin:0">🙋 들어온 사람 ${G.players.length}명 · 순서</h2><span class="sp"></span><button class="sm" id="shuf">🔀 순서 섞기</button></div>
+   <div class="plist" style="margin-top:8px">${G.order.map((id,i)=>{const p=P(id);return `<div class="prow"><span class="no">${i+1}</span><span class="nm ${sxC(p.gender)}">${esc(p.name)}</span><span class="hint">${p.gender==="남"?"형제":p.gender==="여"?"자매":""}</span>
+     <button class="sm" data-up="${i}" ${i?"":"disabled"}>▲</button><button class="sm" data-dn="${i}" ${i<G.order.length-1?"":"disabled"}>▼</button><button class="sm" data-kick="${id}" title="내보내기">✕</button></div>`}).join("")||'<div class="hint center">아직 아무도 안 들어왔어요</div>'}</div>
+   ${ug&&noG.length?`<p class="hint" style="color:var(--red)">성별을 안 고른 사람: ${noG.map(p=>esc(p.name)).join(", ")}</p>`:""}<p class="hint">${G.players.length?capCheck():""}</p>
+   <div class="row" style="margin-top:10px"><button class="sm" id="toRooms">◀ 방 다시 고치기</button><span class="sp"></span><button class="pri big" id="go" ${G.players.length<2?"disabled":""}>🚪 방 고르기 시작</button></div></div>`;
+  $("#cp").onclick=()=>copy(url);
+  $("#shuf").onclick=()=>{G.order=shuffle(G.order);broadcast();toast("순서를 섞었어요 🔀")};
+  $$("[data-up]").forEach(b=>b.onclick=()=>{const i=+b.dataset.up;[G.order[i-1],G.order[i]]=[G.order[i],G.order[i-1]];broadcast()});
+  $$("[data-dn]").forEach(b=>b.onclick=()=>{const i=+b.dataset.dn;[G.order[i+1],G.order[i]]=[G.order[i],G.order[i+1]];broadcast()});
+  $$("[data-kick]").forEach(b=>b.onclick=()=>{const p=P(b.dataset.kick);if(!confirm(`${p.name}님을 내보낼까요?`))return;send(p.id,{t:"err",msg:"방장이 내보냈어요"});G.players=G.players.filter(x=>x!==p);G.order=G.order.filter(x=>x!==p.id);broadcast()});
+  $("#toRooms").onclick=()=>{if(!confirm("방 설정으로 돌아갈까요? (들어온 사람은 그대로예요)"))return;STEP="rooms";G.editRooms=true;render()};
+  $("#go").onclick=()=>{if(ug&&noG.length){toast("모두 성별을 골라야 시작할 수 있어요");return}startPick();broadcast()}}
+function vPickHost(){const c=P(curId());
+  app.innerHTML=`${steps("pick")}${orderChips()}<div class="turn">🙋 <b>${esc(c.name)}</b>님이 자기 휴대폰으로 고르는 중… <span class="hint" style="font-size:15px">(${G.ti+1}/${G.order.length})</span></div>
+  <div class="card"><div class="doors">${G.rooms.map(r=>{const ms=members(r.id);const full=r.cap!=null&&ms.length>=r.cap;return `<div class="door" style="cursor:default"><div class="pic" style="${r.img?`background-image:url(${r.img})`:""}">${r.img?"":r.ico}</div><div class="nm">${esc(r.name)}</div><div class="st">${full?'<span class="full">🔒 꽉 찼어요</span>':"🚪 문이 닫혀 있어요"}</div></div>`}).join("")}</div>
+   <p class="hint center" style="margin:10px 0 0">누가 어느 방에 들어갔는지는 같은 방 사람끼리만 알아요. 다 고르면 모든 문이 열려요.</p></div>
+  <div class="row"><button class="sm" id="skip">⏭ ${esc(c.name)}님 맨 뒤로 보내기</button><span class="sp"></span><button class="sm" id="reset">↺ 처음부터 다시 고르기</button></div>`;
+  $("#skip").onclick=()=>{const id=curId();G.order.splice(G.ti,1);G.order.push(id);G.ti--;advance();broadcast();toast("맨 뒤로 보냈어요")};
+  $("#reset").onclick=()=>{if(!confirm("지금까지 고른 방을 모두 지우고 처음부터 다시 고를까요?"))return;startPick();G.revealed=false;broadcast()}}
+function vDoneHost(){const mem={};G.rooms.forEach(r=>mem[r.id]=members(r.id));const none=G.pickSeq.filter(id=>G.picks[id]==="__none").map(P);
+  app.innerHTML=`${steps("done")}<div class="turn">🎉 모두 방에 들어갔어요! 모든 문이 열려요</div>${revealHTML(G.rooms,mem,none)}
+  <div class="row" style="justify-content:center;margin-top:14px"><button id="copy">📋 결과 복사</button><button id="again">🔁 같은 사람들로 다시</button></div>`;
+  if(G.revealed){if(G.shown)$$("[data-rv]").forEach(el=>el.classList.add("open"));else{G.shown=true;saveH();openDoors()}}
+  $("#copy").onclick=()=>copy(resultText());
+  $("#again").onclick=()=>{if(!confirm("같은 사람들로 방을 다시 고를까요? (대기실로 돌아가요)"))return;G.phase="lobby";G.picks={};G.pickSeq=[];G.revealed=false;G.shown=false;broadcast()}}
+/* =========== 친구 초대 (참가자 기기) =========== */
+const CL={joined:false,name:"",gender:"",id:null,cl:null,imgs:{},send(m){if(this.cl)this.cl.publish(base()+"/h",JSON.stringify({from:this.id,m}),{qos:1})}};
+let LV=null;
+async function joinRoom(name,gender){CL.name=name;CL.gender=gender;try{CL.id=sessionStorage.getItem("tm-id-"+ROOM)}catch(_){}if(!CL.id){CL.id="p"+Math.random().toString(36).slice(2,10);try{sessionStorage.setItem("tm-id-"+ROOM,CL.id)}catch(_){}}
+  try{sessionStorage.setItem("tm-me-"+ROOM,JSON.stringify({name,gender}))}catch(_){}
+  const st=$("#jSt");if(st)st.textContent="방에 연결하는 중…";
+  for(const url of BROKERS){const cl=await mqttOpen(url,7000);if(!cl)continue;let heard=false;
+    cl.subscribe(base()+"/c/"+CL.id,{qos:1});cl.on("connect",()=>{cl.subscribe(base()+"/c/"+CL.id,{qos:1});if(CL.joined)CL.send({t:"join",name:CL.name,gender:CL.gender})});
+    cl.on("message",(tp,buf)=>{let m;try{m=JSON.parse(buf.toString())}catch(_){return}heard=true;
+      if(m.t==="state"){const prev=LV;LV=m.v;CL.joined=true;render();if(navigator.vibrate&&LV.myTurn&&!(prev&&prev.myTurn))try{navigator.vibrate([150,80,150])}catch(_){}
+}
+      else if(m.t==="img"){CL.imgs[m.id]=m.src;if(CL.joined)render()}
+      else if(m.t==="err"){toast(m.msg,3500);const s=$("#jSt");if(s)s.textContent=m.msg}});
+    CL.cl=cl;CL.send({t:"join",name,gender});for(let i=0;i<25&&!heard;i++){await new Promise(r=>setTimeout(r,300));if(i===10)CL.send({t:"join",name,gender})}
+    if(heard){setInterval(()=>CL.send({t:"ping"}),15000);return}try{cl.end(true)}catch(_){}CL.cl=null}
+  const s=$("#jSt");if(s)s.textContent="방에 연결하지 못했어요. 방 코드와 방장 화면이 켜져 있는지 확인해 주세요"}
+function vJoin(){let me={};try{me=JSON.parse(sessionStorage.getItem("tm-me-"+ROOM)||"{}")}catch(_){}let g=me.gender||"";
+  app.innerHTML=`<div class="card center"><div style="font-size:52px">🚪</div><h2>취향셔플 방 ${esc(ROOM)}</h2><p><b>실명</b>을 적고 들어와요</p>
+   <input id="jName" placeholder="내 이름 (실명)" maxlength="12" style="font-size:22px;text-align:center;width:100%;max-width:300px" value="${esc(me.name||"")}">
+   <div class="row gtog" style="justify-content:center;margin-top:10px"><button class="m ${g==="남"?"on":""}" data-g="남" style="font-size:18px;padding:6px 18px">형제</button><button class="f ${g==="여"?"on":""}" data-g="여" style="font-size:18px;padding:6px 18px">자매</button></div>
+   <p class="hint">방마다 형제·자매 인원이 정해져 있을 수 있어서 골라 주세요</p>
+   <div class="row" style="justify-content:center;margin-top:6px"><button class="pri big" id="jGo">들어가기</button></div><p class="hint" id="jSt"></p></div>`;
+  $$("[data-g]").forEach(b=>b.onclick=()=>{g=b.dataset.g;$$("[data-g]").forEach(x=>x.classList.toggle("on",x===b))});
+  $("#jGo").onclick=()=>{const n=clip($("#jName").value,12);if(!n){toast("이름을 적어 주세요");return}joinRoom(n,g)};
+  $("#jName").onkeydown=e=>{if(e.key==="Enter"&&!e.isComposing)$("#jGo").click()}}
+function vClient(){const v=LV;const img=r=>CL.imgs[r.id];let h="";
+  const mine=v.myRoom?`<div class="myroom"><div class="hint">🚪 내가 들어간 방</div><div class="rn">${esc(v.myRoom.name)}</div><div class="hint">같은 방 사람 (다른 방은 마지막에 문이 열릴 때 알 수 있어요)</div>
+    <div class="mates">${v.myRoom.mates.map(p=>`<span class="mate ${sxC(p.gender)}">${esc(p.name)}${p.me?" (나)":""}</span>`).join("")}</div></div>`:"";
+  if(v.ph==="lobby")h=`<div class="card center"><div style="font-size:46px">🙋</div><h2>${esc(v.me.name)}님, 들어왔어요!</h2><p>방장이 순서를 정하고 시작하기를 기다려요…</p>${v.pos>=0?`<p class="hint">지금 내 순서: ${v.pos+1}번째 / ${v.n}명</p>`:""}
+    <div class="doors" style="margin-top:12px">${v.rooms.map(r=>`<div class="door" style="cursor:default"><div class="pic" style="${img(r)?`background-image:url(${img(r)})`:""}">${img(r)?"":r.ico}</div><div class="nm">${esc(r.name)}</div></div>`).join("")}</div></div>`;
+  else if(v.ph==="pick"){
+    if(v.myTurn&&!v.myRoom)h=`<div class="turn">🙋 <b>${esc(v.me.name)}</b>님 차례예요! 들어갈 방을 골라요</div><div class="card"><div class="doors">${v.rooms.map(r=>`<button class="door" data-room="${r.id}" ${r.ok?"":"disabled"}><div class="pic" style="${img(r)?`background-image:url(${img(r)})`:""}">${img(r)?"":r.ico}</div><div class="nm">${esc(r.name)}</div><div class="st">${r.ok?`<b>${esc(r.left)}</b>`:`<span class="full">🔒 ${esc(r.why)}</span>`}</div></button>`).join("")}</div></div>`;
+    else h=(v.myRoom?mine:`<div class="turn">⏳ <b>${esc(v.turnName)}</b>님이 고르는 중…</div><div class="card center"><p>${v.wait>0?`내 차례까지 <b>${v.wait}명</b> 남았어요`:"곧 내 차례예요"}</p><p class="hint">순서 ${v.myPos+1}번째 / ${v.total}명</p></div>`)+(v.myRoom?`<p class="hint center" style="margin-top:10px">⏳ ${esc(v.turnName||"")}님이 고르는 중… (${v.ti+1}/${v.total})</p>`:"")}
+  else if(v.ph==="done"){h=v.reveal?`<div class="turn">🎉 모든 문이 열렸어요!</div>${revealHTML(v.reveal.map(r=>({...r,img:CL.imgs[r.id]||""})),Object.fromEntries(v.reveal.map(r=>[r.id,r.mem])),v.none)}`:`${mine}<div class="card center"><p>모두 다 골랐어요! 곧 모든 문이 열려요…</p></div>`}
+  if(v.noRoom)h=`<div class="card center"><div style="font-size:40px">😢</div><p>갈 수 있는 방이 없어서 미배정이 됐어요. 방장에게 말해 주세요.</p></div>`+h;
+  app.innerHTML=`<div class="row" style="margin-bottom:8px"><span class="badge">🚪 ${esc(v.topic||"취향셔플")}</span><span class="sp"></span><span class="badge ${sxC(v.me.gender)}">👤 ${esc(v.me.name)}</span></div>`+h;
+  if(v.reveal){if(vClient.opened)$$("[data-rv]").forEach(el=>el.classList.add("open"));else{vClient.opened=true;openDoors()}}
+  $$("[data-room]").forEach(b=>b.onclick=()=>{const r=v.rooms.find(x=>x.id===b.dataset.room);if(!confirm(`‘${r.name}’에 들어갈까요?`))return;CL.send({t:"pick",room:r.id});b.disabled=true})}
+/* =========== 라우팅 =========== */
+function render(){
+  if(ROOM&&!HOSTING){if(CL.joined&&LV){vClient();return}vJoin();return}
+  if(G&&G.mode==="online"&&!(STEP==="rooms"&&G.editRooms)){if(G.phase==="lobby")return vLobbyHost();if(G.phase==="pick")return vPickHost();return vDoneHost()}
+  if(G&&G.mode==="local"){if(G.phase==="people")return vPeopleLocal();if(G.phase==="pick")return vPickLocal();return vDoneLocal()}
+  if(STEP==="mode")return vMode();
+  vRooms();
+  if(G&&G.editRooms){const nx=$("#next");nx.textContent="저장하고 대기실로 ▶";nx.onclick=()=>{G.rooms=finalRooms();G.topic=clip(SET.topic,20);G.editRooms=false;G.players.forEach(p=>sendImgs(p.id));broadcast()}}}
+/* 시작 */
+if(HOSTING&&ROOM){try{G=JSON.parse(localStorage.getItem(HK())||"null")}catch(_){}if(G){hostNet()}else{history.replaceState(null,"","./");ROOM=""}}
+else if(ROOM){let me=null;try{me=JSON.parse(sessionStorage.getItem("tm-me-"+ROOM)||"null")}catch(_){}if(me&&me.name)joinRoom(me.name,me.gender||"")}
+else{try{const L=JSON.parse(localStorage.getItem(LK)||"null");if(L&&L.mode==="local")G=L}catch(_){}}
+window.__teamsTest={peek:()=>G,doPick,render};
+render();
+})();
+</script>
+<script src="../assets/scene.js?v=20261116d"></script>
+<script src="../assets/home.js?v=20261118"></script>
+</body></html>
