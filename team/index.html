@@ -233,7 +233,7 @@ td.rate{text-align:left;min-width:130px;border-left:1px solid var(--line)}
 @media (max-width:760px){.abd{grid-template-columns:minmax(0,1fr)}}
 .aros{padding:12px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 64px)}
 .corkcol{min-width:0;display:flex;flex-direction:column;gap:6px}
-.cork{min-height:360px;height:640px;min-width:280px;max-width:100%;resize:both;overflow:auto;border-radius:8px;padding:0;border:12px solid var(--frame);
+.cork{min-height:360px;height:640px;min-width:280px;max-width:100%;resize:both;overflow:hidden;border-radius:8px;padding:0;border:12px solid var(--frame);
   background:radial-gradient(ellipse at 30% 20%,rgba(255,255,255,.06),transparent 60%),radial-gradient(ellipse at 80% 90%,rgba(255,255,255,.04),transparent 55%),repeating-linear-gradient(115deg,rgba(255,255,255,.012) 0 2px,transparent 2px 7px),var(--chalk);
   box-shadow:inset 0 0 60px rgba(0,0,0,.45),0 2px 0 rgba(0,0,0,.15),0 10px 30px rgba(0,0,0,.18);display:block}
 .cork-in{position:relative;min-height:100%;width:100%}
@@ -1472,10 +1472,10 @@ function layoutCork(){const inn=$('#cork-in'),c=$('#cork');if(!inn||!c)return;
     else{if(col>=cols){col=0;rowY+=rowH+28;rowH=0}el.style.left=(18+col*(CARD_W+22))+'px';el.style.top=rowY+'px';rowH=Math.max(rowH,el.offsetHeight);col++}
     maxB=Math.max(maxB,el.offsetTop+el.offsetHeight)});
   (S.albumLines||[]).forEach(l=>{maxB=Math.max(maxB,l.y1,l.y2)});
-  const H=Math.max(c.clientHeight,maxB+40);inn.style.height=H+'px'}
+  const need=maxB+40;if(need>c.clientHeight)c.style.height=(need+(c.offsetHeight-c.clientHeight))+'px';inn.style.height=c.clientHeight+'px'}
 function initCork(){const c=$('#cork'),inn=$('#cork-in');if(!c||!inn)return;layoutCork();
   if(typeof ResizeObserver!=='undefined'){if(corkRO)corkRO.disconnect();let first=true,tm;
-    corkRO=new ResizeObserver(()=>{layoutCork();if(first){first=false;return}clearTimeout(tm);tm=setTimeout(()=>{try{localStorage.setItem(CORK_KEY(),JSON.stringify({w:c.offsetWidth,h:c.offsetHeight}))}catch(e){}},300)});corkRO.observe(c)}
+    corkRO=new ResizeObserver(()=>setTimeout(()=>{if(!c.isConnected)return;layoutCork();try{localStorage.setItem(CORK_KEY(),JSON.stringify({w:c.offsetWidth,h:c.offsetHeight}))}catch(e){}},0));corkRO.observe(c)}
   let drag=null,draw=null;
   const pt=e=>{const r=inn.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}};
   inn.onpointerdown=e=>{if(e.button>0)return;
@@ -1490,7 +1490,7 @@ function initCork(){const c=$('#cork'),inn=$('#cork-in');if(!c||!inn)return;layo
     const d=drag;if(!d||S.readOnly)return;const dx=e.clientX-d.sx,dy=e.clientY-d.sy;if(!d.moved&&Math.hypot(dx,dy)<5)return;
     d.moved=true;d.el.classList.add('dragging');d.el.style.zIndex=9999;
     const x=Math.max(0,Math.min(inn.clientWidth-d.el.offsetWidth,d.ox+dx)),y=Math.max(0,d.oy+dy);d.el.style.left=x+'px';d.el.style.top=y+'px';
-    if(y+d.el.offsetHeight+30>inn.clientHeight)inn.style.height=(y+d.el.offsetHeight+30)+'px'};
+    if(y+d.el.offsetHeight+30>c.clientHeight)c.style.height=(y+d.el.offsetHeight+30+(c.offsetHeight-c.clientHeight))+'px'};
   inn.onpointerup=e=>{
     if(draw){const q=draw.q,p=draw.p;draw.ln.remove();draw=null;if(!q||Math.hypot(q.x-p.x,q.y-p.y)<24)return;
       const l={id:'l'+uid(),x1:Math.round(p.x),y1:Math.round(p.y),x2:Math.round(q.x),y2:Math.round(q.y),label:String(new Date().getFullYear())};
