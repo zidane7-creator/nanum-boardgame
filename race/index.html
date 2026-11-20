@@ -174,9 +174,9 @@ function parse(txt){const out=[],map={};let total=0;
   total=out.reduce((a,p)=>a+p.count,0);return{people:out,total}}
 const sheepSVG=(c,s)=>`<svg width="${s||28}" height="${(s||28)*.82}" viewBox="0 0 44 36" aria-hidden="true"><g fill="#4a3a30"><rect x="10" y="25" width="3.4" height="8" rx="1.7"/><rect x="16" y="26" width="3.4" height="8" rx="1.7"/><rect x="23" y="26" width="3.4" height="8" rx="1.7"/><rect x="28" y="25" width="3.4" height="8" rx="1.7"/></g><g fill="${c}" stroke="#6b5444" stroke-width="1.4"><circle cx="9" cy="18" r="6.5"/><circle cx="15" cy="11" r="7"/><circle cx="23" cy="10" r="7"/><circle cx="29" cy="17" r="6.5"/><circle cx="22" cy="23" r="7"/><circle cx="13" cy="23" r="6.5"/></g><ellipse cx="19" cy="17" rx="10" ry="7.5" fill="${c}"/><ellipse cx="27.5" cy="14" rx="3" ry="1.8" fill="#e9c3a6" stroke="#6b5444" stroke-width="1"/><ellipse cx="34" cy="16" rx="7" ry="7.4" fill="#fde7d2" stroke="#6b5444" stroke-width="1.4"/><g fill="${c}" stroke="#6b5444" stroke-width="1"><circle cx="31.5" cy="9.5" r="3"/><circle cx="35.5" cy="9" r="3"/></g><circle cx="32.2" cy="16" r="1.4" fill="#2b1d14"/><circle cx="37" cy="16" r="1.4" fill="#2b1d14"/><circle cx="32.6" cy="15.5" r=".5" fill="#fff"/><circle cx="37.4" cy="15.5" r=".5" fill="#fff"/><circle cx="31" cy="19.3" r="1.5" fill="#ff9fb0" opacity=".8"/><circle cx="38.6" cy="19.3" r="1.5" fill="#ff9fb0" opacity=".8"/><path d="M33.6 19.6q1 1 2 0" stroke="#6b5444" stroke-width=".9" fill="none" stroke-linecap="round"/></svg>`;
 const DISTS=Array.from({length:20},(_,i)=>(i+1)*100);
-const LIMITS=[0,60,90,120,180,240,300,420,600,900,1200];
+const LIMITS=[0,30,60,90,120,180,240,300,420,600,900,1200];
 const fmtClock=x=>{x=Math.max(0,Math.ceil(x));return Math.floor(x/60)+":"+String(x%60).padStart(2,"0")};
-const limLabel=x=>x?(x%60?`${Math.floor(x/60)}분 ${x%60}초`:`${x/60}분`):"제한 없음";
+const limLabel=x=>x?(x<60?`${x}초`:x%60?`${Math.floor(x/60)}분 ${x%60}초`:`${x/60}분`):"제한 없음";
 const durOf=m=>6+m*.075; // 경주 거리(m) → 대략 걸리는 시간(초)
 const fmtSec=x=>x<60?`약 ${Math.round(x)}초`:`약 ${Math.floor(x/60)}분${Math.round(x%60)?" "+Math.round(x%60)+"초":""}`;
 
@@ -199,7 +199,7 @@ function renderSetup(){stopRace();
     <span class="lbl">중복</span>
     <label class="chk"><input type="checkbox" id="dedup" ${SET.dedup?"checked":""}><span><b>중복 제거 (한 사람은 한 번만 상품 받기)</b><br><span class="hint">같은 사람의 양이 여러 번 순위에 들면 더 높은 순위 하나만 남기고, 다음 사람이 그 자리를 이어받아요.</span></span></label>
     <span class="lbl">제한 시간</span>
-    <div class="row"><select id="limit">${LIMITS.map(x=>`<option value="${x}" ${+SET.limit===x?"selected":""}>${limLabel(x)}</option>`).join("")}</select><span class="hint">포디움에 오를 양(${SET.pod}위까지)이 다 들어온 뒤부터 시간을 재요. 그 안에 못 들어온 양은 실격이고, 그때까지 들어온 양으로 순위를 확정해요</span></div>
+    <div class="row"><select id="limit">${LIMITS.map(x=>`<option value="${x}" ${+SET.limit===x?"selected":""}>${limLabel(x)}</option>`).join("")}</select><span class="hint">${SET.pod}착(${SET.pod}번째로 결승선에 들어온 양)이 나오는 순간부터 시간을 재요. 그 안에 못 들어온 양은 실격이고, 그때까지 들어온 양으로 순위를 확정해요</span></div>
     <span class="lbl">경주 거리</span>
     <div class="row"><select id="dist">${DISTS.map(m=>`<option value="${m}" ${+SET.dist===m?"selected":""}>${m}m</option>`).join("")}</select><span class="hint" id="distHint">보통 ${fmtSec(durOf(+SET.dist||300)*5)} 걸려요 (돌발 상황에 따라 달라요)</span></div>
   </div>
@@ -272,7 +272,7 @@ function startRace(r){
   R={limit:+SET.limit||0,limitStart:null,people:r.people,sheep,D,M,Z,zAnn:{},obs,clovers,t:0,last:0,fin:[],dqN:0,started:false,speed:1,over:false,camC:0,tilt:.5,zoom:1,manual:false,camMode:SET.dir==="back"?"last":"lead",tkOpen:window.innerWidth>700};
   const st=document.createElement("div");st.id="stage";st.className="stage";
   st.innerHTML=`<canvas id="cv"></canvas>
-    <div class="hud"><div class="row"><div class="legend sp">${r.people.map(p=>`<span class="chip">${sheepSVG(p.color,24)}${esc(p.name)} ${p.count}</span>`).join("")}<span class="chip">📏 ${M}m</span>${+SET.limit?`<span class="chip clock" id="clock">⏱ ${fmtClock(+SET.limit)} · ${SET.pod}위까지 들어오면 시작</span>`:""}</div>
+    <div class="hud"><div class="row"><div class="legend sp">${r.people.map(p=>`<span class="chip">${sheepSVG(p.color,24)}${esc(p.name)} ${p.count}</span>`).join("")}<span class="chip">📏 ${M}m</span>${+SET.limit?`<span class="chip clock" id="clock">⏱ ${fmtClock(+SET.limit)} · ${SET.pod}착이 나오면 시작</span>`:""}</div>
       <button class="sm" id="cam">🎥 ${R.camMode==="lead"?"선두":"꼴찌"} 따라가기</button><button class="sm" id="zin" title="확대">🔍＋</button><button class="sm" id="zout" title="축소">🔍－</button><button class="sm" id="fast">⏩ 2배속</button><button class="sm" id="snd" title="효과음 켜기/끄기">${SFX.on?"🔊 소리":"🔇 소리"}</button><button class="sm" id="fsb">⛶ 전체화면</button><button class="sm" id="stop">■ 그만하기</button></div>
       <div class="hint camhint">🖱️ 화면을 좌우로 끌면 카메라 이동 · 위아래로 끌면 앵글 높이 · 휠/🔍로 확대</div><div class="cast" id="cast">🎙️ 곧 출발해요! ${n}마리 양들이 ${M}m 출발선에 섰어요</div></div>
     <div class="ticker${R.tkOpen?"":" shut"}" id="tkbox"><h3 id="tkt">🏁 도착 순서 <span class="hint" id="tkc">0/${n}</span></h3><div class="hint">${SET.dir==="back"?"⏪ 뒤에서부터 순위예요. 가장 늦게 도착한 양이 1위!":"⏩ 먼저 도착한 양이 1위예요"}</div><div id="tk"></div></div>
@@ -315,7 +315,7 @@ const Xm=(m,t)=>R.W/2+(m*R.ppm-R.camC)*kOf(t)+(1.08-t)*R.W*R.sk; // 비스듬한
 const Pt=(m,t,h)=>[Xm(m,t),Yt(t)-(h||0)*R.ppm*1.8*kOf(t)];
 function loop(now){if(!R)return;const rdt=Math.min(.05,(now-R.last)/1000);
   if(R.started&&!R.over){const dt=rdt*R.speed;R.t+=dt;step(dt)}R.last=now;if(R&&R.started&&!R.over&&Math.random()<rdt*.3)SFX.play("baa");
-  if(R&&R.limit){const left=R.limitStart==null?null:R.limit-(R.t-R.limitStart),txt=left==null?`⏱ ${fmtClock(R.limit)} · ${SET.pod}위까지 들어오면 시작`:"⏱ 남은 시간 "+fmtClock(left);if(txt!==R.clk){R.clk=txt;const el=$("#clock");if(el){el.textContent=txt;el.classList.toggle("hurry",left!=null&&left<=30);el.classList.toggle("run",left!=null)}}}
+  if(R&&R.limit){const left=R.limitStart==null?null:R.limit-(R.t-R.limitStart),txt=left==null?`⏱ ${fmtClock(R.limit)} · ${SET.pod}착이 나오면 시작`:"⏱ 남은 시간 "+fmtClock(left);if(txt!==R.clk){R.clk=txt;const el=$("#clock");if(el){el.textContent=txt;el.classList.toggle("hurry",left!=null&&left<=30);el.classList.toggle("run",left!=null)}}}
   if(!R)return;camStep(rdt);draw();raf=requestAnimationFrame(loop)}
 function camStep(dt){if(!R||!R.W)return;if(R.manual){R.camC=Math.max(R.camMin-R.W*.3,Math.min(R.camMax+R.W*.2,R.camC));return}const run=R.sheep.filter(s=>!s.done&&!s.dq);let tx;
   if(!R.started)tx=R.camMin;
@@ -344,13 +344,13 @@ function useMagnet(s,t){const ahead=R.sheep.filter(o=>o!==s&&!o.done&&!o.dq&&!o.
 function maybeEvent(s,t,dt){if(s.ev||s.done||s.dq||t<s.cool||s.p<.05||s.p>.95)return;
   if(Math.random()>dt*.14)return;
   const n=R.sheep.length,dqMax=Math.floor(n*.08),alive=n-R.dqN;
-  const opts=[["eat",30],["fall",16],["trap",12],["back",24],["bump",10],["fight",12],["sleep",22],["love",20]];if(R.dqN<dqMax&&alive-1>=Math.max(2,SET.pod))opts.push(["dq",4]);
+  const opts=[["eat",30],["fall",16],["trap",12],...(R.podDone?[]:[["back",24]]),["bump",10],["fight",12],["sleep",22],["love",20]];if(R.dqN<dqMax&&alive-1>=Math.max(2,SET.pod))opts.push(["dq",4]);
   let k=Math.random()*opts.reduce((a,o)=>a+o[1],0),type="eat";for(const [o,w] of opts){if((k-=w)<0){type=o;break}}
   if(type==="fight"||type==="love"){const foe=R.sheep.find(o=>o!==s&&!o.ev&&!o.done&&!o.dq&&Math.abs(o.yf-s.yf)<.18&&Math.abs(o.p-s.p)*R.M<5);
     if(!foe){type=type==="fight"?"fall":"sleep"}else{startEv(s,type,t,foe);startEv(foe,type,t,s);foe.ev.until=s.ev.until;
       cast(type==="fight"?`💢 ${sName(s)} 양과 ${sName(foe)} 양이 싸워요`:`💕 ${sName(s)} 양과 ${sName(foe)} 양이 눈이 맞았어요`);return}}
   if(type==="dq")R.dqN++;
-  if(type!=="dq"&&Math.random()<.3&&useMagnet(s,t))return;
+  if(type!=="dq"&&!R.podDone&&Math.random()<.3&&useMagnet(s,t))return;
   startEv(s,type,t)}
 function step(dt){const t=R.t,base=1/R.D,M=R.M;
   R.sheep.forEach(s=>{if(s.done){if(s.p<1+14/M)s.p+=dt*base*.6;s.leg+=dt*6;return}
@@ -366,7 +366,7 @@ function step(dt){const t=R.t,base=1/R.D,M=R.M;
         if(e.type==="back"&&!e.c10){e.c10=true;if(Math.random()<.5&&s.p>.1){e.long=true;e.until=Infinity;e.backTo=.1;cast(`↩️ ${sName(s)} 양이 멈추지 않고 10% 지점까지 거꾸로 달려가요!`)}}
         if(e.type==="back"){if(e.long){s.p=Math.max(e.backTo,s.p-base*1.4*dt);if(s.p<=e.backTo)e.until=t}else s.p=Math.max(0,s.p-base*.55*dt);s.leg+=dt*10}else if(e.type==="dq"){s.leg+=dt*12}else if(e.type==="fight"){s.leg+=dt*16}return}}
     // 균형: 70%를 넘어 2등보다 압도적으로(거리의 10%·최소 20m) 앞서면, 한 번 60% 확률로 뒤로 500m
-    if(!s.ld&&s.p>=.7&&!s.ev){const rest=R.sheep.filter(o=>o!==s&&!o.dq&&!o.done);if(rest.length){const sec=Math.max(...rest.map(o=>o.p));
+    if(!s.ld&&!R.podDone&&s.p>=.7&&!s.ev){const rest=R.sheep.filter(o=>o!==s&&!o.dq&&!o.done);if(rest.length){const sec=Math.max(...rest.map(o=>o.p));
       if((s.p-sec)*M>=Math.max(20,M*.1)){s.ld=true;if(Math.random()<.6){startEv(s,"back",t);s.ev.long=true;s.ev.until=Infinity;s.ev.backTo=Math.max(0,s.p-500/M);cast(`🌀 ${sName(s)} 양이 너무 앞서 나가다 정신이 쏙 빠져서 뒤로 500m를 달려가요!`);return}}}}
     // 남은 거리가 20%가 되는 순간, 30% 확률로 경기장 이탈(실격)
     if(!s.chk80&&s.p>=.8){s.chk80=true;if(Math.random()<.3&&R.sheep.length-R.dqN-1>=Math.max(2,SET.pod)){R.dqN++;startEv(s,"dq",t);cast(`🚫 결승선 앞에서 ${sName(s)} 양이 경기장을 벗어났어요! 실격`);return}}
@@ -388,7 +388,11 @@ function step(dt){const t=R.t,base=1/R.D,M=R.M;
     {const C=R.Z.cliff,pm=np*M;if(pm>=C.m0&&pm<=C.m1&&(s.yf<C.b0-.005||s.yf>C.b1+.005)){R.dqN++;startEv(s,"cliff",t);return}}
     if(s.p>=1){s.done=true;s.p=1;R.fin.push(s);s.rank=R.fin.length;addTick(s)}});
   // ⏱ 제한 시간은 포디움에 오를 양(○위까지)이 다 들어온 순간부터 재요
-  if(R.limit&&R.limitStart==null&&!R.over&&computeResult(R.fin,"front",SET.pod,SET.dedup).picks.length>=SET.pod){R.limitStart=R.t;cast(`⏱ ${SET.pod}위까지 다 들어왔어요! 지금부터 제한 시간 ${limLabel(R.limit)} 시작!`)}
+  // ${SET.pod}착이 나오면: 제한 시간 시작 + 그때부터 뒤로 가는 일은 없어요
+  if(!R.podDone&&R.fin.length>=SET.pod){R.podDone=true;
+    R.sheep.forEach(o=>{const e=o.ev;if(e&&(e.type==="back"||e.type==="magnet"||e.type==="pulled")){if(e.type!=="back")o.p=e.to;e.until=R.t;e.long=false}});
+    if(R.limit&&!R.over){R.limitStart=R.t;cast(`⏱ ${SET.pod}착이 나왔어요! 지금부터 제한 시간 ${limLabel(R.limit)} 시작! 이제 뒤로 가는 일은 없어요`)}
+    else cast(`🏁 ${SET.pod}착이 나왔어요! 이제 뒤로 가는 일은 없어요`)}
   if(!R.over&&R.limit&&R.limitStart!=null&&R.t-R.limitStart>=R.limit){timeUp();return}
   if(!R.over&&R.fin.length+R.dqN===R.sheep.length&&R.sheep.every(s=>s.done||s.dq)){R.over=true;setTimeout(()=>{if(R&&R.over)showResult()},1300)}}
 function zoneSteer(s,t,dt){const Z=R.Z,M=R.M,sm=s.p*M;let rg=null,hard=false;s.zm=s.zm||{};
@@ -407,7 +411,7 @@ function zoneSteer(s,t,dt){const Z=R.Z,M=R.M,sm=s.p*M;let rg=null,hard=false;s.z
     if(s.bok==null){s.bok=Math.random()>.18||R.sheep.length-R.dqN-1<Math.max(2,SET.pod)}
     if(s.bok||(s.ev&&s.ev.type==="back")){rg=[C.b0+.012,C.b1-.012];hard=sm>=C.m0-1}
     if(s.bok&&s.fear==null&&sm>=C.m0-1.4&&!s.ev){s.fear=Math.random()<.3;
-      if(s.fear){if(Math.random()<.1){startEv(s,"back",t);s.ev.long=true;s.ev.until=Infinity;s.ev.backTo=Math.max(0,s.p-40/M);cast(`😱 ${sName(s)} 양이 다리가 무서워서 뒤로 도망가요!`)}
+      if(s.fear){if(!R.podDone&&Math.random()<.1){startEv(s,"back",t);s.ev.long=true;s.ev.until=Infinity;s.ev.backTo=Math.max(0,s.p-40/M);cast(`😱 ${sName(s)} 양이 다리가 무서워서 뒤로 도망가요!`)}
         else startEv(s,"scared",t)}}
     if(sm>=C.m0-4)ann("cliff","⚠️ 낭떠러지다! 좁은 다리로 건너야 해요")}
   else if(sm>Z.narrow.m0-10&&sm<Z.narrow.m1){const W=Z.narrow;
