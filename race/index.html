@@ -71,6 +71,7 @@ main.wide{max-width:1300px}
 .stage .ticker{position:absolute;right:10px;bottom:46px;width:220px;max-height:min(46vh,420px);background:rgba(255,255,255,.92);border-width:2px;padding:10px}
 .stage .ticker h3{cursor:pointer;display:flex;gap:6px;align-items:baseline}.stage .ticker.shut{max-height:none;overflow:hidden}.stage .ticker.shut>:not(h3){display:none}.stage .ticker.shut h3{margin:0}
 .stage .cd{position:absolute;inset:0}
+.stage .chip.clock{font-size:17px;background:#fff;border-color:var(--ink)}.stage .chip.clock.hurry{background:#e8503a;color:#fff;animation:fl .6s ease-out infinite alternate}
 @media (max-width:600px){.stage .ticker{width:170px}.stage .hud .chip{font-size:13px}}
 body.racing #homeFab{display:none!important}
 /* result */
@@ -114,7 +115,7 @@ const rnd=(a,b)=>a+Math.random()*(b-a);
 const WOOL=["#fbf7ec","#ffb3c7","#9fd0ff","#b6eda4","#ffd27f","#d3b6ff","#fff07a","#8fe5d4","#ffae8a","#c8ccd2","#a9b9ff","#e5c49b","#f7a6e9","#c2e86d","#7fd9ff","#ff9f9f"];
 const MAXN=150;
 /* ---------- 설정 ---------- */
-let SET={txt:"A * 3, B * 4, C * 5",dir:"front",pod:3,prizes:["10,000원","5,000원","3,000원"],dedup:true,dist:300};
+let SET={txt:"A * 3, B * 4, C * 5",dir:"front",pod:3,prizes:["10,000원","5,000원","3,000원"],dedup:true,dist:300,limit:180};
 try{Object.assign(SET,JSON.parse(localStorage.getItem("race-setup")||"{}"))}catch(e){}
 const saveSet=()=>{try{localStorage.setItem("race-setup",JSON.stringify(SET))}catch(e){}};
 /* "A * 3, B * 4" → [{name,count,color}] (같은 이름은 합쳐요) */
@@ -127,6 +128,9 @@ function parse(txt){const out=[],map={};let total=0;
   total=out.reduce((a,p)=>a+p.count,0);return{people:out,total}}
 const sheepSVG=(c,s)=>`<svg width="${s||28}" height="${(s||28)*.82}" viewBox="0 0 44 36" aria-hidden="true"><g fill="#4a3a30"><rect x="10" y="25" width="3.4" height="8" rx="1.7"/><rect x="16" y="26" width="3.4" height="8" rx="1.7"/><rect x="23" y="26" width="3.4" height="8" rx="1.7"/><rect x="28" y="25" width="3.4" height="8" rx="1.7"/></g><g fill="${c}" stroke="#6b5444" stroke-width="1.4"><circle cx="9" cy="18" r="6.5"/><circle cx="15" cy="11" r="7"/><circle cx="23" cy="10" r="7"/><circle cx="29" cy="17" r="6.5"/><circle cx="22" cy="23" r="7"/><circle cx="13" cy="23" r="6.5"/></g><ellipse cx="19" cy="17" rx="10" ry="7.5" fill="${c}"/><ellipse cx="27.5" cy="14" rx="3" ry="1.8" fill="#e9c3a6" stroke="#6b5444" stroke-width="1"/><ellipse cx="34" cy="16" rx="7" ry="7.4" fill="#fde7d2" stroke="#6b5444" stroke-width="1.4"/><g fill="${c}" stroke="#6b5444" stroke-width="1"><circle cx="31.5" cy="9.5" r="3"/><circle cx="35.5" cy="9" r="3"/></g><circle cx="32.2" cy="16" r="1.4" fill="#2b1d14"/><circle cx="37" cy="16" r="1.4" fill="#2b1d14"/><circle cx="32.6" cy="15.5" r=".5" fill="#fff"/><circle cx="37.4" cy="15.5" r=".5" fill="#fff"/><circle cx="31" cy="19.3" r="1.5" fill="#ff9fb0" opacity=".8"/><circle cx="38.6" cy="19.3" r="1.5" fill="#ff9fb0" opacity=".8"/><path d="M33.6 19.6q1 1 2 0" stroke="#6b5444" stroke-width=".9" fill="none" stroke-linecap="round"/></svg>`;
 const DISTS=Array.from({length:20},(_,i)=>(i+1)*100);
+const LIMITS=[0,60,90,120,180,240,300,420,600,900,1200];
+const fmtClock=x=>{x=Math.max(0,Math.ceil(x));return Math.floor(x/60)+":"+String(x%60).padStart(2,"0")};
+const limLabel=x=>x?(x%60?`${Math.floor(x/60)}분 ${x%60}초`:`${x/60}분`):"제한 없음";
 const durOf=m=>6+m*.075; // 경주 거리(m) → 대략 걸리는 시간(초)
 const fmtSec=x=>x<60?`약 ${Math.round(x)}초`:`약 ${Math.floor(x/60)}분${Math.round(x%60)?" "+Math.round(x%60)+"초":""}`;
 
@@ -148,6 +152,8 @@ function renderSetup(){stopRace();
     <div class="prizes" id="prizes">${Array.from({length:SET.pod},(_,i)=>`<label><span>${i+1}위</span><input data-pz="${i}" maxlength="30" value="${esc(SET.prizes[i]||"")}" placeholder="예: 문화상품권"></label>`).join("")}</div>
     <span class="lbl">중복</span>
     <label class="chk"><input type="checkbox" id="dedup" ${SET.dedup?"checked":""}><span><b>중복 제거 (한 사람은 한 번만 상품 받기)</b><br><span class="hint">같은 사람의 양이 여러 번 순위에 들면 더 높은 순위 하나만 남기고, 다음 사람이 그 자리를 이어받아요.</span></span></label>
+    <span class="lbl">제한 시간</span>
+    <div class="row"><select id="limit">${LIMITS.map(x=>`<option value="${x}" ${+SET.limit===x?"selected":""}>${limLabel(x)}</option>`).join("")}</select><span class="hint">이 시간 안에 결승선을 못 넘은 양은 실격이고, 그때까지 들어온 양으로 순위를 확정해요</span></div>
     <span class="lbl">경주 거리</span>
     <div class="row"><select id="dist">${DISTS.map(m=>`<option value="${m}" ${+SET.dist===m?"selected":""}>${m}m</option>`).join("")}</select><span class="hint" id="distHint">보통 ${fmtSec(durOf(+SET.dist||300)*5)} 걸려요 (돌발 상황에 따라 달라요)</span></div>
   </div>
@@ -156,6 +162,7 @@ function renderSetup(){stopRace();
   prev();
   let tm;$("#txt").oninput=()=>{SET.txt=$("#txt").value;saveSet();prev();clearTimeout(tm);tm=setTimeout(()=>{if(R||!$("#pod"))return;const r=parse(SET.txt),mp=Math.max(1,Math.min(r.total||1,30));if($("#pod").options.length!==mp){const a=document.activeElement===$("#txt"),pos=$("#txt").selectionStart;renderSetup();if(a){$("#txt").focus();$("#txt").setSelectionRange(pos,pos)}}},700)};
   $$("[data-dir]").forEach(b=>b.onclick=()=>{SET.dir=b.dataset.dir;saveSet();$$("[data-dir]").forEach(x=>x.classList.toggle("on",x===b))});
+  $("#limit").onchange=e=>{SET.limit=+e.target.value;saveSet()};
   $("#dist").onchange=e=>{SET.dist=+e.target.value;saveSet();$("#distHint").textContent=`보통 ${fmtSec(durOf(SET.dist)*5)} 걸려요 (돌발 상황에 따라 달라요)`};
   $("#pod").onchange=e=>{SET.pod=+e.target.value;saveSet();renderSetup()};
   $("#prizes").oninput=e=>{const i=e.target.dataset.pz;if(i!=null){SET.prizes[+i]=e.target.value;saveSet()}};
@@ -216,10 +223,10 @@ function startRace(r){
   const M=+SET.dist||300,D=durOf(M),n=sheep.length;
   sheep.forEach((s,i)=>{s.lane=i;s.yf=Math.min(.95,Math.max(.05,(i+.5)/n+rnd(-.3,.3)/n));s.ty=s.yf;s.p=0;s.f=rnd(.92,1.08);s.v=0;s.tv=1/D;s.nextT=0;s.passed=new Set();s.tried=0;s.stun=0;s.jump=-9;s.jh=1;s.boost=0;s.done=false;s.dq=false;s.ev=null;s.hole=null;s.cool=rnd(1,3);s.leg=Math.random()*6});
   const Z=makeZones(M),obs=makeCourse(M,Z),clovers=[];
-  R={people:r.people,sheep,D,M,Z,zAnn:{},obs,clovers,t:0,last:0,fin:[],dqN:0,started:false,speed:1,over:false,camC:0,tilt:.5,zoom:1,manual:false,camMode:SET.dir==="back"?"last":"lead",tkOpen:window.innerWidth>700};
+  R={limit:+SET.limit||0,people:r.people,sheep,D,M,Z,zAnn:{},obs,clovers,t:0,last:0,fin:[],dqN:0,started:false,speed:1,over:false,camC:0,tilt:.5,zoom:1,manual:false,camMode:SET.dir==="back"?"last":"lead",tkOpen:window.innerWidth>700};
   const st=document.createElement("div");st.id="stage";st.className="stage";
   st.innerHTML=`<canvas id="cv"></canvas>
-    <div class="hud"><div class="row"><div class="legend sp">${r.people.map(p=>`<span class="chip">${sheepSVG(p.color,24)}${esc(p.name)} ${p.count}</span>`).join("")}<span class="chip">📏 ${M}m</span></div>
+    <div class="hud"><div class="row"><div class="legend sp">${r.people.map(p=>`<span class="chip">${sheepSVG(p.color,24)}${esc(p.name)} ${p.count}</span>`).join("")}<span class="chip">📏 ${M}m</span>${+SET.limit?`<span class="chip clock" id="clock">⏱ ${fmtClock(+SET.limit)}</span>`:""}</div>
       <button class="sm" id="cam">🎥 ${R.camMode==="lead"?"선두":"꼴찌"} 따라가기</button><button class="sm" id="zin" title="확대">🔍＋</button><button class="sm" id="zout" title="축소">🔍－</button><button class="sm" id="fast">⏩ 2배속</button><button class="sm" id="fsb">⛶ 전체화면</button><button class="sm" id="stop">■ 그만하기</button></div>
       <div class="hint camhint">🖱️ 화면을 좌우로 끌면 카메라 이동 · 위아래로 끌면 앵글 높이 · 휠/🔍로 확대</div><div class="cast" id="cast">🎙️ 곧 출발해요! ${n}마리 양들이 ${M}m 출발선에 섰어요</div></div>
     <div class="ticker${R.tkOpen?"":" shut"}" id="tkbox"><h3 id="tkt">🏁 도착 순서 <span class="hint" id="tkc">0/${n}</span></h3><div class="hint">${SET.dir==="back"?"⏪ 뒤에서부터 순위예요. 가장 늦게 도착한 양이 1위!":"⏩ 먼저 도착한 양이 1위예요"}</div><div id="tk"></div></div>
@@ -261,7 +268,8 @@ const Xm=(m,t)=>R.W/2+(m*R.ppm-R.camC)*kOf(t)+(1.08-t)*R.W*R.sk; // 비스듬한
 const Pt=(m,t,h)=>[Xm(m,t),Yt(t)-(h||0)*R.ppm*1.8*kOf(t)];
 function loop(now){if(!R)return;const rdt=Math.min(.05,(now-R.last)/1000);
   if(R.started&&!R.over){const dt=rdt*R.speed;R.t+=dt;step(dt)}R.last=now;
-  camStep(rdt);draw();raf=requestAnimationFrame(loop)}
+  if(R&&R.limit){const txt="⏱ "+fmtClock(R.limit-R.t);if(txt!==R.clk){R.clk=txt;const el=$("#clock");if(el){el.textContent=txt;el.classList.toggle("hurry",R.limit-R.t<=30)}}}
+  if(!R)return;camStep(rdt);draw();raf=requestAnimationFrame(loop)}
 function camStep(dt){if(!R||!R.W)return;if(R.manual){R.camC=Math.max(R.camMin-R.W*.3,Math.min(R.camMax+R.W*.2,R.camC));return}const run=R.sheep.filter(s=>!s.done&&!s.dq);let tx;
   if(!R.started)tx=R.camMin;
   else if(!run.length)tx=R.camMax;
@@ -331,6 +339,7 @@ function step(dt){const t=R.t,base=1/R.D,M=R.M;
     s.p=np;s.leg+=dt*(8+v*R.D*6);
     {const C=R.Z.cliff,pm=np*M;if(pm>=C.m0&&pm<=C.m1&&(s.yf<C.b0-.005||s.yf>C.b1+.005)){R.dqN++;startEv(s,"cliff",t);return}}
     if(s.p>=1){s.done=true;s.p=1;R.fin.push(s);s.rank=R.fin.length;addTick(s)}});
+  if(!R.over&&R.limit&&R.t>=R.limit){timeUp();return}
   if(!R.over&&R.fin.length+R.dqN===R.sheep.length&&R.sheep.every(s=>s.done||s.dq)){R.over=true;setTimeout(()=>{if(R&&R.over)showResult()},1300)}}
 function zoneSteer(s,t,dt){const Z=R.Z,M=R.M,sm=s.p*M;let rg=null,hard=false;s.zm=s.zm||{};
   const ann=(k,txt)=>{if(!R.zAnn[k]){R.zAnn[k]=1;cast(txt)}};
@@ -365,6 +374,13 @@ function jam(s,v,t,dt){const M=R.M,sm=s.p*M;if(!inNarrow(sm))return v;let blk=nu
   if(!blk)return v;const stopped=!!blk.ev||blk.v<.2/R.D;
   if(stopped){if(Math.random()<dt*.6&&!s.ev&&t>=s.cool){startEv(s,"hurdle",t,null,{type:"jam"});return 0}return 0}
   return Math.min(v,blk.v*.92)}
+/* ⏰ 제한 시간이 끝나면: 아직 못 들어온 양은 모두 실격, 들어온 양으로 순위 확정 */
+function timeUp(){const left=R.sheep.filter(s=>!s.done&&!s.dq);let n=0;
+  left.forEach(s=>{const dying=s.ev&&(s.ev.type==="dq"||s.ev.type==="cliff");s.dq=true;s.ev=null;if(!dying){s.dqWhy="time";n++}});
+  R.dqN+=n;R.over=true;cast(`⏰ 시간 종료! 아직 못 들어온 양 ${n}마리는 실격이에요. 순위를 확정해요`);
+  const tk=$("#tk");if(tk){const d=document.createElement("div");d.className="tk";d.innerHTML=`<span class="n">⏰</span><span>시간 초과 실격 ${n}마리</span>`;tk.appendChild(d);tk.parentElement.scrollTop=1e6}
+  const tc=$("#tkc");if(tc)tc.textContent=`${R.sheep.length}/${R.sheep.length}`;const el=$("#clock");if(el){el.textContent="⏱ 0:00";el.classList.add("hurry")}
+  setTimeout(()=>{if(R&&R.over)showResult()},2200)}
 function addTick(s){const tk=$("#tk");if(!tk)return;const d=document.createElement("div");d.className="tk";
   const tc=$("#tkc");if(tc)tc.textContent=`${R.fin.length+R.dqN}/${R.sheep.length}`;
   d.innerHTML=`<span class="n">${s.dq?"🚫":s.rank+"착"}</span>${sheepSVG(s.color,24)}<span>${esc(s.owner)}</span><span class="hint">#${s.no}${s.dq?" 실격":""}</span>`;tk.appendChild(d);
@@ -568,14 +584,14 @@ function showResult(){if(!R)return;const fin=R.fin,people=R.people;cancelAnimati
     return `<div class="pcol ${cls}"><div class="who">${sheepSVG(r.s.color,54)}<br>${esc(r.s.owner)}</div><div class="prz">${esc(pz(i))||"&nbsp;"}</div><div class="blk">${i+1}</div><div class="sub">${r.rank!==i+1?`(원래 ${r.rank}위)`:""}</div></div>`};
   const top=picks.length>=3?col(1,"p2")+col(0,"p1")+col(2,"p3"):picks.length===2?col(1,"p2")+col(0,"p1"):col(0,"p1");
   const rest=picks.slice(3);
-  app.innerHTML=`<div class="card center"><h2>🏆 포디움</h2><div class="hint">${SET.dir==="back"?"⏪ 뒤에서부터(늦게 도착한 양이 1위)":"⏩ 앞에서부터(먼저 도착한 양이 1위)"} · ${SET.pod}위까지${SET.dedup?" · 중복 제거":" · 중복 허용"}</div>
+  app.innerHTML=`<div class="card center"><h2>🏆 포디움</h2><div class="hint">${SET.dir==="back"?"⏪ 뒤에서부터(늦게 도착한 양이 1위)":"⏩ 앞에서부터(먼저 도착한 양이 1위)"} · ${SET.pod}위까지${SET.dedup?" · 중복 제거":" · 중복 허용"}${+SET.limit?" · 제한 시간 "+limLabel(+SET.limit):""}</div>
     <div class="podium">${top}</div><div class="base"></div>
     ${rest.length?`<div class="plist">${rest.map(r=>`<div class="prow"><span class="rk">${r.place}위</span>${lab(r)}${r.rank!==r.place?`<span class="og">(원래 ${r.rank}위)</span>`:""}<span class="pz">${esc(pz(r.place-1))}</span></div>`).join("")}</div>`:""}
     ${picks.length<SET.pod?`<p class="hint">중복을 빼니 상품 받을 사람이 ${picks.length}명뿐이에요.</p>`:""}
     <div class="row" style="justify-content:center;margin-top:14px"><button class="pri" id="again">🔁 같은 설정으로 다시</button><button id="setup">⚙️ 설정 바꾸기</button><button id="copy">📋 결과 복사</button></div></div>
   <div class="card"><h2>📋 상품 받는 사람</h2><div class="plist">${picks.map(r=>`<div class="prow"><span class="rk">${r.place}위</span>${lab(r)}<span class="pz">${esc(pz(r.place-1))||"—"}</span></div>`).join("")}</div></div>
-  <details class="card"><summary class="j" style="cursor:pointer;font-size:19px">전체 순위 보기 (도착 ${ranked.length}마리${dqs.length?` · 실격 ${dqs.length}마리`:""})</summary>
-    <table class="all"><thead><tr><th>순위</th><th>양</th><th>도착</th><th></th></tr></thead><tbody>${ranked.concat(dqs.map(s=>({s,dq:true}))).map(r=>`<tr class="${r.place?"win":""}"><td>${r.dq?"실격":r.rank+"위"}</td><td><span class="row" style="gap:6px">${sheepSVG(r.s.color,22)}${esc(r.s.owner)} <span class="hint">#${r.s.no}</span></span></td><td>${r.dq?"🚫":r.s.rank+"착"}</td><td class="x">${r.place?`🏆 ${r.place}위${pz(r.place-1)?" · "+esc(pz(r.place-1)):""}`:r.skip?"중복이라 제외":""}</td></tr>`).join("")}</tbody></table></details>`;
+  <details class="card"><summary class="j" style="cursor:pointer;font-size:19px">전체 순위 보기 (도착 ${ranked.length}마리${dqs.length?` · 실격 ${dqs.length}마리${dqs.some(x=>x.dqWhy==="time")?` (시간 초과 ${dqs.filter(x=>x.dqWhy==="time").length})`:""}`:""})</summary>
+    <table class="all"><thead><tr><th>순위</th><th>양</th><th>도착</th><th></th></tr></thead><tbody>${ranked.concat(dqs.map(s=>({s,dq:true}))).map(r=>`<tr class="${r.place?"win":""}"><td>${r.dq?"실격":r.rank+"위"}</td><td><span class="row" style="gap:6px">${sheepSVG(r.s.color,22)}${esc(r.s.owner)} <span class="hint">#${r.s.no}</span></span></td><td>${r.dq?(r.s.dqWhy==="time"?"⏰ 시간 초과":"🚫"):r.s.rank+"착"}</td><td class="x">${r.place?`🏆 ${r.place}위${pz(r.place-1)?" · "+esc(pz(r.place-1)):""}`:r.skip?"중복이라 제외":""}</td></tr>`).join("")}</tbody></table></details>`;
   window.scrollTo(0,0);confetti();
   const text=`[🐑 양 달리기 결과]\n${SET.dir==="back"?"뒤에서부터":"앞에서부터"} · ${SET.pod}위까지${SET.dedup?" · 중복 제거":""}\n\n`+picks.map(r=>`${r.place}위 ${r.s.owner}${pz(r.place-1)?" "+pz(r.place-1):""}`).join("\n");
   $("#again").onclick=()=>startRace({people,total:people.reduce((a,p)=>a+p.count,0)});
