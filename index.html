@@ -79,6 +79,9 @@ html.sc-night .parade{filter:brightness(1.35)}
 .sign i{display:block;width:8px;height:16px;background:var(--wood2)}
 .pen:nth-child(2) .sign{transform:translateX(-50%) rotate(2deg)}
 .flock{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-end;gap:10px 16px}
+.flock .brk{flex-basis:100%;height:0}
+.flock[style*="--cols"] .sheep{min-width:0;flex:none;width:min(clamp(74px,19vw,128px),calc((100% - (var(--cols) - 1) * var(--fg,16px)) / var(--cols)))}
+@media (max-width:560px){.flock{--fg:8px}}
 /* sheep */
 .sheep{position:relative;background:none;border:0;padding:0;font:inherit;color:var(--ink);cursor:pointer;width:clamp(74px,19vw,128px);display:flex;flex-direction:column;align-items:center;-webkit-tap-highlight-color:transparent}
 .sheep svg{width:100%;display:block;overflow:visible;animation:graze var(--d,3s) ease-in-out var(--dl,0s) infinite}
@@ -118,7 +121,7 @@ html.sc-night .parade{filter:brightness(1.35)}
 .tip.below::after{bottom:auto;top:-7px;transform:rotate(225deg)}
 .grp{position:fixed;inset:0;z-index:28;background:rgba(40,30,20,.45);display:none;align-items:center;justify-content:center;padding:40px 18px 18px}
 .grp.show{display:flex;animation:gin .25s ease-out}@keyframes gin{from{opacity:0}}
-.grp .gbox{width:min(560px,100%);min-height:200px;padding-top:56px}
+.grp .gbox{width:min(var(--gw,560px),100%);min-height:200px;padding-top:56px}
 .grp .gx{position:absolute;top:10px;right:12px;z-index:4;width:34px;height:34px;border-radius:50%;border:2px solid var(--ink);background:var(--cream);font-size:16px;cursor:pointer;box-shadow:0 2px 0 var(--ink)}
 #toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,40px);opacity:0;background:var(--cream);border:2px solid var(--ink);border-radius:18px;padding:10px 18px;font-size:16px;box-shadow:0 4px 0 var(--ink);transition:.25s;z-index:20;white-space:nowrap}
 #toast.show{opacity:1;transform:translate(-50%,0)}
@@ -317,8 +320,15 @@ function makeSheep(label,href,kids){
     else if(href&&/^https?:/.test(href)){window.open(href,"_blank","noopener")}else if(href)setTimeout(()=>location.href=href,450);else toast("💤 '"+label+"' 양은 아직 자고 있어요. 곧 깨어날 거예요!");
   };
   return b}
+/* 메뉴(양) 개수에 맞춰 줄을 나눠요: 4→2·2, 5→3·2, 6→3·3, 7→4·3, 8→4·4, 9→5·4, 10→5·5, 11→6·5, 12→4·4·4, 13→5·4·4, 14→5·5·4 */
+const ROWS={1:[1],2:[2],3:[3],4:[2,2],5:[3,2],6:[3,3],7:[4,3],8:[4,4],9:[5,4],10:[5,5],11:[6,5],12:[4,4,4],13:[5,4,4],14:[5,5,4]};
+function rowsFor(n){if(ROWS[n])return ROWS[n];const r=Math.ceil(n/5),b=Math.floor(n/r),x=n%r;return Array.from({length:r},(_,i)=>b+(i<x?1:0))}
+function flockRows(fl){fl.querySelectorAll(".brk").forEach(e=>e.remove());const items=[...fl.children].filter(e=>e.classList.contains("sheep"));let i=0;
+  const R=rowsFor(items.length);fl.style.setProperty("--cols",Math.max(...R,1));
+  const box=fl.closest(".gbox");if(box)box.style.setProperty("--gw",Math.max(560,Math.max(...R)*150+60)+"px");
+  R.slice(0,-1).forEach(c=>{i+=c;const it=items[i-1];if(it){const b=document.createElement("span");b.className="brk";it.after(b)}})}
 function openGroup(label,kids){const g=$("grp");g.querySelector(".sign b").textContent=label;const fl=g.querySelector(".flock");fl.innerHTML="";
-  kids.forEach(([l,h,k])=>fl.appendChild(makeSheep(l,h,k)));g.classList.add("show");g.querySelector(".gx").focus();if(window.__fitLabels)window.__fitLabels()}
+  kids.forEach(([l,h,k])=>fl.appendChild(makeSheep(l,h,k)));flockRows(fl);g.classList.add("show");g.querySelector(".gx").focus();if(window.__fitLabels)window.__fitLabels()}
 function closeGroup(){$("grp").classList.remove("show")}
 $("grp").addEventListener("click",e=>{if(e.target.id=="grp")closeGroup()});
 $("grp").querySelector(".gx").onclick=closeGroup;
@@ -328,7 +338,7 @@ ZONES.forEach(z=>{
   const pen=document.createElement("section");pen.className="pen"+(z.side?" small":"");pen.setAttribute("aria-label",z.name);
   pen.innerHTML='<div class="sign"><b>'+z.name+'</b><i></i></div><span class="post a"></span><span class="post b"></span><span class="post c"></span><span class="post d"></span><div class="flock"></div>';
   const fl=pen.querySelector(".flock");
-  z.items.forEach(([label,href,kids])=>fl.appendChild(makeSheep(label,href,kids)));
+  z.items.forEach(([label,href,kids])=>fl.appendChild(makeSheep(label,href,kids)));flockRows(fl);
   (z.side?SIDE:$("ranch")).appendChild(pen);
 });
 if(SIDE.children.length){$("ranch").appendChild(SIDE);$("ranch").classList.add("has-side")}
