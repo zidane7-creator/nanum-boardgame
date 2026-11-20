@@ -115,7 +115,9 @@ function renderSetup(){
 /* ---------- 게임 ---------- */
 let G=null;
 function start(L,first){const n=+SET.holes||24;G={L,n,turn:first%L.length,trap:Math.floor(Math.random()*n),filled:{},count:{},over:false};render()}
-function render(){const{L,n,turn}=G;const cols=n<=12?4:n<=20?5:n<=28?7:8;
+/* 구멍 수가 줄마다 딱 떨어지게: 한 줄 4~9개, 3~4줄에 가깝게 */
+function gridCols(n){let best=null;for(let c=4;c<=9;c++){if(n%c)continue;const r=n/c,sc=Math.abs(r-3.5)+(c>8?.5:0);if(!best||sc<best.sc||(sc===best.sc&&c<best.c))best={c,sc}}return best?best.c:Math.min(8,Math.ceil(n/4))}
+function render(){const{L,n,turn}=G;const cols=gridCols(n);
   app.innerHTML=`<div class="order">${L.map((x,i)=>`<span class="pchip ${i===turn&&!G.over?"now":""}"><b>${i+1}</b>${esc(x)}${G.count[i]?` 🗡️${G.count[i]}`:""}</span>`).join("")}</div>
   <div class="turn" id="turn">${G.over?`😱 <b>${esc(L[G.loser])}</b>님 걸렸어요!`:`🗡️ <b>${esc(L[turn])}</b>님 차례! 칼을 꽂을 구멍을 골라요`}</div>
   <div class="scene"><div class="barrel" id="barrel"><div class="sheep peek" id="sheep">${SHEEP}</div><div class="mouth"></div>
