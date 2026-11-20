@@ -101,7 +101,7 @@ main{max-width:980px;margin:0 auto;padding:14px 12px 90px}
 @media (prefers-reduced-motion:reduce){.rv .lf,.rv .rt{transition:none}}
 </style>
 </head><body>
-<div class="top"><a href="../">← 목장</a><span class="ttl">🚪 팀짜기 · 취향셔플</span></div>
+<div class="top"><a href="../">← 목장</a><span class="ttl">🚪 팀짜기 · 취향셔플</span><button class="sm" id="snd" title="효과음 켜기/끄기" style="margin-left:auto">🔊</button></div>
 <main id="app"><div class="card center">불러오는 중…</div></main>
 <div class="toast" id="toast"></div>
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js" integrity="sha384-8FWZA6BGMXhsfO+BLtrJK0We6gg5o1JyO8xQm6peWDEUs17ACA5ziE/NIAkl9z2k" crossorigin="anonymous"></script>
@@ -115,10 +115,48 @@ const clip=(s,n)=>String(s??"").replace(/[\u0000-\u001f]/g," ").trim().slice(0,n
 const rnd=n=>{const a=new Uint32Array(1);crypto.getRandomValues(a);return Math.floor(a[0]/4294967296*n)};
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
 const uid=()=>Math.random().toString(36).slice(2,9);
+/* 🔊 효과음: 소리 파일 없이 브라우저에서 바로 만들어요 */
+const SFX=(()=>{let A=null,on=true;const last={},KEY="sfx-on";try{on=localStorage.getItem(KEY)!=="0"}catch(e){}
+  const ac=()=>{if(!A){try{A=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(A&&A.state==="suspended")A.resume();return A};
+  const tone=(f0,f1,dur,type,vol,delay,lp)=>{const a=ac();if(!a)return;const t=a.currentTime+(delay||0),o=a.createOscillator(),g=a.createGain();o.type=type||"sine";o.frequency.setValueAtTime(f0,t);if(f1)o.frequency.exponentialRampToValueAtTime(f1,t+dur);
+    g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol||.15,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+dur);let n=o;if(lp){const f=a.createBiquadFilter();f.type="lowpass";f.frequency.value=lp;o.connect(f);n=f}n.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+.03)};
+  const noise=(dur,vol,fc,delay,type)=>{const a=ac();if(!a)return;const t=a.currentTime+(delay||0),len=Math.max(1,Math.floor(a.sampleRate*dur)),b=a.createBuffer(1,len,a.sampleRate),d=b.getChannelData(0);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*(1-i/len);
+    const s=a.createBufferSource(),f=a.createBiquadFilter(),g=a.createGain();s.buffer=b;f.type=type||"lowpass";f.frequency.value=fc||800;g.gain.value=vol||.2;s.connect(f);f.connect(g);g.connect(a.destination);s.start(t)};
+  const baa=(delay)=>{const a=ac();if(!a)return;const t=a.currentTime+(delay||0),f0=260+Math.random()*90,o=a.createOscillator(),lfo=a.createOscillator(),lg=a.createGain(),f=a.createBiquadFilter(),g=a.createGain();
+    o.type="sawtooth";o.frequency.setValueAtTime(f0,t);o.frequency.linearRampToValueAtTime(f0*.92,t+.5);lfo.frequency.value=7;lg.gain.value=f0*.07;lfo.connect(lg);lg.connect(o.frequency);f.type="lowpass";f.frequency.value=1500;
+    g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.05,t+.05);g.gain.exponentialRampToValueAtTime(.0001,t+.55);o.connect(f);f.connect(g);g.connect(a.destination);o.start(t);lfo.start(t);o.stop(t+.6);lfo.stop(t+.6)};
+  const creak=(delay)=>{const a=ac();if(!a)return;const t=a.currentTime+(delay||0),o=a.createOscillator(),am=a.createOscillator(),ag=a.createGain(),f=a.createBiquadFilter(),g=a.createGain();
+    o.type="sawtooth";o.frequency.setValueAtTime(75,t);o.frequency.linearRampToValueAtTime(115,t+.45);o.frequency.linearRampToValueAtTime(85,t+.75);am.frequency.value=22;ag.gain.value=.5;f.type="bandpass";f.frequency.value=700;f.Q.value=2.5;
+    g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.09,t+.06);g.gain.setValueAtTime(.09,t+.6);g.gain.exponentialRampToValueAtTime(.0001,t+.8);am.connect(ag);ag.connect(g.gain);o.connect(f);f.connect(g);g.connect(a.destination);o.start(t);am.start(t);o.stop(t+.85);am.stop(t+.85);
+    noise(.12,.25,260,(delay||0)+.78)};
+  const P={
+    beep:()=>tone(880,null,.12,"square",.06),
+    go:()=>{tone(660,1320,.32,"square",.07);tone(990,null,.35,"triangle",.06,.05)},
+    jump:()=>tone(330,700,.13,"sine",.05),
+    boing:()=>{tone(140,620,.28,"sine",.11);tone(620,300,.2,"sine",.05,.26)},
+    thud:()=>{noise(.16,.3,380);tone(150,55,.2,"sine",.22)},
+    bonk:()=>{tone(520,170,.14,"square",.06);noise(.06,.12,1500,.01,"bandpass")},
+    munch:()=>{for(let i=0;i<3;i++)noise(.05,.14,1900,i*.1,"bandpass")},
+    snore:()=>{tone(95,70,.55,"sawtooth",.045,0,400);tone(70,100,.5,"sawtooth",.04,.62,400)},
+    twinkle:()=>[1318,1760,2093,2637].forEach((f,i)=>tone(f,null,.25,"triangle",.05,i*.08)),
+    tremble:()=>{for(let i=0;i<8;i++)tone(i%2?430:380,null,.06,"triangle",.05,i*.06)},
+    fall:()=>tone(1200,280,.55,"sine",.07),
+    cliff:()=>{tone(1500,110,1.2,"sine",.08);noise(.25,.3,300,1.15)},
+    rewind:()=>{tone(300,1300,.22,"sawtooth",.035,0,2200);tone(1300,260,.25,"sawtooth",.035,.22,2200)},
+    buzzer:()=>tone(130,120,.55,"sawtooth",.07,0,900),
+    zap:()=>{tone(200,1700,.16,"square",.045);tone(1700,220,.18,"square",.045,.16)},
+    ding:()=>{tone(1046,null,.35,"triangle",.07);tone(1568,null,.3,"triangle",.035,.02)},
+    fanfare:()=>[[523,0,.18],[659,.14,.18],[784,.28,.18],[1046,.42,.6]].forEach(([f,d,l])=>{tone(f,null,l,"triangle",.08,d);tone(f/2,null,l,"square",.025,d)}),
+    whistle:()=>tone(1900,2300,.4,"sine",.05),
+    baa:()=>baa(),creak:()=>creak()};
+  const GAP={jump:160,ding:120,baa:700,thud:120,munch:300,creak:150,beep:0,go:0};
+  return{get on(){return on},unlock:ac,
+    play(k,delay){if(!on||!P[k])return;const n=performance.now();if(!delay&&last[k]&&n-last[k]<(GAP[k]??150))return;last[k]=n;try{if(delay)setTimeout(()=>P[k](),delay*1000);else P[k]()}catch(e){}},
+    toggle(){on=!on;try{localStorage.setItem(KEY,on?"1":"0")}catch(e){}if(on)ac();return on}}})();
 let tt;function toast(m,ms){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("show"),ms||2400)}
 const sxC=g=>g==="남"?"sx-m":g==="여"?"sx-f":"";
 const fullMsg=(name,why)=>`🔒 ‘${name}’은(는) ${why==="형제 자리 마감"?"형제 자리가 다 찼어요":why==="자매 자리 마감"?"자매 자리가 다 찼어요":"제한인원이 다 찼어요"}. 다른 방을 골라 주세요`;
-function denyFx(btn,msg){toast(msg,3200);if(btn){btn.classList.remove("deny");void btn.offsetWidth;btn.classList.add("deny")}}
+function denyFx(btn,msg){SFX.play("bonk");toast(msg,3200);if(btn){btn.classList.remove("deny");void btn.offsetWidth;btn.classList.add("deny")}}
 const ICONS=["🎬","🎭","🚀","💘","🍕","⚽","🎵","📚","🌊","⛰️","🎮","☕"];
 /* =========== 방 설정 (이 기기에 저장) =========== */
 let SET={topic:"",rooms:[]};try{Object.assign(SET,JSON.parse(localStorage.getItem("teams-setup")||"{}"))}catch(e){}
@@ -218,7 +256,7 @@ function vPickLocal(){const p=P(curId());
   <div class="card"><div class="doors">${G.rooms.map(r=>doorHTML(r,p.gender)).join("")}</div><p class="hint center" style="margin:10px 0 0">들어갈 방의 문을 눌러요. 다른 방에 누가 있는지는 마지막에 문이 열릴 때 알 수 있어요.</p></div>
   <div class="row"><button class="sm" id="reset">↺ 처음부터 다시 고르기</button><span class="sp"></span><button class="sm" id="toPeople">◀ 참가자 고치기</button></div>`;
   $$("[data-room]").forEach(b=>b.onclick=()=>{const r=G.rooms.find(x=>x.id===b.dataset.room);const a=avail(r,p.gender);if(!a.ok){denyFx(b,fullMsg(r.name,a.why));return}if(!confirm(`${p.name}님, ‘${r.name}’에 들어갈까요?`))return;
-    const before=members(r.id).map(x=>x.name);const err=doPick(p.id,r.id);if(err){toast(err);vPickLocal();return}saveL();b.classList.add("open");$$("[data-room]").forEach(x=>x.style.pointerEvents="none");setTimeout(()=>{
+    const before=members(r.id).map(x=>x.name);const err=doPick(p.id,r.id);if(err){toast(err);vPickLocal();return}saveL();b.classList.add("open");SFX.play("creak");$$("[data-room]").forEach(x=>x.style.pointerEvents="none");setTimeout(()=>{
     const nx=G.phase==="pick"?P(curId()):null;
     const cv=document.createElement("div");cv.className="cover";cv.innerHTML=`<div class="box"><div style="font-size:46px">🚪</div><h2 style="margin:4px 0">${esc(p.name)}님, ‘${esc(r.name)}’에 들어왔어요!</h2>
       <p>${before.length?`이 방에 먼저 와 있는 사람: <b>${before.map(esc).join(", ")}</b>`:"이 방에 처음 들어왔어요"}</p><p class="hint">확인했으면 화면을 가리고 다음 사람에게 넘겨 주세요</p>
@@ -230,7 +268,7 @@ function vPickLocal(){const p=P(curId());
 function revealHTML(rooms,mem,none){return `<div class="reveal">${rooms.map(r=>`<div class="rv" data-rv><div class="head"><div class="th" style="${r.img?`background-image:url(${r.img})`:""}">${r.img?"":r.ico}</div><b>${esc(r.name)}</b><span class="badge">${mem[r.id].length}명</span></div>
   <div class="body">${mem[r.id].map(p=>`<span class="mate ${sxC(p.gender)}">${esc(p.name)}</span>`).join("")||'<span class="hint">아무도 없어요</span>'}</div><div class="lf"></div><div class="rt"></div></div>`).join("")}</div>
   ${none&&none.length?`<div class="card" style="margin-top:12px"><b>😢 미배정</b> <span class="hint">갈 수 있는 방이 없었어요</span> ${none.map(p=>`<span class="mate ${sxC(p.gender)}">${esc(p.name)}</span>`).join(" ")}</div>`:""}`}
-function openDoors(){const L=$$("[data-rv]");L.forEach((el,i)=>setTimeout(()=>el.classList.add("open"),400+i*250));setTimeout(confetti,400+L.length*250)}
+function openDoors(){const L=$$("[data-rv]");L.forEach((el,i)=>setTimeout(()=>{el.classList.add("open");SFX.play("creak")},400+i*250));setTimeout(()=>{confetti();SFX.play("fanfare")},400+L.length*250+500)}
 function vDoneLocal(){const mem={};G.rooms.forEach(r=>mem[r.id]=members(r.id));const none=G.pickSeq.filter(id=>G.picks[id]==="__none").map(P);
   app.innerHTML=`${steps("done")}<div class="turn">${G.revealed?"🎉 모든 문이 열렸어요!":"🎉 모두 방에 들어갔어요! 이제 문을 열어 볼까요?"}</div>
   ${G.revealed?"":`<div class="center" style="margin-bottom:12px"><button class="pri big" id="open">🚪 모든 문 열기</button></div>`}
@@ -354,7 +392,7 @@ function vClient(){const v=LV;const img=r=>CL.imgs[r.id];let h="";
   if(v.noRoom)h=`<div class="card center"><div style="font-size:40px">😢</div><p>갈 수 있는 방이 없어서 미배정이 됐어요. 방장에게 말해 주세요.</p></div>`+h;
   app.innerHTML=`<div class="row" style="margin-bottom:8px"><span class="badge">🚪 ${esc(v.topic||"취향셔플")}</span><span class="sp"></span><span class="badge ${sxC(v.me.gender)}">👤 ${esc(v.me.name)}</span></div>`+h;
   if(v.reveal){if(vClient.opened)$$("[data-rv]").forEach(el=>el.classList.add("open"));else{vClient.opened=true;openDoors()}}
-  $$("[data-room]").forEach(b=>b.onclick=()=>{const r=v.rooms.find(x=>x.id===b.dataset.room);if(!r.ok){denyFx(b,fullMsg(r.name,r.why));return}if(!confirm(`‘${r.name}’에 들어갈까요?`))return;b.classList.add("open");$$("[data-room]").forEach(x=>x.disabled=true);setTimeout(()=>CL.send({t:"pick",room:r.id}),700)})}
+  $$("[data-room]").forEach(b=>b.onclick=()=>{const r=v.rooms.find(x=>x.id===b.dataset.room);if(!r.ok){denyFx(b,fullMsg(r.name,r.why));return}if(!confirm(`‘${r.name}’에 들어갈까요?`))return;b.classList.add("open");SFX.play("creak");$$("[data-room]").forEach(x=>x.disabled=true);setTimeout(()=>CL.send({t:"pick",room:r.id}),700)})}
 /* =========== 라우팅 =========== */
 function render(){
   if(ROOM&&!HOSTING){if(CL.joined&&LV){vClient();return}vJoin();return}
@@ -367,6 +405,8 @@ function render(){
 if(HOSTING&&ROOM){try{G=JSON.parse(localStorage.getItem(HK())||"null")}catch(_){}if(G){hostNet()}else{history.replaceState(null,"","./");ROOM=""}}
 else if(ROOM){let me=null;try{me=JSON.parse(sessionStorage.getItem("tm-me-"+ROOM)||"null")}catch(_){}if(me&&me.name)joinRoom(me.name,me.gender||"")}
 else{try{const L=JSON.parse(localStorage.getItem(LK)||"null");if(L&&L.mode==="local")G=L}catch(_){}}
+{const sb=$("#snd");sb.textContent=SFX.on?"🔊 소리":"🔇 소리";sb.onclick=()=>{sb.textContent=SFX.toggle()?"🔊 소리":"🔇 소리"}}
+document.addEventListener("pointerdown",()=>SFX.unlock(),{passive:true});
 window.__teamsTest={peek:()=>G,doPick,render};
 render();
 })();

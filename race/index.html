@@ -111,6 +111,45 @@ const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],app
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 let tt;function toast(t,ms){const e=$("#toast");e.textContent=t;e.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>e.classList.remove("show"),ms||2200)}
 const rnd=(a,b)=>a+Math.random()*(b-a);
+/* 🔊 효과음: 소리 파일 없이 브라우저에서 바로 만들어요 */
+const SFX=(()=>{let A=null,on=true;const last={},KEY="sfx-on";try{on=localStorage.getItem(KEY)!=="0"}catch(e){}
+  const ac=()=>{if(!A){try{A=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(A&&A.state==="suspended")A.resume();return A};
+  const tone=(f0,f1,dur,type,vol,delay,lp)=>{const a=ac();if(!a)return;const t=a.currentTime+(delay||0),o=a.createOscillator(),g=a.createGain();o.type=type||"sine";o.frequency.setValueAtTime(f0,t);if(f1)o.frequency.exponentialRampToValueAtTime(f1,t+dur);
+    g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol||.15,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+dur);let n=o;if(lp){const f=a.createBiquadFilter();f.type="lowpass";f.frequency.value=lp;o.connect(f);n=f}n.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+.03)};
+  const noise=(dur,vol,fc,delay,type)=>{const a=ac();if(!a)return;const t=a.currentTime+(delay||0),len=Math.max(1,Math.floor(a.sampleRate*dur)),b=a.createBuffer(1,len,a.sampleRate),d=b.getChannelData(0);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*(1-i/len);
+    const s=a.createBufferSource(),f=a.createBiquadFilter(),g=a.createGain();s.buffer=b;f.type=type||"lowpass";f.frequency.value=fc||800;g.gain.value=vol||.2;s.connect(f);f.connect(g);g.connect(a.destination);s.start(t)};
+  const baa=(delay)=>{const a=ac();if(!a)return;const t=a.currentTime+(delay||0),f0=260+Math.random()*90,o=a.createOscillator(),lfo=a.createOscillator(),lg=a.createGain(),f=a.createBiquadFilter(),g=a.createGain();
+    o.type="sawtooth";o.frequency.setValueAtTime(f0,t);o.frequency.linearRampToValueAtTime(f0*.92,t+.5);lfo.frequency.value=7;lg.gain.value=f0*.07;lfo.connect(lg);lg.connect(o.frequency);f.type="lowpass";f.frequency.value=1500;
+    g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.05,t+.05);g.gain.exponentialRampToValueAtTime(.0001,t+.55);o.connect(f);f.connect(g);g.connect(a.destination);o.start(t);lfo.start(t);o.stop(t+.6);lfo.stop(t+.6)};
+  const creak=(delay)=>{const a=ac();if(!a)return;const t=a.currentTime+(delay||0),o=a.createOscillator(),am=a.createOscillator(),ag=a.createGain(),f=a.createBiquadFilter(),g=a.createGain();
+    o.type="sawtooth";o.frequency.setValueAtTime(75,t);o.frequency.linearRampToValueAtTime(115,t+.45);o.frequency.linearRampToValueAtTime(85,t+.75);am.frequency.value=22;ag.gain.value=.5;f.type="bandpass";f.frequency.value=700;f.Q.value=2.5;
+    g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.09,t+.06);g.gain.setValueAtTime(.09,t+.6);g.gain.exponentialRampToValueAtTime(.0001,t+.8);am.connect(ag);ag.connect(g.gain);o.connect(f);f.connect(g);g.connect(a.destination);o.start(t);am.start(t);o.stop(t+.85);am.stop(t+.85);
+    noise(.12,.25,260,(delay||0)+.78)};
+  const P={
+    beep:()=>tone(880,null,.12,"square",.06),
+    go:()=>{tone(660,1320,.32,"square",.07);tone(990,null,.35,"triangle",.06,.05)},
+    jump:()=>tone(330,700,.13,"sine",.05),
+    boing:()=>{tone(140,620,.28,"sine",.11);tone(620,300,.2,"sine",.05,.26)},
+    thud:()=>{noise(.16,.3,380);tone(150,55,.2,"sine",.22)},
+    bonk:()=>{tone(520,170,.14,"square",.06);noise(.06,.12,1500,.01,"bandpass")},
+    munch:()=>{for(let i=0;i<3;i++)noise(.05,.14,1900,i*.1,"bandpass")},
+    snore:()=>{tone(95,70,.55,"sawtooth",.045,0,400);tone(70,100,.5,"sawtooth",.04,.62,400)},
+    twinkle:()=>[1318,1760,2093,2637].forEach((f,i)=>tone(f,null,.25,"triangle",.05,i*.08)),
+    tremble:()=>{for(let i=0;i<8;i++)tone(i%2?430:380,null,.06,"triangle",.05,i*.06)},
+    fall:()=>tone(1200,280,.55,"sine",.07),
+    cliff:()=>{tone(1500,110,1.2,"sine",.08);noise(.25,.3,300,1.15)},
+    rewind:()=>{tone(300,1300,.22,"sawtooth",.035,0,2200);tone(1300,260,.25,"sawtooth",.035,.22,2200)},
+    buzzer:()=>tone(130,120,.55,"sawtooth",.07,0,900),
+    zap:()=>{tone(200,1700,.16,"square",.045);tone(1700,220,.18,"square",.045,.16)},
+    ding:()=>{tone(1046,null,.35,"triangle",.07);tone(1568,null,.3,"triangle",.035,.02)},
+    fanfare:()=>[[523,0,.18],[659,.14,.18],[784,.28,.18],[1046,.42,.6]].forEach(([f,d,l])=>{tone(f,null,l,"triangle",.08,d);tone(f/2,null,l,"square",.025,d)}),
+    whistle:()=>tone(1900,2300,.4,"sine",.05),
+    baa:()=>baa(),creak:()=>creak()};
+  const GAP={jump:160,ding:120,baa:700,thud:120,munch:300,creak:150,beep:0,go:0};
+  return{get on(){return on},unlock:ac,
+    play(k,delay){if(!on||!P[k])return;const n=performance.now();if(!delay&&last[k]&&n-last[k]<(GAP[k]??150))return;last[k]=n;try{if(delay)setTimeout(()=>P[k](),delay*1000);else P[k]()}catch(e){}},
+    toggle(){on=!on;try{localStorage.setItem(KEY,on?"1":"0")}catch(e){}if(on)ac();return on}}})();
+
 /* 사람마다 다른 양털 색 */
 const WOOL=["#fbf7ec","#ffb3c7","#9fd0ff","#b6eda4","#ffd27f","#d3b6ff","#fff07a","#8fe5d4","#ffae8a","#c8ccd2","#a9b9ff","#e5c49b","#f7a6e9","#c2e86d","#7fd9ff","#ff9f9f"];
 const MAXN=150;
@@ -227,7 +266,7 @@ function startRace(r){
   const st=document.createElement("div");st.id="stage";st.className="stage";
   st.innerHTML=`<canvas id="cv"></canvas>
     <div class="hud"><div class="row"><div class="legend sp">${r.people.map(p=>`<span class="chip">${sheepSVG(p.color,24)}${esc(p.name)} ${p.count}</span>`).join("")}<span class="chip">📏 ${M}m</span>${+SET.limit?`<span class="chip clock" id="clock">⏱ ${fmtClock(+SET.limit)} · ${SET.pod}위까지 들어오면 시작</span>`:""}</div>
-      <button class="sm" id="cam">🎥 ${R.camMode==="lead"?"선두":"꼴찌"} 따라가기</button><button class="sm" id="zin" title="확대">🔍＋</button><button class="sm" id="zout" title="축소">🔍－</button><button class="sm" id="fast">⏩ 2배속</button><button class="sm" id="fsb">⛶ 전체화면</button><button class="sm" id="stop">■ 그만하기</button></div>
+      <button class="sm" id="cam">🎥 ${R.camMode==="lead"?"선두":"꼴찌"} 따라가기</button><button class="sm" id="zin" title="확대">🔍＋</button><button class="sm" id="zout" title="축소">🔍－</button><button class="sm" id="fast">⏩ 2배속</button><button class="sm" id="snd" title="효과음 켜기/끄기">${SFX.on?"🔊 소리":"🔇 소리"}</button><button class="sm" id="fsb">⛶ 전체화면</button><button class="sm" id="stop">■ 그만하기</button></div>
       <div class="hint camhint">🖱️ 화면을 좌우로 끌면 카메라 이동 · 위아래로 끌면 앵글 높이 · 휠/🔍로 확대</div><div class="cast" id="cast">🎙️ 곧 출발해요! ${n}마리 양들이 ${M}m 출발선에 섰어요</div></div>
     <div class="ticker${R.tkOpen?"":" shut"}" id="tkbox"><h3 id="tkt">🏁 도착 순서 <span class="hint" id="tkc">0/${n}</span></h3><div class="hint">${SET.dir==="back"?"⏪ 뒤에서부터 순위예요. 가장 늦게 도착한 양이 1위!":"⏩ 먼저 도착한 양이 1위예요"}</div><div id="tk"></div></div>
     <div class="cd" id="cd"></div>`;
@@ -246,10 +285,11 @@ function startRace(r){
     const nt=Math.max(0,Math.min(1,drag.tl+dy*.004));if(Math.abs(nt-R.tilt)>.002){const keep=R.camC/R.ppm;R.tilt=nt;layout();R.camC=keep*R.ppm}draw()};
   cvEl.onpointerup=cvEl.onpointercancel=()=>{drag=null};
   cvEl.addEventListener("wheel",e=>{e.preventDefault();zoomBy(e.deltaY<0?1.1:1/1.1)},{passive:false});
+  $("#snd").onclick=()=>{$("#snd").textContent=SFX.toggle()?"🔊 소리":"🔇 소리"};
   $("#fsb").onclick=()=>{if(document.fullscreenElement||document.webkitFullscreenElement){try{(document.exitFullscreen||document.webkitExitFullscreen).call(document)}catch(e){}}else goFull(st)};
   $("#tkt").onclick=()=>{R.tkOpen=!R.tkOpen;$("#tkbox").classList.toggle("shut",!R.tkOpen)};
   layout();R.camC=R.camMin;R.ro=new ResizeObserver(()=>{if(R)layout()});R.ro.observe(st);
-  const cd=$("#cd");let c=3;cd.textContent=c;const iv=setInterval(()=>{if(!R){clearInterval(iv);return}c--;if(c>0)cd.textContent=c;else if(c===0)cd.textContent="출발!";else{clearInterval(iv);cd.textContent="";}if(c===0){R.started=true;R.last=performance.now()}},750);
+  const cd=$("#cd");let c=3;cd.textContent=c;SFX.unlock();SFX.play("beep");const iv=setInterval(()=>{if(!R){clearInterval(iv);return}c--;if(c>0){cd.textContent=c;SFX.play("beep")}else if(c===0){cd.textContent="출발!";SFX.play("go");SFX.play("baa",.4)}else{clearInterval(iv);cd.textContent="";}if(c===0){R.started=true;R.last=performance.now()}},750);
   raf=requestAnimationFrame(loop);
 }
 /* 📐 낮은 앵글 원근: t=0 먼 쪽, t=1 가까운 쪽 */
@@ -267,7 +307,7 @@ const Yt=t=>R.yFar+Math.pow(Math.max(0,(t+.08)/1.16),1.3)*(R.yNear-R.yFar);
 const Xm=(m,t)=>R.W/2+(m*R.ppm-R.camC)*kOf(t)+(1.08-t)*R.W*R.sk; // 비스듬한 시점
 const Pt=(m,t,h)=>[Xm(m,t),Yt(t)-(h||0)*R.ppm*1.8*kOf(t)];
 function loop(now){if(!R)return;const rdt=Math.min(.05,(now-R.last)/1000);
-  if(R.started&&!R.over){const dt=rdt*R.speed;R.t+=dt;step(dt)}R.last=now;
+  if(R.started&&!R.over){const dt=rdt*R.speed;R.t+=dt;step(dt)}R.last=now;if(R&&R.started&&!R.over&&Math.random()<rdt*.3)SFX.play("baa");
   if(R&&R.limit){const left=R.limitStart==null?null:R.limit-(R.t-R.limitStart),txt=left==null?`⏱ ${fmtClock(R.limit)} · ${SET.pod}위까지 들어오면 시작`:"⏱ 남은 시간 "+fmtClock(left);if(txt!==R.clk){R.clk=txt;const el=$("#clock");if(el){el.textContent=txt;el.classList.toggle("hurry",left!=null&&left<=30);el.classList.toggle("run",left!=null)}}}
   if(!R)return;camStep(rdt);draw();raf=requestAnimationFrame(loop)}
 function camStep(dt){if(!R||!R.W)return;if(R.manual){R.camC=Math.max(R.camMin-R.W*.3,Math.min(R.camMax+R.W*.2,R.camC));return}const run=R.sheep.filter(s=>!s.done&&!s.dq);let tx;
@@ -279,7 +319,8 @@ function camStep(dt){if(!R||!R.W)return;if(R.manual){R.camC=Math.max(R.camMin-R.
 const EV={eat:["🌿","풀을 뜯어 먹어요"],fall:["💫","꽈당 넘어졌어요"],trap:["🕳️","함정에 빠졌어요"],back:["↩️","거꾸로 달려요"],bump:["💥","돌부리에 걸려 휘청했어요"],fight:["💢","싸워요"],dq:["🚫","경기장을 벗어났어요! 실격"],hurdle:["💥","장애물에 걸렸어요"],sleep:["💤","쿨쿨 잠들었어요"],love:["💕","눈이 맞았어요"],cliff:["😱","낭떠러지로 떨어졌어요! 실격"],magnet:["🧲","자석을 썼어요"],pulled:["🧲","자석에 끌려가요"],scared:["😨","다리 앞에서 무서워서 5초 동안 머뭇거려요"],stick:["🍯","꿀에 발이 붙었어요"]};
 const sName=s=>`${s.owner} #${s.no}`;
 function cast(txt){const el=$("#cast");if(!el)return;el.textContent=txt;el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash")}
-function startEv(s,type,t,partner,ob){const len={eat:rnd(.9,1.7),fall:rnd(.6,1.1),trap:rnd(1.6,2.6),back:rnd(.9,1.5),bump:rnd(.4,.8),fight:rnd(1.1,1.9),dq:1.3,hurdle:rnd(.5,1),sleep:10,love:rnd(1.5,2.5),cliff:1.5,scared:5}[type];
+const EVS={eat:"munch",fall:"thud",hurdle:"thud",trap:"fall",back:"rewind",bump:"bonk",fight:"bonk",sleep:"snore",love:"twinkle",scared:"tremble",dq:"buzzer",cliff:"cliff"};
+function startEv(s,type,t,partner,ob){SFX.play(EVS[type]||"");const len={eat:rnd(.9,1.7),fall:rnd(.6,1.1),trap:rnd(1.6,2.6),back:rnd(.9,1.5),bump:rnd(.4,.8),fight:rnd(1.1,1.9),dq:1.3,hurdle:rnd(.5,1),sleep:10,love:rnd(1.5,2.5),cliff:1.5,scared:5}[type];
   s.ev={type,start:t,until:t+len,partner,ico:ob?OB[ob.type].ico:null};s.cool=t+len+rnd(1.2,2.4);if(type==="bump")s.p=Math.max(0,s.p-1.8/R.M);
   if(type==="trap")s.hole={p:s.p,y:s.yf};
   if(type==="dq")s.dqDir=s.yf<.5?-1:1;
@@ -292,7 +333,7 @@ function useMagnet(s,t){const ahead=R.sheep.filter(o=>o!==s&&!o.done&&!o.dq&&!o.
   const o=ahead.reduce((a,b)=>b.p<a.p?b:a),mid=(s.p+o.p)/2,my=(s.yf+o.yf)/2,dur=1.3;
   s.ev={type:"magnet",start:t,until:t+dur,from:s.p,to:mid,partner:o,ico:"🧲"};o.ev={type:"pulled",start:t,until:t+dur,from:o.p,to:mid,partner:s,ico:"🧲"};
   s.ty=o.ty=my;s.cool=t+dur+rnd(2,3);o.cool=t+dur+rnd(1,2);
-  cast(`🧲 ${sName(s)} 양이 앞의 ${sName(o)} 양에게 자석을 썼어요! 둘이 한가운데에서 만나요 (${Math.round((o.p-s.p)*R.M/2)}m씩)`);return true}
+  cast(`🧲 ${sName(s)} 양이 앞의 ${sName(o)} 양에게 자석을 썼어요! 둘이 한가운데에서 만나요 (${Math.round((o.p-s.p)*R.M/2)}m씩)`);SFX.play("zap");return true}
 function maybeEvent(s,t,dt){if(s.ev||s.done||s.dq||t<s.cool||s.p<.05||s.p>.95)return;
   if(Math.random()>dt*.14)return;
   const n=R.sheep.length,dqMax=Math.floor(n*.08),alive=n-R.dqN;
@@ -325,7 +366,7 @@ function step(dt){const t=R.t,base=1/R.D,M=R.M;
     s.v+=(s.tv-s.v)*Math.min(1,dt*3);let v=s.v;const sm=s.p*M;
     for(const o of R.obs){const d=OB[o.type];if(!d.flat||Math.abs(sm-o.m)>=o.len/2||s.yf<=o.t0||s.yf>=o.t1)continue;
       if(d.trig&&!s.passed.has(o.id)){s.passed.add(o.id);if(Math.random()<d.chance){
-        if(d.trig==="spring"){s.jump=t;s.jh=2.6;cast(`${d.ico} ${sName(s)} 양이 ${d.msg}`)}
+        if(d.trig==="spring"){s.jump=t;s.jh=2.6;SFX.play("boing");cast(`${d.ico} ${sName(s)} 양이 ${d.msg}`)}
         else if(d.trig==="stick"){startEv(s,"eat",t,null,o);s.ev.type="stick";s.ev.until=t+rnd(1.2,2.2);return}
         else{startEv(s,d.trig,t,null,o);return}}}
       if(d.slow&&d.slow<1)v*=d.slow;break}
@@ -335,7 +376,7 @@ function step(dt){const t=R.t,base=1/R.D,M=R.M;
     for(const o of R.obs){const d=OB[o.type];if(d.flat||s.passed.has(o.id))continue;if(s.yf<o.t0-.03||s.yf>o.t1+.03)continue;
       const edge=o.m-1;if(sm<edge+.001&&nm>=edge||sm>=edge&&sm<o.m+.5){
         if(s.tried!==o.id&&Math.random()<d.crash){s.tried=o.id;s.p=edge/M;startEv(s,"hurdle",t,null,o);return}
-        s.passed.add(o.id);s.tried=0;s.jump=t;s.jh=d.h;break}}
+        s.passed.add(o.id);s.tried=0;s.jump=t;s.jh=d.h;SFX.play("jump");break}}
     s.p=np;s.leg+=dt*(8+v*R.D*6);
     {const C=R.Z.cliff,pm=np*M;if(pm>=C.m0&&pm<=C.m1&&(s.yf<C.b0-.005||s.yf>C.b1+.005)){R.dqN++;startEv(s,"cliff",t);return}}
     if(s.p>=1){s.done=true;s.p=1;R.fin.push(s);s.rank=R.fin.length;addTick(s)}});
@@ -377,13 +418,13 @@ function jam(s,v,t,dt){const M=R.M,sm=s.p*M;if(!inNarrow(sm))return v;let blk=nu
   if(stopped){if(Math.random()<dt*.6&&!s.ev&&t>=s.cool){startEv(s,"hurdle",t,null,{type:"jam"});return 0}return 0}
   return Math.min(v,blk.v*.92)}
 /* ⏰ 제한 시간이 끝나면: 아직 못 들어온 양은 모두 실격, 들어온 양으로 순위 확정 */
-function timeUp(){const left=R.sheep.filter(s=>!s.done&&!s.dq);let n=0;
+function timeUp(){SFX.play("buzzer");const left=R.sheep.filter(s=>!s.done&&!s.dq);let n=0;
   left.forEach(s=>{const dying=s.ev&&(s.ev.type==="dq"||s.ev.type==="cliff");s.dq=true;s.ev=null;if(!dying){s.dqWhy="time";n++}});
   R.dqN+=n;R.over=true;cast(`⏰ 시간 종료! 아직 못 들어온 양 ${n}마리는 실격이에요. 순위를 확정해요`);
   const tk=$("#tk");if(tk){const d=document.createElement("div");d.className="tk";d.innerHTML=`<span class="n">⏰</span><span>시간 초과 실격 ${n}마리</span>`;tk.appendChild(d);tk.parentElement.scrollTop=1e6}
   const tc=$("#tkc");if(tc)tc.textContent=`${R.sheep.length}/${R.sheep.length}`;const el=$("#clock");if(el){el.textContent="⏱ 0:00";el.classList.add("hurry")}
   setTimeout(()=>{if(R&&R.over)showResult()},2200)}
-function addTick(s){const tk=$("#tk");if(!tk)return;const d=document.createElement("div");d.className="tk";
+function addTick(s){if(!s.dq)SFX.play(s.rank===1?"fanfare":"ding");const tk=$("#tk");if(!tk)return;const d=document.createElement("div");d.className="tk";
   const tc=$("#tkc");if(tc)tc.textContent=`${R.fin.length+R.dqN}/${R.sheep.length}`;
   d.innerHTML=`<span class="n">${s.dq?"🚫":s.rank+"착"}</span>${sheepSVG(s.color,24)}<span>${esc(s.owner)}</span><span class="hint">#${s.no}${s.dq?" 실격":""}</span>`;tk.appendChild(d);
   const box=tk.parentElement;box.scrollTop=box.scrollHeight}
@@ -579,7 +620,7 @@ function computeResult(fin,dir,pod,dedup){const order=dir==="back"?[...fin].reve
   const ranked=order.map((s,i)=>({s,rank:i+1}));const picks=[],seen=new Set();
   for(const r of ranked){if(picks.length>=pod)break;if(dedup&&seen.has(r.s.owner)){r.skip=true;continue}seen.add(r.s.owner);r.place=picks.length+1;picks.push(r)}
   return{ranked,picks}}
-function showResult(){if(!R)return;const fin=R.fin,people=R.people;cancelAnimationFrame(raf);raf=0;if(R.ro)R.ro.disconnect();closeStage();
+function showResult(){if(!R)return;SFX.play("fanfare");const fin=R.fin,people=R.people;cancelAnimationFrame(raf);raf=0;if(R.ro)R.ro.disconnect();closeStage();
   const dqs=R.sheep.filter(s=>s.dq),{ranked,picks}=computeResult(fin,SET.dir,SET.pod,SET.dedup),pz=i=>(SET.prizes[i]||"").trim();
   const lab=r=>`${sheepSVG(r.s.color,30)}<span>${esc(r.s.owner)}</span>`;
   const col=(i,cls)=>{const r=picks[i];if(!r)return`<div class="pcol ${cls}"><div class="who">　</div><div class="blk">${i+1}</div></div>`;
