@@ -129,6 +129,17 @@ const SFX=(()=>{let A=null,on=true;const last={},KEY="sfx-on";try{on=localStorag
     o.type="sawtooth";o.frequency.setValueAtTime(75,t);o.frequency.linearRampToValueAtTime(115,t+.45);o.frequency.linearRampToValueAtTime(85,t+.75);am.frequency.value=22;ag.gain.value=.5;f.type="bandpass";f.frequency.value=700;f.Q.value=2.5;
     g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.09,t+.06);g.gain.setValueAtTime(.09,t+.6);g.gain.exponentialRampToValueAtTime(.0001,t+.8);am.connect(ag);ag.connect(g.gain);o.connect(f);f.connect(g);g.connect(a.destination);o.start(t);am.start(t);o.stop(t+.85);am.stop(t+.85);
     noise(.12,.25,260,(delay||0)+.78)};
+  /* 🚪 나무 문: 경첩이 삐걱대는 소리는 아주 짧은 '딱' 소리가 불규칙하게 이어져서 나요 */
+  const creakBuf=(dur,f0,f1)=>{const a=ac();if(!a)return null;const sr=a.sampleRate,len=Math.floor(sr*dur),b=a.createBuffer(1,len,sr),d=b.getChannelData(0);let next=0;
+    for(let i=0;i<len;i++){if(i>=next){const t=i/len,f=f0+(f1-f0)*Math.sin(t*Math.PI*.9)+Math.random()*14,amp=(.45+.55*Math.sin(t*Math.PI))*(.6+Math.random()*.4),L=Math.floor(sr*.004);
+        for(let k=0;k<L&&i+k<len;k++)d[i+k]+=amp*Math.sin(2*Math.PI*(1050+Math.random()*120)*k/sr)*Math.exp(-k/(sr*.0012));next=i+Math.floor(sr/f)}}
+    return b};
+  const play=(buf,delay,vol,fc)=>{const a=ac();if(!a||!buf)return;const t=a.currentTime+(delay||0),src=a.createBufferSource(),f1=a.createBiquadFilter(),f2=a.createBiquadFilter(),g=a.createGain();src.buffer=buf;
+    f1.type="bandpass";f1.frequency.value=fc||950;f1.Q.value=1.2;f2.type="peaking";f2.frequency.value=2200;f2.gain.value=6;g.gain.value=vol||.5;src.connect(f1);f1.connect(f2);f2.connect(g);g.connect(a.destination);src.start(t)};
+  const latch=(delay)=>{noise(.018,.5,3200,delay,"bandpass");tone(1900,1500,.03,"square",.03,delay)};
+  const thud=(delay)=>{noise(.2,.45,220,delay);tone(95,48,.22,"sine",.3,delay)};
+  const doorOpen=()=>{latch(0);play(creakBuf(.95,34,60),.07,.55,900)};
+  const doorClose=()=>{play(creakBuf(.32,55,38),0,.4,850);thud(.3);latch(.36)};
   const P={
     beep:()=>tone(880,null,.12,"square",.06),
     go:()=>{tone(660,1320,.32,"square",.07);tone(990,null,.35,"triangle",.06,.05)},
@@ -148,8 +159,8 @@ const SFX=(()=>{let A=null,on=true;const last={},KEY="sfx-on";try{on=localStorag
     ding:()=>{tone(1046,null,.35,"triangle",.07);tone(1568,null,.3,"triangle",.035,.02)},
     fanfare:()=>[[523,0,.18],[659,.14,.18],[784,.28,.18],[1046,.42,.6]].forEach(([f,d,l])=>{tone(f,null,l,"triangle",.08,d);tone(f/2,null,l,"square",.025,d)}),
     whistle:()=>tone(1900,2300,.4,"sine",.05),
-    baa:()=>baa(),creak:()=>creak()};
-  const GAP={jump:160,ding:120,baa:700,thud:120,munch:300,creak:150,beep:0,go:0};
+    baa:()=>baa(),creak:()=>doorOpen(),doorOpen,doorClose};
+  const GAP={jump:160,ding:120,baa:700,thud:120,munch:300,creak:120,doorClose:300,beep:0,go:0};
   return{get on(){return on},unlock:ac,
     play(k,delay){if(!on||!P[k])return;const n=performance.now();if(!delay&&last[k]&&n-last[k]<(GAP[k]??150))return;last[k]=n;try{if(delay)setTimeout(()=>P[k](),delay*1000);else P[k]()}catch(e){}},
     toggle(){on=!on;try{localStorage.setItem(KEY,on?"1":"0")}catch(e){}if(on)ac();return on}}})();
@@ -261,7 +272,7 @@ function vPickLocal(){const p=P(curId());
     const cv=document.createElement("div");cv.className="cover";cv.innerHTML=`<div class="box"><div style="font-size:46px">🚪</div><h2 style="margin:4px 0">${esc(p.name)}님, ‘${esc(r.name)}’에 들어왔어요!</h2>
       <p>${before.length?`이 방에 먼저 와 있는 사람: <b>${before.map(esc).join(", ")}</b>`:"이 방에 처음 들어왔어요"}</p><p class="hint">확인했으면 화면을 가리고 다음 사람에게 넘겨 주세요</p>
       <button class="pri big" id="nx">${nx?`👉 다음: ${esc(nx.name)}님`:"🎉 모두 골랐어요!"}</button></div>`;
-    document.body.appendChild(cv);$("#nx").onclick=()=>{cv.remove();render()}},950)});
+    document.body.appendChild(cv);$("#nx").onclick=()=>{cv.remove();SFX.play("doorClose");render()}},950)});
   $("#reset").onclick=()=>{if(!confirm("지금까지 고른 방을 모두 지우고 처음부터 다시 고를까요?"))return;startPick();saveL();render()};
   $("#toPeople").onclick=()=>{if(G.pickSeq.length&&!confirm("고른 방이 지워져요. 참가자를 고칠까요?"))return;G.phase="people";G.picks={};G.pickSeq=[];saveL();render()}}
 /* =========== 5) 문 열기 =========== */
@@ -392,7 +403,7 @@ function vClient(){const v=LV;const img=r=>CL.imgs[r.id];let h="";
   if(v.noRoom)h=`<div class="card center"><div style="font-size:40px">😢</div><p>갈 수 있는 방이 없어서 미배정이 됐어요. 방장에게 말해 주세요.</p></div>`+h;
   app.innerHTML=`<div class="row" style="margin-bottom:8px"><span class="badge">🚪 ${esc(v.topic||"취향셔플")}</span><span class="sp"></span><span class="badge ${sxC(v.me.gender)}">👤 ${esc(v.me.name)}</span></div>`+h;
   if(v.reveal){if(vClient.opened)$$("[data-rv]").forEach(el=>el.classList.add("open"));else{vClient.opened=true;openDoors()}}
-  $$("[data-room]").forEach(b=>b.onclick=()=>{const r=v.rooms.find(x=>x.id===b.dataset.room);if(!r.ok){denyFx(b,fullMsg(r.name,r.why));return}if(!confirm(`‘${r.name}’에 들어갈까요?`))return;b.classList.add("open");SFX.play("creak");$$("[data-room]").forEach(x=>x.disabled=true);setTimeout(()=>CL.send({t:"pick",room:r.id}),700)})}
+  $$("[data-room]").forEach(b=>b.onclick=()=>{const r=v.rooms.find(x=>x.id===b.dataset.room);if(!r.ok){denyFx(b,fullMsg(r.name,r.why));return}if(!confirm(`‘${r.name}’에 들어갈까요?`))return;b.classList.add("open");SFX.play("creak");$$("[data-room]").forEach(x=>x.disabled=true);setTimeout(()=>CL.send({t:"pick",room:r.id}),700);setTimeout(()=>SFX.play("doorClose"),1500)})}
 /* =========== 라우팅 =========== */
 function render(){
   if(ROOM&&!HOSTING){if(CL.joined&&LV){vClient();return}vJoin();return}
