@@ -939,7 +939,7 @@ function carTimeline(){const days=(+R.nights||0)+1,S=slots(),C=R.tt.cells,toM=t=
   let out='';
   const TS=[];for(let m=360;m<1500;m+=30)TS.push(m); // 06:00 ~ 25:00
   const key=m=>hm(m),lab=m=>pad(Math.floor(m/60))+':'+pad(m%60);
-  const rh=Math.max(15,Math.floor((window.innerHeight-150)/(TS.length+1))); // 하루 시간표가 한 화면에 딱 맞게
+  const rh=Math.max(15,Math.floor((window.innerHeight-150)/(TS.length+1)))*2; // 한 화면 기준 높이의 2배
   for(let d=minD;d<days;d++){const dc=cars.filter(c=>+c.day===d),off=dc.filter(c=>slotOf(c)<0);
     const dp=ok.filter(x=>x.w.d===d),dpOff=dp.filter(x=>slotM(x.w.m)<0);
     const span={};{let q=0;while(q<TS.length){const v=C[d+'-'+key(TS[q])]||'';let j=q;if(v)while(j+1<TS.length&&C[d+'-'+key(TS[j+1])]===v)j++;span[q]=[v,j-q+1];q=j+1}}
