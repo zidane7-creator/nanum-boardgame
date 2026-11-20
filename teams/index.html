@@ -122,9 +122,16 @@ const SFX=(()=>{let A=null,on=true;const last={},KEY="sfx-on";try{on=localStorag
     g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol||.15,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+dur);let n=o;if(lp){const f=a.createBiquadFilter();f.type="lowpass";f.frequency.value=lp;o.connect(f);n=f}n.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+.03)};
   const noise=(dur,vol,fc,delay,type)=>{const a=ac();if(!a)return;const t=a.currentTime+(delay||0),len=Math.max(1,Math.floor(a.sampleRate*dur)),b=a.createBuffer(1,len,a.sampleRate),d=b.getChannelData(0);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*(1-i/len);
     const s=a.createBufferSource(),f=a.createBiquadFilter(),g=a.createGain();s.buffer=b;f.type=type||"lowpass";f.frequency.value=fc||800;g.gain.value=vol||.2;s.connect(f);f.connect(g);g.connect(a.destination);s.start(t)};
-  const baa=(delay)=>{const a=ac();if(!a)return;const t=a.currentTime+(delay||0),f0=260+Math.random()*90,o=a.createOscillator(),lfo=a.createOscillator(),lg=a.createGain(),f=a.createBiquadFilter(),g=a.createGain();
-    o.type="sawtooth";o.frequency.setValueAtTime(f0,t);o.frequency.linearRampToValueAtTime(f0*.92,t+.5);lfo.frequency.value=7;lg.gain.value=f0*.07;lfo.connect(lg);lg.connect(o.frequency);f.type="lowpass";f.frequency.value=1500;
-    g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.05,t+.05);g.gain.exponentialRampToValueAtTime(.0001,t+.55);o.connect(f);f.connect(g);g.connect(a.destination);o.start(t);lfo.start(t);o.stop(t+.6);lfo.stop(t+.6)};
+  function cuteBleat(a,dest,t,p,vol){/* 아기양: 높은 음, "메" 짧게 + "에~" 살짝 올라갔다 내려오기 */
+    const syl=[[.15,1,1.08,.8],[.32+Math.random()*.1,1.12,.95,1]];if(Math.random()<.3)syl.push([.22,1.2,1.05,.7]);let tt=t;
+    syl.forEach(([dur,s,e,amp],k)=>{const f0=p*s,o=a.createOscillator(),o2=a.createOscillator(),vib=a.createOscillator(),vg=a.createGain(),mix=a.createGain(),mix2=a.createGain(),lp=a.createBiquadFilter(),env=a.createGain();
+      o.type="triangle";o2.type="square";o.frequency.setValueAtTime(f0,tt);o.frequency.linearRampToValueAtTime(f0*1.07,tt+dur*.35);o.frequency.linearRampToValueAtTime(p*e,tt+dur);
+      o2.frequency.setValueAtTime(f0,tt);o2.frequency.linearRampToValueAtTime(f0*1.07,tt+dur*.35);o2.frequency.linearRampToValueAtTime(p*e,tt+dur);
+      vib.frequency.value=11+Math.random()*3;vg.gain.value=f0*.035;vib.connect(vg);vg.connect(o.frequency);vg.connect(o2.frequency);
+      mix.gain.value=.9;mix2.gain.value=.12;lp.type="lowpass";lp.Q.value=3;lp.frequency.setValueAtTime(900,tt);lp.frequency.exponentialRampToValueAtTime(3400,tt+.05);lp.frequency.exponentialRampToValueAtTime(2000,tt+dur);
+      env.gain.setValueAtTime(.0001,tt);env.gain.exponentialRampToValueAtTime(vol*amp,tt+.025);env.gain.setValueAtTime(vol*amp*.85,tt+dur*.7);env.gain.exponentialRampToValueAtTime(.0001,tt+dur);
+      o.connect(mix);o2.connect(mix2);mix.connect(lp);mix2.connect(lp);lp.connect(env);env.connect(dest);[o,o2,vib].forEach(x=>{x.start(tt);x.stop(tt+dur+.03)});tt+=dur+(k?.02:.04)})}
+  const baa=(delay)=>{const a=ac();if(!a)return;cuteBleat(a,a.destination,a.currentTime+(delay||0),540+Math.random()*160,.07)};
   const creak=(delay)=>{const a=ac();if(!a)return;const t=a.currentTime+(delay||0),o=a.createOscillator(),am=a.createOscillator(),ag=a.createGain(),f=a.createBiquadFilter(),g=a.createGain();
     o.type="sawtooth";o.frequency.setValueAtTime(75,t);o.frequency.linearRampToValueAtTime(115,t+.45);o.frequency.linearRampToValueAtTime(85,t+.75);am.frequency.value=22;ag.gain.value=.5;f.type="bandpass";f.frequency.value=700;f.Q.value=2.5;
     g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.09,t+.06);g.gain.setValueAtTime(.09,t+.6);g.gain.exponentialRampToValueAtTime(.0001,t+.8);am.connect(ag);ag.connect(g.gain);o.connect(f);f.connect(g);g.connect(a.destination);o.start(t);am.start(t);o.stop(t+.85);am.stop(t+.85);
