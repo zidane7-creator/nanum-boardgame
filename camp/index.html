@@ -225,6 +225,15 @@ table.tl td.ev{width:28%}
 table.tl td.cv,table.tl td.pv{border-top:0;border-bottom:0;position:relative;padding:0}
 table.tl td.cv{min-width:260px}table.tl td.pv{min-width:260px}
 table.tl td .ov{position:absolute;left:4px;right:4px;top:1px;z-index:2}
+table.tl td.tm{text-align:center}
+table.tl td.tm,table.tl td.ev{height:var(--rh,24px);padding-top:0;padding-bottom:0;line-height:1.15}
+table.tl td.tm{font-size:11px}table.tl td.ev{font-size:13px;vertical-align:middle}
+table.tl .cbadge.k-bus{background:#e1f3ff;border-color:#4aa3df}
+table.tl .cbadge.k-pool{background:#e7f8dc;border-color:#6bbf4e}
+table.tl .cbadge.k-solo{background:#ffe5ee;border-color:#e2789f}
+table.tl .cbadge.fold{cursor:pointer;padding:1px 10px;font-family:Jua,sans-serif;font-size:14px;white-space:nowrap}
+table.tl .cbadge .fh{cursor:pointer}table.tl .cbadge .tg{font-size:11px;color:var(--muted)}
+table.tl .chip.p{padding:1px 9px;justify-content:center;line-height:1.35}
 table.tl tr.has td.tm{background:#fff1cc;color:var(--ink);font-weight:700}
 .cbadge{display:inline-block;vertical-align:top;margin:2px;padding:5px 9px;border:2px solid var(--blue);border-radius:12px;background:#eaf3ff;font-size:13px;max-width:320px}
 .cbadge.out{border-color:var(--green);background:#e7f5ea}
@@ -822,10 +831,10 @@ function vPeople(){const L=R.people,PV=peopleView(),m=L.filter(p=>p.gender==='�
    <td><button class="x" data-act="pDel" data-v="${p.id}" title="지우기">🗑</button></td></tr>`}).join('')}</tbody></table></div>`:'<div class="empty">참석인원을 추가하거나 엑셀로 불러와요</div>'}</div>`}
 /* 🔍 한눈에 보기: 표가 화면보다 넓으면 표 전체를 살짝 줄여서 가로 스크롤 없이 보여 줘요 */
 /* 차량 타임라인: 겹쳐 보이는 차·사람 표시가 서로 가리지 않게 아래로 차곡차곡 */
-function stackOv(){document.querySelectorAll('table.tl').forEach(tb=>{let need=0;['cv','pv'].forEach(cls=>{let lastB=-1e9;
-  tb.querySelectorAll('td.'+cls+' > .ov').forEach(ov=>{const td=ov.parentElement,tdTop=td.offsetTop,want=Math.max(tdTop+1,lastB+3);ov.style.top=(want-tdTop)+'px';lastB=want+ov.offsetHeight});
+function stackOv(){document.querySelectorAll('table.tl').forEach(tb=>{let need=0;tb.style.marginBottom='';const T0=tb.getBoundingClientRect().top;['cv','pv'].forEach(cls=>{let lastB=-1e9;
+  tb.querySelectorAll('td.'+cls+' > .ov').forEach(ov=>{const td=ov.parentElement,tdTop=td.getBoundingClientRect().top-T0,want=Math.max(tdTop+1,lastB+3);ov.style.top=(want-tdTop)+'px';lastB=want+ov.offsetHeight});
   need=Math.max(need,lastB-tb.offsetHeight+4)});tb.style.marginBottom=need>0?need+'px':''})}
-addEventListener('resize',()=>stackOv());
+let tlRT;addEventListener('resize',()=>{stackOv();if(TAB==='cars'&&SUB.carView==='tl'){clearTimeout(tlRT);tlRT=setTimeout(render,250)}});
 function fitPeople(){const t=$('#ptbl'),w=$('.ptw'),info=$('#pFitInfo');if(!t||!w)return;t.style.zoom='';
   if(SUB.pFit===false){if(info)info.textContent='';return}
   const need=t.scrollWidth,have=w.clientWidth;if(need<=have+3){if(info)info.textContent='';return}
@@ -916,25 +925,27 @@ function moreList(arr,n,sep){sep=sep||'';if(arr.length<=n)return arr.join(sep);
 function carTimeline(){const days=(+R.nights||0)+1,S=slots(),C=R.tt.cells,toM=t=>{const[h,m]=String(t).split(':').map(Number);return h*60+(m||0)};
   const cars=R.cars.list.filter(c=>c.day!=null&&c.day!==''&&c.time);const none=R.cars.list.filter(c=>!(c.day!=null&&c.day!==''&&c.time));
   const sm=S.map(toM),f0=sm[0],last=sm[sm.length-1]+30;
-  const slotM=m=>{if(m<f0&&m+1440<last)m+=1440;if(m<f0||m>=last)return -1;return Math.floor((m-f0)/30)};const slotOf=c=>slotM(toM(c.time));
+  const slotM=m=>{if(m<360)m+=1440;if(m<360||m>=1500)return -1;return Math.floor((m-360)/30)};const slotOf=c=>slotM(toM(c.time));
   const minD=Math.min(0,...R.cars.list.filter(c=>c.day!==''&&c.day!=null).map(c=>+c.day),...R.people.map(p=>{const w=pWhen(p,'in');return w&&w.m!=null?w.d:0}));
   const MV=peopleMoves(),ok=MV.filter(x=>x.w&&x.w.m!=null&&x.w.d>=minD&&x.w.d<days),unk=MV.filter(x=>x.raw&&!(x.w&&x.w.m!=null)&&!x.src);
   const pchip=x=>`<span class="chip p ${x.p.gender==='여'?'f':x.p.gender==='남'?'m':''}" data-pid="${x.p.id}" title="${esc((x.k==='in'?'들어오는 시간: ':'나가는 시간: ')+(x.raw||(x.src?'차 출발 시각':'')))}">${esc(x.p.name||'(이름 없음)')}${x.src?' 🚌':''}</span>`;
   const pcell=list=>{const a=list.filter(x=>x.k==='in'),b=list.filter(x=>x.k==='out');return (a.length?`<div class="pin"><b>⬇️ 들어와요 ${a.length}명</b> ${moreList(a.map(pchip),6)}</div>`:'')+(b.length?`<div class="pout"><b>⬆️ 나가요 ${b.length}명</b> ${moreList(b.map(pchip),6)}</div>`:'')};
-  const badge=c=>{const n=(c.members||[]).length,names=(c.members||[]).map(pn);return `<div class="cbadge ${c.dir}"><b>${c.dir==='in'?'🚌 들어오는 차':'🏠 집에 가는 차'} · ${esc(c.time)}</b><div>${esc(c.type||'')}${c.name?' · '+esc(c.name):''} ${seatBadge(c)}</div>${c.place?`<div class="hint">${c.dir==='in'?'출발':'도착'}: ${esc(c.place)}</div>`:''}${c.driver?`<div class="hint">운전: ${esc(pn(c.driver))}</div>`:''}${names.length?`<div class="nm">${moreList(names.map(esc),8,', ')}</div>`:''}</div>`};
+  const kindOf=c=>/본대|버스/.test(c.type||'')?'bus':c.type==='자차(카풀가능)'?'pool':c.type==='자차(카풀불가능)'?'solo':'etc';
+  const whoCar=c=>c.name||(c.driver?pn(c.driver)+' 차':'')||c.type||'차';
+  const badge=c=>{const open=SUB.tlOpen&&SUB.tlOpen.has(c.id),names=(c.members||[]).map(pn),ic=c.dir==='in'?'🚌':'🏠';
+    if(!open)return `<div class="cbadge k-${kindOf(c)} fold" data-act="tlCar" data-id="${c.id}" title="${esc(c.time+' '+(c.dir==='in'?'들어오는 차':'집에 가는 차'))} · 눌러서 펼치기">${ic} ${esc(whoCar(c))} <span class="tg">▸</span></div>`;
+    return `<div class="cbadge k-${kindOf(c)}"><b class="fh" data-act="tlCar" data-id="${c.id}" title="눌러서 접기">${c.dir==='in'?'🚌 들어오는 차':'🏠 집에 가는 차'} · ${esc(c.time)} <span class="tg">▾</span></b><div>${esc(c.type||'')}${c.name?' · '+esc(c.name):''} ${seatBadge(c)}</div>${c.place?`<div class="hint">${c.dir==='in'?'출발':'도착'}: ${esc(c.place)}</div>`:''}${c.driver?`<div class="hint">운전: ${esc(pn(c.driver))}</div>`:''}${names.length?`<div class="nm">${moreList(names.map(esc),8,', ')}</div>`:''}</div>`};
   let out='';
+  const TS=[];for(let m=360;m<1500;m+=30)TS.push(m); // 06:00 ~ 25:00
+  const key=m=>hm(m),lab=m=>pad(Math.floor(m/60))+':'+pad(m%60);
+  const rh=Math.max(15,Math.floor((window.innerHeight-150)/(TS.length+1))); // 하루 시간표가 한 화면에 딱 맞게
   for(let d=minD;d<days;d++){const dc=cars.filter(c=>+c.day===d),off=dc.filter(c=>slotOf(c)<0);
-    let rows='',i=0;const span={};while(i<S.length){const v=C[d+'-'+S[i]]||'';let j=i;if(v)while(j+1<S.length&&C[d+'-'+S[j+1]]===v)j++;span[i]=[v,j-i+1];i=j+1}
-    /* 그날 일정·차가 있는 시간대만 (앞뒤 1시간 여유) */
     const dp=ok.filter(x=>x.w.d===d),dpOff=dp.filter(x=>slotM(x.w.m)<0);
-    const used=S.map((s,i)=>!!C[d+'-'+s]||dc.some(c=>slotOf(c)===i)||dp.some(x=>slotM(x.w.m)===i));const fi=used.indexOf(true),li=used.lastIndexOf(true);
-    if(fi<0){out+=`<div class="card"><h2>${d+1}일차${R.start?' · '+fmtD(addD(R.start,d)):''} <span class="hint">시간표·차량·오가는 사람 없음</span></h2>${off.length?`<div class="row"><span class="hint">시간표 범위 밖:</span>${off.map(badge).join('')}</div>`:''}${dpOff.length?`<div><span class="hint">시간표 범위 밖:</span>${pcell(dpOff)}</div>`:''}</div>`;continue}
-    const a0=Math.max(0,fi-2),a1=Math.min(S.length-1,li+2);
-    for(const k in span)delete span[k];{let q=a0;while(q<=a1){const v=C[d+'-'+S[q]]||'';let j=q;if(v)while(j+1<=a1&&C[d+'-'+S[j+1]]===v)j++;span[q]=[v,j-q+1];q=j+1}}
-    S.forEach((s,i)=>{if(i<a0||i>a1)return;const here=dc.filter(c=>slotOf(c)===i).sort((a,b)=>String(a.time).localeCompare(String(b.time)));
-      rows+=`<tr class="${here.length?'has':''}"><td class="tm ${s.endsWith(':00')?'h':''}">${s}</td>${span[i]?`<td class="ev" rowspan="${span[i][1]}" style="${span[i][0]?`background:hsl(${hue(span[i][0])},70%,90%)`:''}">${esc(span[i][0])}</td>`:''}<td class="cv">${here.length?`<div class="ov">${here.map(badge).join('')}</div>`:''}</td><td class="pv">${(pc=>pc?`<div class="ov">${pc}</div>`:'')(pcell(dp.filter(x=>slotM(x.w.m)===i)))}</td></tr>`});
-    out+=`<div class="card"><h2>${d+1}일차${R.start?' · '+fmtD(addD(R.start,d)):''} <span class="hint">차량 ${dc.length}대</span></h2>${off.length?`<div class="row" style="margin-bottom:6px"><span class="hint">시간표 범위 밖:</span>${off.map(badge).join('')}</div>`:''}
-    <div class="hs"><table class="tl"><tr><th>시간</th><th>시간표</th><th>출발하는 차</th><th>들어오는 · 나가는 사람</th></tr>${rows}</table></div>${dpOff.length?`<div style="margin-top:6px"><span class="hint">시간표 범위 밖:</span>${pcell(dpOff)}</div>`:''}</div>`}
+    const span={};{let q=0;while(q<TS.length){const v=C[d+'-'+key(TS[q])]||'';let j=q;if(v)while(j+1<TS.length&&C[d+'-'+key(TS[j+1])]===v)j++;span[q]=[v,j-q+1];q=j+1}}
+    let rows='';TS.forEach((m,i)=>{const here=dc.filter(c=>slotOf(c)===i).sort((a,b)=>String(a.time).localeCompare(String(b.time)));
+      rows+=`<tr class="${here.length?'has':''}"><td class="tm ${m%60===0?'h':''}">${lab(m)}</td>${span[i]?`<td class="ev" rowspan="${span[i][1]}" style="${span[i][0]?`background:hsl(${hue(span[i][0])},70%,90%)`:''}">${esc(span[i][0])}</td>`:''}<td class="cv">${here.length?`<div class="ov">${here.map(badge).join('')}</div>`:''}</td><td class="pv">${(pc=>pc?`<div class="ov">${pc}</div>`:'')(pcell(dp.filter(x=>slotM(x.w.m)===i)))}</td></tr>`});
+    out+=`<div class="card tlday"><h2>${d+1}일차${R.start?' · '+fmtD(addD(R.start,d)):''} <span class="hint">차량 ${dc.length}대 · 06:00~25:00</span></h2>${off.length?`<div class="row" style="margin-bottom:6px"><span class="hint">06~25시 밖:</span>${off.map(badge).join('')}</div>`:''}
+    <div class="hs"><table class="tl" style="--rh:${rh}px"><tr><th>시간</th><th>시간표</th><th>출발하는 차</th><th>들어오는 · 나가는 사람</th></tr>${rows}</table></div>${dpOff.length?`<div style="margin-top:6px"><span class="hint">06~25시 밖:</span>${pcell(dpOff)}</div>`:''}</div>`}
   return `${!Object.values(C).some(Boolean)?'<div class="card"><div class="hint">⏰ [시간표]를 채우면 차 출발 시각 옆에 그때 무슨 일정인지 함께 보여요.</div></div>':''}
   <div class="card"><div class="row"><b class="j" style="font-size:17px">🙋 오가는 사람</b><span class="badge" style="background:#eaf3ff">⬇️ 들어와요 ${ok.filter(x=>x.k==='in').length}명</span><span class="badge" style="background:#fff0e0">⬆️ 나가요 ${ok.filter(x=>x.k==='out').length}명</span><span class="hint">[참석인원]의 들어오는·나가는 시간으로 표시해요. 시간을 안 적은 사람은 탄 차의 출발 시각으로 보여요(🚌).</span></div>
    ${unk.length?`<div style="margin-top:6px"><span class="hint">⏳ 시각을 알 수 없어요 (예: ‘1일차 18:00’, ‘1/20 오후 3시’처럼 적어 주세요):</span> ${unk.map(x=>`<span class="badge">${esc(x.p.name)} ${x.k==='in'?'들어옴':'나감'}: ${esc(x.raw)}</span>`).join(' ')}</div>`:''}</div>
@@ -1119,6 +1130,7 @@ const ACT={
   pSort:t=>{const k=t.dataset.v;if(SUB.ps===k){if(SUB.pd==='desc'){SUB.ps='';SUB.pd=''}else SUB.pd='desc'}else{SUB.ps=k;SUB.pd='asc'}render()},
   pSortDir:()=>{SUB.pd=SUB.pd==='desc'?'asc':'desc';render()},
   pfClear:()=>{SUB.pf={};render()},
+  tlCar:t=>{SUB.tlOpen=SUB.tlOpen||new Set();const id=t.dataset.id;if(SUB.tlOpen.has(id))SUB.tlOpen.delete(id);else SUB.tlOpen.add(id);render()},
   carView:t=>{SUB.carView=t.dataset.v;try{localStorage.setItem('camp-carview',SUB.carView)}catch(_){}render()},
   carAdd:()=>{SUB.carView='card';R.cars.list.push({id:uid(),dir:SUB.dir,type:R.cars.types[SUB.dir][0]||'',day:SUB.dir==='in'?0:(+R.nights||0),time:'',members:[]});save();render()},
   gApply:()=>{const n=Math.max(0,Math.min(60,+$('#gCnt').value||0)),G=R.grp.list;if(n<G.length){const lost=G.slice(n).reduce((s,g)=>s+(g.members||[]).length,0);if(lost&&!confirm(`${G.length-n}개 조를 줄이면 그 조의 ${lost}명이 미배정으로 돌아가요. 할까요?`))return;G.length=n}else for(let i=G.length;i<n;i++)G.push({id:uid(),name:(i+1)+'조',members:[],leader:'',staff:[],roles:{}});save();render()},
