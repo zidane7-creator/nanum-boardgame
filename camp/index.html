@@ -221,6 +221,11 @@ table.tl .pin,table.tl .pout{border-radius:10px;padding:3px 6px;margin:2px 0}
 table.tl .pin{background:#eaf3ff}table.tl .pout{background:#fff0e0}
 table.tl .pin b,table.tl .pout b{font-family:Jua,sans-serif;font-weight:normal;margin-right:2px}
 table.tl td.ev{width:28%}
+table.tl td.cv,table.tl td.pv{white-space:nowrap;padding-top:1px;padding-bottom:1px;vertical-align:middle}
+table.tl .cbadge{display:inline-flex;align-items:center;gap:4px;white-space:nowrap;max-width:none;padding:0 8px;margin:1px 2px;font-size:12px;line-height:1.5;border-width:1.5px;cursor:help}
+table.tl .cbadge b{font-size:13px}table.tl .cbadge .cnt{font-size:11px}
+table.tl .pin,table.tl .pout{display:inline-block;white-space:nowrap;padding:0 6px;margin:1px 4px 1px 0;line-height:1.5}
+table.tl .chip.p{padding:0 6px;font-size:12px;margin:0 1px;line-height:1.4}table.tl .morebtn{margin:0 2px;line-height:1.4}
 table.tl tr.has td.tm{background:#fff1cc;color:var(--ink);font-weight:700}
 .cbadge{display:inline-block;vertical-align:top;margin:2px;padding:5px 9px;border:2px solid var(--blue);border-radius:12px;background:#eaf3ff;font-size:13px;max-width:320px}
 .cbadge.out{border-color:var(--green);background:#e7f5ea}
@@ -910,8 +915,10 @@ function carTimeline(){const days=(+R.nights||0)+1,S=slots(),C=R.tt.cells,toM=t=
   const minD=Math.min(0,...R.cars.list.filter(c=>c.day!==''&&c.day!=null).map(c=>+c.day),...R.people.map(p=>{const w=pWhen(p,'in');return w&&w.m!=null?w.d:0}));
   const MV=peopleMoves(),ok=MV.filter(x=>x.w&&x.w.m!=null&&x.w.d>=minD&&x.w.d<days),unk=MV.filter(x=>x.raw&&!(x.w&&x.w.m!=null)&&!x.src);
   const pchip=x=>`<span class="chip p ${x.p.gender==='여'?'f':x.p.gender==='남'?'m':''}" data-pid="${x.p.id}" title="${esc((x.k==='in'?'들어오는 시간: ':'나가는 시간: ')+(x.raw||(x.src?'차 출발 시각':'')))}">${esc(x.p.name||'(이름 없음)')}${x.src?' 🚌':''}</span>`;
-  const pcell=list=>{const a=list.filter(x=>x.k==='in'),b=list.filter(x=>x.k==='out');return (a.length?`<div class="pin"><b>⬇️ 들어와요 ${a.length}명</b> ${moreList(a.map(pchip),6)}</div>`:'')+(b.length?`<div class="pout"><b>⬆️ 나가요 ${b.length}명</b> ${moreList(b.map(pchip),6)}</div>`:'')};
-  const badge=c=>{const n=(c.members||[]).length,names=(c.members||[]).map(pn);return `<div class="cbadge ${c.dir}"><b>${c.dir==='in'?'🚌 들어오는 차':'🏠 집에 가는 차'} · ${esc(c.time)}</b><div>${esc(c.type||'')}${c.name?' · '+esc(c.name):''} ${seatBadge(c)}</div>${c.place?`<div class="hint">${c.dir==='in'?'출발':'도착'}: ${esc(c.place)}</div>`:''}${c.driver?`<div class="hint">운전: ${esc(pn(c.driver))}</div>`:''}${names.length?`<div class="nm">${moreList(names.map(esc),8,', ')}</div>`:''}</div>`};
+  const pcell=list=>{const a=list.filter(x=>x.k==='in'),b=list.filter(x=>x.k==='out');return (a.length?`<span class="pin"><b>⬇️ ${a.length}명</b> ${moreList(a.map(pchip),6)}</span>`:'')+(b.length?`<span class="pout"><b>⬆️ ${b.length}명</b> ${moreList(b.map(pchip),6)}</span>`:'')};
+  /* 한 줄짜리 차 표시 (자세한 내용은 마우스를 올리면 보여요) → 시간표 줄 높이가 늘어나지 않아요 */
+  const badge=c=>{const names=(c.members||[]).map(pn),tip=[c.dir==='in'?'들어오는 차':'집에 가는 차',(c.type||'')+(c.name?' · '+c.name:''),c.place?(c.dir==='in'?'출발: ':'도착: ')+c.place:'',c.driver?'운전: '+pn(c.driver):'',names.length?'탄 사람: '+names.join(', '):''].filter(Boolean).join(' / ');
+    return `<span class="cbadge ${c.dir}" title="${esc(tip)}"><b>${c.dir==='in'?'🚌':'🏠'} ${esc(c.time)}</b> ${esc(c.type||'')}${c.name?' · '+esc(c.name):''} ${seatBadge(c)}</span>`};
   let out='';
   for(let d=minD;d<days;d++){const dc=cars.filter(c=>+c.day===d),off=dc.filter(c=>slotOf(c)<0);
     let rows='',i=0;const span={};while(i<S.length){const v=C[d+'-'+S[i]]||'';let j=i;if(v)while(j+1<S.length&&C[d+'-'+S[j+1]]===v)j++;span[i]=[v,j-i+1];i=j+1}
