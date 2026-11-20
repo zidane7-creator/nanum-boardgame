@@ -227,6 +227,7 @@ table.tl td.cv{min-width:260px}table.tl td.pv{min-width:260px}
 table.tl td .ov{position:absolute;left:4px;right:4px;top:1px;z-index:2}
 table.tl td.tm{text-align:center;vertical-align:middle}
 /* 🎤 무대 배치도 */
+.stg-tabs{margin-top:10px;gap:6px}.stg-tabs .chip{cursor:pointer;padding:3px 12px}
 .stg-wrap{display:grid;grid-template-columns:260px minmax(0,1fr);gap:14px;margin-top:10px;align-items:start}
 @media (max-width:760px){.stg-wrap{grid-template-columns:minmax(0,1fr)}}
 .stg-pal>b{display:block;margin:8px 0 4px;font-family:Jua,sans-serif;font-weight:normal;font-size:15px}
@@ -335,7 +336,7 @@ function fill(R){
   if(!c.staffRoles)c.staffRoles=['회장','총무','스탭'];
   if(!c.cells)c.cells=[];
   if(!c.parts)c.parts=['찬양인도자','싱어','메인건반','세컨건반','일렉기타','어쿠스틱기타','베이스','드럼'];
-  d('people',[]);d('minutes',[]);d('sched',[]);d('stage',{items:[]});if(!R.stage.items)R.stage.items=[];
+  d('people',[]);d('minutes',[]);d('sched',[]);d('stages',[]);if(R.stage&&!R.stages.length){const it=(R.stage.items||[]).filter(x=>x.pid);if(it.length)R.stages.push({id:'st1',name:'배치 1',items:it})}delete R.stage;if(!R.stages.length)R.stages.push({id:'st1',name:'배치 1',items:[]});
   d('theme',{});const t=R.theme;['hearts','verses','cands'].forEach(k=>{if(!t[k])t[k]=[]});
   d('venue',{});const v=R.venue;if(v.expected==null)v.expected=null;if(!v.list)v.list=[];if(!v.crit)v.crit=[{id:'c_snd',name:'음향'},{id:'c_use',name:'용도(프로그램 공간)'}];
   if(!v.w){v.w={fixed:20,var:25,cap:20,loc:15};const r=20/v.crit.length;v.crit.forEach(x=>v.w[x.id]=Math.round(r))}
@@ -487,31 +488,27 @@ function vPraise(){
   ${L.length?`<div class="hs"><table class="t"><tr><th>이름</th><th>파트 (눌러서 고르기, 여러 개 가능)</th><th>메모</th><th></th></tr>${L.map(p=>`<tr><td><b>${esc(p.name)}</b></td><td>${parts.map(x=>`<span class="chip tog ${(p.parts||[]).includes(x)?'on':''}" data-act="togArr" data-o="people#${p.id}" data-k="parts" data-v="${esc(x)}">${esc(x)}</span>`).join('')}</td><td>${inp('people#'+p.id,'pmemo',{ph:'예) 1일차만 가능'})}</td><td><button class="sm" data-act="unpraise" data-v="${p.id}">해제</button></td></tr>`).join('')}</table></div>`:'<div class="empty">찬양팀으로 지정된 사람이 없어요</div>'}</div>
   <div class="card"><h2>🎼 파트별 보기</h2>${parts.map(x=>{const n=L.filter(p=>(p.parts||[]).includes(x));return `<div style="margin:3px 0"><span class="badge" style="min-width:90px;display:inline-block">${esc(x)}</span> ${n.length?n.map(p=>esc(p.name)).join(', '):'<span class="hint">비어 있어요</span>'}</div>`}).join('')}
   <h3>⚙️ 파트 설정</h3>${LE('cfg.parts','+ 파트 추가 (예: 퍼커션)')}</div>${vStage(L)}`}
-/* 🎤 찬양팀 무대 배치도: 팀원 이름과 악기·장비를 무대로 끌어다 놓아요 */
-const STG_EQ=[['🎤','마이크'],['🎹','건반'],['🥁','드럼'],['🎸','기타'],['🎸','베이스'],['🔊','모니터'],['🎼','보면대'],['🪑','의자'],['💻','자막']];
-function vStage(L){const items=R.stage.items.filter(it=>!it.pid||L.some(p=>p.id===it.pid)),on=new Set(items.map(it=>it.pid).filter(Boolean));
-  const lab=it=>{if(it.pid){const p=P(it.pid);return `${esc(p.name)}<i>${esc((p.parts||[]).join('·'))}</i>`}return `${esc(it.ico||'')} ${esc(it.label||'')}`};
-  return `<div class="card"><div class="row"><h2 style="margin:0">🎤 무대 배치도</h2><span class="sp"></span><span class="hint">팀원·악기를 무대로 끌어다 놓고, 무대 위에서도 끌어서 옮겨요 · ×로 빼요</span></div>
+/* 🎤 찬양팀 무대 배치도: 팀원 이름을 무대로 끌어다 놓아요. 집회마다 배치도를 따로 만들 수 있어요 */
+function curStage(){let st=R.stages.find(x=>x.id===SUB.stg);if(!st){st=R.stages[0];SUB.stg=st&&st.id}return st}
+function vStage(L){const st=curStage(),items=st.items.filter(it=>it.pid&&L.some(p=>p.id===it.pid)),on=new Set(items.map(it=>it.pid));
+  return `<div class="card"><div class="row"><h2 style="margin:0">🎤 무대 배치도</h2><span class="sp"></span><span class="hint">팀원 이름을 무대로 끌어다 놓고, 무대 위에서도 끌어서 옮겨요 · ×로 빼요</span></div>
+  <div class="row stg-tabs">${R.stages.map(x=>`<span class="chip tog ${x.id===st.id?'on':''}" data-act="stgPick" data-v="${x.id}">${esc(x.name||'이름 없는 배치')} <span class="hint">${x.items.filter(it=>it.pid&&L.some(p=>p.id===it.pid)).length}명</span></span>`).join('')}<button class="sm" data-act="stgNew">＋ 새 배치도</button><button class="sm" data-act="stgDup" title="지금 배치를 그대로 복사해서 새로 만들어요">📄 복제</button></div>
+  <div class="row" style="margin:8px 0 0;gap:6px"><label class="row" style="gap:6px">배치도 이름 ${inp('stages#'+st.id,'name',{ph:'예: 1일차 저녁집회',st:'width:220px'})}</label><span class="sp"></span><button class="sm" data-act="stgClear">🧹 비우기</button>${R.stages.length>1?`<button class="sm" data-act="stgRm">🗑 이 배치도 지우기</button>`:''}</div>
   <div class="stg-wrap"><div class="stg-pal">
-    <b>👥 찬양팀 팀원</b><div>${L.length?L.map(p=>`<span class="spc ${on.has(p.id)?'used':''}" data-sp="p:${p.id}" title="${on.has(p.id)?'이미 무대에 있어요 · 끌어다 놓으면 그 자리로 옮겨요':'무대로 끌어다 놓기'}">${esc(p.name)}<i>${esc((p.parts||[]).join('·')||'파트 미정')}</i></span>`).join(''):'<span class="hint">위에서 찬양팀을 먼저 지정해 주세요</span>'}</div>
-    <b>🎛️ 악기·장비</b><div>${STG_EQ.map(([ic,l])=>`<span class="spc eq" data-sp="e:${ic}|${l}" title="무대로 끌어다 놓기 (여러 개 놓을 수 있어요)">${ic} ${l}</span>`).join('')}</div>
-    <b>➕ 직접 추가</b><div class="row" style="gap:6px"><input id="stgNew" placeholder="예: 게스트 보컬, 건반2" style="flex:1;min-width:0"><button class="sm" data-act="stgAdd">무대에 놓기</button></div>
-    <div class="row" style="margin-top:10px"><button class="sm" data-act="stgClear">🧹 배치 비우기</button></div>
+    <b>👥 찬양팀 팀원</b><div>${L.length?L.map(p=>`<span class="spc ${on.has(p.id)?'used':''}" data-sp="${p.id}" title="${on.has(p.id)?'이미 무대에 있어요 · 끌어다 놓으면 그 자리로 옮겨요':'무대로 끌어다 놓기'}">${esc(p.name)}<i>${esc((p.parts||[]).join('·')||'파트 미정')}</i></span>`).join(''):'<span class="hint">위에서 찬양팀을 먼저 지정해 주세요</span>'}</div>
+    ${L.length?`<p class="hint" style="margin:8px 0 0">무대에 ${on.size}명 / 찬양팀 ${L.length}명</p>`:''}
   </div>
-  <div class="stage" id="stage"><div class="stg-back">뒤 (스크린·벽)</div><div class="stg-front">▼ 앞 · 회중석</div>${items.map(it=>`<div class="sit ${it.pid?'pp':'eq'}" data-sit="${it.id}" style="left:${it.x}%;top:${it.y}%">${lab(it)}<button class="x" data-act="stgDel" data-v="${it.id}" title="빼기">×</button></div>`).join('')}${items.length?'':'<div class="stg-empty">왼쪽에서 이름이나 악기를 끌어다 놓아 보세요</div>'}</div></div></div>`}
-function initStage(){const st=$('#stage');if(!st)return;
+  <div class="stage" id="stage"><div class="stg-back">뒤 (스크린·벽)</div><div class="stg-front">▼ 앞 · 회중석</div>${items.map(it=>{const p=P(it.pid);return `<div class="sit" data-sit="${it.id}" style="left:${it.x}%;top:${it.y}%">${esc(p.name)}<i>${esc((p.parts||[]).join('·'))}</i><button class="x" data-act="stgDel" data-v="${it.id}" title="빼기">×</button></div>`}).join('')}${items.length?'':'<div class="stg-empty">왼쪽에서 팀원 이름을 끌어다 놓아 보세요</div>'}</div></div></div>`}
+function initStage(){const st=$('#stage');if(!st)return;const S=curStage();
   const pct=(e)=>{const r=st.getBoundingClientRect();return{x:Math.max(4,Math.min(96,(e.clientX-r.left)/r.width*100)),y:Math.max(6,Math.min(92,(e.clientY-r.top)/r.height*100)),inside:e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom}};
-  // 왼쪽 목록 → 무대
-  $$('.spc[data-sp]').forEach(ch=>ch.onpointerdown=e=>{if(e.button>0)return;e.preventDefault();const g=ch.cloneNode(true);g.className='spc stg-ghost'+(ch.classList.contains('eq')?' eq':'');document.body.appendChild(g);
+  $$('.spc[data-sp]').forEach(ch=>ch.onpointerdown=e=>{if(e.button>0)return;e.preventDefault();const g=ch.cloneNode(true);g.className='spc stg-ghost';document.body.appendChild(g);
     const mv=ev=>{g.style.left=ev.clientX+'px';g.style.top=ev.clientY+'px';st.classList.toggle('over',pct(ev).inside)};mv(e);
     const up=ev=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up);g.remove();st.classList.remove('over');const q=pct(ev);if(!q.inside)return;
-      const sp=ch.dataset.sp;if(sp.startsWith('p:')){const pid=sp.slice(2),ex=R.stage.items.find(it=>it.pid===pid);if(ex){ex.x=q.x;ex.y=q.y}else R.stage.items.push({id:uid(),pid,x:q.x,y:q.y})}
-      else{const[ic,l]=sp.slice(2).split('|');R.stage.items.push({id:uid(),ico:ic,label:l,x:q.x,y:q.y})}save();render()};
+      const pid=ch.dataset.sp,ex=S.items.find(it=>it.pid===pid);if(ex){ex.x=q.x;ex.y=q.y}else S.items.push({id:uid(),pid,x:q.x,y:q.y});save();render()};
     addEventListener('pointermove',mv);addEventListener('pointerup',up)});
-  // 무대 위에서 옮기기
   $$('.sit[data-sit]').forEach(el=>el.onpointerdown=e=>{if(e.button>0||e.target.closest('button'))return;e.preventDefault();el.classList.add('dragging');
     const mv=ev=>{const q=pct(ev);el.style.left=q.x+'%';el.style.top=q.y+'%'};
-    const up=ev=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up);el.classList.remove('dragging');const it=R.stage.items.find(x=>x.id===el.dataset.sit);if(it){const q=pct(ev);it.x=q.x;it.y=q.y;save()}};
+    const up=ev=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up);el.classList.remove('dragging');const it=S.items.find(x=>x.id===el.dataset.sit);if(it){const q=pct(ev);it.x=q.x;it.y=q.y;save()}};
     addEventListener('pointermove',mv);addEventListener('pointerup',up)})}
 
 /* ---------- 회의록 ---------- */
@@ -1075,9 +1072,12 @@ const ACT={
   unprep:t=>{const p=P(t.dataset.v);if(p){p.prep='';p.role='';save();render()}},
   copyStaff:()=>copy(`🛠️ ${R.name} 준비인원 역할\n`+prepList().map(p=>`• ${p.name} (${roleOf(p)})${p.duty?' - '+p.duty:''}`).join('\n')),
   mkPraise:()=>{const id=$('#mkPr').value;if(!id){toast('사람을 골라 주세요');return}P(id).praise=true;save();render()},
-  stgAdd:()=>{const i=$('#stgNew'),v=(i&&i.value||'').trim();if(!v){toast('놓을 이름이나 악기를 적어 주세요');if(i)i.focus();return}R.stage.items.push({id:uid(),ico:'✨',label:v,x:50,y:45});save();render();toast('무대 가운데에 놓았어요. 끌어서 옮겨 주세요')},
-  stgDel:t=>{R.stage.items=R.stage.items.filter(x=>x.id!==t.dataset.v);save();render()},
-  stgClear:()=>{if(!R.stage.items.length)return;if(!confirm('무대 배치를 모두 비울까요?'))return;R.stage.items=[];save();render()},
+  stgPick:t=>{SUB.stg=t.dataset.v;render()},
+  stgNew:()=>{const st={id:uid(),name:`배치 ${R.stages.length+1}`,items:[]};R.stages.push(st);SUB.stg=st.id;save();render();setTimeout(()=>{const e=$(`[data-o="stages#${st.id}"][data-k="name"]`);if(e){e.focus();e.select()}},30);toast('새 배치도를 만들었어요. 이름을 적어 주세요 (예: 2일차 오전집회)')},
+  stgDup:()=>{const c=curStage(),st={id:uid(),name:(c.name||'배치')+' (복사)',items:c.items.map(it=>({...it,id:uid()}))};R.stages.push(st);SUB.stg=st.id;save();render();toast('지금 배치를 복사했어요')},
+  stgRm:()=>{const c=curStage();if(R.stages.length<2)return;if(!confirm(`‘${c.name||'이 배치도'}’를 지울까요?`))return;R.stages=R.stages.filter(x=>x!==c);SUB.stg=R.stages[0].id;save();render()},
+  stgDel:t=>{const c=curStage();c.items=c.items.filter(x=>x.id!==t.dataset.v);save();render()},
+  stgClear:()=>{const c=curStage();if(!c.items.length)return;if(!confirm('이 배치도의 무대를 비울까요?'))return;c.items=[];save();render()},
   unpraise:t=>{const p=P(t.dataset.v);if(p){p.praise=false;save();render()}},
   /* 회의록 */
   ntcNew:()=>{const n={id:uid(),date:todayStr(),title:'',to:'전체',body:'',created:Date.now()};R.notices.push(n);SUB.ntc=n.id;save();render();setTimeout(()=>{const e=$(`[data-o="notices#${n.id}"][data-k="title"]`);if(e)e.focus()},30)},
