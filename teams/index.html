@@ -48,16 +48,26 @@ main{max-width:980px;margin:0 auto;padding:14px 12px 90px}
 .sx-m{color:var(--blue)}.sx-f{color:var(--red)}
 /* 문(방 고르기) */
 .doors{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
-.door{position:relative;border:3px solid var(--ink);border-radius:16px 16px 8px 8px;background:#fff;overflow:hidden;cursor:pointer;text-align:center;padding:0;box-shadow:0 4px 0 rgba(0,0,0,.15);display:flex;flex-direction:column}
-.door:disabled{cursor:not-allowed;filter:grayscale(.85);opacity:.6}
-.door .pic{height:110px;background:linear-gradient(135deg,#ffe9b8,#ffd0c4) center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:44px}
-.door .nm{font-family:Jua,sans-serif;font-size:20px;padding:6px 6px 0}
-.door .st{font-size:13px;color:var(--muted);padding:0 6px 8px}
-.door .st b{color:var(--green);font-weight:normal}.door .st .full{color:var(--red)}
-.door:not(:disabled):hover{transform:translateY(-3px)}
-.door.mine{outline:4px solid var(--gold)}
-.door.deny{animation:deny .45s}@keyframes deny{20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(4px)}}
-.door .st{font-size:18px}
+.door{position:relative;display:block;width:100%;background:none;border:none;box-shadow:none;padding:0;cursor:pointer;text-align:center}
+.door:active{transform:none;box-shadow:none}
+.dframe{position:relative;height:250px;border:9px solid #6b4220;border-bottom:none;border-radius:14px 14px 0 0;background:#2b1a0d;perspective:800px;box-shadow:0 4px 0 rgba(0,0,0,.18)}
+.dframe::after{content:"";position:absolute;left:-14px;right:-14px;bottom:-10px;height:10px;background:#5a3412;border-radius:3px}
+.inside{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,#fff6cf,#ffd36b 55%,#d9932b);display:flex;align-items:center;justify-content:center;font-size:42px}
+.leaf{position:absolute;inset:0;transform-origin:left center;transition:transform .9s cubic-bezier(.5,0,.3,1);display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(90deg,rgba(0,0,0,.12),transparent 12%,transparent 88%,rgba(0,0,0,.15)),repeating-linear-gradient(90deg,#c08043 0 24px,#ad6f36 24px 26px);box-shadow:inset 0 0 0 5px rgba(60,30,10,.18)}
+.leaf::before,.leaf::after{content:"";position:absolute;left:12%;right:12%;height:16%;border:3px solid rgba(70,35,10,.25);border-radius:6px}
+.leaf::before{top:6%}.leaf::after{bottom:6%}
+.knob{position:absolute;right:11px;top:54%;width:15px;height:15px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff0b0,#c9922b);border:2px solid #5a3412;z-index:2}
+.paper{position:relative;z-index:1;width:76%;background:#fffdf5;border:1px solid #d8cdb8;box-shadow:0 4px 8px rgba(0,0,0,.28);padding:10px 7px 9px;transform:rotate(-2.5deg)}
+.door:nth-child(even) .paper{transform:rotate(2deg)}
+.paper::before{content:"";position:absolute;top:-9px;left:50%;width:48px;height:16px;margin-left:-24px;background:rgba(255,232,150,.85);border:1px solid rgba(200,170,80,.5);transform:rotate(3deg)}
+.pimg{height:78px;border-radius:4px;background:#f6efe2 center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:36px;margin-bottom:6px;border:1px solid #eadfcb}
+.paper b{display:block;font-family:Jua,sans-serif;font-weight:normal;font-size:19px;line-height:1.2;word-break:keep-all;color:#3b2a20}
+.door:not(.open):hover .leaf{transform:rotateY(-14deg)}
+.door.open .leaf{transform:rotateY(-100deg)}
+.door.static{cursor:default}.door.static:hover .leaf{transform:none}
+.door.mine .dframe{border-color:var(--gold)}
+.door.deny .dframe{animation:deny .45s}@keyframes deny{20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(4px)}}
 .turn{font-family:Jua,sans-serif;font-size:clamp(22px,5vw,32px);text-align:center;padding:10px;border-radius:16px;background:#fff6d8;border:2px solid var(--gold);margin-bottom:12px}
 .turn b{font-weight:normal;color:var(--accent)}
 .olist{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-bottom:10px}
@@ -200,19 +210,20 @@ function vPeopleLocal(){const ug=useGender(G.rooms);
   $("#back").onclick=()=>{STEP="mode";G=null;try{localStorage.removeItem(LK)}catch(_){}render()};
   $("#go").onclick=()=>{if(ug&&G.players.some(p=>!p.gender)){toast("모두 형제·자매를 골라 주세요");return}startPick();saveL();render()}}
 /* =========== 4) 한 기기: 차례대로 고르기 =========== */
-function doorHTML(r,g,mine){return `<button class="door ${mine?"mine":""}" data-room="${r.id}"><div class="pic" style="${r.img?`background-image:url(${r.img})`:""}">${r.img?"":r.ico}</div><div class="nm">${esc(r.name)}</div><div class="st">🚪</div></button>`}
+function doorInner(r,img){return `<div class="dframe"><div class="inside">✨</div><div class="leaf"><div class="paper">${img?`<div class="pimg" style="background-image:url(${img})"></div>`:`<div class="pimg">${r.ico}</div>`}<b>${esc(r.name)}</b></div><span class="knob"></span></div></div>`}
+function doorHTML(r,g,mine){return `<button class="door ${mine?"mine":""}" data-room="${r.id}" aria-label="${esc(r.name)}">${doorInner(r,r.img)}</button>`}
 function orderChips(){return `<div class="olist">${G.order.map((id,i)=>{const p=P(id);return `<span class="ochip ${i===G.ti&&G.phase==="pick"?"now":""} ${G.picks[id]?"did":""}">${i+1}. ${esc(p.name)}</span>`}).join("")}</div>`}
 function vPickLocal(){const p=P(curId());
   app.innerHTML=`${steps("pick")}${orderChips()}<div class="turn">🙋 <b>${esc(p.name)}</b>님 차례예요! <span class="hint" style="font-size:15px">(${G.ti+1}/${G.order.length})</span></div>
   <div class="card"><div class="doors">${G.rooms.map(r=>doorHTML(r,p.gender)).join("")}</div><p class="hint center" style="margin:10px 0 0">들어갈 방의 문을 눌러요. 다른 방에 누가 있는지는 마지막에 문이 열릴 때 알 수 있어요.</p></div>
   <div class="row"><button class="sm" id="reset">↺ 처음부터 다시 고르기</button><span class="sp"></span><button class="sm" id="toPeople">◀ 참가자 고치기</button></div>`;
   $$("[data-room]").forEach(b=>b.onclick=()=>{const r=G.rooms.find(x=>x.id===b.dataset.room);const a=avail(r,p.gender);if(!a.ok){denyFx(b,fullMsg(r.name,a.why));return}if(!confirm(`${p.name}님, ‘${r.name}’에 들어갈까요?`))return;
-    const before=members(r.id).map(x=>x.name);const err=doPick(p.id,r.id);if(err){toast(err);vPickLocal();return}saveL();
+    const before=members(r.id).map(x=>x.name);const err=doPick(p.id,r.id);if(err){toast(err);vPickLocal();return}saveL();b.classList.add("open");$$("[data-room]").forEach(x=>x.style.pointerEvents="none");setTimeout(()=>{
     const nx=G.phase==="pick"?P(curId()):null;
     const cv=document.createElement("div");cv.className="cover";cv.innerHTML=`<div class="box"><div style="font-size:46px">🚪</div><h2 style="margin:4px 0">${esc(p.name)}님, ‘${esc(r.name)}’에 들어왔어요!</h2>
       <p>${before.length?`이 방에 먼저 와 있는 사람: <b>${before.map(esc).join(", ")}</b>`:"이 방에 처음 들어왔어요"}</p><p class="hint">확인했으면 화면을 가리고 다음 사람에게 넘겨 주세요</p>
       <button class="pri big" id="nx">${nx?`👉 다음: ${esc(nx.name)}님`:"🎉 모두 골랐어요!"}</button></div>`;
-    document.body.appendChild(cv);$("#nx").onclick=()=>{cv.remove();render()}});
+    document.body.appendChild(cv);$("#nx").onclick=()=>{cv.remove();render()}},950)});
   $("#reset").onclick=()=>{if(!confirm("지금까지 고른 방을 모두 지우고 처음부터 다시 고를까요?"))return;startPick();saveL();render()};
   $("#toPeople").onclick=()=>{if(G.pickSeq.length&&!confirm("고른 방이 지워져요. 참가자를 고칠까요?"))return;G.phase="people";G.picks={};G.pickSeq=[];saveL();render()}}
 /* =========== 5) 문 열기 =========== */
@@ -295,7 +306,7 @@ function vLobbyHost(){const url=location.origin+location.pathname+"?room="+G.roo
   $("#go").onclick=()=>{if(ug&&noG.length){toast("모두 성별을 골라야 시작할 수 있어요");return}startPick();broadcast()}}
 function vPickHost(){const c=P(curId());
   app.innerHTML=`${steps("pick")}${orderChips()}<div class="turn">🙋 <b>${esc(c.name)}</b>님이 자기 휴대폰으로 고르는 중… <span class="hint" style="font-size:15px">(${G.ti+1}/${G.order.length})</span></div>
-  <div class="card"><div class="doors">${G.rooms.map(r=>`<div class="door" style="cursor:default"><div class="pic" style="${r.img?`background-image:url(${r.img})`:""}">${r.img?"":r.ico}</div><div class="nm">${esc(r.name)}</div><div class="st">🚪 문이 닫혀 있어요</div></div>`).join("")}</div>
+  <div class="card"><div class="doors">${G.rooms.map(r=>`<div class="door static">${doorInner(r,r.img)}</div>`).join("")}</div>
    <p class="hint center" style="margin:10px 0 0">누가 어느 방에 들어갔는지는 같은 방 사람끼리만 알아요. 다 고르면 모든 문이 열려요.</p></div>
   <div class="row"><button class="sm" id="skip">⏭ ${esc(c.name)}님 맨 뒤로 보내기</button><span class="sp"></span><button class="sm" id="reset">↺ 처음부터 다시 고르기</button></div>`;
   $("#skip").onclick=()=>{const id=curId();G.order.splice(G.ti,1);G.order.push(id);G.ti--;advance();broadcast();toast("맨 뒤로 보냈어요")};
@@ -335,15 +346,15 @@ function vClient(){const v=LV;const img=r=>CL.imgs[r.id];let h="";
   const mine=v.myRoom?`<div class="myroom"><div class="hint">🚪 내가 들어간 방</div><div class="rn">${esc(v.myRoom.name)}</div><div class="hint">같은 방 사람 (다른 방은 마지막에 문이 열릴 때 알 수 있어요)</div>
     <div class="mates">${v.myRoom.mates.map(p=>`<span class="mate ${sxC(p.gender)}">${esc(p.name)}${p.me?" (나)":""}</span>`).join("")}</div></div>`:"";
   if(v.ph==="lobby")h=`<div class="card center"><div style="font-size:46px">🙋</div><h2>${esc(v.me.name)}님, 들어왔어요!</h2><p>방장이 순서를 정하고 시작하기를 기다려요…</p>${v.pos>=0?`<p class="hint">지금 내 순서: ${v.pos+1}번째 / ${v.n}명</p>`:""}
-    <div class="doors" style="margin-top:12px">${v.rooms.map(r=>`<div class="door" style="cursor:default"><div class="pic" style="${img(r)?`background-image:url(${img(r)})`:""}">${img(r)?"":r.ico}</div><div class="nm">${esc(r.name)}</div></div>`).join("")}</div></div>`;
+    <div class="doors" style="margin-top:12px">${v.rooms.map(r=>`<div class="door static">${doorInner(r,img(r))}</div>`).join("")}</div></div>`;
   else if(v.ph==="pick"){
-    if(v.myTurn&&!v.myRoom)h=`<div class="turn">🙋 <b>${esc(v.me.name)}</b>님 차례예요! 들어갈 방을 골라요</div><div class="card"><div class="doors">${v.rooms.map(r=>`<button class="door" data-room="${r.id}"><div class="pic" style="${img(r)?`background-image:url(${img(r)})`:""}">${img(r)?"":r.ico}</div><div class="nm">${esc(r.name)}</div><div class="st">🚪</div></button>`).join("")}</div></div>`;
+    if(v.myTurn&&!v.myRoom)h=`<div class="turn">🙋 <b>${esc(v.me.name)}</b>님 차례예요! 들어갈 방을 골라요</div><div class="card"><div class="doors">${v.rooms.map(r=>`<button class="door" data-room="${r.id}" aria-label="${esc(r.name)}">${doorInner(r,img(r))}</button>`).join("")}</div></div>`;
     else h=(v.myRoom?mine:`<div class="turn">⏳ <b>${esc(v.turnName)}</b>님이 고르는 중…</div><div class="card center"><p>${v.wait>0?`내 차례까지 <b>${v.wait}명</b> 남았어요`:"곧 내 차례예요"}</p><p class="hint">순서 ${v.myPos+1}번째 / ${v.total}명</p></div>`)+(v.myRoom?`<p class="hint center" style="margin-top:10px">⏳ ${esc(v.turnName||"")}님이 고르는 중… (${v.ti+1}/${v.total})</p>`:"")}
   else if(v.ph==="done"){h=v.reveal?`<div class="turn">🎉 모든 문이 열렸어요!</div>${revealHTML(v.reveal.map(r=>({...r,img:CL.imgs[r.id]||""})),Object.fromEntries(v.reveal.map(r=>[r.id,r.mem])),v.none)}`:`${mine}<div class="card center"><p>모두 다 골랐어요! 곧 모든 문이 열려요…</p></div>`}
   if(v.noRoom)h=`<div class="card center"><div style="font-size:40px">😢</div><p>갈 수 있는 방이 없어서 미배정이 됐어요. 방장에게 말해 주세요.</p></div>`+h;
   app.innerHTML=`<div class="row" style="margin-bottom:8px"><span class="badge">🚪 ${esc(v.topic||"취향셔플")}</span><span class="sp"></span><span class="badge ${sxC(v.me.gender)}">👤 ${esc(v.me.name)}</span></div>`+h;
   if(v.reveal){if(vClient.opened)$$("[data-rv]").forEach(el=>el.classList.add("open"));else{vClient.opened=true;openDoors()}}
-  $$("[data-room]").forEach(b=>b.onclick=()=>{const r=v.rooms.find(x=>x.id===b.dataset.room);if(!r.ok){denyFx(b,fullMsg(r.name,r.why));return}if(!confirm(`‘${r.name}’에 들어갈까요?`))return;CL.send({t:"pick",room:r.id});b.disabled=true})}
+  $$("[data-room]").forEach(b=>b.onclick=()=>{const r=v.rooms.find(x=>x.id===b.dataset.room);if(!r.ok){denyFx(b,fullMsg(r.name,r.why));return}if(!confirm(`‘${r.name}’에 들어갈까요?`))return;b.classList.add("open");$$("[data-room]").forEach(x=>x.disabled=true);setTimeout(()=>CL.send({t:"pick",room:r.id}),700)})}
 /* =========== 라우팅 =========== */
 function render(){
   if(ROOM&&!HOSTING){if(CL.joined&&LV){vClient();return}vJoin();return}
