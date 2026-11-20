@@ -221,11 +221,10 @@ table.tl .pin,table.tl .pout{border-radius:10px;padding:3px 6px;margin:2px 0}
 table.tl .pin{background:#eaf3ff}table.tl .pout{background:#fff0e0}
 table.tl .pin b,table.tl .pout b{font-family:Jua,sans-serif;font-weight:normal;margin-right:2px}
 table.tl td.ev{width:28%}
-table.tl td.cv,table.tl td.pv{white-space:nowrap;padding-top:1px;padding-bottom:1px;vertical-align:middle}
-table.tl .cbadge{display:inline-flex;align-items:center;gap:4px;white-space:nowrap;max-width:none;padding:0 8px;margin:1px 2px;font-size:12px;line-height:1.5;border-width:1.5px;cursor:help}
-table.tl .cbadge b{font-size:13px}table.tl .cbadge .cnt{font-size:11px}
-table.tl .pin,table.tl .pout{display:inline-block;white-space:nowrap;padding:0 6px;margin:1px 4px 1px 0;line-height:1.5}
-table.tl .chip.p{padding:0 6px;font-size:12px;margin:0 1px;line-height:1.4}table.tl .morebtn{margin:0 2px;line-height:1.4}
+/* 차·오가는 사람 칸: 가로줄 없이, 내용이 아래 칸 위로 겹쳐 보여요 → 시간표 줄 높이가 늘어나지 않아요 */
+table.tl td.cv,table.tl td.pv{border-top:0;border-bottom:0;position:relative;padding:0}
+table.tl td.cv{min-width:260px}table.tl td.pv{min-width:260px}
+table.tl td .ov{position:absolute;left:4px;right:4px;top:1px;z-index:2}
 table.tl tr.has td.tm{background:#fff1cc;color:var(--ink);font-weight:700}
 .cbadge{display:inline-block;vertical-align:top;margin:2px;padding:5px 9px;border:2px solid var(--blue);border-radius:12px;background:#eaf3ff;font-size:13px;max-width:320px}
 .cbadge.out{border-color:var(--green);background:#e7f5ea}
@@ -421,6 +420,7 @@ function afterRender(){
   const fd=$('#feeD');if(fd)fd.ontoggle=()=>{SUB.feeOpen=fd.open};
   const rd=$('#rulesD');if(rd)rd.ontoggle=()=>{R.venue.rulesOpen=rd.open;save()};
   if(TAB==='people'){const q=$('#pq');if(q)filterPeople(q.value);fitPeople()}
+  stackOv();
   const pq=$('#poolQ');if(pq)filterPool(pq.value);
 }
 
@@ -821,6 +821,11 @@ function vPeople(){const L=R.people,PV=peopleView(),m=L.filter(p=>p.gender==='�
    <td><span class="row" style="gap:3px;flex-wrap:nowrap"><label class="paid ${p.paid?'on':''}" title="${esc(p.paid&&p.paidDate?'입금확인 '+p.paidDate:'')}"><input type="checkbox" data-o="${k}" data-k="paid" data-rr ${p.paid?'checked':''}> ${p.paid?'입금':'미입금'}</label>${p.paid?`<select data-o="${k}" data-k="payMethod" data-rr class="pm" style="width:76px;margin:0"><option value="">방법</option>${PAYM.in.map(m=>`<option${p.payMethod===m?' selected':''}>${m}</option>`).join('')}</select>`:''}${bk?'<span class="hint" title="회계 수입에 들어갔어요">✔</span>':''}</span></td>
    <td><button class="x" data-act="pDel" data-v="${p.id}" title="지우기">🗑</button></td></tr>`}).join('')}</tbody></table></div>`:'<div class="empty">참석인원을 추가하거나 엑셀로 불러와요</div>'}</div>`}
 /* 🔍 한눈에 보기: 표가 화면보다 넓으면 표 전체를 살짝 줄여서 가로 스크롤 없이 보여 줘요 */
+/* 차량 타임라인: 겹쳐 보이는 차·사람 표시가 서로 가리지 않게 아래로 차곡차곡 */
+function stackOv(){document.querySelectorAll('table.tl').forEach(tb=>{let need=0;['cv','pv'].forEach(cls=>{let lastB=-1e9;
+  tb.querySelectorAll('td.'+cls+' > .ov').forEach(ov=>{const td=ov.parentElement,tdTop=td.offsetTop,want=Math.max(tdTop+1,lastB+3);ov.style.top=(want-tdTop)+'px';lastB=want+ov.offsetHeight});
+  need=Math.max(need,lastB-tb.offsetHeight+4)});tb.style.marginBottom=need>0?need+'px':''})}
+addEventListener('resize',()=>stackOv());
 function fitPeople(){const t=$('#ptbl'),w=$('.ptw'),info=$('#pFitInfo');if(!t||!w)return;t.style.zoom='';
   if(SUB.pFit===false){if(info)info.textContent='';return}
   const need=t.scrollWidth,have=w.clientWidth;if(need<=have+3){if(info)info.textContent='';return}
@@ -915,10 +920,8 @@ function carTimeline(){const days=(+R.nights||0)+1,S=slots(),C=R.tt.cells,toM=t=
   const minD=Math.min(0,...R.cars.list.filter(c=>c.day!==''&&c.day!=null).map(c=>+c.day),...R.people.map(p=>{const w=pWhen(p,'in');return w&&w.m!=null?w.d:0}));
   const MV=peopleMoves(),ok=MV.filter(x=>x.w&&x.w.m!=null&&x.w.d>=minD&&x.w.d<days),unk=MV.filter(x=>x.raw&&!(x.w&&x.w.m!=null)&&!x.src);
   const pchip=x=>`<span class="chip p ${x.p.gender==='여'?'f':x.p.gender==='남'?'m':''}" data-pid="${x.p.id}" title="${esc((x.k==='in'?'들어오는 시간: ':'나가는 시간: ')+(x.raw||(x.src?'차 출발 시각':'')))}">${esc(x.p.name||'(이름 없음)')}${x.src?' 🚌':''}</span>`;
-  const pcell=list=>{const a=list.filter(x=>x.k==='in'),b=list.filter(x=>x.k==='out');return (a.length?`<span class="pin"><b>⬇️ ${a.length}명</b> ${moreList(a.map(pchip),6)}</span>`:'')+(b.length?`<span class="pout"><b>⬆️ ${b.length}명</b> ${moreList(b.map(pchip),6)}</span>`:'')};
-  /* 한 줄짜리 차 표시 (자세한 내용은 마우스를 올리면 보여요) → 시간표 줄 높이가 늘어나지 않아요 */
-  const badge=c=>{const names=(c.members||[]).map(pn),tip=[c.dir==='in'?'들어오는 차':'집에 가는 차',(c.type||'')+(c.name?' · '+c.name:''),c.place?(c.dir==='in'?'출발: ':'도착: ')+c.place:'',c.driver?'운전: '+pn(c.driver):'',names.length?'탄 사람: '+names.join(', '):''].filter(Boolean).join(' / ');
-    return `<span class="cbadge ${c.dir}" title="${esc(tip)}"><b>${c.dir==='in'?'🚌':'🏠'} ${esc(c.time)}</b> ${esc(c.type||'')}${c.name?' · '+esc(c.name):''} ${seatBadge(c)}</span>`};
+  const pcell=list=>{const a=list.filter(x=>x.k==='in'),b=list.filter(x=>x.k==='out');return (a.length?`<div class="pin"><b>⬇️ 들어와요 ${a.length}명</b> ${moreList(a.map(pchip),6)}</div>`:'')+(b.length?`<div class="pout"><b>⬆️ 나가요 ${b.length}명</b> ${moreList(b.map(pchip),6)}</div>`:'')};
+  const badge=c=>{const n=(c.members||[]).length,names=(c.members||[]).map(pn);return `<div class="cbadge ${c.dir}"><b>${c.dir==='in'?'🚌 들어오는 차':'🏠 집에 가는 차'} · ${esc(c.time)}</b><div>${esc(c.type||'')}${c.name?' · '+esc(c.name):''} ${seatBadge(c)}</div>${c.place?`<div class="hint">${c.dir==='in'?'출발':'도착'}: ${esc(c.place)}</div>`:''}${c.driver?`<div class="hint">운전: ${esc(pn(c.driver))}</div>`:''}${names.length?`<div class="nm">${moreList(names.map(esc),8,', ')}</div>`:''}</div>`};
   let out='';
   for(let d=minD;d<days;d++){const dc=cars.filter(c=>+c.day===d),off=dc.filter(c=>slotOf(c)<0);
     let rows='',i=0;const span={};while(i<S.length){const v=C[d+'-'+S[i]]||'';let j=i;if(v)while(j+1<S.length&&C[d+'-'+S[j+1]]===v)j++;span[i]=[v,j-i+1];i=j+1}
@@ -929,7 +932,7 @@ function carTimeline(){const days=(+R.nights||0)+1,S=slots(),C=R.tt.cells,toM=t=
     const a0=Math.max(0,fi-2),a1=Math.min(S.length-1,li+2);
     for(const k in span)delete span[k];{let q=a0;while(q<=a1){const v=C[d+'-'+S[q]]||'';let j=q;if(v)while(j+1<=a1&&C[d+'-'+S[j+1]]===v)j++;span[q]=[v,j-q+1];q=j+1}}
     S.forEach((s,i)=>{if(i<a0||i>a1)return;const here=dc.filter(c=>slotOf(c)===i).sort((a,b)=>String(a.time).localeCompare(String(b.time)));
-      rows+=`<tr class="${here.length?'has':''}"><td class="tm ${s.endsWith(':00')?'h':''}">${s}</td>${span[i]?`<td class="ev" rowspan="${span[i][1]}" style="${span[i][0]?`background:hsl(${hue(span[i][0])},70%,90%)`:''}">${esc(span[i][0])}</td>`:''}<td class="cv">${here.map(badge).join('')}</td><td class="pv">${pcell(dp.filter(x=>slotM(x.w.m)===i))}</td></tr>`});
+      rows+=`<tr class="${here.length?'has':''}"><td class="tm ${s.endsWith(':00')?'h':''}">${s}</td>${span[i]?`<td class="ev" rowspan="${span[i][1]}" style="${span[i][0]?`background:hsl(${hue(span[i][0])},70%,90%)`:''}">${esc(span[i][0])}</td>`:''}<td class="cv">${here.length?`<div class="ov">${here.map(badge).join('')}</div>`:''}</td><td class="pv">${(pc=>pc?`<div class="ov">${pc}</div>`:'')(pcell(dp.filter(x=>slotM(x.w.m)===i)))}</td></tr>`});
     out+=`<div class="card"><h2>${d+1}일차${R.start?' · '+fmtD(addD(R.start,d)):''} <span class="hint">차량 ${dc.length}대</span></h2>${off.length?`<div class="row" style="margin-bottom:6px"><span class="hint">시간표 범위 밖:</span>${off.map(badge).join('')}</div>`:''}
     <div class="hs"><table class="tl"><tr><th>시간</th><th>시간표</th><th>출발하는 차</th><th>들어오는 · 나가는 사람</th></tr>${rows}</table></div>${dpOff.length?`<div style="margin-top:6px"><span class="hint">시간표 범위 밖:</span>${pcell(dpOff)}</div>`:''}</div>`}
   return `${!Object.values(C).some(Boolean)?'<div class="card"><div class="hint">⏰ [시간표]를 채우면 차 출발 시각 옆에 그때 무슨 일정인지 함께 보여요.</div></div>':''}
@@ -1098,7 +1101,7 @@ const ACT={
     dl(new Blob(['﻿'+[H,...rows].map(r=>r.map(q).join(',')).join('\r\n')],{type:'text/csv'}),R.name+'_참석인원.csv')},
   /* 배정 */
   dir:t=>{SUB.dir=t.dataset.v;render()},
-  pmore:t=>{const m=t.previousElementSibling;if(!m)return;m.hidden=!m.hidden;t.textContent=m.hidden?`＋ ${t.dataset.n}명 더보기`:'접기 ▲'},
+  pmore:t=>{const m=t.previousElementSibling;if(!m)return;m.hidden=!m.hidden;t.textContent=m.hidden?`＋ ${t.dataset.n}명 더보기`:'접기 ▲';stackOv()},
   assignP:t=>assign(t.dataset.pid,t.dataset.to,null),
   slotAdd:t=>{const kind=t.dataset.v,n=R.spkSlots.filter(x=>x.kind===kind).length+1;let name=kind+n;while(R.spkSlots.some(x=>x.name===name))name=kind+(+name.replace(/\D/g,'')+1);
     const x={id:uid(),name,kind};const i=kind==='집회'?R.spkSlots.filter(y=>y.kind==='집회').length:R.spkSlots.length;R.spkSlots.splice(i,0,x);R.conf['slot_'+x.id]={v:'',ok:false};save();render()},
