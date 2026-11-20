@@ -53,7 +53,10 @@ table.t td input,table.t td select{width:100%}
 table.t td.num,table.t th.num{text-align:right;white-space:nowrap}
 .chip{display:inline-flex;align-items:center;gap:2px;border:1.5px solid var(--ink);border-radius:999px;padding:1px 4px 1px 9px;margin:2px;background:var(--cream);font-size:14px;white-space:nowrap}
 .chip.p{background:#fff}
-.chip.m{background:#e3efff;border-color:#2f6fb0}.chip.f{background:#ffe5ef;border-color:#c8507a}
+/* 이름 칩: 바탕색 = 구분(사역자 연두 · 준비인원 하늘 · 찬양팀 분홍 · 일반 흰색), 글자색 = 성별(남 파랑 · 여 빨강) */
+.chip.k-min{background:#e3f6d5;border-color:#5aa63c}.chip.k-staff{background:#dcefff;border-color:#3d8fd1}.chip.k-praise{background:#ffe1ec;border-color:#d0628e}
+.chip.sx-m{color:#1f5fc2}.chip.sx-f{color:#d22f2f}
+.chiplg{display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--muted)}.chiplg .chip{font-size:12px;padding:0 8px;margin:0;cursor:default}
 .chip.on{background:var(--ink);color:#fff}
 .chip[draggable=true]{cursor:grab}
 .chip.tog{cursor:pointer;padding:1px 10px}
@@ -409,7 +412,7 @@ function personInfo(pid){const p=P(pid);if(!p)return;const fe=feeOf(p);
   const m=modal(`<h2>🙋 ${esc(p.name||'(이름 없음)')} <span class="hint" style="font-size:14px">신청정보</span></h2><table class="t pinfo">${rows.map(([l,v])=>`<tr><th>${l}</th><td>${v===undefined||v===null||v===''?'<span class="hint">-</span>':(typeof v==='string'&&['풀참여부','선발대','성별','나이','소속','사는 곳','보험','맡은 역할'].includes(l)?esc(v):v)}</td></tr>`).join('')}</table>
    <div class="row" style="margin-top:10px"><button class="pri" id="piGo">✏️ 참석인원에서 고치기</button><button data-close>닫기</button></div>`);
   m.querySelector('#piGo').onclick=()=>{m.remove();TAB='people';SUB.pf={};SUB.pHi=pid;render();const r=document.getElementById('prow-'+pid);if(r)r.scrollIntoView({block:'center'});setTimeout(()=>{SUB.pHi=null;const r=document.getElementById('prow-'+pid);if(r)r.classList.remove('phi')},2500)}}
-function CHIP(pid,from,extra){const p=P(pid);if(!p)return'';return `<span class="chip p ${p.gender==='여'?'f':p.gender==='남'?'m':''}" draggable="true" data-pid="${pid}" data-from="${from}" title="${esc([p.gender,p.age,p.org].filter(Boolean).join(' · '))}">${esc(p.name||'(이름 없음)')}${extra||''}${from!=='pool'?`<button class="x" data-act="unassign" data-from="${from}" data-pid="${pid}" title="빼기">×</button>`:''}</span>`}
+function CHIP(pid,from,extra){const p=P(pid);if(!p)return'';return `<span class="chip p ${pCls(p)}" draggable="true" data-pid="${pid}" data-from="${from}" title="${esc([p.gender,p.age,p.org].filter(Boolean).join(' · '))}">${esc(p.name||'(이름 없음)')}${extra||''}${from!=='pool'?`<button class="x" data-act="unassign" data-from="${from}" data-pid="${pid}" title="빼기">×</button>`:''}</span>`}
 function holder(key){const[k,id]=key.split('#');if(k==='car')return R.cars.list.find(c=>c.id===id);if(k==='grp')return R.grp.list.find(g=>g.id===id);if(k==='room')return R.rooms.find(r=>r.id===id);return null}
 function scopeOf(key){const[k,id]=key.split('#');if(k==='car'){const c=holder(key);return R.cars.list.filter(x=>x.dir===(c?c.dir:SUB.dir))}if(k==='grp')return R.grp.list;if(k==='room')return R.rooms;return[]}
 function assign(pid,to,from){
@@ -419,7 +422,9 @@ function assign(pid,to,from){
   R.rooms.forEach(r=>{if(r.captain&&!(r.members||[]).includes(r.captain))r.captain=''});
   save();render()}
 function addSel(to,cands){return `<select data-act="assign" data-to="${to}" style="width:100%;margin-top:4px;font-size:13px"><option value="">+ 참석인원에서 추가</option>${cands.slice().sort(byName).map(p=>`<option value="${p.id}">${esc(p.name)}${p.gender?' ('+p.gender+')':''}${p.org?' · '+esc(p.org):''}</option>`).join('')}</select>`}
-function poolHTML(cands,label){return `<div class="pool" data-drop="pool"><div class="row" style="margin-bottom:4px"><b class="j">🙋 ${esc(label)} (${cands.length})</b><span class="hint">이름을 끌어다 놓거나, 각 칸의 ‘+ 추가’로 넣어요</span><input id="poolQ" placeholder="이름 찾기" style="margin-left:auto;width:120px" value="${esc(SUB.poolQ||'')}"></div>${cands.length?cands.slice().sort(byName).map(p=>CHIP(p.id,'pool')).join(''):'<span class="hint">모두 배정했어요 👏</span>'}</div>`}
+const pCls=p=>(p.prep==='min'?'k-min':p.prep==='staff'?'k-staff':p.praise?'k-praise':'')+' '+(p.gender==='남'?'sx-m':p.gender==='여'?'sx-f':'');
+const chipLegend=()=>`<span class="chiplg"><span class="chip k-min">사역자</span><span class="chip k-staff">준비인원</span><span class="chip k-praise">찬양팀</span><span class="chip">일반</span><span class="chip sx-m">남</span><span class="chip sx-f">여</span></span>`;
+function poolHTML(cands,label){return `<div class="pool" data-drop="pool"><div class="row" style="margin-bottom:4px"><b class="j">🙋 ${esc(label)} (${cands.length})</b><span class="hint">이름을 끌어다 놓거나, 각 칸의 ‘+ 추가’로 넣어요</span>${chipLegend()}<input id="poolQ" placeholder="이름 찾기" style="margin-left:auto;width:120px" value="${esc(SUB.poolQ||'')}"></div>${cands.length?cands.slice().sort(byName).map(p=>CHIP(p.id,'pool')).join(''):'<span class="hint">모두 배정했어요 👏</span>'}</div>`}
 
 /* ============ 메뉴 ============ */
 const TABS=[['people','🙋 참석인원'],['staff','👥 준비인원'],['praise','🎸 찬양팀'],['minutes','📝 회의록'],['sched','📅 일정'],['theme','💡 주제정하기'],['venue','🏕️ 장소탐색'],['spaces','🏠 사용공간'],['speaker','🎤 강사탐색'],['program','🎲 프로그램'],['tt','⏰ 시간표'],['confirm','✅ 확정사항'],['sup','📦 준비물'],['chk','☑️ 체크리스트'],['files','📁 자료실'],['acc','💰 회계'],['cars','🚌 차량배정'],['grp','🧩 조배정'],['rooms','🛏️ 방배정'],['notice','📢 공지문']];
@@ -982,7 +987,7 @@ function carTimeline(){const days=(+R.nights||0)+1,S=slots(),C=R.tt.cells,toM=t=
   const slotM=m=>{if(m<360)m+=1440;if(m<360||m>=1500)return -1;return Math.floor((m-360)/30)};const slotOf=c=>slotM(toM(c.time));
   const minD=Math.min(0,...R.cars.list.filter(c=>c.day!==''&&c.day!=null).map(c=>+c.day),...R.people.map(p=>{const w=pWhen(p,'in');return w&&w.m!=null?w.d:0}));
   const MV=peopleMoves(),ok=MV.filter(x=>x.w&&x.w.m!=null&&x.w.d>=minD&&x.w.d<days),unk=MV.filter(x=>x.raw&&!(x.w&&x.w.m!=null)&&!x.src);
-  const pchip=x=>`<span class="chip p ${x.p.gender==='여'?'f':x.p.gender==='남'?'m':''}" data-pid="${x.p.id}" title="${esc((x.k==='in'?'들어오는 시간: ':'나가는 시간: ')+(x.raw||(x.src?'차 출발 시각':'')))}">${esc(x.p.name||'(이름 없음)')}${x.src?' 🚌':''}</span>`;
+  const pchip=x=>`<span class="chip p ${pCls(x.p)}" data-pid="${x.p.id}" title="${esc((x.k==='in'?'들어오는 시간: ':'나가는 시간: ')+(x.raw||(x.src?'차 출발 시각':'')))}">${esc(x.p.name||'(이름 없음)')}${x.src?' 🚌':''}</span>`;
   const pcell=list=>{const a=list.filter(x=>x.k==='in'),b=list.filter(x=>x.k==='out');return (a.length?`<div class="pin"><b>⬇️ 들어와요 ${a.length}명</b> ${moreList(a.map(pchip),6)}</div>`:'')+(b.length?`<div class="pout"><b>⬆️ 나가요 ${b.length}명</b> ${moreList(b.map(pchip),6)}</div>`:'')};
   const kindOf=c=>/본대|버스/.test(c.type||'')?'bus':c.type==='자차(카풀가능)'?'pool':c.type==='자차(카풀불가능)'?'solo':'etc';
   const whoCar=c=>c.name||(c.driver?pn(c.driver)+' 차':'')||c.type||'차';
