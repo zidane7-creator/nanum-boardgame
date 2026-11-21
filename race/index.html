@@ -367,9 +367,11 @@ function hazards(t){const Z=R.Z,M=R.M,F=Z.fl,K=Z.sk,Wl=Z.wl,live=R.sheep.length-
   const act=s=>!s.done&&!s.dq&&!(t<s.bst)&&!(s.ev&&(s.ev.type==="cliff"||s.ev.type==="dq"));
   // 🌺 꽃
   if(t>=F.next){F.next+=F.per;const cand=R.sheep.filter(s=>act(s)&&!s.ev&&Math.abs(s.p*M-F.m)<=6);SFX.play("bloom");
-    if(cand.length){const s=cand[Math.floor(Math.random()*cand.length)];s.ev={type:"flower",start:t,until:t+5,ico:"🌺"};s.cool=t+5+rnd(1,2);F.on={t0:t,until:t+5,s};
-      cast(`🌺 땅속에서 꽃이 쑥! ${sName(s)} 양이 꽃에 5초 동안 붙잡혔어요`)}
-    else F.on={t0:t,until:t+1.3,s:null,m:F.m+rnd(-4,4),y:rnd(.12,.88)}}
+    const k=Math.min(cand.length,1+Math.floor(Math.random()*3)),got=[];for(let i=0;i<k;i++)got.push(cand.splice(Math.floor(Math.random()*cand.length),1)[0]);
+    got.sort((a,b)=>a.yf-b.yf);const SL=[[[-1.9,.5]],[[-1.9,.36],[1.9,.64]],[[-1.9,.62],[0,.24],[1.9,.74]]][Math.max(0,k-1)];
+    got.forEach((s,i)=>{s.ev={type:"flower",start:t,until:t+5,ico:"🌺",fp:s.p,fy:s.yf,tp:(F.m+SL[i][0])/M,ty:SL[i][1]};s.cool=t+5+rnd(1,2)});
+    F.on={t0:t,until:got.length?t+5:t+1.5,got};
+    if(got.length)cast(`🌺 길 가운데에서 큰 꽃이 쑥! ${got.map(sName).join(", ")} 양이 덩굴에 5초 동안 붙잡혔어요`)}
   if(F.on&&t>F.on.until+.5)F.on=null;
   // 🕳️ 땅 꺼짐: 1.2초 흔들린 다음 1초 동안 꺼져요
   if(t>=K.next){K.t0=K.next+1.2;K.next+=K.per;SFX.play("rumble")}
@@ -394,7 +396,8 @@ function step(dt){const t=R.t,base=1/R.D,M=R.M;hazards(t);
     if(s.ev){const e=s.ev;
       if(t>=e.until){if(e.type==="dq"||e.type==="cliff"){s.dq=true;s.ev=null;addTick(s);return}if(e.long){const sm=s.p*R.M;R.obs.forEach(o=>{if(o.m>sm)s.passed.delete(o.id)});s.tried=0;s.cool=t+2}
       if(e.type==="magnet"||e.type==="pulled"||e.type==="bounced"){s.p=e.to;const sm=s.p*R.M;R.obs.forEach(o=>{if(o.m>sm)s.passed.delete(o.id);else s.passed.add(o.id)});s.tried=0}s.ev=null;s.hole=null}
-      else{if(e.type==="bounced"){const q=Math.min(1,(t-e.start)/.6);s.p=e.from+(e.to-e.from)*(1-(1-q)*(1-q));return}
+      else{if(e.type==="flower"){const q=Math.min(1,(t-e.start)/.5),ez=q*q*(3-2*q);s.p=e.fp+(e.tp-e.fp)*ez;s.yf=s.ty=e.fy+(e.ty-e.fy)*ez;return}
+        if(e.type==="bounced"){const q=Math.min(1,(t-e.start)/.6);s.p=e.from+(e.to-e.from)*(1-(1-q)*(1-q));return}
         if(e.type==="magnet"||e.type==="pulled"){const q=Math.min(1,(t-e.start)/(e.until-e.start)),ez=q<.5?2*q*q:1-2*(1-q)*(1-q);s.p=e.from+(e.to-e.from)*ez;s.yf+=(s.ty-s.yf)*Math.min(1,dt*3);s.leg+=dt*14;return}
         
         if(e.type==="back"){if(e.long){s.p=Math.max(e.backTo,s.p-base*1.4*dt);if(s.p<=e.backTo)e.until=t}else s.p=Math.max(0,s.p-base*.55*dt);s.leg+=dt*10}else if(e.type==="dq"){s.leg+=dt*12}else if(e.type==="fight"){s.leg+=dt*16}return}}
@@ -550,7 +553,7 @@ function draw(){const cv=$("#cv");if(!cv||!R||!R.W)return;const c=cv.getContext(
     if(s.ev&&s.ev.type==="cliff"){const q=(t-s.ev.start)/(s.ev.until-s.ev.start);drop=q*q*rN*9;alpha=Math.max(0,1-q*1.1)}
     const [x,y]=Pt(s.p*M,tv);if(x<-rN*3||x>W+rN*3)return;const k=kOf(tv),r=rN*k;let lift=0;const js=t-s.jump;const jd=s.jh>2?.8:.42;if(js>=0&&js<jd)lift=Math.sin(Math.PI*js/jd)*(s.jh*ppm*1.8*k+r*.4);
     if(s.ev&&s.ev.type==="bounced"){const q=(t-s.ev.start)/.6;if(q<1)lift=Math.sin(Math.PI*q)*2.2*ppm*1.8*k}
-    if(s.ev&&s.ev.type==="flower")lift=flowerUp(s.ev,t)*1.3*ppm*1.8*k;
+    if(s.ev&&s.ev.type==="flower")lift=flowerUp(s.ev,t)*1.1*ppm*1.8*k;
     L.push({t:tv,f:()=>{c.globalAlpha=alpha;drawSheep(c,x,y-r*.95+drop*kOf(tv),r,s,t,lift);c.globalAlpha=1}})});
   zoneSolids(c,L,mL,mR);
   R.sheep.forEach(s=>{const e=s.ev;if(!e||e.type!=="magnet"||!e.partner)return;const o=e.partner,a=Pt(s.p*M,s.yf,1.1),b=Pt(o.p*M,o.yf,1.1);
@@ -572,13 +575,18 @@ function draw(){const cv=$("#cv");if(!cv||!R||!R.W)return;const c=cv.getContext(
   R.sheep.forEach(s=>{if(s.dq)return;const px=mx+Math.min(1,s.p)*mw;c.fillStyle=s.color;c.strokeStyle="#3b2a20";c.lineWidth=1;c.beginPath();c.arc(px,my+(s.yf-.5)*8,4,0,7);c.fill();c.stroke()});
   c.textBaseline="alphabetic"}
 function flowerUp(e,t){const a=(t-(e.t0??e.start))/.45,b=(e.until-t)/.45;return Math.max(0,Math.min(1,a,b))}
-function drawBloom(c,m,y,up,front){if(up<=0)return;const k=kOf(y),h=1.3*up,[gx,gy]=Pt(m,y,0),[hx,hy]=Pt(m,y,h),pr=R.rN*k*.55*(.4+.6*up);
-  if(!front){c.strokeStyle="#2f8a33";c.lineWidth=Math.max(3,R.rN*k*.16);c.lineCap="round";c.beginPath();c.moveTo(gx,gy);c.quadraticCurveTo(gx-pr*.5,(gy+hy)/2,hx,hy);c.stroke();
-    c.fillStyle="#4fae4a";[[-1,.55],[1,.35]].forEach(([d,q])=>{c.beginPath();c.ellipse(gx+d*pr*.55,gy-(gy-hy)*q,pr*.5,pr*.2,d*.5,0,7);c.fill()});
-    c.fillStyle="#3a2a1a";c.beginPath();c.ellipse(gx,gy,pr*1.1,pr*.3,0,0,7);c.fill();
-    for(let i=0;i<6;i++){const a=Math.PI+i/5*Math.PI;c.fillStyle=i%2?"#ff7eb6":"#ff9fd0";c.beginPath();c.ellipse(hx+Math.cos(a)*pr*1.1,hy+Math.sin(a)*pr*.55,pr*.62,pr*.38,a,0,7);c.fill()}}
-  else{for(let i=0;i<5;i++){const a=i/4*Math.PI;c.fillStyle=i%2?"#ff5fa2":"#ff86bd";c.strokeStyle="#c2357a";c.lineWidth=1.5;c.beginPath();c.ellipse(hx+Math.cos(a)*pr*1.05,hy+Math.sin(a)*pr*.35,pr*.6,pr*.34,a,0,7);c.fill();c.stroke()}
-    c.fillStyle="#ffd23f";c.beginPath();c.ellipse(hx,hy+pr*.2,pr*.35,pr*.16,0,0,7);c.fill()}}
+function drawBigFlower(c,m,y,up){if(up<=0)return;const k=kOf(y),h=2.6*up,[gx,gy]=Pt(m,y,0),[hx,hy]=Pt(m,y,h),pr=R.rN*k*1.25*(.3+.7*up),sw=Math.sin(R.t*3)*.08;
+  c.fillStyle="#5a3d24";c.beginPath();c.ellipse(gx,gy,pr*1.3,pr*.35,0,0,7);c.fill();
+  c.strokeStyle="#2f8a33";c.lineWidth=Math.max(5,R.rN*k*.3);c.lineCap="round";c.beginPath();c.moveTo(gx,gy);c.quadraticCurveTo(gx+pr*.4,(gy+hy)/2,hx,hy);c.stroke();
+  c.fillStyle="#4fae4a";[[-1,.3],[1,.5]].forEach(([d,q])=>{const ly=gy-(gy-hy)*q;c.beginPath();c.ellipse(gx+d*pr*.6,ly,pr*.7,pr*.25,d*.45,0,7);c.fill()});
+  for(let i=0;i<8;i++){const a=i/8*Math.PI*2+sw;c.fillStyle=i%2?"#ff5fa2":"#ff86bd";c.strokeStyle="#c2357a";c.lineWidth=2;c.beginPath();c.ellipse(hx+Math.cos(a)*pr*.85,hy+Math.sin(a)*pr*.85,pr*.62,pr*.36,a,0,7);c.fill();c.stroke()}
+  c.fillStyle="#ffd23f";c.strokeStyle="#e0a800";c.beginPath();c.arc(hx,hy,pr*.5,0,7);c.fill();c.stroke();
+  c.fillStyle="#3b2a20";[-1,1].forEach(d=>{c.beginPath();c.arc(hx+d*pr*.18,hy-pr*.06,pr*.065,0,7);c.fill()});
+  c.strokeStyle="#3b2a20";c.lineWidth=2;c.beginPath();c.arc(hx,hy+pr*.06,pr*.15,.2,Math.PI-.2);c.stroke()}
+function drawVine(c,m,y,s,up){const M=R.M,[ax,ay]=Pt(m,y,2.6*up*.45),k=kOf(s.yf),r=R.rN*k,[bx,gy]=Pt(s.p*M,s.yf,0),by=gy-up*1.1*R.ppm*1.8*k-r*.55;
+  c.strokeStyle="#2f8a33";c.lineWidth=Math.max(3,r*.14);c.lineCap="round";c.beginPath();c.moveTo(ax,ay);c.quadraticCurveTo((ax+bx)/2,Math.max(ay,by)+r*.6,bx,by);c.stroke();
+  c.strokeStyle="#4fae4a";c.lineWidth=Math.max(2,r*.11);c.beginPath();c.ellipse(bx,by,r*.8,r*.3,0,0,7);c.stroke();
+  c.fillStyle="#ff86bd";c.beginPath();c.arc(bx+r*.7,by-r*.1,r*.14,0,7);c.fill()}
 function drawFlat(c,o,x,y,rx,ry){const T=o.type;
   if(T==="pit"){c.fillStyle="#2a1d12";c.beginPath();c.ellipse(x,y,rx,ry,0,0,7);c.fill();c.fillStyle="#4a3424";c.beginPath();c.ellipse(x,y+ry*.25,rx*.8,ry*.55,0,0,7);c.fill();
     c.strokeStyle="#c9a35a";c.lineWidth=2;for(let i=0;i<9;i++){const a=i/9*Math.PI*2;c.beginPath();c.moveTo(x+Math.cos(a)*rx*.95,y+Math.sin(a)*ry*.95);c.lineTo(x+Math.cos(a+.5)*rx*.55,y+Math.sin(a+.5)*ry*.55);c.stroke()}return}
@@ -631,8 +639,8 @@ function zoneSolids(c,L,mL,mR){const Z=R.Z,vis=(a,b)=>b>mL-2&&a<mR+2;
   const C=Z.cliff;if(vis(C.m0-1,C.m1+1)){[C.b0,C.b1].forEach(tt=>L.push({t:tt+.0005,f:()=>{c.strokeStyle="#7a4b22";c.lineWidth=Math.max(2,4*kOf(tt));c.lineCap="round";
       const ps=[];for(let m=C.m0-.6;m<=C.m1+.61;m+=(C.m1-C.m0+1.2)/5){const a=Pt(m,tt,0),b=Pt(m,tt,.9);c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke();ps.push(b)}
       c.strokeStyle="#d9b37a";c.lineWidth=Math.max(1.5,2.5*kOf(tt));c.beginPath();ps.forEach((b,i)=>{if(!i){c.moveTo(b[0],b[1]);return}const a=ps[i-1];c.quadraticCurveTo((a[0]+b[0])/2,(a[1]+b[1])/2+6*kOf(tt),b[0],b[1])});c.stroke()}}))}
-  {const F=Z.fl,o=F.on,t=R.t;if(o){if(o.s){const s=o.s,e=s.ev&&s.ev.type==="flower"?s.ev:{start:o.t0,until:o.until},up=flowerUp(e,t),m=s.p*R.M;if(m>mL-4&&m<mR+4){L.push({t:s.yf-.0006,f:()=>drawBloom(c,m,s.yf,up,false)});L.push({t:s.yf+.0006,f:()=>drawBloom(c,m,s.yf,up,true)})}}
-    else if(o.m>mL-4&&o.m<mR+4){const up=flowerUp({start:o.t0,until:o.until},t);L.push({t:o.y,f:()=>{drawBloom(c,o.m,o.y,up,false);drawBloom(c,o.m,o.y,up,true)}})}}}
+  {const F=Z.fl,o=F.on,t=R.t;if(o&&F.m>mL-6&&F.m<mR+6){const up=flowerUp({start:o.t0,until:o.until},t);L.push({t:.5,f:()=>drawBigFlower(c,F.m,.5,up)});
+    o.got.forEach(s=>{if(s.ev&&s.ev.type==="flower")L.push({t:s.yf+.0006,f:()=>drawVine(c,F.m,.5,s,flowerUp(s.ev,t))})})}}
   {const Wl=Z.wl,t=R.t,a=t-Wl.t0;if(a>=0&&a<2.3&&Wl.m1>mL-2&&Wl.m0<mR+2){const up=Math.max(0,Math.min(1,a/.25,(2.3-a)/.3)),h=1.4*up,g0=Wl.g0,g1=g0+.2;
     [[-.08,g0],[g1,1.08]].forEach(([a0,b0])=>{if(b0-a0<.01)return;L.push({t:b0,f:()=>{box3(c,Wl.m0,Wl.m1,a0,b0,h,"#ffb3c1","#ff5c7a","#e84a68");
       c.strokeStyle="rgba(255,255,255,.7)";c.lineWidth=Math.max(2,4*kOf(b0));for(let m=Wl.m0+.6;m<Wl.m1;m+=1.2){const p=Pt(m,b0,h*.2),q=Pt(m+.5,b0,h*.85);c.beginPath();c.moveTo(p[0],p[1]);c.lineTo(q[0],q[1]);c.stroke()}}})})}}
