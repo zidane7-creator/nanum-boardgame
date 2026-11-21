@@ -61,6 +61,12 @@ button.on{background:#fdba4d;color:#2b2118}
 @keyframes toss{0%{transform:translate(38vw,42vh) scale(.3)}60%{transform:translate(0,-8vh) scale(1.15)}80%{transform:translate(0,1vh) scale(.97)}100%{transform:translate(0,0) scale(1)}}
 @keyframes pop{50%{transform:scale(1.25)}}
 #board{position:relative;width:100%;margin-top:8px}
+#bsizer{position:relative}#bscale{transform-origin:0 0}
+#bview{position:relative;overflow:auto;touch-action:pan-x pan-y;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+#bview.zoomed{max-height:calc(100vh - 120px);border-radius:14px;outline:2px dashed rgba(43,33,24,.25);outline-offset:2px}
+#zbar{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:12;display:flex;align-items:center;gap:4px;background:rgba(255,250,240,.95);border:2px solid #2b2118;border-radius:999px;padding:3px 6px;box-shadow:0 3px 0 rgba(0,0,0,.25)}
+#zbar button{width:34px;height:34px;padding:0;border-radius:50%;font-size:18px;line-height:1;box-shadow:none}
+#zbar #zlab{min-width:3.2em;text-align:center;font-size:14px}
 #board svg{position:absolute;inset:0;width:100%;height:100%}
 .t{position:absolute;width:13.6%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:clamp(8px,2.3vw,11.5px);line-height:1.15;color:#2b2118;padding:2px;box-sizing:border-box;word-break:keep-all;overflow:hidden}
 .n{font-size:7px;opacity:.6;line-height:1;margin-bottom:1px}.pawn svg{width:100%;height:100%;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
@@ -114,7 +120,7 @@ button.on{background:#fdba4d;color:#2b2118}
 <div id="top"><div id="status"></div><div class="tb"><button id="homeb" aria-label="홈 화면">🏠</button><button id="fs" aria-label="전체화면" title="전체화면" hidden>⛶</button><button id="gear">⚙ 설정</button></div></div>
 <div id="set"><div class="card" style="max-width:380px;max-height:88vh;overflow:auto;text-align:left"><div style="font-size:20px">⚙ 설정</div><div class="sec">인원 (바꾸면 새 게임)</div><div class="bar" id="pc"></div><div class="sec">순서 (◀ ▶로 바꾸기)</div><div id="ord"></div><div class="sec">말 이름</div><div id="nm"></div><div class="sec">주사위</div><div class="bar" id="ds"></div><div class="sec">🔊 효과음 음량 <span id="sfxv"></span></div><input type="range" class="rg" id="sfxr" min="0" max="100"><div id="bgmbox" hidden><div class="sec">🎵 배경음악 음량 <span id="bgmv"></span></div><input type="range" class="rg" id="bgmr" min="0" max="100"></div><div class="sec">바탕색</div><div class="bar" id="bg"></div><div class="bar"><button id="newg">새 게임</button><button id="sx">닫기</button></div></div></div>
 <button id="roll" aria-label="주사위 던지기">🎲</button><div id="big"></div><audio id="bgm" loop preload="none"></audio>
-<div id="board"></div>
+<div id="bview"><div id="bsizer"><div id="bscale"><div id="board"></div></div></div></div><div id="zbar" aria-label="보드판 크기"><button id="zout" aria-label="작게">－</button><span id="zlab">100%</span><button id="zin" aria-label="크게">＋</button><button id="zfit" aria-label="원래 크기">↺</button></div>
 <section class="about"><h2>교회 소모임 나눔 보드게임</h2><p>교회 소모임, 셀모임, 속회, 구역 모임, 청년부 모임에서 처음 만난 사이에도 자연스럽게 이야기를 꺼낼 수 있는 아이스브레이킹 나눔 게임이에요. 휴대폰 하나로 1~10명이 함께할 수 있고, 설치나 가입 없이 무료로 바로 쓸 수 있어요.</p><h3>어떻게 하나요?</h3><ul><li>인원을 고르고 차례대로 주사위를 굴려 말을 옮겨요.</li><li>멈춘 칸의 질문에 답하며 서로의 이야기를 나눠요.</li><li>나눔 질문은 '나에 대해', '나의 이야기', '하나님과 나' 세 가지예요.</li><li>밸런스 게임, 사다리, 기도제목 나눔 칸도 있어요.</li><li>가장 먼저 도착한 사람이 우승이에요!</li></ul></section>
 </div>
 <div id="home"><a class="back" href="../">← 치영의 교회 생활 즐기기</a><div class="hs">🎲 다 같이 이야기 나눠요</div><div class="hh">치영의<br><b>나눔</b>보드게임</div><div class="hp" id="hp"></div><div class="sec">몇 명이서 할까요?</div><div class="bar" id="hc"></div><div class="sec">이름과 순서를 정해요 (◀ ▶로 순서 바꾸기)</div><div id="hord"></div><button id="go">게임 시작 ▶</button><p class="hi">교회 소모임 · 셀모임 · 속회 · 청년부<br>아이스브레이킹 나눔 게임</p></div>
@@ -163,7 +169,26 @@ function renderOrder(el,arr,onChange,editable){el.innerHTML="";const l=document.
  s.onclick=()=>{const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}onChange(a)};
  el.appendChild(l);if(arr.length>1)el.appendChild(s)}
 function renderSetOrder(){renderOrder($("ord"),order,a=>{if(busy)return;order=a;oi=order.indexOf(turn);renderSetOrder()})}
-function scrollToPawn(k){const p=xy(pos[k]),r=board.getBoundingClientRect();window.scrollTo({top:scrollY+r.top+p[1]/100*r.height-innerHeight*.62,behavior:"smooth"})}
+function scrollToPawn(k){const p=xy(pos[k]),r=board.getBoundingClientRect(),v=document.getElementById("bview");
+  if(BZ>1){const vr=v.getBoundingClientRect();v.scrollTo({left:v.scrollLeft+r.left-vr.left+p[0]/100*r.width-v.clientWidth/2,top:v.scrollTop+r.top-vr.top+p[1]/100*r.height-v.clientHeight*.55,behavior:"smooth"});return}
+  window.scrollTo({top:scrollY+r.top+p[1]/100*r.height-innerHeight*.62,behavior:"smooth"})}
+/* 🔍 보드판 확대·축소: 버튼, Ctrl+마우스 휠, 두 손가락 벌리기 (이 기기에 기억) */
+let BZ=1;try{BZ=Math.max(1,Math.min(3,+localStorage.getItem("board-zoom")||1))}catch(e){}
+function setBZ(z,cx,cy){const v=document.getElementById("bview"),sz=document.getElementById("bsizer"),sc=document.getElementById("bscale"),old=BZ;z=Math.max(1,Math.min(3,Math.round(z*100)/100));if(z<1.04)z=1;
+  const vr=v.getBoundingClientRect();cx=cx??vr.left+v.clientWidth/2;cy=cy??vr.top+v.clientHeight/2;const fx=(v.scrollLeft+cx-vr.left)/old,fy=(v.scrollTop+cy-vr.top)/old;
+  BZ=z;v.classList.toggle("zoomed",z>1);document.getElementById("zlab").textContent=Math.round(z*100)+"%";
+  if(z===1){sc.style.transform="";sc.style.width="";sz.style.width="";sz.style.height=""}
+  else{const base=v.clientWidth;sc.style.width=base+"px";sc.style.transform="scale("+z+")";const h=sc.offsetHeight;sz.style.width=base*z+"px";sz.style.height=h*z+"px";v.scrollLeft=fx*z-(cx-vr.left);v.scrollTop=fy*z-(cy-vr.top)}
+  try{localStorage.setItem("board-zoom",z)}catch(e){}}
+addEventListener("resize",()=>{if(BZ>1){const z=BZ;BZ=1;setBZ(1);setBZ(z)}});
+(()=>{const v=document.getElementById("bview");
+  document.getElementById("zin").onclick=()=>setBZ(BZ+.25);document.getElementById("zout").onclick=()=>setBZ(BZ-.25);document.getElementById("zfit").onclick=()=>setBZ(1);
+  v.addEventListener("wheel",e=>{if(!e.ctrlKey)return;e.preventDefault();setBZ(BZ*(e.deltaY<0?1.1:1/1.1),e.clientX,e.clientY)},{passive:false});
+  let pin=null;const dist=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
+  v.addEventListener("touchstart",e=>{if(e.touches.length===2)pin={d:dist(e.touches),z:BZ}},{passive:true});
+  v.addEventListener("touchmove",e=>{if(pin&&e.touches.length===2){e.preventDefault();const t=e.touches;setBZ(pin.z*dist(t)/pin.d,(t[0].clientX+t[1].clientX)/2,(t[0].clientY+t[1].clientY)/2)}},{passive:false});
+  v.addEventListener("touchend",e=>{if(e.touches.length<2)pin=null});
+  setBZ(BZ)})();
 // ---- sound effects (synthesized, no files) ----
 let AC=null,sfxVol=.7,bgmVol=.4;
 try{const a=localStorage.getItem("sfxVol"),b=localStorage.getItem("bgmVol");if(a!==null)sfxVol=+a;if(b!==null)bgmVol=+b}catch(e){}
