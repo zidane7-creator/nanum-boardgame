@@ -253,12 +253,15 @@ td.rate{text-align:left;min-width:130px;border-left:1px solid var(--line)}
 .chalk .cl{stroke:rgba(244,244,236,.62);stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round;fill:none}
 .chalk .cl.c2{stroke:rgba(250,250,244,.55);stroke-width:2;stroke-dasharray:14 2 6 1}
 .chalk .cl.drawing{stroke:rgba(244,244,236,.8);stroke-width:3}
-.chalk .hit{stroke:transparent;stroke-width:18;stroke-linecap:round}
+.chalk .hit{stroke:transparent;stroke-width:18;stroke-linecap:round;pointer-events:stroke;cursor:ns-resize}
+.chalk .clabel{pointer-events:visiblePainted;cursor:ns-resize}
+.chalk g.dragging .cl{stroke:#ffe9a8}.chalk g.dragging .clabel{fill:#ffe9a8}
 .chalk .clabel{fill:rgba(244,244,236,.92);font-family:'Nanum Pen Script','Gaegu',cursive;font-size:30px}
 .chalk g.sel .cl{stroke:#ffe9a8}.chalk g.sel .clabel{fill:#ffe9a8}
 .chalking .cork-in{cursor:crosshair}
 .chalking .chalk{z-index:99999}
 .chalking .chalk .hit{pointer-events:stroke;cursor:pointer}
+.chalk .clabel{user-select:none}
 .chalking .polar{pointer-events:none;opacity:.8}
 .polar:focus-visible{outline:3px solid #fff;outline-offset:3px}
 .polar.dropping{outline:3px dashed #fff;outline-offset:4px;transform:rotate(0) scale(1.04)}
@@ -1489,15 +1492,20 @@ function initCork(){const c=$('#cork'),inn=$('#cork-in');if(!c||!inn)return;layo
       try{localStorage.setItem(CORK_KEY(),JSON.stringify({w:c.offsetWidth,h:c.offsetHeight}))}catch(_){}render()}}}
   if(typeof ResizeObserver!=='undefined'){if(corkRO)corkRO.disconnect();let first=true,tm;
     corkRO=new ResizeObserver(()=>setTimeout(()=>{if(!c.isConnected)return;layoutCork();try{localStorage.setItem(CORK_KEY(),JSON.stringify({w:c.offsetWidth,h:c.offsetHeight}))}catch(e){}},0));corkRO.observe(c)}
-  let drag=null,draw=null;
+  let drag=null,draw=null,ldrag=null;
   const pt=e=>{const r=inn.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}};
   inn.onpointerdown=e=>{if(e.button>0)return;
-    if(UI.aChalk&&!S.readOnly){const g=e.target.closest('g[data-lid]');if(g){UI.aLineSel=g.dataset.lid;render();const i=$('#al-label');if(i)i.focus();return}
+    const lg=!S.readOnly&&e.target.closest&&e.target.closest('g[data-lid]');
+    if(lg){const l=(S.albumLines||[]).find(x=>x.id===lg.dataset.lid);if(l){ldrag={g:lg,l,sy:e.clientY,dy:0,moved:false};try{inn.setPointerCapture(e.pointerId)}catch(_){}e.preventDefault();return}}
+    if(UI.aChalk&&!S.readOnly){
       const p=pt(e);const svg=$('#chalk');const ln=document.createElementNS('http://www.w3.org/2000/svg','line');ln.setAttribute('class','cl drawing');
       ['x1','x2'].forEach(k=>ln.setAttribute(k,p.x));['y1','y2'].forEach(k=>ln.setAttribute(k,p.y));svg.appendChild(ln);draw={p,ln};try{inn.setPointerCapture(e.pointerId)}catch(_){}e.preventDefault();return}
     const el=e.target.closest('.polar');if(!el)return;
     drag={el,id:el.dataset.aid,sx:e.clientX,sy:e.clientY,ox:el.offsetLeft,oy:el.offsetTop,moved:false};if(!S.readOnly)try{el.setPointerCapture(e.pointerId)}catch(_){}};
   inn.onpointermove=e=>{
+    if(ldrag){const L=ldrag.l,top=Math.min(L.y1,L.y2),bot=Math.max(L.y1,L.y2);let dy=e.clientY-ldrag.sy;if(!ldrag.moved&&Math.abs(dy)<4)return;ldrag.moved=true;
+      dy=Math.max(34-top,dy);ldrag.dy=dy;ldrag.g.setAttribute('transform',`translate(0 ${dy})`);ldrag.g.classList.add('dragging');
+      if(bot+dy+30>c.clientHeight)c.style.height=(bot+dy+30+(c.offsetHeight-c.clientHeight))+'px';return}
     if(draw){let p=pt(e),dx=p.x-draw.p.x,dy=p.y-draw.p.y;if(Math.abs(dy)<Math.abs(dx)*.18)p.y=draw.p.y;else if(Math.abs(dx)<Math.abs(dy)*.18)p.x=draw.p.x;
       draw.ln.setAttribute('x2',p.x);draw.ln.setAttribute('y2',p.y);draw.q=p;return}
     const d=drag;if(!d||S.readOnly)return;const dx=e.clientX-d.sx,dy=e.clientY-d.sy;if(!d.moved&&Math.hypot(dx,dy)<5)return;
@@ -1505,6 +1513,9 @@ function initCork(){const c=$('#cork'),inn=$('#cork-in');if(!c||!inn)return;layo
     const x=Math.max(0,Math.min(inn.clientWidth-d.el.offsetWidth,d.ox+dx)),y=Math.max(0,d.oy+dy);d.el.style.left=x+'px';d.el.style.top=y+'px';
     if(y+d.el.offsetHeight+30>c.clientHeight)c.style.height=(y+d.el.offsetHeight+30+(c.offsetHeight-c.clientHeight))+'px'};
   inn.onpointerup=e=>{
+    if(ldrag){const d=ldrag;ldrag=null;
+      if(d.moved){S.albumLines=(S.albumLines||[]).map(x=>x.id===d.l.id?Object.assign({},x,{y1:x.y1+d.dy,y2:x.y2+d.dy}):x);saveLines(0);render();return}
+      if(UI.aChalk){UI.aLineSel=d.l.id;render();const i=$('#al-label');if(i)i.focus()}else{d.g.removeAttribute('transform')}return}
     if(draw){const q=draw.q,p=draw.p;draw.ln.remove();draw=null;if(!q||Math.hypot(q.x-p.x,q.y-p.y)<24)return;
       const l={id:'l'+uid(),x1:Math.round(p.x),y1:Math.round(p.y),x2:Math.round(q.x),y2:Math.round(q.y),label:String(new Date().getFullYear())};
       S.albumLines=[...(S.albumLines||[]),l];saveLines();UI.aLineSel=l.id;render();const i=$('#al-label');if(i){i.focus();i.select()}return}
@@ -1513,7 +1524,7 @@ function initCork(){const c=$('#cork'),inn=$('#cork-in');if(!c||!inn)return;layo
       if(a){const n=Object.assign({},a,{x:Math.round(d.el.offsetLeft),y:Math.round(d.el.offsetTop),z:Date.now()});saveAlbum(n);d.el.dataset.x=n.x;d.el.dataset.y=n.y}
       const zs=[...inn.querySelectorAll('.polar')].map(p=>+p.style.zIndex||0).filter(z=>z<9999);d.el.style.zIndex=(zs.length?Math.max(...zs):0)+1;return}
     openAlbumViewer(d.id)};
-  inn.onpointercancel=()=>{if(draw){draw.ln.remove();draw=null}if(drag){drag.el.classList.remove('dragging');drag=null}};
+  inn.onpointercancel=()=>{if(ldrag){ldrag.g.removeAttribute('transform');ldrag=null}if(draw){draw.ln.remove();draw=null}if(drag){drag.el.classList.remove('dragging');drag=null}};
 }
 /* --- board export (JPG/PDF): whole board as arranged, or one year re-laid in a grid --- */
 function albumYears(){return [...new Set(S.album.map(a=>(a.date||'').slice(0,4)).filter(Boolean))].sort().reverse()}
