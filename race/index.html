@@ -136,6 +136,9 @@ const SFX=(()=>{let A=null,on=true;const last={},KEY="sfx-on";try{on=localStorag
     beep:()=>tone(880,null,.12,"square",.06),
     go:()=>{tone(660,1320,.32,"square",.07);tone(990,null,.35,"triangle",.06,.05)},
     jump:()=>tone(330,700,.13,"sine",.05),
+    bloom:()=>{tone(420,900,.22,"sine",.07);tone(900,1400,.18,"triangle",.05,.16);tone(1400,1800,.12,"sine",.04,.3)},
+    rumble:()=>{noise(1.1,.32,140);tone(60,40,1.1,"sawtooth",.05)},
+    wallup:()=>{noise(.35,.2,500);tone(110,380,.32,"square",.05);tone(380,300,.15,"square",.04,.3)},
     boost:()=>{tone(220,880,.45,"sawtooth",.045);tone(440,1760,.5,"triangle",.04,.06);tone(880,1320,.25,"square",.03,.4)},
     boing:()=>{tone(140,620,.28,"sine",.11);tone(620,300,.2,"sine",.05,.26)},
     thud:()=>{noise(.16,.3,380);tone(150,55,.2,"sine",.22)},
@@ -246,11 +249,18 @@ const OB={
 /* 🛤️ 특별 구간: 25% 좁은 길 3개 · 50% 낭떠러지와 다리 · 75% 좁아지는 길 */
 function makeZones(M){const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
   const n3L=cl(M*.05,9,30),gap=cl(M*.025,6,12),nrL=cl(M*.06,9,40);
-  return{n3:{m0:M*.25,m1:M*.25+n3L,lanes:[[.08,.24],[.42,.58],[.76,.92]],block:Math.floor(Math.random()*3)},
+  const n3m1=M*.25+n3L;
+  return{n3:{m0:M*.25,m1:n3m1,lanes:[[.08,.24],[.42,.58],[.76,.92]],block:Math.floor(Math.random()*3)},
+    // 🌺 30%: 20초마다 땅속에서 꽃이 올라와 근처 양 한 마리를 5초 동안 붙잡아요
+    fl:{m:Math.max(M*.3,n3m1+8),per:20,next:rnd(3,20),on:null},
+    // 🕳️ 60%: 30초마다 5m 폭의 땅이 1초 동안 꺼져요 (지나가던 양은 실격)
+    sk:{m0:M*.6-2.5,m1:M*.6+2.5,per:30,next:rnd(3,30),t0:-99,hit:-99},
+    // 🧱 90%: 60초마다 튕겨내는 벽이 2초 동안 솟아요 (빈틈 20%는 매번 바뀌어요)
+    wl:{m0:M*.9-2.5,m1:M*.9+2.5,per:60,next:rnd(3,60),t0:-99,g0:.4},
     cliff:{m0:M*.5-gap/2,m1:M*.5+gap/2,b0:.455,b1:.545},
     narrow:{m0:M*.75,m1:M*.75+nrL,a:.32,b:.68}}}
 function makeCourse(M,Z){const list=[];let m=rnd(10,16),id=0;const tot=Object.values(OB).reduce((a,o)=>a+o.w,0);
-  const busy=[[Z.n3.m0-10,Z.n3.m1+4],[Z.cliff.m0-14,Z.cliff.m1+5],[Z.narrow.m0-9,Z.narrow.m1+4]];
+  const busy=[[Z.n3.m0-10,Z.n3.m1+4],[Z.fl.m-8,Z.fl.m+7],[Z.cliff.m0-14,Z.cliff.m1+5],[Z.sk.m0-5,Z.sk.m1+3],[Z.narrow.m0-9,Z.narrow.m1+4],[Z.wl.m0-6,Z.wl.m1+3]];
   while(m<M-8){const bz=busy.find(([a,b])=>m>=a&&m<=b);if(bz){m=bz[1]+rnd(1,4);continue}
 let k=Math.random()*tot,type="hurdle";for(const [ty,o] of Object.entries(OB)){if((k-=o.w)<0){type=ty;break}}
     const o=OB[type],ob={id:++id,type,m};
@@ -268,7 +278,7 @@ function startRace(r){
   const sheep=[];r.people.forEach(p=>{for(let i=0;i<p.count;i++)sheep.push({owner:p.name,color:p.color,no:i+1})});
   for(let i=sheep.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[sheep[i],sheep[j]]=[sheep[j],sheep[i]]}
   const M=+SET.dist||300,D=durOf(M),n=sheep.length;
-  sheep.forEach((s,i)=>{s.lane=i;s.yf=Math.min(.95,Math.max(.05,(i+.5)/n+rnd(-.3,.3)/n));s.ty=s.yf;s.p=0;s.f=rnd(.92,1.08);s.v=0;s.tv=1/D;s.nextT=0;s.passed=new Set();s.tried=0;s.stun=0;s.jump=-9;s.jh=1;s.boost=0;s.bst=0;s.b100=0;s.done=false;s.dq=false;s.ev=null;s.hole=null;s.cool=rnd(1,3);s.leg=Math.random()*6});
+  sheep.forEach((s,i)=>{s.lane=i;s.yf=Math.min(.95,Math.max(.05,(i+.5)/n+rnd(-.3,.3)/n));s.ty=s.yf;s.p=0;s.f=1;s.v=0;s.tv=1/D;s.nextT=0;s.passed=new Set();s.tried=0;s.stun=0;s.jump=-9;s.jh=1;s.boost=0;s.bst=0;s.b100=0;s.done=false;s.dq=false;s.ev=null;s.hole=null;s.cool=rnd(1,3);s.leg=Math.random()*6});
   const Z=makeZones(M),obs=makeCourse(M,Z),clovers=[];
   R={limit:+SET.limit||0,limitStart:null,people:r.people,sheep,D,M,Z,zAnn:{},obs,clovers,t:0,last:0,fin:[],dqN:0,started:false,speed:1,over:false,camC:0,tilt:.5,zoom:1,manual:false,camMode:SET.dir==="back"?"last":"lead",tkOpen:window.innerWidth>700};
   const st=document.createElement("div");st.id="stage";st.className="stage";
@@ -324,7 +334,7 @@ function camStep(dt){if(!R||!R.W)return;if(R.manual){R.camC=Math.max(R.camMin-R.
   else{const ps=run.map(s=>s.p),p=R.camMode==="lead"?Math.max(...ps):Math.min(...ps);tx=p*R.M*R.ppm+R.W*(R.camMode==="lead"?.14:-.1)}
   tx=Math.max(R.camMin,Math.min(R.camMax,tx));R.camC+=(tx-R.camC)*Math.min(1,dt*2.2)}
 /* 🎲 돌발 상황: 먹이 먹기 · 넘어지기 · 함정 · 거꾸로 달리기 · 싸움 · 부딪힘 · 경기장 이탈(실격) */
-const EV={eat:["🌿","풀을 뜯어 먹어요"],fall:["💫","꽈당 넘어졌어요"],trap:["🕳️","함정에 빠졌어요"],back:["↩️","거꾸로 달려요"],bump:["💥","돌부리에 걸려 휘청했어요"],fight:["💢","싸워요"],dq:["🚫","경기장을 벗어났어요! 실격"],hurdle:["💥","장애물에 걸렸어요"],sleep:["💤","쿨쿨 잠들었어요"],love:["💕","눈이 맞았어요"],cliff:["😱","낭떠러지로 떨어졌어요! 실격"],magnet:["🧲","자석을 썼어요"],pulled:["🧲","자석에 끌려가요"],scared:["😨","다리 앞에서 무서워서 5초 동안 머뭇거려요"],stick:["🍯","꿀에 발이 붙었어요"]};
+const EV={flower:["🌺","꽃에 붙잡혔어요"],bounced:["🧱","벽에 튕겨났어요"],eat:["🌿","풀을 뜯어 먹어요"],fall:["💫","꽈당 넘어졌어요"],trap:["🕳️","함정에 빠졌어요"],back:["↩️","거꾸로 달려요"],bump:["💥","돌부리에 걸려 휘청했어요"],fight:["💢","싸워요"],dq:["🚫","경기장을 벗어났어요! 실격"],hurdle:["💥","장애물에 걸렸어요"],sleep:["💤","쿨쿨 잠들었어요"],love:["💕","눈이 맞았어요"],cliff:["😱","낭떠러지로 떨어졌어요! 실격"],magnet:["🧲","자석을 썼어요"],pulled:["🧲","자석에 끌려가요"],scared:["😨","다리 앞에서 무서워서 5초 동안 머뭇거려요"],stick:["🍯","꿀에 발이 붙었어요"]};
 const sName=s=>`${s.owner} #${s.no}`;
 function cast(txt){const el=$("#cast");if(!el)return;el.textContent=txt;el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash")}
 const EVS={eat:"munch",fall:"thud",hurdle:"thud",trap:"fall",back:"rewind",bump:"bonk",fight:"bonk",sleep:"snore",love:"twinkle",scared:"tremble",dq:"buzzer",cliff:"cliff"};
@@ -353,19 +363,40 @@ function maybeEvent(s,t,dt){if(s.ev||s.done||s.dq||t<s.cool||t<s.bst||s.p<.05||s
   if(type==="dq")R.dqN++;
   if(type!=="dq"&&!R.podDone&&Math.random()<.3&&useMagnet(s,t))return;
   startEv(s,type,t)}
-function step(dt){const t=R.t,base=1/R.D,M=R.M;
+function hazards(t){const Z=R.Z,M=R.M,F=Z.fl,K=Z.sk,Wl=Z.wl,live=R.sheep.length-R.dqN;
+  const act=s=>!s.done&&!s.dq&&!(t<s.bst)&&!(s.ev&&(s.ev.type==="cliff"||s.ev.type==="dq"));
+  // 🌺 꽃
+  if(t>=F.next){F.next+=F.per;const cand=R.sheep.filter(s=>act(s)&&!s.ev&&Math.abs(s.p*M-F.m)<=6);SFX.play("bloom");
+    if(cand.length){const s=cand[Math.floor(Math.random()*cand.length)];s.ev={type:"flower",start:t,until:t+5,ico:"🌺"};s.cool=t+5+rnd(1,2);F.on={t0:t,until:t+5,s};
+      cast(`🌺 땅속에서 꽃이 쑥! ${sName(s)} 양이 꽃에 5초 동안 붙잡혔어요`)}
+    else F.on={t0:t,until:t+1.3,s:null,m:F.m+rnd(-4,4),y:rnd(.12,.88)}}
+  if(F.on&&t>F.on.until+.5)F.on=null;
+  // 🕳️ 땅 꺼짐: 1.2초 흔들린 다음 1초 동안 꺼져요
+  if(t>=K.next){K.t0=K.next+1.2;K.next+=K.per;SFX.play("rumble")}
+  if(t>=K.t0&&t<K.t0+1){
+    R.sheep.forEach(s=>{if(!act(s)||(s.ev&&s.ev.sink===K.t0))return;const sm=s.p*M;if(sm<K.m0||sm>K.m1)return;s.ev=null;
+      if(R.sheep.length-R.dqN-1>=Math.max(2,SET.pod)){R.dqN++;startEv(s,"cliff",t);s.ev.ico="🕳️";s.ev.sink=K.t0;cast(`🕳️ 땅이 꺼졌어요! ${sName(s)} 양이 쏙 빠져서 실격`)}
+      else{startEv(s,"trap",t);s.ev.ico="🕳️";s.ev.sink=K.t0}})}
+  // 🧱 튕겨내는 벽
+  if(t>=Wl.next){Wl.t0=Wl.next;Wl.next+=Wl.per;Wl.g0=rnd(0,.8);SFX.play("wallup");if(R.sheep.some(s=>!s.done&&!s.dq&&Math.abs(s.p*M-Wl.m0)<40))cast("🧱 튕겨내는 벽이 솟아올랐어요! 빈틈은 한 곳뿐")}
+  if(t>=Wl.t0&&t<Wl.t0+2){const g0=Wl.g0,g1=g0+.2;
+    R.sheep.forEach(s=>{if(!act(s))return;const e=s.ev;if(e&&(e.type==="bounced"||e.wall===Wl.t0))return;const sm=s.p*M;if(sm<Wl.m0-.7||sm>Wl.m1)return;if(s.yf>g0+.015&&s.yf<g1-.015)return;
+      if(!R.podDone){s.ev={type:"bounced",start:t,until:t+1.3,from:s.p,to:Math.max(0,s.p-10/M),ico:"🧱",wall:Wl.t0};s.cool=t+2.5;SFX.play("boing");cast(`🧱 ${sName(s)} 양이 벽에 부딪혀 10m 뒤로 튕겨났어요!`)}
+      else{s.p=Math.min(s.p,(Wl.m0-.7)/M);s.ev={type:"hurdle",start:t,until:Math.max(t+.8,Wl.t0+2),ico:"🧱",wall:Wl.t0};SFX.play("thud")}})}}
+function step(dt){const t=R.t,base=1/R.D,M=R.M;hazards(t);
   R.sheep.forEach(s=>{if(s.done){if(s.p<1+14/M)s.p+=dt*base*.6;s.leg+=dt*6;return}
     if(s.dq)return;
-    if(t>=s.nextT){s.tv=base*s.f*rnd(.62,1.38);s.nextT=t+rnd(.3,.8);s.ty=Math.min(.95,Math.max(.05,s.yf+rnd(-.1,.1)))}
+    if(t>=s.nextT){s.tv=base;s.nextT=t+rnd(.3,.8);s.ty=Math.min(.95,Math.max(.05,s.yf+rnd(-.1,.1)))}
     s.yf+=(s.ty-s.yf)*Math.min(1,dt*1.5);
     const B=t<s.bst;
     if(!(s.ev&&(s.ev.type==="dq"||s.ev.type==="cliff")))zoneSteer(s,t,dt);
     maybeEvent(s,t,dt);
     if(s.ev){const e=s.ev;
       if(t>=e.until){if(e.type==="dq"||e.type==="cliff"){s.dq=true;s.ev=null;addTick(s);return}if(e.long){const sm=s.p*R.M;R.obs.forEach(o=>{if(o.m>sm)s.passed.delete(o.id)});s.tried=0;s.cool=t+2}
-      if(e.type==="magnet"||e.type==="pulled"){s.p=e.to;const sm=s.p*R.M;R.obs.forEach(o=>{if(o.m>sm)s.passed.delete(o.id);else s.passed.add(o.id)});s.tried=0}s.ev=null;s.hole=null}
-      else{if(e.type==="magnet"||e.type==="pulled"){const q=Math.min(1,(t-e.start)/(e.until-e.start)),ez=q<.5?2*q*q:1-2*(1-q)*(1-q);s.p=e.from+(e.to-e.from)*ez;s.yf+=(s.ty-s.yf)*Math.min(1,dt*3);s.leg+=dt*14;return}
-        if(e.type==="back"&&!e.c10){e.c10=true;if(Math.random()<.5&&s.p>.1){e.long=true;e.until=Infinity;e.backTo=.1;cast(`↩️ ${sName(s)} 양이 멈추지 않고 10% 지점까지 거꾸로 달려가요!`)}}
+      if(e.type==="magnet"||e.type==="pulled"||e.type==="bounced"){s.p=e.to;const sm=s.p*R.M;R.obs.forEach(o=>{if(o.m>sm)s.passed.delete(o.id);else s.passed.add(o.id)});s.tried=0}s.ev=null;s.hole=null}
+      else{if(e.type==="bounced"){const q=Math.min(1,(t-e.start)/.6);s.p=e.from+(e.to-e.from)*(1-(1-q)*(1-q));return}
+        if(e.type==="magnet"||e.type==="pulled"){const q=Math.min(1,(t-e.start)/(e.until-e.start)),ez=q<.5?2*q*q:1-2*(1-q)*(1-q);s.p=e.from+(e.to-e.from)*ez;s.yf+=(s.ty-s.yf)*Math.min(1,dt*3);s.leg+=dt*14;return}
+        
         if(e.type==="back"){if(e.long){s.p=Math.max(e.backTo,s.p-base*1.4*dt);if(s.p<=e.backTo)e.until=t}else s.p=Math.max(0,s.p-base*.55*dt);s.leg+=dt*10}else if(e.type==="dq"){s.leg+=dt*12}else if(e.type==="fight"){s.leg+=dt*16}return}}
     // 균형: 70%를 넘어 2등보다 압도적으로(거리의 10%·최소 20m) 앞서면, 한 번 60% 확률로 뒤로 500m
     if(!s.ld&&!B&&!R.podDone&&s.p>=.7&&!s.ev){const rest=R.sheep.filter(o=>o!==s&&!o.dq&&!o.done);if(rest.length){const sec=Math.max(...rest.map(o=>o.p));
@@ -394,7 +425,7 @@ function step(dt){const t=R.t,base=1/R.D,M=R.M;
   // ⏱ 제한 시간은 포디움에 오를 양(○위까지)이 다 들어온 순간부터 재요
   // ${SET.pod}착이 나오면: 제한 시간 시작 + 그때부터 뒤로 가는 일은 없어요
   if(!R.podDone&&R.fin.length>=SET.pod){R.podDone=true;
-    R.sheep.forEach(o=>{const e=o.ev;if(e&&(e.type==="back"||e.type==="magnet"||e.type==="pulled")){if(e.type!=="back")o.p=e.to;e.until=R.t;e.long=false}});
+    R.sheep.forEach(o=>{const e=o.ev;if(e&&!e.u3&&(e.type==="back"||e.type==="magnet"||e.type==="pulled"||e.type==="bounced")){if(e.type==="bounced")e.to=o.p;else if(e.type!=="back")o.p=e.to;e.until=R.t;e.long=false}});
     if(R.limit&&!R.over){R.limitStart=R.t;cast(`⏱ ${SET.pod}착이 나왔어요! 지금부터 제한 시간 ${limLabel(R.limit)} 시작! 이제 뒤로 가는 일은 없어요`)}
     else cast(`🏁 ${SET.pod}착이 나왔어요! 이제 뒤로 가는 일은 없어요`)}
   if(!R.over&&R.limit&&R.limitStart!=null&&R.t-R.limitStart>=R.limit){timeUp();return}
@@ -404,13 +435,16 @@ function zoneSteer(s,t,dt){const Z=R.Z,M=R.M,sm=s.p*M,B=t<s.bst;let rg=null,hard
   const mid=L=>(L[0]+L[1])/2,near=(lanes,skip)=>{let b=-1;lanes.forEach((L,i)=>{if(i===skip)return;if(b<0||Math.abs(mid(L)-s.yf)<Math.abs(mid(lanes[b])-s.yf))b=i});return b};
   const crash=(m0,kind)=>{s.p=Math.max(0,(m0-2.2)/M);startEv(s,"hurdle",t,null,{type:kind});s.tried=0};
   if(sm>Z.n3.m0-12&&sm<Z.n3.m1){const N=Z.n3;
-    if(s.l3==null){s.l3=Math.random()<.3?Math.floor(Math.random()*3):near(N.lanes,-1)}
+    const K3=s.k3??-1;
+    if(s.l3==null||(B&&s.l3===N.block&&sm<N.m0)){s.l3=B?near(N.lanes,N.block):Math.random()<.3?Math.floor(Math.random()*3):near(N.lanes,-1)}
+    if(s.k3===N.block&&s.l3===N.block&&!(s.ev&&s.ev.u3)){s.l3=near(N.lanes,N.block);s.zm.n3=false;s.u3ok=true}
     if(s.zm.n3==null)s.zm.n3=Math.random()<.4; // 40%는 한눈팔다 울타리에 부딪혀요
     const L=N.lanes[s.l3],inL=s.yf>=L[0]+.01&&s.yf<=L[1]-.01;
     if(!s.zm.n3||sm>=N.m0)rg=[L[0]+.025,L[1]-.025];
-    if(sm>=N.m0-.9&&sm<N.m0){if(s.l3===N.block){s.l3=near(N.lanes,N.block);s.zm.n3=false;if(!B){crash(N.m0,"gateW");return}}
-      if(!inL&&!B){crash(N.m0,"hedgeW");s.l3=near(N.lanes,N.block);s.zm.n3=false;return}}
-    hard=sm>=N.m0-.9;if(sm>=N.m0-2)ann("n3","🛤️ 좁은 길 3개! 그런데 하나는 막혀 있어요")}
+    if(sm>=N.m0-.9&&sm<N.m0&&!inL&&!B&&!s.u3ok&&!(s.ev&&s.ev.u3)){crash(N.m0,"hedgeW");s.l3=near(N.lanes,K3);s.zm.n3=false;return}
+    if(s.l3===N.block&&!s.ev&&sm>=N.m1-1.6){s.p=(N.m1-1.5)/M;startEv(s,"back",t);const e=s.ev;Object.assign(e,{u3:true,c10:true,long:true,until:Infinity,backTo:Math.max(0,(N.m0-6)/M),ico:"🚧"});s.k3=N.block;
+      SFX.play("thud");cast(`🚧 ${sName(s)} 양이 막다른 길을 만났어요! 입구로 되돌아가서 다른 길로 가요`);return}
+    hard=sm>=N.m0-.9;if(sm>=N.m0-2)ann("n3","🛤️ 좁은 길 3개! 그런데 하나는 끝이 막혀 있어요")}
   else if(sm>Z.cliff.m0-15&&sm<Z.cliff.m1+1){const C=Z.cliff;
     if(s.bok==null){s.bok=Math.random()>.18||R.sheep.length-R.dqN-1<Math.max(2,SET.pod)}if(B)s.bok=true;
     if(s.bok||(s.ev&&s.ev.type==="back")){rg=[C.b0+.012,C.b1-.012];hard=sm>=C.m0-1}
@@ -515,6 +549,8 @@ function draw(){const cv=$("#cv");if(!cv||!R||!R.W)return;const c=cv.getContext(
   R.sheep.forEach(s=>{if(s.dq&&!s.ev)return;let tv=s.yf,alpha=1,drop=0;if(s.ev&&s.ev.type==="dq"){const q=(t-s.ev.start)/(s.ev.until-s.ev.start);tv=s.yf+s.dqDir*q*.35;alpha=Math.max(0,1-q*q)}
     if(s.ev&&s.ev.type==="cliff"){const q=(t-s.ev.start)/(s.ev.until-s.ev.start);drop=q*q*rN*9;alpha=Math.max(0,1-q*1.1)}
     const [x,y]=Pt(s.p*M,tv);if(x<-rN*3||x>W+rN*3)return;const k=kOf(tv),r=rN*k;let lift=0;const js=t-s.jump;const jd=s.jh>2?.8:.42;if(js>=0&&js<jd)lift=Math.sin(Math.PI*js/jd)*(s.jh*ppm*1.8*k+r*.4);
+    if(s.ev&&s.ev.type==="bounced"){const q=(t-s.ev.start)/.6;if(q<1)lift=Math.sin(Math.PI*q)*2.2*ppm*1.8*k}
+    if(s.ev&&s.ev.type==="flower")lift=flowerUp(s.ev,t)*1.3*ppm*1.8*k;
     L.push({t:tv,f:()=>{c.globalAlpha=alpha;drawSheep(c,x,y-r*.95+drop*kOf(tv),r,s,t,lift);c.globalAlpha=1}})});
   zoneSolids(c,L,mL,mR);
   R.sheep.forEach(s=>{const e=s.ev;if(!e||e.type!=="magnet"||!e.partner)return;const o=e.partner,a=Pt(s.p*M,s.yf,1.1),b=Pt(o.p*M,o.yf,1.1);
@@ -530,11 +566,19 @@ function draw(){const cv=$("#cv");if(!cv||!R||!R.W)return;const c=cv.getContext(
   // 미니맵
   const mx=20,mw=W-40,my=H-22;c.fillStyle="rgba(255,255,255,.88)";c.beginPath();c.roundRect?c.roundRect(mx-8,my-14,mw+16,28,14):c.rect(mx-8,my-14,mw+16,28);c.fill();
   c.fillStyle="#d9ecd2";c.fillRect(mx,my-3,mw,6);R.obs.forEach(o=>{const d=OB[o.type];c.fillStyle=d.flat?(d.mc||"#9c7349"):"#c9302c";c.fillRect(mx+o.m/M*mw-1,my-(d.flat?3:6),d.flat?3:2,d.flat?6:12)});
-  {const Z=R.Z;[[Z.n3.m0,Z.n3.m1,"#3a9a3d"],[Z.cliff.m0,Z.cliff.m1,"#2a1d12"],[Z.narrow.m0,Z.narrow.m1,"#7d848b"]].forEach(([a,b,col])=>{c.fillStyle=col;c.fillRect(mx+a/M*mw,my-4,Math.max(3,(b-a)/M*mw),8)})}
+  {const Z=R.Z;[[Z.n3.m0,Z.n3.m1,"#3a9a3d"],[Z.fl.m-6,Z.fl.m+6,"#ff7eb6"],[Z.cliff.m0,Z.cliff.m1,"#2a1d12"],[Z.sk.m0,Z.sk.m1,"#6b4a2e"],[Z.narrow.m0,Z.narrow.m1,"#7d848b"],[Z.wl.m0,Z.wl.m1,"#ff5c7a"]].forEach(([a,b,col])=>{c.fillStyle=col;c.fillRect(mx+a/M*mw,my-4,Math.max(3,(b-a)/M*mw),8)})}
   c.fillStyle="#222";c.fillRect(mx+mw-2,my-8,4,16);
   const v0=(R.camC-W/2)/ppm/M,v1=(R.camC+W/2)/ppm/M;c.strokeStyle="rgba(232,80,58,.9)";c.lineWidth=2;c.strokeRect(mx+Math.max(0,v0)*mw,my-11,Math.max(6,(Math.min(1,v1)-Math.max(0,v0))*mw),22);
   R.sheep.forEach(s=>{if(s.dq)return;const px=mx+Math.min(1,s.p)*mw;c.fillStyle=s.color;c.strokeStyle="#3b2a20";c.lineWidth=1;c.beginPath();c.arc(px,my+(s.yf-.5)*8,4,0,7);c.fill();c.stroke()});
   c.textBaseline="alphabetic"}
+function flowerUp(e,t){const a=(t-(e.t0??e.start))/.45,b=(e.until-t)/.45;return Math.max(0,Math.min(1,a,b))}
+function drawBloom(c,m,y,up,front){if(up<=0)return;const k=kOf(y),h=1.3*up,[gx,gy]=Pt(m,y,0),[hx,hy]=Pt(m,y,h),pr=R.rN*k*.55*(.4+.6*up);
+  if(!front){c.strokeStyle="#2f8a33";c.lineWidth=Math.max(3,R.rN*k*.16);c.lineCap="round";c.beginPath();c.moveTo(gx,gy);c.quadraticCurveTo(gx-pr*.5,(gy+hy)/2,hx,hy);c.stroke();
+    c.fillStyle="#4fae4a";[[-1,.55],[1,.35]].forEach(([d,q])=>{c.beginPath();c.ellipse(gx+d*pr*.55,gy-(gy-hy)*q,pr*.5,pr*.2,d*.5,0,7);c.fill()});
+    c.fillStyle="#3a2a1a";c.beginPath();c.ellipse(gx,gy,pr*1.1,pr*.3,0,0,7);c.fill();
+    for(let i=0;i<6;i++){const a=Math.PI+i/5*Math.PI;c.fillStyle=i%2?"#ff7eb6":"#ff9fd0";c.beginPath();c.ellipse(hx+Math.cos(a)*pr*1.1,hy+Math.sin(a)*pr*.55,pr*.62,pr*.38,a,0,7);c.fill()}}
+  else{for(let i=0;i<5;i++){const a=i/4*Math.PI;c.fillStyle=i%2?"#ff5fa2":"#ff86bd";c.strokeStyle="#c2357a";c.lineWidth=1.5;c.beginPath();c.ellipse(hx+Math.cos(a)*pr*1.05,hy+Math.sin(a)*pr*.35,pr*.6,pr*.34,a,0,7);c.fill();c.stroke()}
+    c.fillStyle="#ffd23f";c.beginPath();c.ellipse(hx,hy+pr*.2,pr*.35,pr*.16,0,0,7);c.fill()}}
 function drawFlat(c,o,x,y,rx,ry){const T=o.type;
   if(T==="pit"){c.fillStyle="#2a1d12";c.beginPath();c.ellipse(x,y,rx,ry,0,0,7);c.fill();c.fillStyle="#4a3424";c.beginPath();c.ellipse(x,y+ry*.25,rx*.8,ry*.55,0,0,7);c.fill();
     c.strokeStyle="#c9a35a";c.lineWidth=2;for(let i=0;i<9;i++){const a=i/9*Math.PI*2;c.beginPath();c.moveTo(x+Math.cos(a)*rx*.95,y+Math.sin(a)*ry*.95);c.lineTo(x+Math.cos(a+.5)*rx*.55,y+Math.sin(a+.5)*ry*.55);c.stroke()}return}
@@ -566,25 +610,38 @@ function zoneGround(c,mL,mR){const Z=R.Z,C=Z.cliff;
     poly(c,[Pt(C.m0-.6,C.b0),Pt(C.m1+.6,C.b0),Pt(C.m1+.6,C.b1),Pt(C.m0-.6,C.b1)],"#c08a52","#7a4b22",2);
     poly(c,[Pt(C.m0,C.b1,0),Pt(C.m1,C.b1,0),Pt(C.m1,C.b1,-.35),Pt(C.m0,C.b1,-.35)],"#6b4a2e");
     c.strokeStyle="rgba(90,55,25,.7)";c.lineWidth=1.5;for(let m=C.m0-.4;m<C.m1+.6;m+=.55){const a=Pt(m,C.b0),b=Pt(m,C.b1);c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke()}}
+  {const F=Z.fl;if(F.m+7>mL&&F.m-7<mR){poly(c,[Pt(F.m-6,-.04),Pt(F.m+6,-.04),Pt(F.m+6,1.04),Pt(F.m-6,1.04)],"rgba(140,95,55,.22)");
+    for(let i=0;i<14;i++){const mm=F.m-5.5+((i*7.3)%11),yy=.06+((i*.37)%.9),[x,y]=Pt(mm,yy),q=Math.max(2,R.rN*kOf(yy)*.12);c.fillStyle="#2f8a33";c.beginPath();c.ellipse(x-q*.5,y-q*.4,q*.6,q*.3,-.6,0,7);c.ellipse(x+q*.5,y-q*.4,q*.6,q*.3,.6,0,7);c.fill()}}}
+  {const K=Z.sk,t=R.t;if(K.m1>mL&&K.m0<mR){const warn=t>=K.t0-1.2&&t<K.t0,open=t>=K.t0&&t<K.t0+1,sh=warn?Math.sin(t*60)*.12:0;
+    if(open){const g=c.createLinearGradient(0,Yt(-.08),0,Yt(1.08));g.addColorStop(0,"#120c08");g.addColorStop(1,"#2e2016");poly(c,[Pt(K.m0,-.08),Pt(K.m1,-.08),Pt(K.m1,1.08),Pt(K.m0,1.08)],g);
+      poly(c,[Pt(K.m1,-.08),Pt(K.m1,1.08),Pt(K.m1,1.08,-.8),Pt(K.m1,-.08,-.8)],"#6b4a2e")}
+    else{poly(c,[Pt(K.m0+sh,-.08),Pt(K.m1+sh,-.08),Pt(K.m1+sh,1.08),Pt(K.m0+sh,1.08)],warn?"rgba(120,80,40,.5)":"rgba(150,110,70,.25)");
+      c.strokeStyle=warn?"rgba(50,30,15,.8)":"rgba(80,55,30,.4)";c.lineWidth=warn?2.5:1.5;for(let i=0;i<6;i++){const y0=-.02+i*.18,a=Pt(K.m0+.4+sh,y0),b=Pt((K.m0+K.m1)/2+sh,y0+.08),d=Pt(K.m1-.4+sh,y0+.02);c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.lineTo(d[0],d[1]);c.stroke()}}}}
+  {const Wl=Z.wl;if(Wl.m1>mL&&Wl.m0<mR){c.strokeStyle="rgba(232,74,104,.45)";c.lineWidth=2;c.setLineDash([6,6]);[Wl.m0,Wl.m1].forEach(m=>{const a=Pt(m,-.08),b=Pt(m,1.08);c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke()});c.setLineDash([])}}
   // 구간 바닥 표시
   [[Z.n3.m0,"#e8d8a8"],[Z.narrow.m0,"#d9c8a0"]].forEach(([m0])=>{});
 }
 function zoneSolids(c,L,mL,mR){const Z=R.Z,vis=(a,b)=>b>mL-2&&a<mR+2;
   const N=Z.n3;if(vis(N.m0,N.m1)){const bl=[[-.08,N.lanes[0][0]],[N.lanes[0][1],N.lanes[1][0]],[N.lanes[1][1],N.lanes[2][0]],[N.lanes[2][1],1.08]];
     bl.forEach(([a,b])=>L.push({t:b,f:()=>hedge(c,N.m0,N.m1,a,b)}));
-    const BL=N.lanes[N.block];L.push({t:BL[1],f:()=>{box3(c,N.m0,N.m0+.7,BL[0],BL[1],.75,"#f2f2f2","#d6352e","#c22f29");
-      c.strokeStyle="#fff";c.lineWidth=Math.max(2,4*kOf(BL[1]));for(let q=.15;q<1;q+=.3){const a=Pt(N.m0,BL[1],.75*q),b=Pt(N.m0+.7,BL[1],.75*Math.min(1,q+.25));c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke()}
-      const [x,y]=Pt(N.m0+.35,(BL[0]+BL[1])/2,1.3);c.font=`${Math.max(14,22*kOf(BL[1]))}px sans-serif`;c.textAlign="center";c.textBaseline="middle";c.fillText("⛔",x,y)}})}
+    const BL=N.lanes[N.block],G0=N.m1-.7;L.push({t:BL[1],f:()=>{box3(c,G0,G0+.7,BL[0],BL[1],.75,"#f2f2f2","#d6352e","#c22f29");
+      c.strokeStyle="#fff";c.lineWidth=Math.max(2,4*kOf(BL[1]));for(let q=.15;q<1;q+=.3){const a=Pt(G0,BL[1],.75*q),b=Pt(G0+.7,BL[1],.75*Math.min(1,q+.25));c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke()}
+      const [x,y]=Pt(G0+.35,(BL[0]+BL[1])/2,1.3);c.font=`${Math.max(14,22*kOf(BL[1]))}px sans-serif`;c.textAlign="center";c.textBaseline="middle";c.fillText("⛔",x,y)}})}
   const W=Z.narrow;if(vis(W.m0,W.m1)){[[-.08,W.a],[W.b,1.08]].forEach(([a,b])=>L.push({t:b,f:()=>rockwall(c,W.m0,W.m1,a,b)}))}
   const C=Z.cliff;if(vis(C.m0-1,C.m1+1)){[C.b0,C.b1].forEach(tt=>L.push({t:tt+.0005,f:()=>{c.strokeStyle="#7a4b22";c.lineWidth=Math.max(2,4*kOf(tt));c.lineCap="round";
       const ps=[];for(let m=C.m0-.6;m<=C.m1+.61;m+=(C.m1-C.m0+1.2)/5){const a=Pt(m,tt,0),b=Pt(m,tt,.9);c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke();ps.push(b)}
       c.strokeStyle="#d9b37a";c.lineWidth=Math.max(1.5,2.5*kOf(tt));c.beginPath();ps.forEach((b,i)=>{if(!i){c.moveTo(b[0],b[1]);return}const a=ps[i-1];c.quadraticCurveTo((a[0]+b[0])/2,(a[1]+b[1])/2+6*kOf(tt),b[0],b[1])});c.stroke()}}))}
+  {const F=Z.fl,o=F.on,t=R.t;if(o){if(o.s){const s=o.s,e=s.ev&&s.ev.type==="flower"?s.ev:{start:o.t0,until:o.until},up=flowerUp(e,t),m=s.p*R.M;if(m>mL-4&&m<mR+4){L.push({t:s.yf-.0006,f:()=>drawBloom(c,m,s.yf,up,false)});L.push({t:s.yf+.0006,f:()=>drawBloom(c,m,s.yf,up,true)})}}
+    else if(o.m>mL-4&&o.m<mR+4){const up=flowerUp({start:o.t0,until:o.until},t);L.push({t:o.y,f:()=>{drawBloom(c,o.m,o.y,up,false);drawBloom(c,o.m,o.y,up,true)}})}}}
+  {const Wl=Z.wl,t=R.t,a=t-Wl.t0;if(a>=0&&a<2.3&&Wl.m1>mL-2&&Wl.m0<mR+2){const up=Math.max(0,Math.min(1,a/.25,(2.3-a)/.3)),h=1.4*up,g0=Wl.g0,g1=g0+.2;
+    [[-.08,g0],[g1,1.08]].forEach(([a0,b0])=>{if(b0-a0<.01)return;L.push({t:b0,f:()=>{box3(c,Wl.m0,Wl.m1,a0,b0,h,"#ffb3c1","#ff5c7a","#e84a68");
+      c.strokeStyle="rgba(255,255,255,.7)";c.lineWidth=Math.max(2,4*kOf(b0));for(let m=Wl.m0+.6;m<Wl.m1;m+=1.2){const p=Pt(m,b0,h*.2),q=Pt(m+.5,b0,h*.85);c.beginPath();c.moveTo(p[0],p[1]);c.lineTo(q[0],q[1]);c.stroke()}}})})}}
   // 구간 안내 표지판 (먼 쪽 울타리)
-  [[Z.n3.m0-3,"⚠️ 좁은 길 3개"],[C.m0-4,"⚠️ 낭떠러지! 다리로"],[W.m0-3,"⚠️ 길이 좁아져요"]].forEach(([m,txt])=>{if(m<mL||m>mR)return;
+  [[Z.n3.m0-3,"⚠️ 좁은 길 3개"],[Z.fl.m-7,"🌺 꽃이 양을 잡아요"],[C.m0-4,"⚠️ 낭떠러지! 다리로"],[Z.sk.m0-3,"🕳️ 땅이 꺼져요"],[W.m0-3,"⚠️ 길이 좁아져요"],[Z.wl.m0-3,"🧱 튕겨내는 벽"]].forEach(([m,txt])=>{if(m<mL||m>mR)return;
     L.push({t:-.09,f:()=>{const [x,y]=Pt(m,-.08,0),[,yt]=Pt(m,-.08,1.9);c.fillStyle="#7a4b22";c.fillRect(x-2,yt,4,y-yt);c.font="15px Jua, sans-serif";const w=c.measureText(txt).width+16;
       c.fillStyle="#ffd84d";c.strokeStyle="#3b2a20";c.lineWidth=2;c.beginPath();c.roundRect?c.roundRect(x-w/2,yt-24,w,24,7):c.rect(x-w/2,yt-24,w,24);c.fill();c.stroke();c.fillStyle="#3b2a20";c.textAlign="center";c.textBaseline="middle";c.fillText(txt,x,yt-11.5)}})})}
 function shade(hex,k){const n=parseInt(hex.slice(1),16);const f=v=>Math.max(0,Math.min(255,Math.round(v*k)));return `rgb(${f(n>>16)},${f(n>>8&255)},${f(n&255)})`}
-function drawSheep(c,x,y,R0,s,t,lift){lift=lift||0;const ev=s.ev&&s.ev.type,r=R0*(ev==="trap"?.75:1),dizzy=ev==="fall"||ev==="hurdle"||ev==="bump"||ev==="trap";
+function drawSheep(c,x,y,R0,s,t,lift){lift=lift||0;const ev=s.ev&&s.ev.type,r=R0*(ev==="trap"?.75:1),dizzy=ev==="fall"||ev==="hurdle"||ev==="bump"||ev==="trap"||ev==="bounced";
   const faceBack=ev==="back"||((ev==="love"||ev==="fight")&&s.ev.partner&&s.ev.partner.p<s.p);
   const running=!ev&&!s.done&&!(s.dq);if(ev==="trap")y+=r*.5;if(ev==="fight"||ev==="scared")x+=Math.sin(t*40)*r*.18;
   const bob=running||s.done?-Math.abs(Math.sin(s.leg))*r*.12:0;
