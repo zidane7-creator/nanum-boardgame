@@ -62,8 +62,8 @@ button.on{background:#fdba4d;color:#2b2118}
 @keyframes pop{50%{transform:scale(1.25)}}
 #board{position:relative;width:100%;margin-top:8px}
 #bsizer{position:relative}#bscale{transform-origin:0 0}
-#bview{position:relative;overflow:auto;touch-action:pan-x pan-y;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
-#bview.zoomed{max-height:calc(100vh - 120px);border-radius:14px;outline:2px dashed rgba(43,33,24,.25);outline-offset:2px}
+#bview{position:relative;overflow:hidden;touch-action:pan-y}
+#bview.zoomed{border-radius:14px;cursor:grab;touch-action:none}#bview.grab{cursor:grabbing}
 #zbar{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:12;display:flex;align-items:center;gap:4px;background:rgba(255,250,240,.95);border:2px solid #2b2118;border-radius:999px;padding:3px 6px;box-shadow:0 3px 0 rgba(0,0,0,.25)}
 #zbar button{width:34px;height:34px;padding:0;border-radius:50%;font-size:18px;line-height:1;box-shadow:none}
 #zbar #zlab{min-width:3.2em;text-align:center;font-size:14px}
@@ -169,25 +169,34 @@ function renderOrder(el,arr,onChange,editable){el.innerHTML="";const l=document.
  s.onclick=()=>{const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}onChange(a)};
  el.appendChild(l);if(arr.length>1)el.appendChild(s)}
 function renderSetOrder(){renderOrder($("ord"),order,a=>{if(busy)return;order=a;oi=order.indexOf(turn);renderSetOrder()})}
-function scrollToPawn(k){const p=xy(pos[k]),r=board.getBoundingClientRect(),v=document.getElementById("bview");
-  if(BZ>1){const vr=v.getBoundingClientRect();v.scrollTo({left:v.scrollLeft+r.left-vr.left+p[0]/100*r.width-v.clientWidth/2,top:v.scrollTop+r.top-vr.top+p[1]/100*r.height-v.clientHeight*.55,behavior:"smooth"});return}
-  window.scrollTo({top:scrollY+r.top+p[1]/100*r.height-innerHeight*.62,behavior:"smooth"})}
-/* 🔍 보드판 확대·축소: 버튼, Ctrl+마우스 휠, 두 손가락 벌리기 (이 기기에 기억) */
-let BZ=1;try{BZ=Math.max(1,Math.min(3,+localStorage.getItem("board-zoom")||1))}catch(e){}
-function setBZ(z,cx,cy){const v=document.getElementById("bview"),sz=document.getElementById("bsizer"),sc=document.getElementById("bscale"),old=BZ;z=Math.max(1,Math.min(3,Math.round(z*100)/100));if(z<1.04)z=1;
-  const vr=v.getBoundingClientRect();cx=cx??vr.left+v.clientWidth/2;cy=cy??vr.top+v.clientHeight/2;const fx=(v.scrollLeft+cx-vr.left)/old,fy=(v.scrollTop+cy-vr.top)/old;
-  BZ=z;v.classList.toggle("zoomed",z>1);document.getElementById("zlab").textContent=Math.round(z*100)+"%";
-  if(z===1){sc.style.transform="";sc.style.width="";sz.style.width="";sz.style.height=""}
-  else{const base=v.clientWidth;sc.style.width=base+"px";sc.style.transform="scale("+z+")";const h=sc.offsetHeight;sz.style.width=base*z+"px";sz.style.height=h*z+"px";v.scrollLeft=fx*z-(cx-vr.left);v.scrollTop=fy*z-(cy-vr.top)}
-  try{localStorage.setItem("board-zoom",z)}catch(e){}}
-addEventListener("resize",()=>{if(BZ>1){const z=BZ;BZ=1;setBZ(1);setBZ(z)}});
-(()=>{const v=document.getElementById("bview");
+/* 🔍 보드판 확대·축소: 판 크기는 그대로 두고 안쪽만 커져요 (스크롤 대신 끌어서 옮기기) */
+let BZ=1,TX=0,TY=0;try{BZ=Math.max(1,Math.min(3,+localStorage.getItem("board-zoom")||1))}catch(e){}
+const BV=()=>document.getElementById("bview"),BS=()=>document.getElementById("bscale");
+function clampT(){const v=BV(),w=v.clientWidth,h=v.clientHeight;TX=Math.min(0,Math.max(w*(1-BZ),TX));TY=Math.min(0,Math.max(h*(1-BZ),TY))}
+function applyT(anim){const sc=BS();sc.style.transition=anim?"transform .35s ease":"none";sc.style.transform=BZ>1?`translate(${TX}px,${TY}px) scale(${BZ})`:"";BV().classList.toggle("zoomed",BZ>1);document.getElementById("zlab").textContent=Math.round(BZ*100)+"%"}
+function setBZ(z,cx,cy){const v=BV(),r=v.getBoundingClientRect(),old=BZ;z=Math.max(1,Math.min(3,Math.round(z*100)/100));if(z<1.04)z=1;
+  const px=(cx??r.left+r.width/2)-r.left,py=(cy??r.top+Math.min(r.height,innerHeight)/2)-r.top;
+  TX=px-(px-TX)*z/old;TY=py-(py-TY)*z/old;BZ=z;if(z===1){TX=0;TY=0}clampT();applyT(false);try{localStorage.setItem("board-zoom",z)}catch(e){}}
+function scrollToPawn(k){const p=xy(pos[k]),v=BV();
+  if(BZ>1){const w=v.clientWidth,h=v.clientHeight,vis=Math.min(h,innerHeight*.8);TX=w/2-p[0]/100*w*BZ;TY=vis*.5-p[1]/100*h*BZ;
+    const r=v.getBoundingClientRect();if(r.top<0||r.top>innerHeight*.3)window.scrollTo({top:scrollY+r.top-70,behavior:"smooth"});clampT();applyT(true);return}
+  const r=board.getBoundingClientRect();window.scrollTo({top:scrollY+r.top+p[1]/100*r.height-innerHeight*.62,behavior:"smooth"})}
+addEventListener("resize",()=>{clampT();applyT(false)});
+(()=>{const v=BV();
   document.getElementById("zin").onclick=()=>setBZ(BZ+.25);document.getElementById("zout").onclick=()=>setBZ(BZ-.25);document.getElementById("zfit").onclick=()=>setBZ(1);
   v.addEventListener("wheel",e=>{if(!e.ctrlKey)return;e.preventDefault();setBZ(BZ*(e.deltaY<0?1.1:1/1.1),e.clientX,e.clientY)},{passive:false});
-  let pin=null;const dist=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
-  v.addEventListener("touchstart",e=>{if(e.touches.length===2)pin={d:dist(e.touches),z:BZ}},{passive:true});
-  v.addEventListener("touchmove",e=>{if(pin&&e.touches.length===2){e.preventDefault();const t=e.touches;setBZ(pin.z*dist(t)/pin.d,(t[0].clientX+t[1].clientX)/2,(t[0].clientY+t[1].clientY)/2)}},{passive:false});
-  v.addEventListener("touchend",e=>{if(e.touches.length<2)pin=null});
+  // 끌어서 옮기기 (크게 봤을 때만)
+  let dr=null;
+  v.addEventListener("pointerdown",e=>{if(BZ<=1||e.pointerType==="touch")return;dr={x:e.clientX,y:e.clientY,tx:TX,ty:TY};try{v.setPointerCapture(e.pointerId)}catch(_){}v.classList.add("grab")});
+  v.addEventListener("pointermove",e=>{if(!dr)return;TX=dr.tx+e.clientX-dr.x;TY=dr.ty+e.clientY-dr.y;clampT();applyT(false)});
+  const end=()=>{dr=null;v.classList.remove("grab")};v.addEventListener("pointerup",end);v.addEventListener("pointercancel",end);
+  // 휴대폰: 한 손가락으로 옮기고, 두 손가락으로 벌려 확대
+  let pin=null,one=null;const dist=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
+  v.addEventListener("touchstart",e=>{if(e.touches.length===2){pin={d:dist(e.touches),z:BZ};one=null}else if(e.touches.length===1&&BZ>1)one={x:e.touches[0].clientX,y:e.touches[0].clientY,tx:TX,ty:TY}},{passive:true});
+  v.addEventListener("touchmove",e=>{const t=e.touches;
+    if(pin&&t.length===2){e.preventDefault();setBZ(pin.z*dist(t)/pin.d,(t[0].clientX+t[1].clientX)/2,(t[0].clientY+t[1].clientY)/2);return}
+    if(one&&t.length===1&&BZ>1){e.preventDefault();TX=one.tx+t[0].clientX-one.x;TY=one.ty+t[0].clientY-one.y;clampT();applyT(false)}},{passive:false});
+  v.addEventListener("touchend",e=>{if(e.touches.length<2)pin=null;if(!e.touches.length)one=null});
   setBZ(BZ)})();
 // ---- sound effects (synthesized, no files) ----
 let AC=null,sfxVol=.7,bgmVol=.4;
