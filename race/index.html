@@ -407,6 +407,9 @@ function step(dt){const t=R.t,base=1/R.D,M=R.M;hazards(t);
       if((s.p-sec)*M>=Math.max(20,M*.1)){s.ld=true;if(Math.random()<.6){startEv(s,"back",t);s.ev.long=true;s.ev.until=Infinity;s.ev.backTo=Math.max(0,s.p-500/M);cast(`🌀 ${sName(s)} 양이 너무 앞서 나가다 정신이 쏙 빠져서 뒤로 500m를 달려가요!`);return}}}}
     // 남은 거리가 20%가 되는 순간, 30% 확률로 경기장 이탈(실격)
     if(!s.chk80&&!B&&s.p>=.8){s.chk80=true;if(Math.random()<.3&&R.sheep.length-R.dqN-1>=Math.max(2,SET.pod)){R.dqN++;startEv(s,"dq",t);cast(`🚫 결승선 앞에서 ${sName(s)} 양이 경기장을 벗어났어요! 실격`);return}}
+    // 💤 결승선 바로 앞(4m)에서 40% 확률로 잠들어 경주가 끝날 때까지 못 들어와요
+    if(!s.chkEnd&&s.p*M>=M-4){s.chkEnd=true;if(!B&&Math.random()<.4&&R.sheep.length-R.dqN-1>=Math.max(2,SET.pod)){
+      R.dqN++;s.dq=true;s.dqWhy="sleep";s.ev={type:"sleep",start:t,until:Infinity};SFX.play("snore");cast(`💤 결승선 바로 앞에서 ${sName(s)} 양이 잠들어 버렸어요! 경주가 끝날 때까지 쿨쿨`);addTick(s);return}}
     s.v+=(s.tv-s.v)*Math.min(1,dt*3);let v=s.v;const sm=s.p*M;
     if(!B)for(const o of R.obs){const d=OB[o.type];if(!d.flat||Math.abs(sm-o.m)>=o.len/2||s.yf<=o.t0||s.yf>=o.t1)continue;
       if(d.trig&&!s.passed.has(o.id)){s.passed.add(o.id);if(Math.random()<d.chance){
@@ -479,7 +482,7 @@ function timeUp(){SFX.play("buzzer");const left=R.sheep.filter(s=>!s.done&&!s.dq
   setTimeout(()=>{if(R&&R.over)showResult()},2200)}
 function addTick(s){if(!s.dq)SFX.play(s.rank===1?"fanfare":"ding");const tk=$("#tk");if(!tk)return;const d=document.createElement("div");d.className="tk";
   const tc=$("#tkc");if(tc)tc.textContent=`${R.fin.length+R.dqN}/${R.sheep.length}`;
-  d.innerHTML=`<span class="n">${s.dq?"🚫":s.rank+"착"}</span>${sheepSVG(s.color,24)}<span>${esc(s.owner)}</span><span class="hint">#${s.no}${s.dq?" 실격":""}</span>`;tk.appendChild(d);
+  d.innerHTML=`<span class="n">${s.dq?(s.dqWhy==="sleep"?"💤":"🚫"):s.rank+"착"}</span>${sheepSVG(s.color,24)}<span>${esc(s.owner)}</span><span class="hint">#${s.no}${s.dq?(s.dqWhy==="sleep"?" 잠듦":" 실격"):""}</span>`;tk.appendChild(d);
   const box=tk.parentElement;box.scrollTop=box.scrollHeight}
 /* ---------- 그리기 ---------- */
 function poly(c,pts,fill,stroke,lw){c.beginPath();pts.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();if(fill){c.fillStyle=fill;c.fill()}if(stroke){c.strokeStyle=stroke;c.lineWidth=lw||1;c.stroke()}}
@@ -719,7 +722,7 @@ function showResult(){if(!R)return;SFX.play("fanfare");const fin=R.fin,people=R.
     <div class="row" style="justify-content:center;margin-top:14px"><button class="pri" id="again">🔁 같은 설정으로 다시</button><button id="setup">⚙️ 설정 바꾸기</button><button id="copy">📋 결과 복사</button></div></div>
   <div class="card"><h2>📋 상품 받는 사람</h2><div class="plist">${picks.map(r=>`<div class="prow"><span class="rk">${r.place}위</span>${lab(r)}<span class="pz">${esc(pz(r.place-1))||"—"}</span></div>`).join("")}</div></div>
   <details class="card"><summary class="j" style="cursor:pointer;font-size:19px">전체 순위 보기 (도착 ${ranked.length}마리${dqs.length?` · 실격 ${dqs.length}마리${dqs.some(x=>x.dqWhy==="time")?` (시간 초과 ${dqs.filter(x=>x.dqWhy==="time").length})`:""}`:""})</summary>
-    <table class="all"><thead><tr><th>순위</th><th>양</th><th>도착</th><th></th></tr></thead><tbody>${ranked.concat(dqs.map(s=>({s,dq:true}))).map(r=>`<tr class="${r.place?"win":""}"><td>${r.dq?"실격":r.rank+"위"}</td><td><span class="row" style="gap:6px">${sheepSVG(r.s.color,22)}${esc(r.s.owner)} <span class="hint">#${r.s.no}</span></span></td><td>${r.dq?(r.s.dqWhy==="time"?"⏰ 시간 초과":"🚫"):r.s.rank+"착"}</td><td class="x">${r.place?`🏆 ${r.place}위${pz(r.place-1)?" · "+esc(pz(r.place-1)):""}`:r.skip?"중복이라 제외":""}</td></tr>`).join("")}</tbody></table></details>`;
+    <table class="all"><thead><tr><th>순위</th><th>양</th><th>도착</th><th></th></tr></thead><tbody>${ranked.concat(dqs.map(s=>({s,dq:true}))).map(r=>`<tr class="${r.place?"win":""}"><td>${r.dq?(r.s.dqWhy==="sleep"?"잠듦":"실격"):r.rank+"위"}</td><td><span class="row" style="gap:6px">${sheepSVG(r.s.color,22)}${esc(r.s.owner)} <span class="hint">#${r.s.no}</span></span></td><td>${r.dq?(r.s.dqWhy==="time"?"⏰ 시간 초과":r.s.dqWhy==="sleep"?"💤 결승선 앞에서 잠듦":"🚫"):r.s.rank+"착"}</td><td class="x">${r.place?`🏆 ${r.place}위${pz(r.place-1)?" · "+esc(pz(r.place-1)):""}`:r.skip?"중복이라 제외":""}</td></tr>`).join("")}</tbody></table></details>`;
   window.scrollTo(0,0);confetti();
   const text=`[🐑 양 달리기 결과]\n${SET.dir==="back"?"뒤에서부터":"앞에서부터"} · ${SET.pod}위까지${SET.dedup?" · 중복 제거":""}\n\n`+picks.map(r=>`${r.place}위 ${r.s.owner}${pz(r.place-1)?" "+pz(r.place-1):""}`).join("\n");
   $("#again").onclick=()=>startRace({people,total:people.reduce((a,p)=>a+p.count,0)});
