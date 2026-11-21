@@ -63,7 +63,7 @@ button.on{background:#fdba4d;color:#2b2118}
 #board{position:relative;width:100%;margin-top:8px}
 #bsizer{position:relative}#bscale{transform-origin:0 0}
 #bview{position:relative;overflow:hidden;touch-action:pan-y}
-#bview.zoomed{border-radius:14px;cursor:grab;touch-action:none}#bview.grab{cursor:grabbing}
+#bview.zoomed{cursor:grab;touch-action:none}body.bzoom .wrap{overflow-x:visible}body.bzoom{overflow-x:hidden}#bview.grab{cursor:grabbing}
 #zbar{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:12;display:flex;align-items:center;gap:4px;background:rgba(255,250,240,.95);border:2px solid #2b2118;border-radius:999px;padding:3px 6px;box-shadow:0 3px 0 rgba(0,0,0,.25)}
 #zbar button{width:34px;height:34px;padding:0;border-radius:50%;font-size:18px;line-height:1;box-shadow:none}
 #zbar #zlab{min-width:3.2em;text-align:center;font-size:14px}
@@ -172,16 +172,26 @@ function renderSetOrder(){renderOrder($("ord"),order,a=>{if(busy)return;order=a;
 /* 🔍 보드판 확대·축소: 판 크기는 그대로 두고 안쪽만 커져요 (스크롤 대신 끌어서 옮기기) */
 let BZ=1,TX=0,TY=0;try{BZ=Math.max(1,Math.min(3,+localStorage.getItem("board-zoom")||1))}catch(e){}
 const BV=()=>document.getElementById("bview"),BS=()=>document.getElementById("bscale");
-function clampT(){const v=BV(),w=v.clientWidth,h=v.clientHeight;TX=Math.min(0,Math.max(w*(1-BZ),TX));TY=Math.min(0,Math.max(h*(1-BZ),TY))}
+/* 크게 볼 때는 보드 영역을 화면 양옆 끝까지 넓혀요 (판 자체 크기 CW는 그대로) */
+let CW=0;
+function baseL(){const w=document.querySelector(".wrap"),cs=getComputedStyle(w);return w.getBoundingClientRect().left+parseFloat(cs.paddingLeft)}
+function baseW(){const w=document.querySelector(".wrap"),cs=getComputedStyle(w);return w.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight)}
+function widen(on){const v=BV(),sc=BS();document.body.classList.toggle("bzoom",on);
+  if(on){CW=baseW();sc.style.width=CW+"px";const vw=document.documentElement.clientWidth;v.style.width=vw+"px";v.style.marginLeft=(-baseL())+"px"}
+  else{sc.style.width="";v.style.width="";v.style.marginLeft="";CW=0}}
+function clampT(){if(BZ<=1){TX=0;TY=0;return}const v=BV(),vw=v.clientWidth,h=v.clientHeight,cw=CW*BZ;
+  TX=cw<=vw?(vw-cw)/2:Math.min(0,Math.max(vw-cw,TX));TY=Math.min(0,Math.max(h*(1-BZ),TY))}
 function applyT(anim){const sc=BS();sc.style.transition=anim?"transform .35s ease":"none";sc.style.transform=BZ>1?`translate(${TX}px,${TY}px) scale(${BZ})`:"";BV().classList.toggle("zoomed",BZ>1);document.getElementById("zlab").textContent=Math.round(BZ*100)+"%"}
-function setBZ(z,cx,cy){const v=BV(),r=v.getBoundingClientRect(),old=BZ;z=Math.max(1,Math.min(3,Math.round(z*100)/100));if(z<1.04)z=1;
-  const px=(cx??r.left+r.width/2)-r.left,py=(cy??r.top+Math.min(r.height,innerHeight)/2)-r.top;
-  TX=px-(px-TX)*z/old;TY=py-(py-TY)*z/old;BZ=z;if(z===1){TX=0;TY=0}clampT();applyT(false);try{localStorage.setItem("board-zoom",z)}catch(e){}}
+function setBZ(z,cx,cy){const old=BZ;z=Math.max(1,Math.min(3,Math.round(z*100)/100));if(z<1.04)z=1;
+  if(z>1&&!CW){const l0=baseL();widen(true);TX=l0;TY=0}
+  const v=BV(),r=v.getBoundingClientRect();
+  const px=(cx??innerWidth/2)-r.left,py=(cy??r.top+Math.min(r.height,innerHeight)/2)-r.top;
+  TX=px-(px-TX)*z/old;TY=py-(py-TY)*z/old;BZ=z;if(z===1){widen(false);TX=0;TY=0}clampT();applyT(false);try{localStorage.setItem("board-zoom",z)}catch(e){}}
 function scrollToPawn(k){const p=xy(pos[k]),v=BV();
-  if(BZ>1){const w=v.clientWidth,h=v.clientHeight,vis=Math.min(h,innerHeight*.8);TX=w/2-p[0]/100*w*BZ;TY=vis*.5-p[1]/100*h*BZ;
+  if(BZ>1){const w=v.clientWidth,h=v.clientHeight,vis=Math.min(h,innerHeight*.8);TX=w/2-p[0]/100*CW*BZ;TY=vis*.5-p[1]/100*h*BZ;
     const r=v.getBoundingClientRect();if(r.top<0||r.top>innerHeight*.3)window.scrollTo({top:scrollY+r.top-70,behavior:"smooth"});clampT();applyT(true);return}
   const r=board.getBoundingClientRect();window.scrollTo({top:scrollY+r.top+p[1]/100*r.height-innerHeight*.62,behavior:"smooth"})}
-addEventListener("resize",()=>{clampT();applyT(false)});
+addEventListener("resize",()=>{if(BZ>1){const fx=(BV().clientWidth/2-TX)/(CW*BZ);widen(false);widen(true);TX=BV().clientWidth/2-fx*CW*BZ}clampT();applyT(false)});
 (()=>{const v=BV();
   document.getElementById("zin").onclick=()=>setBZ(BZ+.25);document.getElementById("zout").onclick=()=>setBZ(BZ-.25);document.getElementById("zfit").onclick=()=>setBZ(1);
   v.addEventListener("wheel",e=>{if(!e.ctrlKey)return;e.preventDefault();setBZ(BZ*(e.deltaY<0?1.1:1/1.1),e.clientX,e.clientY)},{passive:false});
