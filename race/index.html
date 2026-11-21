@@ -251,12 +251,12 @@ function makeZones(M){const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
   const n3L=cl(M*.05,9,30),gap=cl(M*.025,6,12),nrL=cl(M*.06,9,40);
   const n3m1=M*.25+n3L;
   return{n3:{m0:M*.25,m1:n3m1,lanes:[[.08,.24],[.42,.58],[.76,.92]],block:Math.floor(Math.random()*3)},
-    // 🌺 30%: 20초마다 땅속에서 꽃이 올라와 근처 양 한 마리를 5초 동안 붙잡아요
-    fl:{m:Math.max(M*.3,n3m1+8),per:20,next:rnd(3,20),on:null},
-    // 🕳️ 60%: 30초마다 5m 폭의 땅이 1초 동안 꺼져요 (지나가던 양은 실격)
-    sk:{m0:M*.6-2.5,m1:M*.6+2.5,per:30,next:rnd(3,30),t0:-99,hit:-99},
-    // 🧱 90%: 60초마다 튕겨내는 벽이 2초 동안 솟아요 (빈틈 20%는 매번 바뀌어요)
-    wl:{m0:M*.9-2.5,m1:M*.9+2.5,per:60,next:rnd(3,60),t0:-99,g0:.4},
+    // 🌺 30%: 10초마다 땅속에서 꽃이 올라와 근처 양 한 마리를 5초 동안 붙잡아요
+    fl:{m:Math.max(M*.3,n3m1+8),per:10,next:rnd(3,10),on:null},
+    // 🕳️ 60%: 20초마다 5m 폭의 땅이 1초 동안 꺼져요 (지나가던 양은 실격)
+    sk:{m0:M*.6-2.5,m1:M*.6+2.5,per:20,next:rnd(3,20),t0:-99,hit:-99},
+    // 🧱 90%: 10초마다 튕겨내는 벽이 2초 동안 솟아요 (빈틈 20%는 매번 바뀌어요)
+    wl:{m0:M*.9-2.5,m1:M*.9+2.5,per:10,next:rnd(3,10),t0:-99,g0:.4},
     cliff:{m0:M*.5-gap/2,m1:M*.5+gap/2,b0:.455,b1:.545},
     narrow:{m0:M*.75,m1:M*.75+nrL,a:.32,b:.68}}}
 function makeCourse(M,Z){const list=[];let m=rnd(10,16),id=0;const tot=Object.values(OB).reduce((a,o)=>a+o.w,0);
