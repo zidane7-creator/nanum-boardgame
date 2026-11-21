@@ -136,6 +136,7 @@ const SFX=(()=>{let A=null,on=true;const last={},KEY="sfx-on";try{on=localStorag
     beep:()=>tone(880,null,.12,"square",.06),
     go:()=>{tone(660,1320,.32,"square",.07);tone(990,null,.35,"triangle",.06,.05)},
     jump:()=>tone(330,700,.13,"sine",.05),
+    boost:()=>{tone(220,880,.45,"sawtooth",.045);tone(440,1760,.5,"triangle",.04,.06);tone(880,1320,.25,"square",.03,.4)},
     boing:()=>{tone(140,620,.28,"sine",.11);tone(620,300,.2,"sine",.05,.26)},
     thud:()=>{noise(.16,.3,380);tone(150,55,.2,"sine",.22)},
     bonk:()=>{tone(520,170,.14,"square",.06);noise(.06,.12,1500,.01,"bandpass")},
@@ -267,7 +268,7 @@ function startRace(r){
   const sheep=[];r.people.forEach(p=>{for(let i=0;i<p.count;i++)sheep.push({owner:p.name,color:p.color,no:i+1})});
   for(let i=sheep.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[sheep[i],sheep[j]]=[sheep[j],sheep[i]]}
   const M=+SET.dist||300,D=durOf(M),n=sheep.length;
-  sheep.forEach((s,i)=>{s.lane=i;s.yf=Math.min(.95,Math.max(.05,(i+.5)/n+rnd(-.3,.3)/n));s.ty=s.yf;s.p=0;s.f=rnd(.92,1.08);s.v=0;s.tv=1/D;s.nextT=0;s.passed=new Set();s.tried=0;s.stun=0;s.jump=-9;s.jh=1;s.boost=0;s.done=false;s.dq=false;s.ev=null;s.hole=null;s.cool=rnd(1,3);s.leg=Math.random()*6});
+  sheep.forEach((s,i)=>{s.lane=i;s.yf=Math.min(.95,Math.max(.05,(i+.5)/n+rnd(-.3,.3)/n));s.ty=s.yf;s.p=0;s.f=rnd(.92,1.08);s.v=0;s.tv=1/D;s.nextT=0;s.passed=new Set();s.tried=0;s.stun=0;s.jump=-9;s.jh=1;s.boost=0;s.bst=0;s.b100=0;s.done=false;s.dq=false;s.ev=null;s.hole=null;s.cool=rnd(1,3);s.leg=Math.random()*6});
   const Z=makeZones(M),obs=makeCourse(M,Z),clovers=[];
   R={limit:+SET.limit||0,limitStart:null,people:r.people,sheep,D,M,Z,zAnn:{},obs,clovers,t:0,last:0,fin:[],dqN:0,started:false,speed:1,over:false,camC:0,tilt:.5,zoom:1,manual:false,camMode:SET.dir==="back"?"last":"lead",tkOpen:window.innerWidth>700};
   const st=document.createElement("div");st.id="stage";st.className="stage";
@@ -336,17 +337,17 @@ function startEv(s,type,t,partner,ob){SFX.play(EVS[type]||"");const len={eat:rnd
   if(ob)cast(`${OB[ob.type].ico} ${sName(s)} 양이 ${OB[ob.type].msg}`);
   else if(type!=="fight"&&type!=="love")cast(`${EV[type][0]} ${sName(s)} 양이 ${EV[type][1]}`)}
 /* 🧲 자석: 바로 앞 양과 둘 사이 한가운데에서 만나요 (쓴 양은 앞으로, 끌려간 양은 뒤로) */
-function useMagnet(s,t){const ahead=R.sheep.filter(o=>o!==s&&!o.done&&!o.dq&&!o.ev&&o.p>s.p);if(!ahead.length)return false;
+function useMagnet(s,t){const ahead=R.sheep.filter(o=>o!==s&&!o.done&&!o.dq&&!o.ev&&!(t<o.bst)&&o.p>s.p);if(!ahead.length)return false;
   const o=ahead.reduce((a,b)=>b.p<a.p?b:a),mid=(s.p+o.p)/2,my=(s.yf+o.yf)/2,dur=1.3;
   s.ev={type:"magnet",start:t,until:t+dur,from:s.p,to:mid,partner:o,ico:"🧲"};o.ev={type:"pulled",start:t,until:t+dur,from:o.p,to:mid,partner:s,ico:"🧲"};
   s.ty=o.ty=my;s.cool=t+dur+rnd(2,3);o.cool=t+dur+rnd(1,2);
   cast(`🧲 ${sName(s)} 양이 앞의 ${sName(o)} 양에게 자석을 썼어요! 둘이 한가운데에서 만나요 (${Math.round((o.p-s.p)*R.M/2)}m씩)`);SFX.play("zap");return true}
-function maybeEvent(s,t,dt){if(s.ev||s.done||s.dq||t<s.cool||s.p<.05||s.p>.95)return;
+function maybeEvent(s,t,dt){if(s.ev||s.done||s.dq||t<s.cool||t<s.bst||s.p<.05||s.p>.95)return;
   if(Math.random()>dt*.14)return;
   const n=R.sheep.length,dqMax=Math.floor(n*.08),alive=n-R.dqN;
   const opts=[["eat",30],["fall",16],["trap",12],...(R.podDone?[]:[["back",24]]),["bump",10],["fight",12],["sleep",22],["love",20]];if(R.dqN<dqMax&&alive-1>=Math.max(2,SET.pod))opts.push(["dq",4]);
   let k=Math.random()*opts.reduce((a,o)=>a+o[1],0),type="eat";for(const [o,w] of opts){if((k-=w)<0){type=o;break}}
-  if(type==="fight"||type==="love"){const foe=R.sheep.find(o=>o!==s&&!o.ev&&!o.done&&!o.dq&&Math.abs(o.yf-s.yf)<.18&&Math.abs(o.p-s.p)*R.M<5);
+  if(type==="fight"||type==="love"){const foe=R.sheep.find(o=>o!==s&&!o.ev&&!(t<o.bst)&&!o.done&&!o.dq&&Math.abs(o.yf-s.yf)<.18&&Math.abs(o.p-s.p)*R.M<5);
     if(!foe){type=type==="fight"?"fall":"sleep"}else{startEv(s,type,t,foe);startEv(foe,type,t,s);foe.ev.until=s.ev.until;
       cast(type==="fight"?`💢 ${sName(s)} 양과 ${sName(foe)} 양이 싸워요`:`💕 ${sName(s)} 양과 ${sName(foe)} 양이 눈이 맞았어요`);return}}
   if(type==="dq")R.dqN++;
@@ -357,6 +358,7 @@ function step(dt){const t=R.t,base=1/R.D,M=R.M;
     if(s.dq)return;
     if(t>=s.nextT){s.tv=base*s.f*rnd(.62,1.38);s.nextT=t+rnd(.3,.8);s.ty=Math.min(.95,Math.max(.05,s.yf+rnd(-.1,.1)))}
     s.yf+=(s.ty-s.yf)*Math.min(1,dt*1.5);
+    const B=t<s.bst;
     if(!(s.ev&&(s.ev.type==="dq"||s.ev.type==="cliff")))zoneSteer(s,t,dt);
     maybeEvent(s,t,dt);
     if(s.ev){const e=s.ev;
@@ -366,26 +368,28 @@ function step(dt){const t=R.t,base=1/R.D,M=R.M;
         if(e.type==="back"&&!e.c10){e.c10=true;if(Math.random()<.5&&s.p>.1){e.long=true;e.until=Infinity;e.backTo=.1;cast(`↩️ ${sName(s)} 양이 멈추지 않고 10% 지점까지 거꾸로 달려가요!`)}}
         if(e.type==="back"){if(e.long){s.p=Math.max(e.backTo,s.p-base*1.4*dt);if(s.p<=e.backTo)e.until=t}else s.p=Math.max(0,s.p-base*.55*dt);s.leg+=dt*10}else if(e.type==="dq"){s.leg+=dt*12}else if(e.type==="fight"){s.leg+=dt*16}return}}
     // 균형: 70%를 넘어 2등보다 압도적으로(거리의 10%·최소 20m) 앞서면, 한 번 60% 확률로 뒤로 500m
-    if(!s.ld&&!R.podDone&&s.p>=.7&&!s.ev){const rest=R.sheep.filter(o=>o!==s&&!o.dq&&!o.done);if(rest.length){const sec=Math.max(...rest.map(o=>o.p));
+    if(!s.ld&&!B&&!R.podDone&&s.p>=.7&&!s.ev){const rest=R.sheep.filter(o=>o!==s&&!o.dq&&!o.done);if(rest.length){const sec=Math.max(...rest.map(o=>o.p));
       if((s.p-sec)*M>=Math.max(20,M*.1)){s.ld=true;if(Math.random()<.6){startEv(s,"back",t);s.ev.long=true;s.ev.until=Infinity;s.ev.backTo=Math.max(0,s.p-500/M);cast(`🌀 ${sName(s)} 양이 너무 앞서 나가다 정신이 쏙 빠져서 뒤로 500m를 달려가요!`);return}}}}
     // 남은 거리가 20%가 되는 순간, 30% 확률로 경기장 이탈(실격)
-    if(!s.chk80&&s.p>=.8){s.chk80=true;if(Math.random()<.3&&R.sheep.length-R.dqN-1>=Math.max(2,SET.pod)){R.dqN++;startEv(s,"dq",t);cast(`🚫 결승선 앞에서 ${sName(s)} 양이 경기장을 벗어났어요! 실격`);return}}
+    if(!s.chk80&&!B&&s.p>=.8){s.chk80=true;if(Math.random()<.3&&R.sheep.length-R.dqN-1>=Math.max(2,SET.pod)){R.dqN++;startEv(s,"dq",t);cast(`🚫 결승선 앞에서 ${sName(s)} 양이 경기장을 벗어났어요! 실격`);return}}
     s.v+=(s.tv-s.v)*Math.min(1,dt*3);let v=s.v;const sm=s.p*M;
-    for(const o of R.obs){const d=OB[o.type];if(!d.flat||Math.abs(sm-o.m)>=o.len/2||s.yf<=o.t0||s.yf>=o.t1)continue;
+    if(!B)for(const o of R.obs){const d=OB[o.type];if(!d.flat||Math.abs(sm-o.m)>=o.len/2||s.yf<=o.t0||s.yf>=o.t1)continue;
       if(d.trig&&!s.passed.has(o.id)){s.passed.add(o.id);if(Math.random()<d.chance){
         if(d.trig==="spring"){s.jump=t;s.jh=2.6;SFX.play("boing");cast(`${d.ico} ${sName(s)} 양이 ${d.msg}`)}
         else if(d.trig==="stick"){startEv(s,"eat",t,null,o);s.ev.type="stick";s.ev.until=t+rnd(1.2,2.2);return}
         else{startEv(s,d.trig,t,null,o);return}}}
       if(d.slow&&d.slow<1)v*=d.slow;break}
-    v=jam(s,v,t,dt);if(s.ev)return;
+    if(B)v*=2;else v=jam(s,v,t,dt);if(s.ev)return;
     let np=s.p+v*dt;const nm=np*M;
     for(const c of R.clovers)if(c.alive&&Math.abs(c.y-s.yf)<.09&&s.p<c.x+.4/M&&np>=c.x-.4/M){c.alive=false;s.boost=t+.9;break}
     for(const o of R.obs){const d=OB[o.type];if(d.flat||s.passed.has(o.id))continue;if(s.yf<o.t0-.03||s.yf>o.t1+.03)continue;
       const edge=o.m-1;if(sm<edge+.001&&nm>=edge||sm>=edge&&sm<o.m+.5){
-        if(s.tried!==o.id&&Math.random()<d.crash){s.tried=o.id;s.p=edge/M;startEv(s,"hurdle",t,null,o);return}
+        if(!B&&s.tried!==o.id&&Math.random()<d.crash){s.tried=o.id;s.p=edge/M;startEv(s,"hurdle",t,null,o);return}
         s.passed.add(o.id);s.tried=0;s.jump=t;s.jh=d.h;SFX.play("jump");break}}
     s.p=np;s.leg+=dt*(8+v*R.D*6);
-    {const C=R.Z.cliff,pm=np*M;if(pm>=C.m0&&pm<=C.m1&&(s.yf<C.b0-.005||s.yf>C.b1+.005)){R.dqN++;startEv(s,"cliff",t);return}}
+    {const C=R.Z.cliff,pm=np*M;if(!B&&pm>=C.m0&&pm<=C.m1&&(s.yf<C.b0-.005||s.yf>C.b1+.005)){R.dqN++;startEv(s,"cliff",t);return}}
+    {const mk=Math.floor(s.p*M/100);if(mk>s.b100){s.b100=mk;if(!B&&s.p<1){const act=R.sheep.filter(o=>!o.done&&!o.dq);
+      if(act.length>1&&act.every(o=>o===s||o.p>=s.p)&&Math.random()<.3){s.bst=t+7;SFX.play("boost");cast(`🚀 꼴찌 ${sName(s)} 양에게 부스터! 7초 동안 2배로 달리고 함정에도 안 걸려요`)}}}}
     if(s.p>=1){s.done=true;s.p=1;R.fin.push(s);s.rank=R.fin.length;addTick(s)}});
   // ⏱ 제한 시간은 포디움에 오를 양(○위까지)이 다 들어온 순간부터 재요
   // ${SET.pod}착이 나오면: 제한 시간 시작 + 그때부터 뒤로 가는 일은 없어요
@@ -395,7 +399,7 @@ function step(dt){const t=R.t,base=1/R.D,M=R.M;
     else cast(`🏁 ${SET.pod}착이 나왔어요! 이제 뒤로 가는 일은 없어요`)}
   if(!R.over&&R.limit&&R.limitStart!=null&&R.t-R.limitStart>=R.limit){timeUp();return}
   if(!R.over&&R.fin.length+R.dqN===R.sheep.length&&R.sheep.every(s=>s.done||s.dq)){R.over=true;setTimeout(()=>{if(R&&R.over)showResult()},1300)}}
-function zoneSteer(s,t,dt){const Z=R.Z,M=R.M,sm=s.p*M;let rg=null,hard=false;s.zm=s.zm||{};
+function zoneSteer(s,t,dt){const Z=R.Z,M=R.M,sm=s.p*M,B=t<s.bst;let rg=null,hard=false;s.zm=s.zm||{};if(B){s.zm.n3=false;s.zm.nr=false}
   const ann=(k,txt)=>{if(!R.zAnn[k]){R.zAnn[k]=1;cast(txt)}};
   const mid=L=>(L[0]+L[1])/2,near=(lanes,skip)=>{let b=-1;lanes.forEach((L,i)=>{if(i===skip)return;if(b<0||Math.abs(mid(L)-s.yf)<Math.abs(mid(lanes[b])-s.yf))b=i});return b};
   const crash=(m0,kind)=>{s.p=Math.max(0,(m0-2.2)/M);startEv(s,"hurdle",t,null,{type:kind});s.tried=0};
@@ -404,20 +408,20 @@ function zoneSteer(s,t,dt){const Z=R.Z,M=R.M,sm=s.p*M;let rg=null,hard=false;s.z
     if(s.zm.n3==null)s.zm.n3=Math.random()<.4; // 40%는 한눈팔다 울타리에 부딪혀요
     const L=N.lanes[s.l3],inL=s.yf>=L[0]+.01&&s.yf<=L[1]-.01;
     if(!s.zm.n3||sm>=N.m0)rg=[L[0]+.025,L[1]-.025];
-    if(sm>=N.m0-.9&&sm<N.m0){if(s.l3===N.block){crash(N.m0,"gateW");s.l3=near(N.lanes,N.block);s.zm.n3=false;return}
-      if(!inL){crash(N.m0,"hedgeW");s.l3=near(N.lanes,N.block);s.zm.n3=false;return}}
+    if(sm>=N.m0-.9&&sm<N.m0){if(s.l3===N.block){s.l3=near(N.lanes,N.block);s.zm.n3=false;if(!B){crash(N.m0,"gateW");return}}
+      if(!inL&&!B){crash(N.m0,"hedgeW");s.l3=near(N.lanes,N.block);s.zm.n3=false;return}}
     hard=sm>=N.m0-.9;if(sm>=N.m0-2)ann("n3","🛤️ 좁은 길 3개! 그런데 하나는 막혀 있어요")}
   else if(sm>Z.cliff.m0-15&&sm<Z.cliff.m1+1){const C=Z.cliff;
-    if(s.bok==null){s.bok=Math.random()>.18||R.sheep.length-R.dqN-1<Math.max(2,SET.pod)}
+    if(s.bok==null){s.bok=Math.random()>.18||R.sheep.length-R.dqN-1<Math.max(2,SET.pod)}if(B)s.bok=true;
     if(s.bok||(s.ev&&s.ev.type==="back")){rg=[C.b0+.012,C.b1-.012];hard=sm>=C.m0-1}
-    if(s.bok&&s.fear==null&&sm>=C.m0-1.4&&!s.ev){s.fear=Math.random()<.3;
+    if(s.bok&&!B&&s.fear==null&&sm>=C.m0-1.4&&!s.ev){s.fear=Math.random()<.3;
       if(s.fear){if(!R.podDone&&Math.random()<.1){startEv(s,"back",t);s.ev.long=true;s.ev.until=Infinity;s.ev.backTo=Math.max(0,s.p-40/M);cast(`😱 ${sName(s)} 양이 다리가 무서워서 뒤로 도망가요!`)}
         else startEv(s,"scared",t)}}
     if(sm>=C.m0-4)ann("cliff","⚠️ 낭떠러지다! 좁은 다리로 건너야 해요")}
   else if(sm>Z.narrow.m0-10&&sm<Z.narrow.m1){const W=Z.narrow;
     if(s.zm.nr==null)s.zm.nr=Math.random()<.4;
     if(!s.zm.nr||sm>=W.m0)rg=[W.a+.03,W.b-.03];
-    if(sm>=W.m0-.9&&sm<W.m0&&(s.yf<W.a+.01||s.yf>W.b-.01)){crash(W.m0,"rockW");s.zm.nr=false;return}
+    if(!B&&sm>=W.m0-.9&&sm<W.m0&&(s.yf<W.a+.01||s.yf>W.b-.01)){crash(W.m0,"rockW");s.zm.nr=false;return}
     hard=sm>=W.m0-.9;if(sm>=W.m0-2)ann("narrow","🚧 길이 확 좁아지고 함정이 가득해요!")}
   if(!rg)return;const tg=Math.max(rg[0],Math.min(rg[1],s.yf));s.ty=Math.max(rg[0],Math.min(rg[1],s.ty));
   if(hard)s.yf=tg;else s.yf+=(tg-s.yf)*Math.min(1,dt*3.5)}
@@ -586,6 +590,8 @@ function drawSheep(c,x,y,R0,s,t,lift){lift=lift||0;const ev=s.ev&&s.ev.type,r=R0
   const bob=running||s.done?-Math.abs(Math.sin(s.leg))*r*.12:0;
   // 그림자 (땅에 남아요)
   const sh=1/(1+lift/(r*2));c.fillStyle="rgba(0,0,0,.16)";c.beginPath();c.ellipse(x,y+r*.98,r*1.05*sh,r*.24*sh,0,0,7);c.fill();
+  const BST=s.bst>t&&!s.done&&!s.dq;if(BST){c.save();c.strokeStyle="rgba(255,150,40,.75)";c.lineCap="round";c.lineWidth=Math.max(1.5,r*.12);
+    for(let k=0;k<3;k++){const yy=y+bob-lift+(k-1)*r*.35,ph=((t*6+k*.37)%1);c.globalAlpha=.85-ph*.6;c.beginPath();c.moveTo(x-r*(1.25+ph*.5),yy);c.lineTo(x-r*(2+ph*.9),yy);c.stroke()}c.restore()}
   c.save();c.translate(x,y+bob-lift);if(dizzy&&ev!=="trap")c.rotate(-.75);if(ev==="sleep"){c.translate(0,r*.3);c.rotate(.12)}if(faceBack)c.scale(-1,1);
   const ol="#6b5444";c.lineJoin="round";
   // 다리 4개
@@ -620,6 +626,7 @@ function drawSheep(c,x,y,R0,s,t,lift){lift=lift||0;const ev=s.ev&&s.ev.type,r=R0
   const tw=c.measureText(label).width+10,ly=y+bob-lift-r*1.05;c.fillStyle="rgba(255,255,255,.9)";c.strokeStyle=s.color==="#fbf7ec"?"#bba":shade(s.color,.75);c.lineWidth=2;
   c.beginPath();c.roundRect?c.roundRect(x-tw/2,ly-fs*.62,tw,fs*1.24,fs*.6):c.rect(x-tw/2,ly-fs*.62,tw,fs*1.24);c.fill();c.stroke();
   c.fillStyle="#3b2a20";c.textAlign="center";c.textBaseline="middle";c.fillText(label,x,ly+.5);
+  if(BST&&!ev){c.font=`${Math.max(14,r*.85)}px sans-serif`;c.fillText("🚀",x+r*.95,ly-fs*.9)}
   if(ev&&ev!=="dq"){c.font=`${Math.max(14,r*.85)}px sans-serif`;const ic=s.ev.ico||EV[ev][0];
     if(ev==="sleep"){const q=(t*1.3)%1;c.globalAlpha=1-q;c.fillText("💤",x+r*.9+q*r*.4,ly-fs*.6-q*r*.8);c.globalAlpha=1}
     else if(ev==="love"){const q=(t*1.1)%1;c.fillText("💕",x+(faceBack?-1:1)*r*.6,ly-fs*.8-q*r*.5)}else c.fillText(ic,x+r*.95,ly-fs*.9)}
