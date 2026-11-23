@@ -72,7 +72,16 @@ main.wide{max-width:1300px}
 .stage .ticker h3{cursor:pointer;display:flex;gap:6px;align-items:baseline}.stage .ticker.shut{max-height:none;overflow:hidden}.stage .ticker.shut>:not(h3){display:none}.stage .ticker.shut h3{margin:0}
 .stage .cd{position:absolute;inset:0}
 .stage .chip.clock{font-size:17px;background:#fff;border-color:var(--ink)}.stage .chip.clock.run{background:#fff6d8}.stage .chip.clock.hurry{background:#e8503a;color:#fff;animation:fl .6s ease-out infinite alternate}
-@media (max-width:600px){.stage .ticker{width:170px}.stage .hud .chip{font-size:13px}}
+.stage .livebox{position:absolute;left:10px;bottom:46px;width:230px;background:rgba(255,255,255,.92);border:2px solid var(--ink);border-radius:14px;padding:8px 10px;pointer-events:none}
+.stage .livebox h3{margin:0 0 4px;display:flex;gap:6px;align-items:baseline;font-size:17px}
+.stage .livebox ol{list-style:none;margin:0;padding:0}
+.stage .livebox li{display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:1px dashed var(--line);font-family:Jua,sans-serif;font-size:16px;line-height:1.2}
+.stage .livebox li:last-child{border-bottom:0}
+.stage .livebox .lr{flex:none;width:2.2em;text-align:center}
+.stage .livebox .ln{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stage .livebox .lm{flex:none;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.stage .livebox li.fin .lm{color:#2b8a3e}
+@media (max-width:600px){.stage .ticker{width:170px}.stage .hud .chip{font-size:13px}.stage .livebox{width:170px;font-size:14px}.stage .livebox li{font-size:14px}}
 body.racing #homeFab{display:none!important}
 /* result */
 .podium{display:flex;align-items:flex-end;justify-content:center;gap:10px;margin:10px 0 4px;min-height:260px}
@@ -127,6 +136,19 @@ const SFX=(()=>{let A=null,on=true;const last={},KEY="sfx-on";try{on=localStorag
       mix.gain.value=.9;mix2.gain.value=.12;lp.type="lowpass";lp.Q.value=3;lp.frequency.setValueAtTime(900,tt);lp.frequency.exponentialRampToValueAtTime(3400,tt+.05);lp.frequency.exponentialRampToValueAtTime(2000,tt+dur);
       env.gain.setValueAtTime(.0001,tt);env.gain.exponentialRampToValueAtTime(vol*amp,tt+.025);env.gain.setValueAtTime(vol*amp*.85,tt+dur*.7);env.gain.exponentialRampToValueAtTime(.0001,tt+dur);
       o.connect(mix);o2.connect(mix2);mix.connect(lp);mix2.connect(lp);lp.connect(env);env.connect(dest);[o,o2,vib].forEach(x=>{x.start(tt);x.stop(tt+dur+.03)});tt+=dur+(k?.02:.04)})}
+  function homeBleat(a,dest,t,p,vol){/* 홈 화면의 양 소리 "메에에~"(어른 양)와 같은 소리. vol로 크기 조절 */
+    const dur=.75+Math.random()*.45,f0=(p||220)*.78,out=a.createGain();out.gain.value=vol;out.connect(dest);
+    const o=a.createOscillator();o.type="sawtooth";
+    o.frequency.setValueAtTime(f0*.9,t);o.frequency.linearRampToValueAtTime(f0*1.12,t+.16);o.frequency.linearRampToValueAtTime(f0*1.04,t+dur*.6);o.frequency.linearRampToValueAtTime(f0*.86,t+dur);
+    const q=a.createOscillator(),qg=a.createGain();q.type="triangle";q.frequency.setValueAtTime(7+Math.random()*3,t);q.frequency.linearRampToValueAtTime(10+Math.random()*4,t+dur);qg.gain.value=f0*.05;q.connect(qg).connect(o.frequency);
+    const am=a.createGain(),qa=a.createGain();am.gain.value=.7;qa.gain.value=.3;q.connect(qa).connect(am.gain);
+    const lp=a.createBiquadFilter();lp.type="lowpass";lp.Q.value=2;lp.frequency.setValueAtTime(450,t);lp.frequency.exponentialRampToValueAtTime(3200,t+.14);lp.frequency.exponentialRampToValueAtTime(1600,t+dur);
+    const env=a.createGain();env.gain.setValueAtTime(.0001,t);env.gain.exponentialRampToValueAtTime(.3,t+.07);env.gain.setValueAtTime(.3,t+dur*.55);env.gain.exponentialRampToValueAtTime(.0001,t+dur);
+    o.connect(am).connect(lp).connect(env);
+    [[820,6,1.1],[1350,7,.8],[2650,9,.4],[300,3,.5]].forEach(([fr,qq,g])=>{const f=a.createBiquadFilter();f.type="bandpass";f.frequency.value=fr*(.95+Math.random()*.1);f.Q.value=qq;const gg=a.createGain();gg.gain.value=g*2;env.connect(f).connect(gg).connect(out)});
+    const len=Math.ceil(a.sampleRate*dur),buf=a.createBuffer(1,len,a.sampleRate),d=buf.getChannelData(0);for(let i=0;i<len;i++)d[i]=Math.random()*2-1;
+    const ns=a.createBufferSource();ns.buffer=buf;const hp=a.createBiquadFilter();hp.type="bandpass";hp.frequency.value=2200;hp.Q.value=.8;const ng=a.createGain();ng.gain.value=.05;ns.connect(hp).connect(ng).connect(env);
+    [o,q,ns].forEach(x=>{x.start(t);x.stop(t+dur+.05)})}
   const baa=(delay)=>{const a=ac();if(!a)return;cuteBleat(a,a.destination,a.currentTime+(delay||0),540+Math.random()*160,.07)};
   const creak=(delay)=>{const a=ac();if(!a)return;const t=a.currentTime+(delay||0),o=a.createOscillator(),am=a.createOscillator(),ag=a.createGain(),f=a.createBiquadFilter(),g=a.createGain();
     o.type="sawtooth";o.frequency.setValueAtTime(75,t);o.frequency.linearRampToValueAtTime(115,t+.45);o.frequency.linearRampToValueAtTime(85,t+.75);am.frequency.value=22;ag.gain.value=.5;f.type="bandpass";f.frequency.value=700;f.Q.value=2.5;
@@ -135,7 +157,7 @@ const SFX=(()=>{let A=null,on=true;const last={},KEY="sfx-on";try{on=localStorag
   const P={
     beep:()=>tone(880,null,.12,"square",.06),
     go:()=>{tone(660,1320,.32,"square",.07);tone(990,null,.35,"triangle",.06,.05)},
-    jump:()=>tone(330,700,.13,"sine",.05),
+    jump:()=>{const a=ac();if(!a)return;homeBleat(a,a.destination,a.currentTime,215+Math.random()*60,.3)},
     bloom:()=>{tone(420,900,.22,"sine",.07);tone(900,1400,.18,"triangle",.05,.16);tone(1400,1800,.12,"sine",.04,.3)},
     rumble:()=>{noise(1.1,.32,140);tone(60,40,1.1,"sawtooth",.05)},
     wallup:()=>{noise(.35,.2,500);tone(110,380,.32,"square",.05);tone(380,300,.15,"square",.04,.3)},
@@ -156,7 +178,7 @@ const SFX=(()=>{let A=null,on=true;const last={},KEY="sfx-on";try{on=localStorag
     fanfare:()=>[[523,0,.18],[659,.14,.18],[784,.28,.18],[1046,.42,.6]].forEach(([f,d,l])=>{tone(f,null,l,"triangle",.08,d);tone(f/2,null,l,"square",.025,d)}),
     whistle:()=>tone(1900,2300,.4,"sine",.05),
     baa:()=>baa(),creak:()=>creak()};
-  const GAP={jump:160,ding:120,baa:700,thud:120,munch:300,creak:150,beep:0,go:0};
+  const GAP={jump:900,ding:120,baa:700,thud:120,munch:300,creak:150,beep:0,go:0};
   return{get on(){return on},unlock:ac,
     play(k,delay){if(!on||!P[k])return;const n=performance.now();if(!delay&&last[k]&&n-last[k]<(GAP[k]??150))return;last[k]=n;try{if(delay)setTimeout(()=>P[k](),delay*1000);else P[k]()}catch(e){}},
     toggle(){on=!on;try{localStorage.setItem(KEY,on?"1":"0")}catch(e){}if(on)ac();return on}}})();
@@ -287,6 +309,7 @@ function startRace(r){
       <button class="sm" id="cam">🎥 ${R.camMode==="lead"?"선두":"꼴찌"} 따라가기</button><button class="sm" id="zin" title="확대">🔍＋</button><button class="sm" id="zout" title="축소">🔍－</button><button class="sm" id="fast">⏩ 2배속</button><button class="sm" id="snd" title="효과음 켜기/끄기">${SFX.on?"🔊 소리":"🔇 소리"}</button><button class="sm" id="fsb">⛶ 전체화면</button><button class="sm" id="stop">■ 그만하기</button></div>
       <div class="hint camhint">🖱️ 화면을 좌우로 끌면 카메라 이동 · 위아래로 끌면 앵글 높이 · 휠/🔍로 확대</div><div class="cast" id="cast">🎙️ 곧 출발해요! ${n}마리 양들이 ${M}m 출발선에 섰어요</div></div>
     <div class="ticker${R.tkOpen?"":" shut"}" id="tkbox"><h3 id="tkt">🏁 도착 순서 <span class="hint" id="tkc">0/${n}</span></h3><div class="hint">${SET.dir==="back"?"⏪ 뒤에서부터 순위예요. 가장 늦게 도착한 양이 1위!":"⏩ 먼저 도착한 양이 1위예요"}</div><div id="tk"></div></div>
+    <div class="livebox" id="livebox"><h3>📊 실시간 순위 <span class="hint">${SET.dir==="back"?"⏪ 뒤에서부터":"1~5위"}</span></h3><ol id="live"><li class="hint">출발하면 순위가 나와요</li></ol></div>
     <div class="cd" id="cd"></div>`;
   document.body.appendChild(st);document.body.style.overflow="hidden";document.body.classList.add("racing");goFull(st);
   $("#stop").onclick=()=>{if(confirm("경주를 그만하고 설정으로 돌아갈까요?"))renderSetup()};
@@ -327,7 +350,14 @@ const Pt=(m,t,h)=>[Xm(m,t),Yt(t)-(h||0)*R.ppm*1.8*kOf(t)];
 function loop(now){if(!R)return;const rdt=Math.min(.05,(now-R.last)/1000);
   if(R.started&&!R.over){const dt=rdt*R.speed;R.t+=dt;step(dt)}R.last=now;if(R&&R.started&&!R.over&&Math.random()<rdt*.3)SFX.play("baa");
   if(R&&R.limit){const left=R.limitStart==null?null:R.limit-(R.t-R.limitStart),txt=left==null?`⏱ ${fmtClock(R.limit)} · ${SET.pod}착이 나오면 시작`:"⏱ 남은 시간 "+fmtClock(left);if(txt!==R.clk){R.clk=txt;const el=$("#clock");if(el){el.textContent=txt;el.classList.toggle("hurry",left!=null&&left<=30);el.classList.toggle("run",left!=null)}}}
+  if(R&&R.started&&(!R.lvT||now-R.lvT>250)){R.lvT=now;updLive()}
   if(!R)return;camStep(rdt);draw();raf=requestAnimationFrame(loop)}
+/* 📊 실시간 1~5위: 결과 화면과 같은 기준(앞에서부터 = 먼저 도착 / 뒤에서부터 = 늦게 도착이 1위). 실격·잠든 양은 빠져요 */
+function liveOrder(){const fin=R.fin.filter(s=>!s.dq),run=R.sheep.filter(s=>!s.done&&!s.dq);
+  return SET.dir==="back"?[...run.sort((a,b)=>a.p-b.p),...[...fin].reverse()]:[...fin,...run.sort((a,b)=>b.p-a.p)]}
+function updLive(){const el=$("#live");if(!el||!R)return;const top=liveOrder().slice(0,5);
+  const html=top.map((s,i)=>`<li class="${s.done?"fin":""}"><span class="lr">${["🥇","🥈","🥉"][i]||(i+1)+"위"}</span>${sheepSVG(s.color,22)}<span class="ln">${esc(s.owner)} <span class="hint">#${s.no}</span></span><span class="lm">${s.done?"🏁 도착":Math.round(Math.min(1,s.p)*R.M)+"m"}</span></li>`).join("");
+  if(html!==R.lvH){R.lvH=html;el.innerHTML=html||'<li class="hint">달리는 양이 없어요</li>'}}
 function camStep(dt){if(!R||!R.W)return;if(R.manual){R.camC=Math.max(R.camMin-R.W*.3,Math.min(R.camMax+R.W*.2,R.camC));return}const run=R.sheep.filter(s=>!s.done&&!s.dq);let tx;
   if(!R.started)tx=R.camMin;
   else if(!run.length)tx=R.camMax;
