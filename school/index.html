@@ -662,6 +662,25 @@ nav.tabs a{flex:0 0 auto}
 @media (max-width:560px){.tlog li{grid-template-columns:80px minmax(0,1fr) auto}.tlog li .x{grid-column:3}}
 table.sg td.stc{text-align:center;padding:3px}
 .tal{font-family:var(--f-mono);font-weight:700}
+.att-grp{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:9px 16px;background:color-mix(in srgb,var(--gold) 22%,var(--cream));border-bottom:1px solid var(--line);border-top:2px solid var(--ink);font-size:.92rem}
+.att-grp .cnt{font-family:var(--f-mono);font-size:.8rem;color:var(--muted)}
+.att-grp .tch{font-size:.82rem;color:var(--muted)}
+.clsgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.clscard{padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.clscard .ch{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.clscard .ch .cnt{margin-left:auto;font-family:var(--f-mono);font-size:.85rem;color:var(--muted)}
+.clscard .tch{font-size:.85rem;color:var(--muted)}
+.clscard .stus{display:flex;flex-wrap:wrap;gap:6px}
+.clscard .stus .nmlink{border:2px solid var(--line);border-radius:999px;padding:2px 10px;text-decoration:none;font-weight:normal;background:var(--cream)}
+.clscard .stus .nmlink:hover{border-color:var(--ink)}
+.clscard .asg{display:flex;align-items:center;gap:6px;width:100%}
+.clscard .asg select{flex:1;min-width:0}
+.infogrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 14px;margin-top:10px}
+.infogrid .wide{grid-column:1/-1}
+.infogrid .lb .row{flex-wrap:nowrap}
+.infogrid input.f{width:100%;min-width:0}
+.tellink{text-decoration:none;flex:0 0 auto}
+@media (max-width:760px){.infogrid{grid-template-columns:1fr}}
 </style>
 
 <header class="band gutter">
@@ -675,7 +694,7 @@ table.sg td.stc{text-align:center;padding:3px}
       <a href="#stamps" data-v="stamps">출석도장</a>
       <a href="#talents" data-v="talents">달란트 관리</a>
       <a href="#members" data-v="members">학생 명부</a>
-      <a href="#groups" data-v="groups">조</a>
+      <a href="#classes" data-v="classes">반</a>
       <a href="#minutes" data-v="minutes">회의록</a>
       <a href="#calendar" data-v="calendar">캘린더</a>
       <a href="#acct" data-v="acct">회계</a>
@@ -755,10 +774,12 @@ table.sg td.stc{text-align:center;padding:3px}
 const DEF_TEAMS=[],DEF_ROLES=[];
 /* 달란트 항목: kind 'week' = 매주 출석부에서 체크, 'event' = 건별로 개인 페이지에서 부여. 'att'(출석)은 항상 있어요. */
 const DEF_ITEMS=[{id:'att',name:'출석',amt:1,kind:'week',fixed:true},{id:'bible',name:'성경책 가져오기',amt:1,kind:'week'},{id:'evan',name:'전도',amt:5,kind:'event'}];
-let TEAMS=DEF_TEAMS.slice(),ROLES=DEF_ROLES.slice(),TCLS={},ITEMS=DEF_ITEMS.map(x=>Object.assign({},x));
+const DEF_IN=['교회 예산','후원','헌금','기타수입'],DEF_OUT=['간식','행사','선물','기타지출'];
+let IN_CATS=DEF_IN.slice(),OUT_CATS=DEF_OUT.slice(),TEAMS=DEF_TEAMS.slice(),ROLES=DEF_ROLES.slice(),TCLS={},ITEMS=DEF_ITEMS.map(x=>Object.assign({},x));
 function applyCfg(){const c=(typeof S!=='undefined'&&S.cfg)||{};
   TEAMS=Array.isArray(c.teams)?c.teams.slice():DEF_TEAMS.slice();ROLES=[];
   TCLS={};TEAMS.forEach((t,i)=>TCLS[t]='t'+(i%8+1));
+  IN_CATS=Array.isArray(c.inCats)&&c.inCats.length?c.inCats.slice():DEF_IN.slice();OUT_CATS=Array.isArray(c.outCats)&&c.outCats.length?c.outCats.slice():DEF_OUT.slice();
   ITEMS=(Array.isArray(c.items)&&c.items.length?c.items:DEF_ITEMS).map(x=>Object.assign({},x));
   if(!ITEMS.some(x=>x.id==='att'))ITEMS.unshift(Object.assign({},DEF_ITEMS[0]))}
 const attItem=()=>ITEMS.find(x=>x.id==='att')||DEF_ITEMS[0];
@@ -828,7 +849,7 @@ try{const ms=JSON.parse(localStorage.getItem('team-msort')||'null');if(ms&&ms.k)
 function clsIdx(t){const i=TEAMS.indexOf(t);return i<0?(t?TEAMS.length:TEAMS.length+1):i}
 function sortedMembers(team,who){
   who=who||'active';
-  return S.members.filter(m=>(who==='all'||(who==='former')===!!m.former)&&(!team||team==='all'||(team==='none'?!m.team||!TEAMS.includes(m.team):m.team===team)))
+  return S.members.filter(m=>(who==='all'||(who==='former')===!!m.former)&&(!team||team==='all'||(team==='none'?!m.team||!TEAMS.includes(m.team):team==='praise'?!!m.praise:m.team===team)))
     .sort((a,b)=>(clsIdx(a.team)-clsIdx(b.team))||String(a.name).localeCompare(String(b.name),'ko'));
 }
 
@@ -965,7 +986,7 @@ function render(){
   if(S.saveErr)h+=`<div class="notice errnote">${esc(S.saveErr)}</div>`;
   if(!S.loaded){$('#view').innerHTML=h+`<div class="panel empty"><strong>불러오는 중…</strong>저장된 학생과 출석 기록을 가져오고 있어요.</div>`;return}
   $('#view').classList.toggle('wide',UI.view==='minutes');
-  h+=UI.view==='minutes'?`<div class="mwrap"><div class="mleft">${vMinutes()}</div>${vBoard()}</div>`:({attendance:vAttendance,stamps:vStamps,talents:vTalents,student:vStudent,settings:vSettings,calendar:vCalendar,acct:vAcct,minutes:vMinutes,members:vMembers,stats:vStats,worship:vWorship,groups:vGroups})[UI.view]();
+  h+=UI.view==='minutes'?`<div class="mwrap"><div class="mleft">${vMinutes()}</div>${vBoard()}</div>`:({attendance:vAttendance,stamps:vStamps,talents:vTalents,student:vStudent,settings:vSettings,classes:vClasses,calendar:vCalendar,acct:vAcct,minutes:vMinutes,members:vMembers,stats:vStats,worship:vWorship,groups:vGroups})[UI.view]();
   $('#view').innerHTML=h;
   if(UI.view==='minutes')$('#view').querySelectorAll('textarea.bt').forEach(autosize);
   if(UI.view==='prayer'){autosizeAll();const pb=$('#p-paste-box');if(pb)pb.addEventListener('toggle',()=>{UI.pPasteOpen=pb.open})}
@@ -973,8 +994,20 @@ function render(){
   if(S.readOnly)$('#view').querySelectorAll('input,select,textarea,button[data-w]').forEach(e=>e.disabled=true);
 }
 const teamChip=t=>t?`<span class="team ${TCLS[t]||''}">${esc(t)}</span>`:'';
-const teamFilter=(cur,act)=>{if(!TEAMS.length)return '<span></span>';const none=S.members.some(m=>!m.former&&(!m.team||!TEAMS.includes(m.team)));
-  return `<div class="filters" role="group" aria-label="반 필터">${['all',...TEAMS,...(none?['none']:[])].map(t=>`<button class="chipbtn" data-act="${act}" data-v="${esc(t)}" aria-pressed="${cur===t}">${t==='all'?'전체 반':t==='none'?'반 없음':esc(t)}</button>`).join('')}</div>`};
+const teamFilter=(cur,act,noPraise)=>{const none=TEAMS.length&&S.members.some(m=>!m.former&&(!m.team||!TEAMS.includes(m.team))),pr=!noPraise&&S.members.some(m=>!m.former&&m.praise);
+  if(!TEAMS.length&&!pr)return '<span></span>';
+  return `<div class="filters" role="group" aria-label="반 필터">${['all',...TEAMS,...(none?['none']:[]),...(pr?['praise']:[])].map(t=>`<button class="chipbtn" data-act="${act}" data-v="${esc(t)}" aria-pressed="${cur===t}">${t==='all'?'전체 반':t==='none'?'반 없음':t==='praise'?'🎵 찬양팀':esc(t)}</button>`).join('')}</div>`};
+const tchOf=t=>((S.cfg.teachers||{})[t])||{};
+const tchText=t=>{const x=tchOf(t),a=[];if(x.main)a.push('담임 '+esc(x.main));if(x.sub)a.push('부담임 '+esc(x.sub));return a.join(' · ')};
+/* 반별 묶음: 등록한 반 순서대로, 반 없는 학생, 그리고 찬양팀(반과 겹쳐도 한 번 더 보여요) */
+function classGroups(list,f,rev){
+  if(f==='praise')return [{key:'praise',list:list.filter(m=>m.praise),praise:true}];
+  const out=[],cls=rev?[...TEAMS].reverse():TEAMS;
+  cls.forEach(t=>{const l=list.filter(m=>m.team===t);if(l.length)out.push({key:t,list:l})});
+  const none=list.filter(m=>!m.team||!TEAMS.includes(m.team));if(none.length)out.push({key:'none',list:none});
+  if(f==='all'){const p=list.filter(m=>m.praise);if(p.length)out.push({key:'praise',list:p,praise:true,dup:true})}
+  return out}
+const grpTitle=g=>g.praise?'<span class="ptag">🎵 찬양팀</span>':g.key==='none'?'<b>반 없음</b>':teamChip(g.key);
 const nmLink=m=>`<button class="nmlink" data-act="stu" data-id="${m.id}" title="${esc(m.name)} 개인 페이지">${esc(m.name)}</button>`;
 const praiseTag=m=>m.praise?'<span class="ptag">찬양팀</span>':'';
 function sortBtns(cur,act,opts){return `<div class="sortbar" role="group" aria-label="정렬"><span class="sub">정렬</span>${opts.map(([k,l])=>{const on=cur.k===k;return `<button class="chipbtn" data-act="${act}" data-v="${k}" aria-pressed="${on}" title="누를 때마다 오름차순·내림차순이 바뀌어요">${l} ${on?(cur.dir==='asc'?'▲':'▼'):''}</button>`}).join('')}</div>`}
@@ -1002,13 +1035,13 @@ function vAttendance(){
     <div class="row"><button class="btn" data-act="allp" data-w>미체크 모두 출석</button><button class="btn ghost" data-act="clr" data-w>이 날 기록 지우기</button></div></div>
   <div class="panel"><div class="tally"><span>${fmtLong(d)}</span><span class="ok">출석 <b>${cnt.p}</b></span><span class="no">결석 <b>${cnt.a}</b></span><span>미체크 <b class="mono">${cnt.n}</b></span><span class="sub">전체 ${all.length}명 · 이 날 달란트 <b class="mono">${given}</b></span></div>
   ${bd.length?`<div class="bday">이번 주 생일 · ${bd.join(', ')}</div>`:''}
-  <div class="att-row sc head-row"><span>이름 · 반</span><span>출석 여부</span><span>도장</span><span>달란트 항목</span><span>비고</span></div>
-  ${list.map(m=>{const r=rec[m.id]||{},it=r.it||{};return `<div class="att-row sc ${r.s?'':'unset'}">
+  <div class="att-row sc head-row"><span>이름</span><span>출석 여부</span><span>도장</span><span>달란트 항목</span><span>비고</span></div>
+  ${classGroups(list,UI.attTeam,UI.attSort.k==='cls'&&UI.attSort.dir==='desc').map(g=>`<div class="att-grp">${grpTitle(g)}<span class="cnt">${g.list.length}명 · 출석 ${g.list.filter(m=>rec[m.id]&&rec[m.id].s==='p').length}</span>${!g.praise&&g.key!=='none'&&tchText(g.key)?`<span class="tch">${tchText(g.key)}</span>`:''}${g.dup?'<span class="sub">반과 겹쳐서 한 번 더 보여요</span>':''}</div>`+g.list.map(m=>{const r=rec[m.id]||{},it=r.it||{};return `<div class="att-row sc ${r.s?'':'unset'}">
     <div class="who">${nmLink(m)}${teamChip(m.team)}${praiseTag(m)}</div>
     <div class="seg" role="group" aria-label="${esc(m.name)} 출석 여부"><button class="p ${r.s==='p'?'on':''}" data-act="st" data-id="${m.id}" data-v="p" data-w aria-pressed="${r.s==='p'}">출석</button><button class="a ${r.s==='a'?'on':''}" data-act="st" data-id="${m.id}" data-v="a" data-w aria-pressed="${r.s==='a'}">결석</button></div>
     <div class="stc">${r.s==='p'?`<span class="stamp sm" title="출석도장 · ${r.ta!=null?r.ta:AI.amt}달란트">출석</span>`:'<span class="stamp sm off" aria-hidden="true"></span>'}</div>
     <div class="titems">${WI.map(x=>{const on=it[x.id]!=null&&it[x.id]!==false;return `<button class="tchk" data-act="tit" data-id="${m.id}" data-v="${esc(x.id)}" aria-pressed="${on}" data-w>${on?'✓ ':''}${esc(x.name)}<span class="ta">+${on&&typeof it[x.id]==='number'?it[x.id]:x.amt}</span></button>`}).join('')||'<span class="sub">매주 항목 없음</span>'}</div>
-    <div class="note"><input class="f" id="note-${m.id}" data-act="note" data-id="${m.id}" value="${esc(r.note)}" placeholder="비고" aria-label="${esc(m.name)} 비고"></div></div>`}).join('')||'<div class="att-row"><span class="sub">이 반에는 학생이 없어요.</span></div>'}
+    <div class="note"><input class="f" id="note-${m.id}${g.dup?'-p':''}" data-act="note" data-id="${m.id}" value="${esc(r.note)}" placeholder="비고" aria-label="${esc(m.name)} 비고"></div></div>`}).join('')).join('')||'<div class="att-row"><span class="sub">이 반에는 학생이 없어요.</span></div>'}
   </div>`;
   return h;
 }
@@ -1016,10 +1049,14 @@ function cleanRec(r,id){const x=r[id];if(!x)return;if(x.it&&!Object.keys(x.it).l
 function attRec(date){if(!S.att[date])S.att[date]={date,records:{}};if(!S.att[date].records)S.att[date].records={};return S.att[date].records}
 
 /* ---------- 설정 ---------- */
-function vCfg(){const box=(k,ttl,list,ph,tip)=>`<div class="panel" style="padding:16px"><b>${ttl}</b> <span class="sub">${tip}</span>
-    <div class="chips">${list.map((v,i)=>`<span class="ck">${k==='teams'?teamChip(v):esc(v)}<button type="button" data-act="cfgup" data-k="${k}" data-i="${i}" title="앞으로" ${i?'':'disabled'} data-w>◀</button><button type="button" data-act="cfgren" data-k="${k}" data-i="${i}" title="이름 바꾸기" data-w>✏️</button><button type="button" data-act="cfgdel" data-k="${k}" data-i="${i}" title="빼기" data-w>✕</button></span>`).join('')||'<span class="sub">아직 등록한 반이 없어요</span>'}</div>
-    <div class="row"><input class="f" id="cfg-${k}" maxlength="20" placeholder="${ph}" style="flex:1;min-width:0"><button class="btn" type="button" data-act="cfgadd" data-k="${k}" data-w>추가</button></div></div>`;
-  return box('teams','반',TEAMS,'예) 사랑반, 1학년 2반','학생 명부·출석부·통계의 반 필터에 쓰여요. 앞에 있을수록 먼저 나와요')}
+function cfgBox(k,ttl,list,ph,tip,emptyMsg){return `<div class="panel" style="padding:16px"><b>${ttl}</b> <span class="sub">${tip}</span>
+    <div class="chips">${list.map((v,i)=>`<span class="ck">${k==='teams'?teamChip(v):esc(v)}<button type="button" data-act="cfgup" data-k="${k}" data-i="${i}" title="앞으로" ${i?'':'disabled'} data-w>◀</button><button type="button" data-act="cfgren" data-k="${k}" data-i="${i}" title="이름 바꾸기" data-w>✏️</button><button type="button" data-act="cfgdel" data-k="${k}" data-i="${i}" title="빼기" data-w>✕</button></span>`).join('')||`<span class="sub">${emptyMsg||'아직 없어요'}</span>`}</div>
+    <div class="row"><input class="f" id="cfg-${k}" maxlength="20" placeholder="${ph}" style="flex:1;min-width:0"><button class="btn" type="button" data-act="cfgadd" data-k="${k}" data-w>추가</button></div></div>`}
+function vCfg(){const box=(k,ttl,list,ph,tip)=>cfgBox(k,ttl,list,ph,tip,'아직 등록한 반이 없어요');
+  const tch=TEAMS.length?`<table class="itbl" style="margin-top:4px"><thead><tr><th>반</th><th>담임선생님</th><th>부담임선생님</th></tr></thead><tbody>${TEAMS.map(t=>{const x=tchOf(t);return `<tr><td class="k">${teamChip(t)}</td>
+      <td><input class="f" data-act="tch" data-cls="${esc(t)}" data-k="main" value="${esc(x.main)}" maxlength="20" placeholder="담임" aria-label="${esc(t)} 담임선생님" data-w></td>
+      <td><input class="f" data-act="tch" data-cls="${esc(t)}" data-k="sub" value="${esc(x.sub)}" maxlength="40" placeholder="부담임 (여러 명이면 쉼표로)" aria-label="${esc(t)} 부담임선생님" data-w></td></tr>`}).join('')}</tbody></table><p class="sub" style="margin:6px 0 0">입력하면 바로 저장돼요. 출석부와 반 화면에 함께 보여요.</p>`:'';
+  return box('teams','반',TEAMS,'예) 사랑반, 1학년 2반','학생 명부·출석부·통계의 반 필터에 쓰여요. 앞에 있을수록 먼저 나와요').replace(/<\/div>$/,tch+'</div>')}
 function vSettings(){
   const row=x=>`<tr><td class="k">${x.fixed?`<b>${esc(x.name)}</b> <span class="sub">출석부에서 ‘출석’을 누르면 출석도장과 함께 쌓여요</span>`:`<input class="f" data-act="itf" data-id="${esc(x.id)}" data-k="name" value="${esc(x.name)}" maxlength="20" aria-label="항목 이름" data-w>`}</td>
     <td><input class="f mono num" type="number" step="1" data-act="itf" data-id="${esc(x.id)}" data-k="amt" value="${esc(x.amt)}" aria-label="${esc(x.name)} 달란트" data-w></td>
@@ -1039,18 +1076,23 @@ function vSettings(){
        <input class="f mono" id="it-amt" type="number" step="1" value="1" style="width:80px" aria-label="달란트">
        <select class="f" id="it-kind" aria-label="주는 방법"><option value="week">매주 · 출석부</option><option value="event">건별 · 개인 페이지</option></select>
        <button class="btn primary" data-act="itadd" data-w>추가</button></div></div>
+   <div id="cats"><h3 class="sech" style="margin-top:4px">회계 수입 · 지출 항목 <span class="sub">회계에서 내역을 적을 때 고르는 항목이에요. 앞에 있을수록 먼저 나와요. 이름을 바꾸면 이미 적은 내역도 함께 바뀌어요.</span></h3>
+   <div class="cfgbox">${cfgBox('inCats','수입 항목',IN_CATS,'예) 교회 예산','하나 이상 있어야 해요')}${cfgBox('outCats','지출 항목',OUT_CATS,'예) 달란트 시장','하나 이상 있어야 해요')}</div></div>
   </div>`}
 function setItems(list,msg,re){S.cfg=Object.assign({},S.cfg,{items:list});applyCfg();saveCfg(re?0:600);if(re)render();if(msg)toast(msg)}
 function setCfgList(k,list,msg){S.cfg=Object.assign({},S.cfg,{[k]:list});applyCfg();persist('cfg',()=>DB.doc('settings/cfg').set(clone(S.cfg)));render();if(msg)toast(msg)}
 function cfgAct(act,k,i){if(S.readOnly){toast('보기 권한이라 바꿀 수 없어요');return}
-  const list=(k==='teams'?TEAMS:ROLES).slice(),fld=k==='teams'?'team':'role',name=k==='teams'?'반':'직책';
+  const list=({teams:TEAMS,inCats:IN_CATS,outCats:OUT_CATS}[k]||ROLES).slice(),fld=k==='teams'?'team':k==='roles'?'role':null,name={teams:'반',inCats:'수입 항목',outCats:'지출 항목'}[k]||'직책',lt=k==='inCats'?'in':'out';
   if(act==='cfgadd'){const inp=$('#cfg-'+k),v=(inp&&inp.value||'').trim();if(!v)return;if(list.includes(v)){toast(`‘${v}’ ${name}은 이미 있어요`);return}list.push(v);setCfgList(k,list,`${name} ‘${v}’을 추가했어요`);const n=$('#cfg-'+k);if(n)n.focus();return}
   const old=list[i];if(old==null)return;
   if(act==='cfgup'){if(i>0){list.splice(i,1);list.splice(i-1,0,old);setCfgList(k,list)}return}
-  if(act==='cfgdel'){const used=S.members.filter(m=>m[fld]===old).length;
-    if(used&&!confirm(`‘${old}’ ${name} 학생이 ${used}명 있어요. 목록에서만 빼고, 그 학생들의 ${name}은 그대로 둘까요?`))return;list.splice(i,1);setCfgList(k,list,`${name} ‘${old}’을 뺐어요`);return}
+  if(act==='cfgdel'){if(!fld&&list.length<=1){toast(`${name}은 하나 이상 있어야 해요`);return}
+    const used=fld?S.members.filter(m=>m[fld]===old).length:S.ledger.filter(x=>x.type===lt&&x.cat===old).length;
+    if(used&&!confirm(fld?`‘${old}’ ${name} 학생이 ${used}명 있어요. 목록에서만 빼고, 그 학생들의 ${name}은 그대로 둘까요?`:`‘${old}’로 적은 내역이 ${used}건 있어요. 목록에서만 빼고, 적은 내역은 그대로 둘까요?`))return;list.splice(i,1);setCfgList(k,list,`${name} ‘${old}’을 뺐어요`);return}
   if(act==='cfgren'){const v=(prompt(`‘${old}’의 새 이름`,old)||'').trim();if(!v||v===old)return;if(list.includes(v)){toast(`‘${v}’ ${name}은 이미 있어요`);return}
-    list[i]=v;let n=0;S.members.forEach(m=>{if(m[fld]===old){saveMember(Object.assign({},m,{[fld]:v}));n++}});setCfgList(k,list,`‘${old}’ → ‘${v}’ 로 바꿨어요${n?` (학생 ${n}명도 함께)`:''}`)}}
+    if(k==='teams'&&S.cfg.teachers&&S.cfg.teachers[old]){const T=Object.assign({},S.cfg.teachers);T[v]=T[old];delete T[old];S.cfg=Object.assign({},S.cfg,{teachers:T})}
+    list[i]=v;let n=0;if(fld)S.members.forEach(m=>{if(m[fld]===old){saveMember(Object.assign({},m,{[fld]:v}));n++}});else S.ledger.filter(x=>x.type===lt&&x.cat===old).forEach(x=>{saveLedger(Object.assign({},x,{cat:v}));n++});
+    setCfgList(k,list,`‘${old}’ → ‘${v}’ 로 바꿨어요${n?fld?` (학생 ${n}명도 함께)`:` (내역 ${n}건도 함께)`:''}`)}}
 /* ---------- 학생 명부 ---------- */
 function vMembers(){
   const e0=UI.mEdit?S.members.find(m=>m.id===UI.mEdit):null;
@@ -1135,6 +1177,20 @@ function vTalents(){
   ${list.map(m=>{const x=sums[m.id];return `<tr><td>${nmLink(m)} ${praiseTag(m)}</td><td>${teamChip(m.team)||'<span class="sub">—</span>'}</td><td class="mono">${x.stamps}개</td><td class="mono">${x.att}</td><td class="mono">${x.week}</td><td class="mono">${x.event}</td><td class="mono">${x.use?x.use:'—'}</td><td class="tal">${x.total}</td></tr>`}).join('')||'<tr><td colspan="8" class="sub">이 반에는 학생이 없어요.</td></tr>'}
   </tbody></table></div>`;
   return h}
+/* ---------- 반 ---------- */
+function vClasses(){
+  const act=sortedMembers(),byKo=(a,b)=>String(a.name).localeCompare(String(b.name),'ko');
+  let h=`<div class="head"><div><h2>반</h2><div class="sub">학생 명부의 반대로 모아 보여요. 찬양팀은 반과 겹쳐도 따로 모아요. 이름을 누르면 개인 페이지로 가요.</div></div><a class="btn" href="#settings">⚙️ 반·담임 설정</a></div>`;
+  if(!act.length)return h+`<div class="panel empty"><strong>등록된 학생이 없어요</strong>학생 명부에 학생을 등록하세요.<div style="margin-top:14px"><a class="btn primary" href="#members">학생 등록하러 가기</a></div></div>`;
+  const opts=`<option value="">반 고르기</option>`+TEAMS.map(t=>`<option>${esc(t)}</option>`).join('');
+  const card=g=>`<div class="panel clscard"><div class="ch">${grpTitle(g)}<span class="cnt">${g.list.length}명</span></div>
+    ${g.praise?'':g.key==='none'?(TEAMS.length?'<div class="tch">반을 고르면 바로 그 반으로 옮겨져요</div>':'<div class="tch"><a href="#settings">설정</a>에서 반을 먼저 등록하세요</div>'):`<div class="tch">${tchText(g.key)||'담임 미정 · <a href="#settings">등록하기</a>'}</div>`}
+    <div class="stus">${g.key==='none'&&TEAMS.length?g.list.sort(byKo).map(m=>`<div class="asg">${nmLink(m)}<select class="f" data-act="asgn" data-id="${m.id}" aria-label="${esc(m.name)} 반 배정" data-w>${opts}</select></div>`).join(''):g.list.sort(byKo).map(m=>`${nmLink(m)}`).join('')}</div></div>`;
+  const gs=TEAMS.map(t=>({key:t,list:act.filter(m=>m.team===t)}));
+  const none=act.filter(m=>!m.team||!TEAMS.includes(m.team));if(none.length)gs.push({key:'none',list:none});
+  gs.push({key:'praise',praise:true,list:act.filter(m=>m.praise)});
+  return h+`<div class="clsgrid">${gs.map(card).join('')}</div>`}
+
 /* ---------- 학생 개인 페이지 ---------- */
 function vStudent(){
   const m=S.members.find(x=>x.id===UI.stu);
@@ -1144,6 +1200,9 @@ function vStudent(){
   let h=`<div class="stuhead"><div><a href="#members" class="sub">‹ 학생 명부</a><h2>${esc(m.name)} ${m.former?'<span class="oldtag">(구)</span>':''}</h2>
     <div class="row" style="gap:8px">${esc(TNAME)} ${teamChip(m.team)} ${praiseTag(m)} ${m.bday?`<span class="sub mono">생일 ${esc(m.bday)}</span>`:''}</div></div>
     <button class="btn ghost" data-act="medit2" data-id="${m.id}" data-w>정보 수정</button></div>
+  <div class="panel" style="padding:16px;margin-bottom:16px"><b>연락처 · 주소</b> <span class="sub">입력하면 바로 이 기기에 저장돼요</span>
+   <div class="infogrid">${[['phone','학생 핸드폰','010-0000-0000',1],['mom','어머니 핸드폰','010-0000-0000',1],['dad','아버지 핸드폰','010-0000-0000',1],['school','학교 · 학년','예) 새빛초등학교 3학년'],['addr','주소','예) 서울시 ○○구 ○○로 12, 101동 203호',0,1],['memo','메모','예) 알레르기, 차량 이용 등',0,1]].map(([k,l,ph,tel,wide])=>{const v=m[k]||'',d=String(v).replace(/[^0-9]/g,'');
+     return `<label class="lb ${wide?'wide':''}">${l}<span class="row" style="gap:6px"><input class="f ${tel?'mono':''}" ${tel?'type="tel" inputmode="tel"':''} data-act="mf" data-id="${m.id}" data-k="${k}" value="${esc(v)}" placeholder="${ph}" maxlength="${wide?120:40}" aria-label="${l}" data-w>${tel&&d.length>=9?`<a class="btn sm tellink" href="tel:${d}" title="전화 걸기" aria-label="${l}로 전화 걸기">📞</a>`:''}</span></label>`}).join('')}</div></div>
   <div class="cards"><div class="card"><div class="k">출석도장</div><div class="v">${x.stamps}<small>개</small></div></div><div class="card"><div class="k">달란트 잔액</div><div class="v">${x.total}</div></div>
    <div class="card"><div class="k">받은 달란트</div><div class="v">${x.att+x.week+x.event}<small>출석 ${x.att} · 매주 ${x.week} · 건별 ${x.event}</small></div></div><div class="card"><div class="k">사용</div><div class="v">${-x.use}</div></div></div>
   <div class="panel" style="padding:16px;margin-bottom:16px"><b>건별 달란트 주기</b> <span class="sub">항목을 누르면 설정한 달란트가 바로 쌓여요</span>
@@ -1180,7 +1239,7 @@ function vStats(){
   const tot=avg(all);
   h+=`<div class="cards"><div class="card"><div class="k">${period} 전체</div><div class="v">${pct(tot.r)}<small>${tot.n}건</small></div></div>
   ${TEAMS.map(t=>{const x=avg(all.filter(m=>m.team===t));return `<div class="card"><div class="k">${t}</div><div class="v">${pct(x.r)}<small>${x.n}건</small></div></div>`}).join('')}</div>
-  <div class="row" style="margin-bottom:10px;justify-content:space-between">${teamFilter(UI.statTeam,'steam')}${hasFormer?`<button class="chipbtn" data-act="sformer" aria-pressed="${UI.statFormer}">(구)학생 함께 보기</button>`:''}</div>
+  <div class="row" style="margin-bottom:10px;justify-content:space-between">${teamFilter(UI.statTeam,'steam',true)}${hasFormer?`<button class="chipbtn" data-act="sformer" aria-pressed="${UI.statFormer}">(구)학생 함께 보기</button>`:''}</div>
   <div class="grid-wrap"><table class="sg"><thead><tr><th class="nmc">이름</th>${dates.map(d=>`<th class="d ${d>today?'future':''}" title="${fmtLong(d)}">${fmtShort(d)}</th>`).join('')}<th style="text-align:left;border-left:1px solid var(--line)">${period} 출석률</th>${UI.statMode!=='all'?'<th style="text-align:left">누적</th>':''}</tr></thead><tbody>`;
   for(const m of list){
     const x=rateOf(m.id,dates),c=rateOf(m.id,WEDS);
@@ -1840,7 +1899,6 @@ async function saveAlbumEditor(){
 const won=n=>(Math.round(+n||0)).toLocaleString('ko-KR')+'원';
 const parseAmt=s=>+String(s??'').replace(/[^\d]/g,'')||0;
 const moLabel=mo=>`${mo.slice(0,4)}.${mo.slice(5)}`;
-const IN_CATS=['회비','후원','이자','기타수입'],OUT_CATS=['간식','회식','행사','기타지출'];
 
 // fee rules per year: {monthly, annual}; null = 미정. Amounts are looked up at calculation time,
 // so entering a rule later applies to payments already checked.
@@ -1849,9 +1907,8 @@ function duesOf(mo){const d=S.dues[mo],p=(d&&d.paid)||{},fee=rule(mo.slice(0,4),
 function annualOf(y){const d=S.dues['Y'+y],p=(d&&d.paid)||{},fee=rule(y,'annual')||0;const list=Object.keys(p).filter(k=>p[k]);return{n:list.length,sum:list.length*fee,paid:p,fee}}
 // annual dues count as income in the month they were checked
 function annualIn(mo){let s=0;YEARS.forEach(y=>{const a=annualOf(y);for(const k in a.paid){const r=a.paid[k];if(r&&(r.at||(y+'-01')).startsWith(mo))s+=a.fee}});return s}
-function acctMonths(){const set=new Set(MONTHS);S.ledger.forEach(x=>x.date&&set.add(x.date.slice(0,7)));Object.keys(S.dues).filter(k=>!k.startsWith('Y')).forEach(k=>set.add(k));
-  YEARS.forEach(y=>{const p=annualOf(y).paid;for(const k in p)if(p[k]&&p[k].at)set.add(p[k].at.slice(0,7))});return[...set].sort()}
-function acctRows(){let bal=+S.acct.carry||0;return acctMonths().map(mo=>{const du=duesOf(mo).sum+annualIn(mo);
+function acctMonths(){const set=new Set(MONTHS);S.ledger.forEach(x=>x.date&&set.add(x.date.slice(0,7)));return[...set].sort()}
+function acctRows(){let bal=+S.acct.carry||0;return acctMonths().map(mo=>{const du=0;
   const inc=S.ledger.filter(x=>x.type==='in'&&(x.date||'').startsWith(mo)).reduce((a,x)=>a+(+x.amount||0),0);
   const out=S.ledger.filter(x=>x.type==='out'&&(x.date||'').startsWith(mo)).reduce((a,x)=>a+(+x.amount||0),0);
   bal+=du+inc-out;return{mo,du,inc,out,bal}})}
@@ -1861,32 +1918,13 @@ function vAcct(){
   const balance=(+S.acct.carry||0)+tot.du+tot.inc-tot.out;
   const act=sortedMembers(),curD=duesOf(cur);
   const rpm=UI.rpMonth||cur;
-  let h=`<div class="head"><div><h2>회계</h2><div class="sub">월별 회비 납부 · 수입/지출 내역 · 회비 잔액</div></div>
+  let h=`<div class="head"><div><h2>회계</h2><div class="sub">수입/지출 내역 · 잔액 · 월말 회계보고</div></div>
    <div class="row"><select class="f" id="rp-month" aria-label="보고서 월">${acctMonths().map(mo=>`<option value="${mo}" ${mo===rpm?'selected':''}>${moLabel(mo)}</option>`).join('')}</select><button class="btn primary" data-act="rpt">월말 회계보고 JPG</button></div></div>
-  <div class="cards"><div class="card"><div class="k">현재 회비 잔액</div><div class="v ${balance<0?'neg':''}">${won(balance)}</div></div>
-   <div class="card"><div class="k">${+cur.slice(5)}월 회비 납부</div><div class="v">${act.filter(m=>curD.paid[m.id]).length}<small>/ ${act.length}명 · ${won(curD.sum)}</small></div></div>
+  <div class="cards"><div class="card"><div class="k">현재 잔액</div><div class="v ${balance<0?'neg':''}">${won(balance)}</div></div>
    <div class="card"><div class="k">${+cur.slice(5)}월 수입 내역</div><div class="v pos">${won(cr.inc)}</div></div>
    <div class="card"><div class="k">${+cur.slice(5)}월 지출</div><div class="v neg">${won(cr.out)}</div></div></div>`;
 
-  // 1. 월별 회비 납부
-  const shown=[...act,...sortedMembers('all','former').filter(m=>MONTHS.some(mo=>duesOf(mo).paid[m.id])||YEARS.some(y=>annualOf(y).paid[m.id]))].sort((a,b)=>String(a.name).localeCompare(String(b.name),'ko'));
-  h+=`<h3 class="sech">월별 회비 납부 <span class="sub">칸을 누르면 납부 / 미납이 바뀌어요</span></h3>
-  <div class="panel rules"><div class="rules-h"><b>회비 규정</b><span class="sub">비워 두면 ‘미정’이에요. 회의 후 금액을 입력하면 이미 체크한 납부에도 바로 적용돼요.</span></div>
-   <div class="rules-g">${YEARS.map(y=>`<div class="ry"><span class="ryl mono">${y}년</span>
-     <label class="lb">월회비<input class="f mono amt" id="ac-r-${y}-monthly" inputmode="numeric" placeholder="미정" value="${rule(y,'monthly')==null?'':rule(y,'monthly').toLocaleString('ko-KR')}" data-w></label>
-     <label class="lb">연회비<input class="f mono amt" id="ac-r-${y}-annual" inputmode="numeric" placeholder="미정" value="${rule(y,'annual')==null?'':rule(y,'annual').toLocaleString('ko-KR')}" data-w></label></div>`).join('')}
-     <div class="ry"><span class="ryl">이월</span><label class="lb">기초 잔액 (이월금)<input class="f mono amt" id="ac-carry" inputmode="numeric" value="${(+S.acct.carry||0).toLocaleString('ko-KR')}" data-w></label></div></div></div>`;
-  if(!shown.length)h+=`<div class="panel empty"><strong>학생이 없어요</strong>학생 명부에 학생을 등록하면 회비 납부표가 만들어져요.</div>`;
-  else{
-    h+=`<div class="grid-wrap"><table class="sg dues"><thead><tr><th class="nmc">이름</th>${MONTHS.map(mo=>`<th class="d ${mo===cur?'curm':''}">${mo.slice(2,4)}.${mo.slice(5)}</th>`).join('')}<th style="border-left:1px solid var(--line)">월회비<br>납부</th>${YEARS.map((y,i)=>`<th class="d yr ${i===0?'ysep':''}">${y.slice(2)}년<br>연회비</th>`).join('')}</tr></thead><tbody>`;
-    for(const m of shown){let cnt=0;
-      h+=`<tr class="${m.former?'former':''}"><td class="nmc"><b>${esc(m.name)}</b>${m.former?' <span class="oldtag">(구)</span>':''} ${teamChip(m.team)}</td>`+MONTHS.map(mo=>{const p=duesOf(mo).paid[m.id];if(p)cnt++;
-        return `<td class="d ${mo===cur?'curm':''}"><button class="dk ${p?'on':''}" data-act="due" data-id="${m.id}" data-v="${mo}" aria-pressed="${!!p}" aria-label="${esc(m.name)} ${moLabel(mo)} ${p?'납부':'미납'}" title="${p?`납부${p.at?' ('+p.at+')':''}`:'미납'}" data-w>${p?'✓':''}</button></td>`}).join('')+
-        `<td class="mono" style="border-left:1px solid var(--line)">${cnt}회</td>`+
-        YEARS.map((y,i)=>{const p=annualOf(y).paid[m.id];return `<td class="d yr ${i===0?'ysep':''}"><button class="dk ${p?'on':''}" data-act="dueY" data-id="${m.id}" data-v="${y}" aria-pressed="${!!p}" aria-label="${esc(m.name)} ${y}년 연회비 ${p?'납부':'미납'}" title="${p?`납부${p.at?' ('+p.at+')':''}`:'미납'}" data-w>${p?'✓':''}</button></td>`}).join('')+`</tr>`}
-    h+=`</tbody><tfoot><tr><td class="nmc">납부 인원 / 금액</td>${MONTHS.map(mo=>{const d=duesOf(mo);return `<td class="d ${mo===cur?'curm':''}">${d.n?`${d.n}명${d.fee?`<br>${(d.sum/10000).toLocaleString('ko-KR',{maximumFractionDigits:1})}만`:''}`:''}</td>`}).join('')}<td style="border-left:1px solid var(--line)"></td>${YEARS.map((y,i)=>{const a=annualOf(y);return `<td class="d yr ${i===0?'ysep':''}">${a.n?`${a.n}명${a.fee?`<br>${(a.sum/10000).toLocaleString('ko-KR',{maximumFractionDigits:1})}만`:''}`:''}</td>`}).join('')}</tr></tfoot></table></div>
-    ${YEARS.some(y=>rule(y,'monthly')==null||rule(y,'annual')==null)?`<p class="sub" style="margin-top:8px">금액이 ‘미정’인 회비는 납부 체크만 기록되고 잔액에는 0원으로 계산돼요. 회비 규정에 금액을 넣으면 자동으로 반영돼요.</p>`:''}`;
-  }
+  h+=`<div class="panel rules"><div class="rules-g"><div class="ry"><span class="ryl">이월</span><label class="lb">기초 잔액 (이월금)<input class="f mono amt" id="ac-carry" inputmode="numeric" value="${(+S.acct.carry||0).toLocaleString('ko-KR')}" data-w></label></div></div></div>`;
 
   // 2. 수입 / 지출 내역
   const months=acctMonths(),f=UI.acFilter||'all';
@@ -1906,18 +1944,18 @@ function vAcct(){
       :`<div class="led"><button class="ledbtn" data-act="ledit" data-id="${x.id}" title="눌러서 고치기" data-w><span class="ld mono">${esc((x.date||'').slice(5).replace('-','.'))}</span><span class="lt"><span>${esc(x.desc)}</span>${x.cat?`<span class="sub">${esc(x.cat)}</span>`:''}</span><span class="la mono ${t==='in'?'pos':'neg'}">${t==='in'?'+':'−'}${won(x.amount)}</span></button>
       ${UI.ledDel===x.id?`<span class="row"><button class="btn danger" data-act="ldel2" data-id="${x.id}" data-w>삭제</button><button class="btn" data-act="ldel0">취소</button></span>`:`<button class="btn ghost icon" data-act="ldel" data-id="${x.id}" aria-label="삭제" title="삭제" data-w>×</button>`}</div>`).join(''):`<div class="sub" style="padding:10px 0">${f==='all'?'아직':moLabel(f)+'에'} 적은 ${t==='in'?'수입':'지출'}이 없어요.</div>`}
       <div class="ledsum"><span>${t==='in'?'수입':'지출'} 합계</span><b class="mono ${t==='in'?'pos':'neg'}">${won(sum)}</b></div></div>`};
-  h+=`<h3 class="sech">수입 · 지출 내역 <span class="sub">납부표에 체크한 회비는 자동으로 계산돼요. 납부표 밖에서 받은 회비나 그 밖의 수입, 지출을 여기에 적으세요.</span></h3>
+  h+=`<h3 class="sech">수입 · 지출 내역 <span class="sub">교회 예산·후원 같은 수입과 간식·행사 같은 지출을 적으세요. 항목은 <a href="#settings">⚙️ 설정</a>에서 정해요.</span></h3>
   <div class="row" style="margin-bottom:10px"><select class="f" id="ac-filter" aria-label="기간">${['all',...months].map(mo=>`<option value="${mo}" ${mo===f?'selected':''}>${mo==='all'?'전체 기간':moLabel(mo)}</option>`).join('')}</select></div>
   <div class="ledgrid"><div class="panel ledp"><div class="ledh pos">수입 내역</div>${form('in')}${items('in')}</div>
   <div class="panel ledp"><div class="ledh neg">지출 내역</div>${form('out')}${items('out')}</div></div>`;
 
-  // 3. 회비 잔액
-  const used=rows.filter(r=>r.du||r.inc||r.out||r.mo<=cur);
-  h+=`<h3 class="sech">회비 잔액</h3>
-  <div class="panel balf"><span>기초 잔액 <b class="mono">${won(S.acct.carry)}</b></span><span>+ 회비 (납부표) <b class="mono pos">${won(tot.du)}</b></span><span>+ 수입 내역 <b class="mono pos">${won(tot.inc)}</b></span><span>− 지출 <b class="mono neg">${won(tot.out)}</b></span><span class="eq">= 잔액 <b class="mono">${won(balance)}</b></span></div>
-  <div class="panel tbl-wrap" style="margin-top:10px"><table class="tbl num"><thead><tr><th>월</th><th>회비 (납부표)</th><th>수입 내역</th><th>지출</th><th>월말 잔액</th></tr></thead><tbody>
-  ${used.map(r=>`<tr class="${r.mo===cur?'currow':''}"><td class="mono">${moLabel(r.mo)}</td><td class="mono">${r.du?won(r.du):'—'}</td><td class="mono">${r.inc?won(r.inc):'—'}</td><td class="mono">${r.out?'−'+won(r.out):'—'}</td><td class="mono ${r.bal<0?'neg':''}"><b>${won(r.bal)}</b></td></tr>`).join('')}
-  </tbody><tfoot><tr><td>합계</td><td class="mono">${won(tot.du)}</td><td class="mono">${won(tot.inc)}</td><td class="mono">−${won(tot.out)}</td><td class="mono"><b>${won(balance)}</b></td></tr></tfoot></table></div>`;
+  // 3. 잔액
+  const used=rows.filter(r=>r.inc||r.out||r.mo<=cur);
+  h+=`<h3 class="sech">잔액</h3>
+  <div class="panel balf"><span>기초 잔액 <b class="mono">${won(S.acct.carry)}</b></span><span>+ 수입 내역 <b class="mono pos">${won(tot.inc)}</b></span><span>− 지출 <b class="mono neg">${won(tot.out)}</b></span><span class="eq">= 잔액 <b class="mono">${won(balance)}</b></span></div>
+  <div class="panel tbl-wrap" style="margin-top:10px"><table class="tbl num"><thead><tr><th>월</th><th>수입 내역</th><th>지출</th><th>월말 잔액</th></tr></thead><tbody>
+  ${used.map(r=>`<tr class="${r.mo===cur?'currow':''}"><td class="mono">${moLabel(r.mo)}</td><td class="mono">${r.inc?won(r.inc):'—'}</td><td class="mono">${r.out?'−'+won(r.out):'—'}</td><td class="mono ${r.bal<0?'neg':''}"><b>${won(r.bal)}</b></td></tr>`).join('')}
+  </tbody><tfoot><tr><td>합계</td><td class="mono">${won(tot.inc)}</td><td class="mono">−${won(tot.out)}</td><td class="mono"><b>${won(balance)}</b></td></tr></tfoot></table></div>`;
   return h;
 }
 
@@ -2056,7 +2094,7 @@ function buildPdf(imgs){
   return new Blob(parts,{type:'application/pdf'});
 }
 /* --- accounting auto-save --- */
-function ledDraft(t){UI.ledDrafts=UI.ledDrafts||{};return UI.ledDrafts[t]||(UI.ledDrafts[t]={date:todayStr(),cat:(t==='in'?IN_CATS:OUT_CATS)[0],desc:'',amt:''})}
+function ledDraft(t){UI.ledDrafts=UI.ledDrafts||{};const cats=t==='in'?IN_CATS:OUT_CATS,d=UI.ledDrafts[t]||(UI.ledDrafts[t]={date:todayStr(),cat:cats[0],desc:'',amt:''});if(!cats.includes(d.cat))d.cat=cats[0];return d}
 function tryAutoAdd(t,loud){
   const d=ledDraft(t),desc=d.desc.trim(),amount=parseAmt(d.amt);
   if(S.readOnly){if(loud)toast('보기 권한이라 저장할 수 없어요');return}
@@ -2101,21 +2139,14 @@ async function drawReport(mo){
   const empty=s=>op(52,(c,y0)=>txt(c,s,M+110,y0+34,`400 22px ${SANS}`,C.muted));
   op(16,()=>{});
   section('수입',row.du+row.inc,C.ok);
-  const fee=d.fee;line('',`월회비 (${d.n}명${fee?` × ${won(fee)}`:', 금액 미정'})`,'',won(d.sum),C.ok);
-  if(annualPayers.length){const byY={};annualPayers.forEach(a=>{(byY[a.y]=byY[a.y]||[]).push(a)});Object.keys(byY).forEach(k=>{const a=byY[k],f=a[0].fee;line('',`${k}년 연회비 (${a.length}명${f?` × ${won(f)}`:', 금액 미정'})`,a.map(x=>x.name).join(', '),won(a.length*f),C.ok)})}
+  if(!ins.length)empty('이번 달 수입이 없어요.');
   ins.forEach(x=>line(x.date.slice(5).replace('-','.'),x.desc,x.cat,'+'+won(x.amount),C.ok));
   op(28,()=>{});
   section('지출',row.out,C.no);
   if(!outs.length)empty('이번 달 지출이 없어요.');
   outs.forEach(x=>line(x.date.slice(5).replace('-','.'),x.desc,x.cat,'−'+won(x.amount),C.no));
   op(28,()=>{});
-  // dues status
-  const byName=[...act].sort((a,b)=>String(a.name).localeCompare(String(b.name),'ko'));const paid=byName.filter(x=>d.paid[x.id]).map(x=>x.name),unpaid=byName.filter(x=>!d.paid[x.id]).map(x=>x.name);
-  op(64,(c,y0)=>txt(c,`${+m}월 월회비 납부 현황`,M,y0+40,`600 30px ${SANS}`,C.ink));
-  op(10,(c,y0)=>{c.fillStyle=C.ink;c.fillRect(M,y0,CW,2)});
-  [['납부',paid,C.ok],['미납',unpaid,C.no]].forEach(([k,ns,col])=>{const lf=`400 24px ${SANS}`,lines=wrap(ns.length?ns.join(', '):'없음',lf,CW-170);const h=lines.length*36+24;
-    op(h,(c,y0)=>{txt(c,`${k} ${ns.length}명`,M,y0+36,`600 24px ${SANS}`,col);lines.forEach((ln,i)=>txt(c,ln,M+170,y0+36+i*36,lf,C.ink))})});
-  op(40,()=>{});
+  op(12,()=>{});
   op(40,(c,y0)=>txt(c,`기초 잔액 ${won(S.acct.carry)}부터 누적 계산한 금액이에요.`,M,y0+26,`400 20px ${SANS}`,C.muted));
   const H=yy+M-40;const cv=document.createElement('canvas');cv.width=W;cv.height=H;const c=cv.getContext('2d');
   c.fillStyle='#ffffff';c.fillRect(0,0,W,H);c.textBaseline='alphabetic';ops.forEach(f=>f(c));return cv;
@@ -2335,6 +2366,7 @@ view.addEventListener('change',e=>{
   else if(t.id==='att-day'){S.cfg=Object.assign({},S.cfg,{day:+t.value});UI.attDate=null;buildDates();UI.attDate=defaultWed();UI.statMonth=UI.attDate.slice(0,7);
     persist('cfg',()=>DB.doc('settings/cfg').set(clone(S.cfg)));t.blur();render();toast('이제 매주 '+dayName()+'에 출석을 체크해요')}
   else if(t.dataset&&t.dataset.act==='itf'&&t.dataset.k==='kind'){setItems(ITEMS.map(x=>x.id===t.dataset.id?Object.assign({},x,{kind:t.value}):x),'주는 방법을 바꿨어요',true)}
+  else if(t.dataset&&t.dataset.act==='asgn'){const m=S.members.find(x=>x.id===t.dataset.id);if(!m||!t.value)return;saveMember(Object.assign({},m,{team:t.value}));t.blur();render();toast(`${m.name} 학생을 ${t.value}에 넣었어요`)}
   else if(t.id==='st-month'){UI.stMonth=t.value;render()}
   else if(t.id==='att-other'){if(!t.value)return;UI.attDate=t.value;t.blur();render()}
   else if(t.id==='s-month'){UI.statMonth=t.value;render()}
@@ -2358,6 +2390,9 @@ view.addEventListener('change',e=>{
 view.addEventListener('input',e=>{
   const t=e.target;
   if(t.dataset.act==='note'){const r=attRec(UI.attDate);const cur=Object.assign({s:null},r[t.dataset.id]||{});cur.note=t.value;r[t.dataset.id]=cur;saveAtt(UI.attDate,700);return}
+  if(t.dataset.act==='tch'){const T=Object.assign({},S.cfg.teachers||{}),c=t.dataset.cls;T[c]=Object.assign({},T[c]||{},{[t.dataset.k]:t.value.trim()});S.cfg=Object.assign({},S.cfg,{teachers:T});saveCfg(600);return}
+  if(t.dataset.act==='mf'){const m=S.members.find(x=>x.id===t.dataset.id);if(!m)return;const n=Object.assign({},m,{[t.dataset.k]:t.value});
+    const i=S.members.findIndex(x=>x.id===m.id);S.members[i]=n;persist('m:'+m.id,()=>DB.collection('members').doc(m.id).set(strip(S.members.find(x=>x.id===m.id)||n)),600);return}
   if(t.dataset.act==='itf'&&t.dataset.k!=='kind'){const k=t.dataset.k;setItems(ITEMS.map(x=>x.id===t.dataset.id?Object.assign({},x,{[k]:k==='amt'?Math.round(+t.value||0):t.value.trim()||x.name}):x));return}
   if(t.id==='ed-search'){filterPick(t.value);return}
   if(t.id==='al-label'){const l=(S.albumLines||[]).find(x=>x.id===UI.aLineSel);if(!l)return;l.label=t.value;S.albumLines=[...S.albumLines];saveLines(600);
@@ -2441,11 +2476,13 @@ function normBday(s){s=String(s||'').trim();if(!s)return'';
   if(p.length===1){const d=p[0];if(d.length===8)p=[d.slice(2,4),d.slice(4,6),d.slice(6)];else if(d.length===6)p=[d.slice(0,2),d.slice(2,4),d.slice(4)];else return s}
   if(p.length!==3)return s;let[y,m,d]=p;if(y.length===4)y=y.slice(2);if(y.length!==2)return s;return y+'-'+m.padStart(2,'0')+'-'+d.padStart(2,'0')}
 // birthday auto-format: 980321 -> 98-03-21
+const fmtPhone=v=>{const d=String(v||'').replace(/[^0-9]/g,'');if(d.length===11)return d.replace(/(\d{3})(\d{4})(\d{4})/,'$1-$2-$3');if(d.length===10)return d.startsWith('02')?d.replace(/(\d{2})(\d{4})(\d{4})/,'$1-$2-$3'):d.replace(/(\d{3})(\d{3})(\d{4})/,'$1-$2-$3');if(d.length===9&&d.startsWith('02'))return d.replace(/(\d{2})(\d{3})(\d{4})/,'$1-$2-$3');return v};
 view.addEventListener('blur',e=>{if(e.target.id==='m-bday')e.target.value=normBday(e.target.value);
+  if(e.target.dataset&&e.target.dataset.act==='mf'){const t=e.target;if(t.type==='tel'){const f=fmtPhone(t.value);if(f!==t.value){t.value=f;t.dispatchEvent(new Event('input',{bubbles:true}))}}}
   if(e.target.classList&&e.target.classList.contains('amt')&&e.target.value.trim()){e.target.value=parseAmt(e.target.value).toLocaleString('ko-KR')}},true);
 
 /* ---------- routing ---------- */
-const VIEWS=['attendance','stamps','talents','settings','calendar','acct','minutes','groups','members','stats'];
+const VIEWS=['attendance','stamps','talents','settings','calendar','acct','minutes','classes','members','stats'];
 function route(){const h=decodeURIComponent(location.hash.slice(1));if(h.startsWith('stu-')){UI.view='student';UI.stu=h.slice(4);UI.awDel=null}else UI.view=VIEWS.includes(h)?h:'attendance';UI.confirmDel=null;render();window.scrollTo(0,0)}
 window.addEventListener('hashchange',route);
 
