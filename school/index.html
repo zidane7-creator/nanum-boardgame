@@ -680,6 +680,14 @@ table.sg td.stc{text-align:center;padding:3px}
 .infogrid .lb .row{flex-wrap:nowrap}
 .infogrid input.f{width:100%;min-width:0}
 .tellink{text-decoration:none;flex:0 0 auto}
+.pch{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.parents{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:10px}
+.pbox{border:2px dashed var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.pbox .pbh{font-weight:700}
+.pbox input.f,.pbox select.f{width:100%;min-width:0}
+.pb2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:760px){.parents{grid-template-columns:1fr}}
+.pch .tchk{font-size:.8rem;padding:1px 9px}
 @media (max-width:760px){.infogrid{grid-template-columns:1fr}}
 </style>
 
@@ -774,11 +782,14 @@ table.sg td.stc{text-align:center;padding:3px}
 const DEF_TEAMS=[],DEF_ROLES=[];
 /* 달란트 항목: kind 'week' = 매주 출석부에서 체크, 'event' = 건별로 개인 페이지에서 부여. 'att'(출석)은 항상 있어요. */
 const DEF_ITEMS=[{id:'att',name:'출석',amt:1,kind:'week',fixed:true},{id:'bible',name:'성경책 가져오기',amt:1,kind:'week'},{id:'evan',name:'전도',amt:5,kind:'event'}];
+const DEF_TITLES=['성도','서리집사','안수집사','권사','장로'],DEF_DEPTS=['찬양대','교회학교 교사','안내','주방 봉사','차량 봉사'];
+let TITLES=DEF_TITLES.slice(),DEPTS=DEF_DEPTS.slice();
 const DEF_IN=['교회 예산','후원','헌금','기타수입'],DEF_OUT=['간식','행사','선물','기타지출'];
 let IN_CATS=DEF_IN.slice(),OUT_CATS=DEF_OUT.slice(),TEAMS=DEF_TEAMS.slice(),ROLES=DEF_ROLES.slice(),TCLS={},ITEMS=DEF_ITEMS.map(x=>Object.assign({},x));
 function applyCfg(){const c=(typeof S!=='undefined'&&S.cfg)||{};
   TEAMS=Array.isArray(c.teams)?c.teams.slice():DEF_TEAMS.slice();ROLES=[];
   TCLS={};TEAMS.forEach((t,i)=>TCLS[t]='t'+(i%8+1));
+  TITLES=Array.isArray(c.titles)?c.titles.slice():DEF_TITLES.slice();DEPTS=Array.isArray(c.depts)?c.depts.slice():DEF_DEPTS.slice();
   IN_CATS=Array.isArray(c.inCats)&&c.inCats.length?c.inCats.slice():DEF_IN.slice();OUT_CATS=Array.isArray(c.outCats)&&c.outCats.length?c.outCats.slice():DEF_OUT.slice();
   ITEMS=(Array.isArray(c.items)&&c.items.length?c.items:DEF_ITEMS).map(x=>Object.assign({},x));
   if(!ITEMS.some(x=>x.id==='att'))ITEMS.unshift(Object.assign({},DEF_ITEMS[0]))}
@@ -840,7 +851,7 @@ const MONTHS=[],YEARS=[];
 /* ---------- state ---------- */
 const S={cfg:{day:3},members:[],att:{},awards:[],minutes:[],events:[],worship:{},prayer:{},pextra:[],notes:[],groups:[],album:[],albumLines:[],dues:{},ledger:[],acct:{fee:10000,carry:0},mode:'init',readOnly:false,loaded:false,loadNote:''};
 buildDates();
-const UI={view:'attendance',attSort:{k:'name',dir:'asc'},talSort:{k:'total',dir:'desc'},stMonth:null,stu:null,statFormer:true,calMonth:todayStr().slice(0,7),calSel:todayStr(),calDel:null,attDate:defaultWed(),attTeam:'all',statMode:'month',statMonth:defaultWed().slice(0,7),statYear:defaultWed().slice(0,4),statTeam:'all',
+const UI={view:'attendance',attSort:{k:'name',dir:'asc'},talSort:{k:'got',dir:'desc'},stMonth:null,stu:null,statFormer:true,calMonth:todayStr().slice(0,7),calSel:todayStr(),calDel:null,attDate:defaultWed(),attTeam:'all',statMode:'month',statMonth:defaultWed().slice(0,7),statYear:defaultWed().slice(0,4),statTeam:'all',
   edId:null,confirmDel:null,confirmMin:false,mEdit:null,mErr:''};
 let ED=null; // minutes draft
 let DB=null;
@@ -936,7 +947,7 @@ function talentLog(mid){const out=[];
   (S.awards||[]).forEach(w=>{if(w.mid===mid)out.push({date:w.date,label:w.name,note:w.note||'',amt:+w.amt||0,kind:(+w.amt<0)?'use':'event',id:w.id,at:w.at||0})});
   return out.sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:(b.at||0)-(a.at||0))}
 function talentSum(mid){const s={att:0,week:0,event:0,use:0,total:0,stamps:0};
-  talentLog(mid).forEach(x=>{s[x.kind]+=x.amt;s.total+=x.amt;if(x.kind==='att')s.stamps++});return s}
+  talentLog(mid).forEach(x=>{s[x.kind]+=x.amt;s.total+=x.amt;if(x.kind==='att')s.stamps++});s.got=s.att+s.week+s.event;return s}
 const stampOf=(mid,d)=>{const r=S.att[d]&&S.att[d].records&&S.att[d].records[mid];return r&&r.s};
 const tnum=n=>(n>0?'+':'')+n;
 function saveMember(m){
@@ -1014,7 +1025,7 @@ function sortBtns(cur,act,opts){return `<div class="sortbar" role="group" aria-l
 
 /* ---------- 출석부 ---------- */
 function sortStudents(list,st){const dir=st.dir==='asc'?1:-1,byName=(a,b)=>String(a.name).localeCompare(String(b.name),'ko');
-  const key={name:byName,cls:(a,b)=>clsIdx(a.team)-clsIdx(b.team),total:(a,b)=>talentSum(a.id).total-talentSum(b.id).total,stamps:(a,b)=>talentSum(a.id).stamps-talentSum(b.id).stamps}[st.k]||byName;
+  const key={name:byName,cls:(a,b)=>clsIdx(a.team)-clsIdx(b.team),got:(a,b)=>talentSum(a.id).got-talentSum(b.id).got,stamps:(a,b)=>talentSum(a.id).stamps-talentSum(b.id).stamps}[st.k]||byName;
   return [...list].sort((a,b)=>(key(a,b)*dir)||byName(a,b))}
 function vAttendance(){
   const d=UI.attDate,rec=(S.att[d]&&S.att[d].records)||{};
@@ -1076,21 +1087,26 @@ function vSettings(){
        <input class="f mono" id="it-amt" type="number" step="1" value="1" style="width:80px" aria-label="달란트">
        <select class="f" id="it-kind" aria-label="주는 방법"><option value="week">매주 · 출석부</option><option value="event">건별 · 개인 페이지</option></select>
        <button class="btn primary" data-act="itadd" data-w>추가</button></div></div>
+   <div><h3 class="sech" style="margin-top:4px">부모님 직분 · 사역부서 <span class="sub">학생 개인 페이지에서 어머니·아버지의 직분과 사역부서를 고를 때 나오는 목록이에요</span></h3>
+   <div class="cfgbox">${cfgBox('titles','직분',TITLES,'예) 권사','앞에 있을수록 먼저 나와요','아직 등록한 직분이 없어요')}${cfgBox('depts','사역부서',DEPTS,'예) 찬양대','앞에 있을수록 먼저 나와요','아직 등록한 사역부서가 없어요')}</div></div>
    <div id="cats"><h3 class="sech" style="margin-top:4px">회계 수입 · 지출 항목 <span class="sub">회계에서 내역을 적을 때 고르는 항목이에요. 앞에 있을수록 먼저 나와요. 이름을 바꾸면 이미 적은 내역도 함께 바뀌어요.</span></h3>
    <div class="cfgbox">${cfgBox('inCats','수입 항목',IN_CATS,'예) 교회 예산','하나 이상 있어야 해요')}${cfgBox('outCats','지출 항목',OUT_CATS,'예) 달란트 시장','하나 이상 있어야 해요')}</div></div>
   </div>`}
 function setItems(list,msg,re){S.cfg=Object.assign({},S.cfg,{items:list});applyCfg();saveCfg(re?0:600);if(re)render();if(msg)toast(msg)}
 function setCfgList(k,list,msg){S.cfg=Object.assign({},S.cfg,{[k]:list});applyCfg();persist('cfg',()=>DB.doc('settings/cfg').set(clone(S.cfg)));render();if(msg)toast(msg)}
 function cfgAct(act,k,i){if(S.readOnly){toast('보기 권한이라 바꿀 수 없어요');return}
-  const list=({teams:TEAMS,inCats:IN_CATS,outCats:OUT_CATS}[k]||ROLES).slice(),fld=k==='teams'?'team':k==='roles'?'role':null,name={teams:'반',inCats:'수입 항목',outCats:'지출 항목'}[k]||'직책',lt=k==='inCats'?'in':'out';
+  const list=({teams:TEAMS,inCats:IN_CATS,outCats:OUT_CATS,titles:TITLES,depts:DEPTS}[k]||ROLES).slice(),fld=k==='teams'?'team':k==='roles'?'role':null,name={teams:'반',inCats:'수입 항목',outCats:'지출 항목',titles:'직분',depts:'사역부서'}[k]||'직책',lt=k==='inCats'?'in':'out';
+  const pf={titles:['momTitle','dadTitle'],depts:['momDept','dadDept']}[k];
   if(act==='cfgadd'){const inp=$('#cfg-'+k),v=(inp&&inp.value||'').trim();if(!v)return;if(list.includes(v)){toast(`‘${v}’ ${name}은 이미 있어요`);return}list.push(v);setCfgList(k,list,`${name} ‘${v}’을 추가했어요`);const n=$('#cfg-'+k);if(n)n.focus();return}
   const old=list[i];if(old==null)return;
   if(act==='cfgup'){if(i>0){list.splice(i,1);list.splice(i-1,0,old);setCfgList(k,list)}return}
-  if(act==='cfgdel'){if(!fld&&list.length<=1){toast(`${name}은 하나 이상 있어야 해요`);return}
+  if(act==='cfgdel'){if(pf){const u=S.members.filter(m=>pf.some(f=>m[f]===old)).length;if(u&&!confirm(`‘${old}’ ${name}으로 적어 둔 부모님이 ${u}명 있어요. 목록에서만 빼고, 적어 둔 것은 그대로 둘까요?`))return;list.splice(i,1);setCfgList(k,list,`${name} ‘${old}’을 뺐어요`);return}
+    if(!fld&&list.length<=1){toast(`${name}은 하나 이상 있어야 해요`);return}
     const used=fld?S.members.filter(m=>m[fld]===old).length:S.ledger.filter(x=>x.type===lt&&x.cat===old).length;
     if(used&&!confirm(fld?`‘${old}’ ${name} 학생이 ${used}명 있어요. 목록에서만 빼고, 그 학생들의 ${name}은 그대로 둘까요?`:`‘${old}’로 적은 내역이 ${used}건 있어요. 목록에서만 빼고, 적은 내역은 그대로 둘까요?`))return;list.splice(i,1);setCfgList(k,list,`${name} ‘${old}’을 뺐어요`);return}
   if(act==='cfgren'){const v=(prompt(`‘${old}’의 새 이름`,old)||'').trim();if(!v||v===old)return;if(list.includes(v)){toast(`‘${v}’ ${name}은 이미 있어요`);return}
     if(k==='teams'&&S.cfg.teachers&&S.cfg.teachers[old]){const T=Object.assign({},S.cfg.teachers);T[v]=T[old];delete T[old];S.cfg=Object.assign({},S.cfg,{teachers:T})}
+    if(pf){list[i]=v;let n=0;S.members.forEach(m=>{const ch={};pf.forEach(f=>{if(m[f]===old)ch[f]=v});if(Object.keys(ch).length){saveMember(Object.assign({},m,ch));n++}});setCfgList(k,list,`‘${old}’ → ‘${v}’ 로 바꿨어요${n?` (학생 ${n}명의 부모님 정보도 함께)`:''}`);return}
     list[i]=v;let n=0;if(fld)S.members.forEach(m=>{if(m[fld]===old){saveMember(Object.assign({},m,{[fld]:v}));n++}});else S.ledger.filter(x=>x.type===lt&&x.cat===old).forEach(x=>{saveLedger(Object.assign({},x,{cat:v}));n++});
     setCfgList(k,list,`‘${old}’ → ‘${v}’ 로 바꿨어요${n?fld?` (학생 ${n}명도 함께)`:` (내역 ${n}건도 함께)`:''}`)}}
 /* ---------- 학생 명부 ---------- */
@@ -1109,7 +1125,7 @@ function vMembers(){
    </div>${UI.mErr?`<div class="err">${esc(UI.mErr)}</div>`:''}
   </form>`;
   if(!S.members.length)return h+`<div class="panel empty"><strong>아직 학생이 없어요</strong>위 칸에 이름, 반, 생일을 입력하고 등록하세요. 반 이름은 ⚙️ 설정에서 먼저 등록할 수 있어요.</div>`;
-  const row=m=>`<tr class="${m.former?'former':''}"><td>${nmLink(m)}${m.former?' <span class="oldtag">(구)</span>':''}</td><td>${esc(TNAME)}</td><td>${teamChip(m.team)||'<span class="sub">—</span>'}</td><td>${m.praise?'<span class="ptag">찬양팀</span>':'<span class="sub">—</span>'}</td><td class="mono">${esc(m.bday)||'<span class="sub">—</span>'}</td><td class="tal">${talentSum(m.id).total}</td>${m.former?`<td class="mono sub">${esc(m.leftAt||'')}</td>`:''}<td class="act">`+
+  const row=m=>`<tr class="${m.former?'former':''}"><td>${nmLink(m)}${m.former?' <span class="oldtag">(구)</span>':''}</td><td>${esc(TNAME)}</td><td>${teamChip(m.team)||'<span class="sub">—</span>'}</td><td>${m.praise?'<span class="ptag">찬양팀</span>':'<span class="sub">—</span>'}</td><td class="mono">${esc(m.bday)||'<span class="sub">—</span>'}</td><td class="tal">${talentSum(m.id).got}</td>${m.former?`<td class="mono sub">${esc(m.leftAt||'')}</td>`:''}<td class="act">`+
       (UI.confirmDel===m.id?`<span class="sub">기록까지 완전히 지울까요? </span><button class="btn danger" data-act="mdel2" data-id="${m.id}" data-w>완전 삭제</button> <button class="btn" data-act="mdel0">취소</button>`
       :m.former?`<button class="btn ghost" data-act="medit" data-id="${m.id}" data-w>수정</button> <button class="btn ghost" data-act="mback" data-id="${m.id}" data-w>현재 학생으로 복귀</button> <button class="btn ghost" data-act="mdel" data-id="${m.id}" data-w>삭제</button>`
       :`<button class="btn ghost" data-act="medit" data-id="${m.id}" data-w>수정</button> <button class="btn ghost" data-act="mformer" data-id="${m.id}" data-w>(구)학생으로</button>`)+`</td></tr>`;
@@ -1120,7 +1136,7 @@ function vMembers(){
   return h+`<p class="sub" style="margin-top:10px">이름을 누르면 학생 개인 페이지(출석도장·달란트)로 가요. 부서를 떠난 학생은 ‘(구)학생으로’를 누르세요. ‘삭제’는 (구)학생에서만 할 수 있고, 통계에서도 사라져요.</p>`;
 }
 // member list sorting. 직책 "내림차순" = 팀장 → 회계 → 서기 → 싱어팀장 → 세션팀장 → 방송팀장 → (직책 없음)
-const SORT_COLS=[['name','이름','asc'],['dept','소속','asc'],['team','반','asc'],['praise','찬양팀','desc'],['bday','생일','asc'],['tal','달란트','desc']];
+const SORT_COLS=[['name','이름','asc'],['dept','소속','asc'],['team','반','asc'],['praise','찬양팀','desc'],['bday','생일','asc'],['tal','모은 달란트','desc']];
 // 공동체: born before Feb 2001 → SM, otherwise VM. YY ≥ 30 is read as 19YY, else 20YY. No birthday → unknown.
 function commOf(m){const b=String(m.bday||'').match(/^(\d{2})-(\d{2})-(\d{2})$/);if(!b)return'';
   const y=(+b[1]>=30?1900:2000)+(+b[1]),mo=+b[2];return (y<2001||(y===2001&&mo<2))?'SM':'VM'}
@@ -1134,7 +1150,7 @@ function sortMembers(list){
     team:(a,b)=>clsIdx(a.team)-clsIdx(b.team),
     dept:()=>0,
     praise:(a,b)=>(a.praise?1:0)-(b.praise?1:0),
-    tal:(a,b)=>talentSum(a.id).total-talentSum(b.id).total,
+    tal:(a,b)=>talentSum(a.id).got-talentSum(b.id).got,
     role:(a,b)=>roleRank(b.role)-roleRank(a.role),          // asc = 방송팀장 … 팀장; desc = 팀장 … 방송팀장
     bday:(a,b)=>String(a.bday||'').slice(3).localeCompare(String(b.bday||'').slice(3)), // by month-day
     comm:(a,b)=>commOf(a).localeCompare(commOf(b))
@@ -1166,15 +1182,16 @@ function vStamps(){
   return h}
 /* ---------- 달란트 관리 ---------- */
 function vTalents(){
-  let h=`<div class="head"><div><h2>달란트 관리</h2><div class="sub">출석도장·출석부 항목·개인 페이지에서 준 달란트가 여기에 쌓여요. 이름을 누르면 내역을 보고 건별 달란트를 주거나 사용할 수 있어요.</div></div><a class="btn" href="#settings">⚙️ 달란트 항목 설정</a></div>`;
+  let h=`<div class="head"><div><h2>달란트 관리</h2><div class="sub">출석도장·출석부 항목·개인 페이지에서 준 달란트를 학생마다 모아 보여요. 이름을 누르면 내역을 보고 건별 달란트를 줄 수 있어요.</div></div><a class="btn" href="#settings">⚙️ 달란트 항목 설정</a></div>`;
   if(!S.members.length)return h+`<div class="panel empty"><strong>등록된 학생이 없어요</strong>학생 명부에 학생을 등록하세요.</div>`;
   const all=sortedMembers(),sums={};all.forEach(m=>sums[m.id]=talentSum(m.id));
-  const tot=all.reduce((a,m)=>{const x=sums[m.id];a.g+=x.att+x.week+x.event;a.u+=x.use;a.b+=x.total;return a},{g:0,u:0,b:0});
-  h+=`<div class="cards"><div class="card"><div class="k">지금까지 준 달란트</div><div class="v">${tot.g}</div></div><div class="card"><div class="k">사용한 달란트</div><div class="v">${-tot.u}</div></div><div class="card"><div class="k">남은 달란트 합계</div><div class="v">${tot.b}</div></div></div>
-  <div class="row" style="justify-content:space-between;margin-bottom:10px;gap:10px">${teamFilter(UI.attTeam,'ateam')}${sortBtns(UI.talSort,'tsort',[['total','잔액'],['name','이름'],['cls','반']])}</div>`;
+  const tot=all.reduce((a,m)=>{const x=sums[m.id];a.g+=x.got;a.s+=x.stamps;return a},{g:0,s:0});
+  const top=all.length?Math.max(...all.map(m=>sums[m.id].got)):0;
+  h+=`<div class="cards"><div class="card"><div class="k">모은 달란트 합계</div><div class="v">${tot.g}<small>${all.length}명</small></div></div><div class="card"><div class="k">한 명 평균</div><div class="v">${all.length?Math.round(tot.g/all.length*10)/10:0}</div></div><div class="card"><div class="k">가장 많이 모은 달란트</div><div class="v">${top}</div></div><div class="card"><div class="k">찍힌 출석도장</div><div class="v">${tot.s}<small>개</small></div></div></div>
+  <div class="row" style="justify-content:space-between;margin-bottom:10px;gap:10px">${teamFilter(UI.attTeam,'ateam')}${sortBtns(UI.talSort,'tsort',[['got','모은 달란트'],['name','이름'],['cls','반']])}</div>`;
   const list=sortStudents(sortedMembers(UI.attTeam),UI.talSort);
-  h+=`<div class="panel tbl-wrap"><table class="tbl"><thead><tr><th>이름</th><th>반</th><th>출석도장</th><th>출석 달란트</th><th>매주 항목</th><th>건별</th><th>사용</th><th>잔액</th></tr></thead><tbody>
-  ${list.map(m=>{const x=sums[m.id];return `<tr><td>${nmLink(m)} ${praiseTag(m)}</td><td>${teamChip(m.team)||'<span class="sub">—</span>'}</td><td class="mono">${x.stamps}개</td><td class="mono">${x.att}</td><td class="mono">${x.week}</td><td class="mono">${x.event}</td><td class="mono">${x.use?x.use:'—'}</td><td class="tal">${x.total}</td></tr>`}).join('')||'<tr><td colspan="8" class="sub">이 반에는 학생이 없어요.</td></tr>'}
+  h+=`<div class="panel tbl-wrap"><table class="tbl"><thead><tr><th>이름</th><th>반</th><th>출석도장</th><th>출석 달란트</th><th>매주 항목</th><th>건별</th><th>모은 달란트</th></tr></thead><tbody>
+  ${list.map(m=>{const x=sums[m.id];return `<tr><td>${nmLink(m)} ${praiseTag(m)}</td><td>${teamChip(m.team)||'<span class="sub">—</span>'}</td><td class="mono">${x.stamps}개</td><td class="mono">${x.att}</td><td class="mono">${x.week}</td><td class="mono">${x.event}</td><td class="tal">${x.got}</td></tr>`}).join('')||'<tr><td colspan="7" class="sub">이 반에는 학생이 없어요.</td></tr>'}
   </tbody></table></div>`;
   return h}
 /* ---------- 반 ---------- */
@@ -1192,6 +1209,14 @@ function vClasses(){
   return h+`<div class="clsgrid">${gs.map(card).join('')}</div>`}
 
 /* ---------- 학생 개인 페이지 ---------- */
+function infoField(m,k,l,ph,tel,wide){const v=m[k]||'',d=String(v).replace(/[^0-9]/g,'');
+  return `<label class="lb ${wide?'wide':''}">${l}<span class="row" style="gap:6px"><input class="f ${tel?'mono':''}" ${tel?'type="tel" inputmode="tel"':''} data-act="mf" data-id="${m.id}" data-k="${k}" value="${esc(v)}" placeholder="${ph}" maxlength="${wide?120:40}" aria-label="${l}" data-w>${tel&&d.length>=9?`<a class="btn sm tellink" href="tel:${d}" title="전화 걸기" aria-label="${l}로 전화 걸기">📞</a>`:''}</span></label>`}
+function parentBox(m,p,l){const ck=p+'Church',sel=(k,list,lab)=>{const v=m[p+k]||'';return `<label class="lb">${lab}<select class="f" data-act="mf" data-id="${m.id}" data-k="${p+k}" aria-label="${l} ${lab}" data-w><option value="">선택 안 함</option>${list.concat(v&&!list.includes(v)?[v]:[]).map(x=>`<option ${x===v?'selected':''}>${esc(x)}</option>`).join('')}</select></label>`};
+  return `<div class="pbox"><div class="pbh">${l}</div>
+    <label class="lb">성함<input class="f" data-act="mf" data-id="${m.id}" data-k="${p}Name" value="${esc(m[p+'Name'])}" maxlength="20" placeholder="${l} 성함" aria-label="${l} 성함" data-w></label>
+    ${infoField(m,p,'핸드폰','010-0000-0000',1)}
+    <div class="lb">교회<div class="pch" role="group" aria-label="${l} 교회">${[['same','같은 교회'],['other','다른 교회'],['none','교회 안 다님']].map(([cv,ct])=>`<button type="button" class="tchk" data-act="pch" data-id="${m.id}" data-k="${ck}" data-v="${cv}" aria-pressed="${m[ck]===cv}" data-w>${m[ck]===cv?'✓ ':''}${ct}</button>`).join('')}</div></div>
+    <div class="pb2">${sel('Title',TITLES,'직분')}${sel('Dept',DEPTS,'사역부서')}</div></div>`}
 function vStudent(){
   const m=S.members.find(x=>x.id===UI.stu);
   if(!m)return `<div class="panel empty"><strong>학생을 찾지 못했어요</strong><a class="btn" href="#members">학생 명부로</a></div>`;
@@ -1201,10 +1226,11 @@ function vStudent(){
     <div class="row" style="gap:8px">${esc(TNAME)} ${teamChip(m.team)} ${praiseTag(m)} ${m.bday?`<span class="sub mono">생일 ${esc(m.bday)}</span>`:''}</div></div>
     <button class="btn ghost" data-act="medit2" data-id="${m.id}" data-w>정보 수정</button></div>
   <div class="panel" style="padding:16px;margin-bottom:16px"><b>연락처 · 주소</b> <span class="sub">입력하면 바로 이 기기에 저장돼요</span>
-   <div class="infogrid">${[['phone','학생 핸드폰','010-0000-0000',1],['mom','어머니 핸드폰','010-0000-0000',1],['dad','아버지 핸드폰','010-0000-0000',1],['school','학교 · 학년','예) 새빛초등학교 3학년'],['addr','주소','예) 서울시 ○○구 ○○로 12, 101동 203호',0,1],['memo','메모','예) 알레르기, 차량 이용 등',0,1]].map(([k,l,ph,tel,wide])=>{const v=m[k]||'',d=String(v).replace(/[^0-9]/g,'');
-     return `<label class="lb ${wide?'wide':''}">${l}<span class="row" style="gap:6px"><input class="f ${tel?'mono':''}" ${tel?'type="tel" inputmode="tel"':''} data-act="mf" data-id="${m.id}" data-k="${k}" value="${esc(v)}" placeholder="${ph}" maxlength="${wide?120:40}" aria-label="${l}" data-w>${tel&&d.length>=9?`<a class="btn sm tellink" href="tel:${d}" title="전화 걸기" aria-label="${l}로 전화 걸기">📞</a>`:''}</span></label>`}).join('')}</div></div>
-  <div class="cards"><div class="card"><div class="k">출석도장</div><div class="v">${x.stamps}<small>개</small></div></div><div class="card"><div class="k">달란트 잔액</div><div class="v">${x.total}</div></div>
-   <div class="card"><div class="k">받은 달란트</div><div class="v">${x.att+x.week+x.event}<small>출석 ${x.att} · 매주 ${x.week} · 건별 ${x.event}</small></div></div><div class="card"><div class="k">사용</div><div class="v">${-x.use}</div></div></div>
+   <div class="infogrid">${[['phone','학생 핸드폰','010-0000-0000',1],['school','학교 · 학년','예) 새빛초등학교 3학년'],['addr','주소','예) 서울시 ○○구 ○○로 12, 101동 203호',0,1],['memo','메모','예) 알레르기, 차량 이용 등',0,1]].map(([k,l,ph,tel,wide])=>infoField(m,k,l,ph,tel,wide)).join('')}</div></div>
+  <div class="panel" style="padding:16px;margin-bottom:16px"><b>부모님</b> <span class="sub">직분·사역부서 목록은 <a href="#settings">⚙️ 설정</a>에서 등록해요</span>
+   <div class="parents">${[['mom','어머니'],['dad','아버지']].map(([p,l])=>parentBox(m,p,l)).join('')}</div></div>
+  <div class="cards"><div class="card"><div class="k">출석도장</div><div class="v">${x.stamps}<small>개</small></div></div><div class="card"><div class="k">모은 달란트</div><div class="v">${x.got}<small>출석 ${x.att} · 매주 ${x.week} · 건별 ${x.event}</small></div></div>
+   ${x.use?`<div class="card"><div class="k">사용</div><div class="v">${-x.use}</div></div><div class="card"><div class="k">남은 달란트</div><div class="v">${x.total}</div></div>`:''}</div>
   <div class="panel" style="padding:16px;margin-bottom:16px"><b>건별 달란트 주기</b> <span class="sub">항목을 누르면 설정한 달란트가 바로 쌓여요</span>
    <div class="row" style="margin:10px 0;gap:8px"><label class="row" style="gap:6px">날짜 <input class="f mono" type="date" id="aw-date" value="${esc(UI.awDate||today)}"></label><input class="f" id="aw-note" placeholder="메모 (예: 김철수 전도)" maxlength="40" style="flex:1;min-width:160px" aria-label="메모"></div>
    <div class="awbtns">${EI.map(it=>`<button class="btn primary" data-act="award" data-v="${esc(it.id)}" data-w>＋ ${esc(it.name)} <span class="mono">${tnum(+it.amt)}</span></button>`).join('')||'<span class="sub">건별 항목이 없어요. <a href="#settings">설정</a>에서 ‘건별’ 항목을 만들어 주세요.</span>'}</div>
@@ -2202,7 +2228,7 @@ view.addEventListener('click',e=>{
     case 'tit':{const r=attRec(UI.attDate);const cur=Object.assign({s:null,note:''},r[id]||{});cur.it=Object.assign({},cur.it||{});const it=itemOf(v);
       if(cur.it[v]!=null&&cur.it[v]!==false)delete cur.it[v];else cur.it[v]=+(it&&it.amt)||0;r[id]=cur;cleanRec(r,id);render();saveAtt(UI.attDate);break}
     case 'asort':{const s=UI.attSort;UI.attSort=s.k===v?{k:v,dir:s.dir==='asc'?'desc':'asc'}:{k:v,dir:v==='stamps'?'desc':'asc'};render();break}
-    case 'tsort':{const s=UI.talSort;UI.talSort=s.k===v?{k:v,dir:s.dir==='asc'?'desc':'asc'}:{k:v,dir:v==='total'?'desc':'asc'};render();break}
+    case 'tsort':{const s=UI.talSort;UI.talSort=s.k===v?{k:v,dir:s.dir==='asc'?'desc':'asc'}:{k:v,dir:v==='got'?'desc':'asc'};render();break}
     case 'stmon':{const j=MONTHS.indexOf(UI.stMonth)+(+v);if(MONTHS[j]){UI.stMonth=MONTHS[j];render()}break}
     case 'stu':location.hash='stu-'+id;break;
     case 'medit2':location.hash='members';setTimeout(()=>{UI.mEdit=id;UI.mDraft=null;UI.mErr='';render();const n=$('#m-name');if(n)n.focus()},0);break;
@@ -2212,6 +2238,7 @@ view.addEventListener('click',e=>{
       const bal=talentSum(UI.stu).total;if(n>bal&&!confirm(`남은 달란트(${bal})보다 많아요. 그래도 사용 처리할까요?`))break;
       const date=($('#aw-date')||{}).value||todayStr(),note=(($('#aw-note')||{}).value||'').trim();UI.awDate=date;
       saveAward({id:uid(),mid:UI.stu,item:'use',name:'달란트 사용',amt:-n,date,note,at:Date.now()});render();toast(`${n}달란트를 사용 처리했어요`);break}
+    case 'pch':{const m=S.members.find(x=>x.id===id);if(!m)break;const k=b.dataset.k;saveMember(Object.assign({},m,{[k]:m[k]===v?'':v}));render();break}
     case 'awdel':UI.awDel=id;render();break;
     case 'awdel0':UI.awDel=null;render();break;
     case 'awdel2':deleteAward(id);UI.awDel=null;render();toast('내역을 지웠어요');break;
