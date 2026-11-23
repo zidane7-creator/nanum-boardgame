@@ -224,8 +224,13 @@ function openP(i,c,grew){cur=i;const p=DB.list[i];if(!p){home();return}const N=B
   document.querySelectorAll(".vers [data-v]").forEach(b=>b.onclick=()=>{ver=b.dataset.v;openP(i,curC)});
   $("prevC").disabled=curC<=1;$("nextC").disabled=curC>=N;$("prevC").onclick=()=>openP(i,curC-1);$("nextC").onclick=()=>openP(i,curC+1);
   /* 본문: 대한성서공회 성경 읽기 페이지에서 본문 칸만 잘라 보여 줘요 */
-  const rf=$("rf"),ref=$("ref"),vn=(VERSES[p.b]&&VERSES[p.b][curC-1])||30,HH=337+vn*110+900;
-  const fit=()=>{const sc=ref.clientWidth/659;rf.style.height=HH+"px";rf.style.transform=`translate(${-24*sc}px,${-337*sc}px) scale(${sc})`;let z=ref.querySelector(".sz");if(!z){z=document.createElement("div");z.className="sz";ref.appendChild(z)}z.style.height=(HH-337)*sc+"px"};
+  const rf=$("rf"),ref=$("ref"),vn=(VERSES[p.b]&&VERSES[p.b][curC-1])||30;
+  /* 본문 끝: 미리 재 둔 절 위치표로 마지막 절 위치를 알면 거기까지만(아래 여백 없이), 모르면 절 수로 어림 */
+  const endY=()=>{const t=LPOS&&LPOS[ver]&&LPOS[ver][p.b]&&LPOS[ver][p.b][curC-1];
+    if(t&&t.length-1>=vn){let y=parseInt(t.slice(0,2),36)*16;for(let k=2;k<=vn;k++)y+=parseInt(t[k],36)*16;return y+100}
+    return 560+vn*84};
+  const fit=()=>{const sc=ref.clientWidth/659,HH=endY();rf.style.height=HH+"px";rf.style.transform=`translate(${-24*sc}px,${-337*sc}px) scale(${sc})`;let z=ref.querySelector(".sz");if(!z){z=document.createElement("div");z.className="sz";ref.appendChild(z)}
+    const ch=(HH-337)*sc;z.style.height=ch+"px";ref.style.height=Math.min(330,Math.ceil(ch)+4)+"px"};
   rf.src=`https://www.bskorea.or.kr/bible/korbibReadpage.php?version=${ver}&book=${BSK[p.b]}&chap=${curC}`;fit();addEventListener("resize",fit);
   const tx=$("tx"),nd=need(p.b,curC);tx.value=getTx(p.id,curC);
   const upd=()=>{/* 장·절 번호는 빼고 글자만 세요 */const n=tx.value.replace(/[0-9\s.,:;'"“”‘’!?·\-()]/g,"").length,r=Math.min(1,n/nd);$("pg").style.width=r*100+"%";
@@ -245,7 +250,7 @@ function openP(i,c,grew){cur=i;const p=DB.list[i];if(!p){home();return}const N=B
   const scrollRef=v=>{const sc=ref.clientWidth/659,L=tx.value.split("\n");let y=posOf(v);if(y==null){y=538;for(let k=1;k<Math.min(v,vn);k++)y+=linesOf(L[k-1],k)*32}
     const top=(y-337)*sc;
     ref.scrollTop=Math.max(0,top-84*sc)};
-  if(!LPOS)loadPos().then(()=>{lastV=0;paint()});
+  if(!LPOS)loadPos().then(()=>{fit();lastV=0;paint()});
   const paint=()=>{/* 입력칸에 스크롤바가 생기면 그만큼 번호 칸도 좁혀서 줄바꿈 위치를 똑같이 맞춰요 */bd.style.right=Math.max(0,tx.offsetWidth-tx.clientWidth)+"px";const lines=tx.value.split("\n"),cv=curLine();
     bd.innerHTML=lines.map((l,k)=>`<div class="vl${k+1===cv?" cur":k+1<cv&&l.trim()?" dn":""}${k+1>vn?" over":""}"><span class="vn">${k+1<cv&&l.trim()?"✓":""}${k+1}</span>${esc(l)||"&#8203;"}</div>`).join("");
     bd.scrollTop=tx.scrollTop;const v=Math.min(cv,vn);$("vNow").textContent=cv>vn?`${vn}절 다음`:cv;if(v!==lastV){lastV=v;scrollRef(v)}else{clearTimeout(paint.t);paint.t=setTimeout(()=>scrollRef(v),600)}};
