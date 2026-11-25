@@ -337,11 +337,16 @@ const VERSES=[[31,25,24,26,32,22,24,22,29,32,32,20,18,24,21,16,27,33,38,18,34,24
 /* 대한성서공회 페이지(1024px 기준)에서 본문 칸만 잘라 보여 줘요: 본문은 x 30~677, 위 메뉴는 y 0~337 */
 const BX=30,BW=647,BTOP=337,BFULL=1024;let rMenuOpen=false;
 function rURL(){return "https://www.bskorea.or.kr/bible/korbibReadpage.php?version="+R.v+"&book="+BSK[R.b]+"&chap="+R.c}
+/* 필사 페이지와 같은 절 위치표(공식 페이지에서 미리 잰 값)로 본문이 끝나는 곳을 알아내요 */
+let LPOS=null;fetch("../copy/lines.json?v=1").then(r=>r.ok?r.json():null).then(j=>{LPOS=j;if(j)rFit()}).catch(()=>{});
+function rPos(v){const t=LPOS&&LPOS[R.v]&&LPOS[R.v][R.b]&&LPOS[R.v][R.b][R.c-1];if(!t||t.length-1<Math.min(v,rVerses()))return null;
+  const n=Math.min(v,rVerses());let y=parseInt(t.slice(0,2),36)*16;for(let k=2;k<=n;k++)y+=parseInt(t[k],36)*16;return y}
+function rEnd(){const y=rPos(rVerses());return y!=null?y+100:BTOP+220+rVerses()*84}
 function rVerses(){return (VERSES[R.b]&&VERSES[R.b][R.c-1])||40}
 function rFill(){$("rBook").innerHTML=BOOKS.map((b,i)=>'<option value="'+i+'">'+b[0]+'</option>').join("");$("rBook").value=R.b;rChaps()}
 function rChaps(){const n=BOOKS[R.b][1];$("rChap").innerHTML=Array.from({length:n},(_,i)=>'<option value="'+(i+1)+'">'+(i+1)+'장</option>').join("");$("rChap").value=R.c}
 /* 바깥 칸이 스크롤되고 iframe은 본문 길이만큼 길게 (속 스크롤 없음) */
-function rFit(){const w=$("rWrap").clientWidth||600,f=$("rFrame"),H=BTOP+rVerses()*110+900;
+function rFit(){const w=$("rWrap").clientWidth||600,f=$("rFrame"),H=rEnd();
   const sc=rMenuOpen?w/BFULL:w/BW,ox=rMenuOpen?0:BX,oy=rMenuOpen?0:BTOP;
   f.style.height=H+"px";f.style.transform="translate("+(-ox*sc)+"px,"+(-oy*sc)+"px) scale("+sc+")";
   const mk=$("rMark");if(mk){mk.style.height=H+"px";mk.style.transform=f.style.transform;mk.setAttribute("viewBox","0 0 1024 "+H)}
@@ -359,7 +364,7 @@ $("rPrev").onclick=()=>rGo(-1);$("rNext").onclick=()=>rGo(1);
 document.querySelectorAll(".vers [data-v]").forEach(x=>x.onclick=()=>{R.v=x.dataset.v;rShow()});
 /* 이동: 고른 책·장으로 가고, 절을 적었으면 그 절 근처로 스크롤 (공식 페이지에 절 위치 표시가 없어 대략적인 위치) */
 function rScrollVerse(){const v=+$("rVerse").value;if(!v||rMenuOpen)return;const n=rVerses(),sc=rFit();
-  const y=Math.max(0,(110+(Math.min(v,n)-1)*54)*sc-50);$("rWrap").scrollTo({top:y,behavior:"smooth"})}
+  const p=rPos(v),y=Math.max(0,(p!=null?p-BTOP:110+(Math.min(v,n)-1)*54)*sc-50);$("rWrap").scrollTo({top:y,behavior:"smooth"})}
 $("rGoBtn").onclick=()=>{const b=+$("rBook").value,c=+$("rChap").value,same=b===R.b&&c===R.c;R.b=b;R.c=c;rShow();
   if(same)rScrollVerse();else $("rFrame").addEventListener("load",()=>setTimeout(rScrollVerse,150),{once:true});
   if(!$("rPanel").hidden&&$("rPanel").classList.contains("par"))rPar()};

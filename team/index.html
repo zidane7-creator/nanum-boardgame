@@ -237,6 +237,9 @@ td.rate{text-align:left;min-width:130px;border-left:1px solid var(--line)}
   background:radial-gradient(ellipse at 30% 20%,rgba(255,255,255,.06),transparent 60%),radial-gradient(ellipse at 80% 90%,rgba(255,255,255,.04),transparent 55%),repeating-linear-gradient(115deg,rgba(255,255,255,.012) 0 2px,transparent 2px 7px),var(--chalk);
   box-shadow:inset 0 0 60px rgba(0,0,0,.45),0 2px 0 rgba(0,0,0,.15),0 10px 30px rgba(0,0,0,.18);display:block}
 .cork-in{position:relative;min-height:100%;width:100%}
+.cork-grip{position:relative;z-index:3;height:16px;margin:0 0 -14px;display:flex;justify-content:center;align-items:center;cursor:ns-resize;touch-action:none}
+.cork-grip span{width:72px;height:6px;border-radius:3px;background:rgba(255,255,255,.55);box-shadow:0 0 0 1px rgba(60,35,10,.35)}
+.cork-grip:hover span,.cork-grip.on span{background:#fff;width:96px}
 .cork-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;color:rgba(240,244,236,.65);font-family:'Nanum Pen Script','Gaegu',cursive;font-size:1.7rem;padding:60px 10px;pointer-events:none}
 .polar{margin:0;background:#fffdf8;padding:7px 7px 9px;box-shadow:0 1px 2px rgba(0,0,0,.25),0 10px 18px -8px rgba(0,0,0,.55);transform:rotate(var(--rot));cursor:grab;position:absolute;width:172px;touch-action:none;user-select:none;transition:transform .12s ease,box-shadow .12s ease;color:#1f2933}
 .polar::before{content:"";position:absolute;top:-7px;left:50%;width:46px;height:15px;margin-left:-23px;background:rgba(240,228,196,.82);box-shadow:0 1px 2px rgba(0,0,0,.15);transform:rotate(-3deg)}
@@ -250,12 +253,15 @@ td.rate{text-align:left;min-width:130px;border-left:1px solid var(--line)}
 .chalk .cl{stroke:rgba(244,244,236,.62);stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round;fill:none}
 .chalk .cl.c2{stroke:rgba(250,250,244,.55);stroke-width:2;stroke-dasharray:14 2 6 1}
 .chalk .cl.drawing{stroke:rgba(244,244,236,.8);stroke-width:3}
-.chalk .hit{stroke:transparent;stroke-width:18;stroke-linecap:round}
+.chalk .hit{stroke:transparent;stroke-width:18;stroke-linecap:round;pointer-events:stroke;cursor:ns-resize}
+.chalk .clabel{pointer-events:visiblePainted;cursor:ns-resize}
+.chalk g.dragging .cl{stroke:#ffe9a8}.chalk g.dragging .clabel{fill:#ffe9a8}
 .chalk .clabel{fill:rgba(244,244,236,.92);font-family:'Nanum Pen Script','Gaegu',cursive;font-size:30px}
 .chalk g.sel .cl{stroke:#ffe9a8}.chalk g.sel .clabel{fill:#ffe9a8}
 .chalking .cork-in{cursor:crosshair}
 .chalking .chalk{z-index:99999}
 .chalking .chalk .hit{pointer-events:stroke;cursor:pointer}
+.chalk .clabel{user-select:none}
 .chalking .polar{pointer-events:none;opacity:.8}
 .polar:focus-visible{outline:3px solid #fff;outline-offset:3px}
 .polar.dropping{outline:3px dashed #fff;outline-offset:4px;transform:rotate(0) scale(1.04)}
@@ -793,8 +799,8 @@ function persist(key,fn,delay){
       .finally(()=>{inflight[key]=0;setSync()});
   },delay||0);
 }
-function saveLocal(){try{localStorage.setItem(LS_KEY,JSON.stringify({cfg:S.cfg,members:S.members,att:S.att,minutes:S.minutes,events:S.events,worship:S.worship,prayer:S.prayer,pextra:S.pextra,notes:S.notes,groups:S.groups,album:S.album,albumLines:S.albumLines,dues:S.dues,ledger:S.ledger,acct:S.acct}))}catch(e){}}
-function loadLocal(){try{const d=JSON.parse(localStorage.getItem(LS_KEY)||'null');if(d){if(d.cfg)S.cfg=Object.assign({day:3},d.cfg);S.members=d.members||[];S.att=d.att||{};S.minutes=d.minutes||[];S.events=d.events||[];S.worship=d.worship||{};S.prayer=d.prayer||{};S.pextra=d.pextra||[];S.notes=d.notes||[];S.groups=d.groups||[];S.album=d.album||[];S.albumLines=d.albumLines||[];S.dues=d.dues||{};S.ledger=d.ledger||[];if(d.acct)S.acct=Object.assign({fee:10000,carry:0},d.acct)}}catch(e){}}
+function saveLocal(){try{localStorage.setItem(LS_KEY,JSON.stringify({cfg:S.cfg,members:S.members,att:S.att,minutes:S.minutes,events:S.events,worship:S.worship,prayer:S.prayer,pextra:S.pextra,notes:S.notes,groups:S.groups,album:S.album,albumLines:S.albumLines,albumTop:S.albumTop||0,dues:S.dues,ledger:S.ledger,acct:S.acct}))}catch(e){}}
+function loadLocal(){try{const d=JSON.parse(localStorage.getItem(LS_KEY)||'null');if(d){if(d.cfg)S.cfg=Object.assign({day:3},d.cfg);S.members=d.members||[];S.att=d.att||{};S.minutes=d.minutes||[];S.events=d.events||[];S.worship=d.worship||{};S.prayer=d.prayer||{};S.pextra=d.pextra||[];S.notes=d.notes||[];S.groups=d.groups||[];S.album=d.album||[];S.albumLines=d.albumLines||[];S.albumTop=d.albumTop||0;S.dues=d.dues||{};S.ledger=d.ledger||[];if(d.acct)S.acct=Object.assign({fee:10000,carry:0},d.acct)}}catch(e){}}
 function saveEvent(ev){const i=S.events.findIndex(x=>x.id===ev.id);if(i>=0)S.events[i]=ev;else S.events.push(ev);persist('e:'+ev.id,()=>DB.collection('events').doc(ev.id).set(strip(ev)))}
 function deleteEvent(id){S.events=S.events.filter(e=>e.id!==id);persist('e:'+id,()=>DB.collection('events').doc(id).delete())}
 const duesDirty={};let acctDirty=0;
@@ -1444,7 +1450,7 @@ function vAlbum(){
      <span class="row a-exp"><select class="f" id="a-exp" aria-label="내보낼 범위"><option value="all">게시판 전체</option>${albumYears().map(y=>`<option value="${y}">${y}년 사진만</option>`).join('')}</select><button class="btn sm" data-act="aexp" data-v="jpg">JPG</button><button class="btn sm" data-act="aexp" data-v="pdf">PDF</button></span>
      <span class="sub">${UI.aChalk?'게시판 위를 끌어서 선을 그어요. 그은 선을 누르면 글씨를 고치거나 지울 수 있어요.':'사진을 끌어서 원하는 자리로 옮길 수 있어요. 새 사진은 맨 위에 붙어요.'}</span>
      ${sel?`<span class="row al-edit"><label class="sub" for="al-label">선 글씨</label><input class="f" id="al-label" value="${esc(sel.label||'')}" placeholder="예: 2026" maxlength="20"><button class="btn sm danger" data-act="aldel">선 지우기</button><button class="btn sm" data-act="aldone">완료</button></span>`:''}</div>
-   <div class="cork ${UI.aChalk?'chalking':''}" id="cork" style="${corkStyle()}"><div class="cork-in" id="cork-in">
+   ${S.readOnly?'':`<div class="cork-grip" id="cork-grip" role="separator" aria-orientation="horizontal" aria-label="게시판 위쪽 크기 조절" title="위로 끌면 위쪽 공간이 넓어져요"><span></span></div>`}<div class="cork ${UI.aChalk?'chalking':''}" id="cork" style="${corkStyle()}"><div class="cork-in" id="cork-in">
     <svg class="chalk" id="chalk" aria-hidden="true">${chalkDefs()}${(S.albumLines||[]).map(lineSVG).join('')}</svg>
     ${shown.map(a=>`<figure class="polar" data-aid="${a.id}" ${a.x!=null?`data-x="${+a.x}" data-y="${+a.y}"`:''} tabindex="0" role="button" aria-label="${esc(a.memo||'사진')} 크게 보기" style="--rot:${+a.rot||0}deg;z-index:${zr.indexOf(a.id)+1}">
       <div class="ph">${cardImg(a)}</div>
@@ -1466,7 +1472,7 @@ function saveLines(delay){persist('alines',()=>DB.doc('settings/albumlines').set
 let corkRO=null;
 // place cards: moved cards keep their spot; the rest fill a grid from the top, newest first
 function layoutCork(){const inn=$('#cork-in'),c=$('#cork');if(!inn||!c)return;
-  const W=inn.clientWidth,cols=Math.max(1,Math.floor((W-24)/(CARD_W+22)));let col=0,rowY=26,rowH=0,maxB=0;
+  const W=inn.clientWidth,cols=Math.max(1,Math.floor((W-24)/(CARD_W+22)));let col=0,rowY=26+(S.albumTop||0),rowH=0,maxB=0;
   inn.querySelectorAll('.polar').forEach(el=>{
     if(el.dataset.x!=null){el.style.left=Math.min(+el.dataset.x,Math.max(0,W-CARD_W-8))+'px';el.style.top=(+el.dataset.y)+'px'}
     else{if(col>=cols){col=0;rowY+=rowH+28;rowH=0}el.style.left=(18+col*(CARD_W+22))+'px';el.style.top=rowY+'px';rowH=Math.max(rowH,el.offsetHeight);col++}
@@ -1474,17 +1480,32 @@ function layoutCork(){const inn=$('#cork-in'),c=$('#cork');if(!inn||!c)return;
   (S.albumLines||[]).forEach(l=>{maxB=Math.max(maxB,l.y1,l.y2)});
   const need=maxB+40;if(need>c.clientHeight)c.style.height=(need+(c.offsetHeight-c.clientHeight))+'px';inn.style.height=c.clientHeight+'px'}
 function initCork(){const c=$('#cork'),inn=$('#cork-in');if(!c||!inn)return;layoutCork();
+  // top grip: drag up to add room above everything (cards and chalk lines move down with it), drag down to take it back
+  const grip=$('#cork-grip');if(grip&&!S.readOnly){grip.onpointerdown=e=>{if(e.button>0)return;e.preventDefault();const h0=c.offsetHeight,sy=e.clientY;
+    const tops=[...inn.querySelectorAll('.polar')].map(p=>p.offsetTop).concat((S.albumLines||[]).map(l=>Math.min(l.y1,l.y2)-40));
+    const lim=tops.length?-(Math.min(...tops)-10):-Math.max(0,c.clientHeight-360);let dy=0;
+    try{grip.setPointerCapture(e.pointerId)}catch(_){}grip.classList.add('on');
+    grip.onpointermove=ev=>{dy=Math.max(lim,Math.round(sy-ev.clientY));c.style.height=Math.max(360,h0+dy)+'px';inn.style.transform=`translateY(${dy}px)`};
+    grip.onpointerup=grip.onpointercancel=()=>{grip.onpointermove=grip.onpointerup=grip.onpointercancel=null;grip.classList.remove('on');inn.style.transform='';if(!dy)return;
+      S.album.filter(a=>a.x!=null).forEach(a=>saveAlbum(Object.assign({},a,{y:Math.max(0,(+a.y||0)+dy)})));
+      S.albumLines=(S.albumLines||[]).map(l=>Object.assign({},l,{y1:l.y1+dy,y2:l.y2+dy}));S.albumTop=Math.max(0,(S.albumTop||0)+dy);saveLines(0);
+      try{localStorage.setItem(CORK_KEY(),JSON.stringify({w:c.offsetWidth,h:c.offsetHeight}))}catch(_){}render()}}}
   if(typeof ResizeObserver!=='undefined'){if(corkRO)corkRO.disconnect();let first=true,tm;
     corkRO=new ResizeObserver(()=>setTimeout(()=>{if(!c.isConnected)return;layoutCork();try{localStorage.setItem(CORK_KEY(),JSON.stringify({w:c.offsetWidth,h:c.offsetHeight}))}catch(e){}},0));corkRO.observe(c)}
-  let drag=null,draw=null;
+  let drag=null,draw=null,ldrag=null;
   const pt=e=>{const r=inn.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}};
   inn.onpointerdown=e=>{if(e.button>0)return;
-    if(UI.aChalk&&!S.readOnly){const g=e.target.closest('g[data-lid]');if(g){UI.aLineSel=g.dataset.lid;render();const i=$('#al-label');if(i)i.focus();return}
+    const lg=!S.readOnly&&e.target.closest&&e.target.closest('g[data-lid]');
+    if(lg){const l=(S.albumLines||[]).find(x=>x.id===lg.dataset.lid);if(l){ldrag={g:lg,l,sy:e.clientY,dy:0,moved:false};try{inn.setPointerCapture(e.pointerId)}catch(_){}e.preventDefault();return}}
+    if(UI.aChalk&&!S.readOnly){
       const p=pt(e);const svg=$('#chalk');const ln=document.createElementNS('http://www.w3.org/2000/svg','line');ln.setAttribute('class','cl drawing');
       ['x1','x2'].forEach(k=>ln.setAttribute(k,p.x));['y1','y2'].forEach(k=>ln.setAttribute(k,p.y));svg.appendChild(ln);draw={p,ln};try{inn.setPointerCapture(e.pointerId)}catch(_){}e.preventDefault();return}
     const el=e.target.closest('.polar');if(!el)return;
     drag={el,id:el.dataset.aid,sx:e.clientX,sy:e.clientY,ox:el.offsetLeft,oy:el.offsetTop,moved:false};if(!S.readOnly)try{el.setPointerCapture(e.pointerId)}catch(_){}};
   inn.onpointermove=e=>{
+    if(ldrag){const L=ldrag.l,top=Math.min(L.y1,L.y2),bot=Math.max(L.y1,L.y2);let dy=e.clientY-ldrag.sy;if(!ldrag.moved&&Math.abs(dy)<4)return;ldrag.moved=true;
+      dy=Math.max(34-top,dy);ldrag.dy=dy;ldrag.g.setAttribute('transform',`translate(0 ${dy})`);ldrag.g.classList.add('dragging');
+      if(bot+dy+30>c.clientHeight)c.style.height=(bot+dy+30+(c.offsetHeight-c.clientHeight))+'px';return}
     if(draw){let p=pt(e),dx=p.x-draw.p.x,dy=p.y-draw.p.y;if(Math.abs(dy)<Math.abs(dx)*.18)p.y=draw.p.y;else if(Math.abs(dx)<Math.abs(dy)*.18)p.x=draw.p.x;
       draw.ln.setAttribute('x2',p.x);draw.ln.setAttribute('y2',p.y);draw.q=p;return}
     const d=drag;if(!d||S.readOnly)return;const dx=e.clientX-d.sx,dy=e.clientY-d.sy;if(!d.moved&&Math.hypot(dx,dy)<5)return;
@@ -1492,6 +1513,9 @@ function initCork(){const c=$('#cork'),inn=$('#cork-in');if(!c||!inn)return;layo
     const x=Math.max(0,Math.min(inn.clientWidth-d.el.offsetWidth,d.ox+dx)),y=Math.max(0,d.oy+dy);d.el.style.left=x+'px';d.el.style.top=y+'px';
     if(y+d.el.offsetHeight+30>c.clientHeight)c.style.height=(y+d.el.offsetHeight+30+(c.offsetHeight-c.clientHeight))+'px'};
   inn.onpointerup=e=>{
+    if(ldrag){const d=ldrag;ldrag=null;
+      if(d.moved){S.albumLines=(S.albumLines||[]).map(x=>x.id===d.l.id?Object.assign({},x,{y1:x.y1+d.dy,y2:x.y2+d.dy}):x);saveLines(0);render();return}
+      if(UI.aChalk){UI.aLineSel=d.l.id;render();const i=$('#al-label');if(i)i.focus()}else{d.g.removeAttribute('transform')}return}
     if(draw){const q=draw.q,p=draw.p;draw.ln.remove();draw=null;if(!q||Math.hypot(q.x-p.x,q.y-p.y)<24)return;
       const l={id:'l'+uid(),x1:Math.round(p.x),y1:Math.round(p.y),x2:Math.round(q.x),y2:Math.round(q.y),label:String(new Date().getFullYear())};
       S.albumLines=[...(S.albumLines||[]),l];saveLines();UI.aLineSel=l.id;render();const i=$('#al-label');if(i){i.focus();i.select()}return}
@@ -1500,7 +1524,7 @@ function initCork(){const c=$('#cork'),inn=$('#cork-in');if(!c||!inn)return;layo
       if(a){const n=Object.assign({},a,{x:Math.round(d.el.offsetLeft),y:Math.round(d.el.offsetTop),z:Date.now()});saveAlbum(n);d.el.dataset.x=n.x;d.el.dataset.y=n.y}
       const zs=[...inn.querySelectorAll('.polar')].map(p=>+p.style.zIndex||0).filter(z=>z<9999);d.el.style.zIndex=(zs.length?Math.max(...zs):0)+1;return}
     openAlbumViewer(d.id)};
-  inn.onpointercancel=()=>{if(draw){draw.ln.remove();draw=null}if(drag){drag.el.classList.remove('dragging');drag=null}};
+  inn.onpointercancel=()=>{if(ldrag){ldrag.g.removeAttribute('transform');ldrag=null}if(draw){draw.ln.remove();draw=null}if(drag){drag.el.classList.remove('dragging');drag=null}};
 }
 /* --- board export (JPG/PDF): whole board as arranged, or one year re-laid in a grid --- */
 function albumYears(){return [...new Set(S.album.map(a=>(a.date||'').slice(0,4)).filter(Boolean))].sort().reverse()}
