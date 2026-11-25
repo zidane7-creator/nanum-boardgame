@@ -122,7 +122,8 @@ html.sc-night .parade{filter:brightness(1.35)}
 .grp{position:fixed;inset:0;z-index:28;background:rgba(40,30,20,.45);display:none;align-items:center;justify-content:center;padding:40px 18px 18px}
 .grp.show{display:flex;animation:gin .25s ease-out}@keyframes gin{from{opacity:0}}
 .grp .gbox{width:min(var(--gw,560px),100%);min-height:200px;padding-top:56px}
-.grp .gx{position:absolute;top:10px;right:12px;z-index:4;width:34px;height:34px;border-radius:50%;border:2px solid var(--ink);background:var(--cream);font-size:16px;cursor:pointer;box-shadow:0 2px 0 var(--ink)}
+.grp .gbtns{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:16px 0 4px;position:relative;z-index:3}.gbtn{display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:var(--ink);background:#fff8e6;border:2.5px solid var(--ink);border-radius:16px;padding:9px 20px;box-shadow:0 3px 0 var(--ink);font-size:18px}.gbtn small{font-size:12px;opacity:.7}.gbtn:hover{background:#ffeec2}.gbtn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.gx{position:absolute;top:10px;right:12px;z-index:4;width:34px;height:34px;border-radius:50%;border:2px solid var(--ink);background:var(--cream);font-size:16px;cursor:pointer;box-shadow:0 2px 0 var(--ink)}
 #toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,40px);opacity:0;background:var(--cream);border:2px solid var(--ink);border-radius:18px;padding:10px 18px;font-size:16px;box-shadow:0 4px 0 var(--ink);transition:.25s;z-index:20;white-space:nowrap}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 @media (max-width:560px){.sky{height:300px}.ranch{padding:30px 14px 16px}.pen{padding:42px 4px 22px;min-height:0}.flock{gap:10px 8px}.sun{width:120px;height:120px}}
@@ -233,7 +234,7 @@ html.sc-night .tree,html.sc-night .hills,html.sc-night .front{filter:brightness(
 <script>
 const SITE="치영의 교회 생활 즐기기";
 const ZONES=[
- {name:"예배",items:[["예배준비",null,[["악보제작","score/"],["주보제작","jubo/"],["설교도우미","sermon/"],["자막스튜디오","subtitle/"]]],["개인예배",null,[["성경 읽기","bible/"],["묵상저장소","meditation/"],["작정기도","prayer/"],["필사나무 키우기","copy/"]]]]},
+ {name:"예배",items:[["예배준비",null,[["악보제작","score/"],["주보제작","jubo/"],["설교도우미","sermon/"],["자막스튜디오","subtitle/"]]],["개인예배",null,[["성경 읽기","bible/"],["묵상저장소","meditation/"],["작정기도","prayer/"],["필사나무 키우기","copy/"]],[["📜 성경 트래커","tracker/","성경 역사 · 지도 · 족보를 한눈에"]]]]},
  {name:"선교",items:[["선교책자 만들기"],["단기선교 준비 패키지"]]},
  {name:"교회학교",items:[["교적관리","school/"]]},
  {name:"교제",items:[["셀교제",null,[["나눔보드게임","board/"],["신앙그래프","lifestory/"],["누가 기도해?","pray/"],["익명질문","anon/"],["인셀네컷","cell4/"]]],["레크리에이션",null,[["찬양월드컵","worldcup/"],["텔레스트레이션","tele/"],["윷놀이","yut/"],["바울의 전도여행","paul/"],["추수꾼게임","harvest/"],["라이어게임","liar/"],["양 달리기","race/"],["깜짝통 게임","barrel/"],["팀짜기","teams/"],["빙고게임","bingo/"]]]]},
@@ -302,7 +303,7 @@ function showTip(el,label){const d=DESC[label];if(!d)return;TIP.textContent=d;TI
   let y=r.top-h-8;TIP.classList.toggle("below",y<8);if(y<8)y=r.bottom+8;TIP.style.left=x+"px";TIP.style.top=y+"px";TIP.style.setProperty("--ax",(r.left+r.width/2-x)+"px")}
 function hideTip(){TIP.classList.remove("show")}
 addEventListener("scroll",hideTip,{passive:true});
-function makeSheep(label,href,kids){
+function makeSheep(label,href,kids,btns){
   const open=!!href||!!(kids&&kids.some(k=>k[1]));
   const b=document.createElement("button");b.className="sheep"+(open?" open":"")+(Math.random()<.35?" flip":"");
   b.style.setProperty("--d",(2.4+Math.random()*1.8).toFixed(2)+"s");b.style.setProperty("--dl",(-Math.random()*3).toFixed(2)+"s");
@@ -318,7 +319,7 @@ function makeSheep(label,href,kids){
     try{gtag("event","menu_click",{menu_name:label,menu_type:kids?"모음":href?"열림":"준비 중"})}catch(e){}
     if(open){b.classList.remove("jump");void b.offsetWidth;b.classList.add("jump")}
     const s=document.createElement("span");s.className="bubble";s.textContent=open?SAY[Math.floor(Math.random()*SAY.length)]:"쿨쿨…";b.appendChild(s);setTimeout(()=>s.remove(),900);
-    if(kids)setTimeout(()=>openGroup(label,kids),250);
+    if(kids)setTimeout(()=>openGroup(label,kids,btns),250);
     else if(href&&/^https?:/.test(href)){window.open(href,"_blank","noopener")}else if(href)setTimeout(()=>location.href=href,450);else toast("💤 '"+label+"' 양은 아직 자고 있어요. 곧 깨어날 거예요!");
   };
   return b}
@@ -329,8 +330,12 @@ function flockRows(fl){fl.querySelectorAll(".brk").forEach(e=>e.remove());const 
   const R=rowsFor(items.length);fl.style.setProperty("--cols",Math.max(...R,1));
   const box=fl.closest(".gbox");if(box)box.style.setProperty("--gw",Math.max(560,Math.max(...R)*150+60)+"px");
   R.slice(0,-1).forEach(c=>{i+=c;const it=items[i-1];if(it){const b=document.createElement("span");b.className="brk";it.after(b)}})}
-function openGroup(label,kids){const g=$("grp");g.querySelector(".sign b").textContent=label;const fl=g.querySelector(".flock");fl.innerHTML="";
-  kids.forEach(([l,h,k])=>fl.appendChild(makeSheep(l,h,k)));flockRows(fl);g.classList.add("show");g.querySelector(".gx").focus();if(window.__fitLabels)window.__fitLabels()}
+function openGroup(label,kids,btns){const g=$("grp");g.querySelector(".sign b").textContent=label;const fl=g.querySelector(".flock");fl.innerHTML="";
+  kids.forEach(([l,h,k])=>fl.appendChild(makeSheep(l,h,k)));
+  /* 양이 아닌 버튼 메뉴 (예: 개인예배 → 📜 성경 트래커) */
+  let gb=g.querySelector(".gbtns");if(!gb){gb=document.createElement("div");gb.className="gbtns";fl.after(gb)}
+  gb.innerHTML="";(btns||[]).forEach(([t,h,d])=>{const a=document.createElement("a");a.className="gbtn";a.href=h;a.innerHTML="<b></b><small></small>";a.querySelector("b").textContent=t;a.querySelector("small").textContent=d||"";
+    a.onclick=()=>{try{gtag("event","menu_click",{menu_name:t,menu_type:"버튼"})}catch(e){}};gb.appendChild(a)});gb.hidden=!(btns&&btns.length);flockRows(fl);g.classList.add("show");g.querySelector(".gx").focus();if(window.__fitLabels)window.__fitLabels()}
 function closeGroup(){$("grp").classList.remove("show")}
 $("grp").addEventListener("click",e=>{if(e.target.id=="grp")closeGroup()});
 $("grp").querySelector(".gx").onclick=closeGroup;
@@ -340,7 +345,7 @@ ZONES.forEach(z=>{
   const pen=document.createElement("section");pen.className="pen"+(z.side?" small":"");pen.setAttribute("aria-label",z.name);
   pen.innerHTML='<div class="sign"><b>'+z.name+'</b><i></i></div><span class="post a"></span><span class="post b"></span><span class="post c"></span><span class="post d"></span><div class="flock"></div>';
   const fl=pen.querySelector(".flock");
-  z.items.forEach(([label,href,kids])=>fl.appendChild(makeSheep(label,href,kids)));flockRows(fl);
+  z.items.forEach(([label,href,kids,btns])=>fl.appendChild(makeSheep(label,href,kids,btns)));flockRows(fl);
   (z.side?SIDE:$("ranch")).appendChild(pen);
 });
 if(SIDE.children.length){$("ranch").appendChild(SIDE);$("ranch").classList.add("has-side")}

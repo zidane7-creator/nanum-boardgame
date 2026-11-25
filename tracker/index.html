@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://js.tosspayments.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' data: blob: https://api.github.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://api.open-meteo.com https://api.met.no https://wttr.in https://api.mymemory.translated.net https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.doubleclick.net https://www.google.com https://*.tosspayments.com https://0.peerjs.com wss://0.peerjs.com wss://broker.emqx.io:8084 wss://broker.hivemq.com:8884 https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self' blob:; frame-src 'self' https://www.bskorea.or.kr https://*.tosspayments.com; object-src 'none'; base-uri 'self'; form-action 'self' https://*.tosspayments.com">
+<meta name="referrer" content="strict-origin-when-cross-origin"><script async src="https://www.googletagmanager.com/gtag/js?id=G-0WTWY3TPES"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-0WTWY3TPES");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>성경 트래커 | 치영의 교회 생활 즐기기 · 성경 역사·지도·족보 한눈에</title>
+<meta name="description" content="성경을 시대순으로 보는 성경 역사 트래커, 시대별 성경 지도 트래커, 아담부터 예수님까지 이어지는 성경 족보 트래커. 구약 시대 구분, 북이스라엘·남유다 역대 왕과 선지자, 신약 성경과 바울의 전도여행을 한눈에.">
+<meta name="keywords" content="성경 연대표, 구약 시대 구분, 분열왕국 왕 연대표, 북이스라엘 남유다 왕, 성경 지도, 바울 전도여행 지도, 출애굽 경로, 성경 족보, 예수님 족보, 신약 성경 기록 연대">
+<link rel="canonical" href="https://zidane7-creator.github.io/nanum-boardgame/tracker/">
+<meta property="og:title" content="성경 트래커 — 치영의 교회 생활 즐기기">
+<meta property="og:description" content="성경 역사·지도·족보를 한눈에 따라가요">
+<meta property="og:url" content="https://zidane7-creator.github.io/nanum-boardgame/tracker/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📜</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+:root{--ink:#3b2a20;--cream:#fffaf0;--accent:#e8503a;--gold:#f5b82e;--green:#5aa957;--muted:#7a6a5c;
+  --hist:#e8503a;--poem:#8a5cc7;--proph:#2f86c4;--gos:#d98a00;--paul:#2e9e6a;--gen:#c2457a;--rev:#5a5a8a}
+*{box-sizing:border-box}
+html,body{margin:0;color:var(--ink);font-family:"Jua","Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+body{min-height:100vh;background:linear-gradient(#ffe8b8,#fff3d6 220px,#c3e78f 221px)}
+button{font:inherit;color:inherit;border:2px solid var(--ink);background:var(--cream);border-radius:16px;padding:8px 16px;cursor:pointer;box-shadow:0 3px 0 var(--ink)}
+button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+button.sm{padding:4px 10px;font-size:14px;border-radius:12px;box-shadow:0 2px 0 var(--ink)}
+button.on{background:var(--gold)}
+.top{position:sticky;top:0;z-index:1200;display:flex;align-items:center;gap:10px;padding:calc(8px + env(safe-area-inset-top,0px)) 14px 8px;background:rgba(255,255,255,.92);border-bottom:4px solid var(--gold)}
+.top a{color:var(--ink);text-decoration:none;font-size:15px;border:2px solid var(--ink);border-radius:14px;padding:3px 10px;background:var(--cream)}
+.top .ttl{flex:1;font-size:19px}
+main{max-width:1200px;margin:0 auto;padding:16px 10px 80px}
+h1{text-align:center;margin:6px 0 4px;font-size:clamp(26px,5vw,38px)}
+.sub{text-align:center;margin:0 0 14px;opacity:.75;font-size:15px}
+.card{background:var(--cream);border:3px solid var(--ink);border-radius:22px;padding:16px;margin-bottom:16px;box-shadow:0 5px 0 rgba(0,0,0,.12)}
+.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.modes button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:12px 6px;border-radius:20px;font-size:clamp(15px,2.6vw,20px);background:#fff}
+.modes button i{font-style:normal;font-size:clamp(26px,5vw,36px)}
+.modes button small{font-size:12px;opacity:.7}
+.modes button.on{background:var(--gold)}
+.seg{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
+.note{font-size:13px;opacity:.72;text-align:center;line-height:1.5;margin:8px 0 0}
+.view[hidden]{display:none}
+.chip{display:inline-flex;align-items:center;gap:3px;border:2px solid var(--ink);border-radius:999px;padding:2px 10px;font-size:14px;background:#fff;cursor:pointer;box-shadow:0 2px 0 var(--ink);margin:2px}
+.chip.h{border-color:var(--hist);color:var(--hist)}.chip.p{border-color:var(--poem);color:var(--poem)}.chip.r{border-color:var(--proph);color:var(--proph)}
+.chip.g{border-color:var(--gos);color:var(--gos)}.chip.l{border-color:var(--paul);color:var(--paul)}.chip.e{border-color:var(--gen);color:var(--gen)}.chip.v{border-color:var(--rev);color:var(--rev)}
+.legend{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;font-size:13px;margin:4px 0 10px}
+.legend span{display:inline-flex;align-items:center;gap:4px}.legend b{width:12px;height:12px;border-radius:4px;display:inline-block}
+/* ---- 구약 시대 띠 ---- */
+.band{display:flex;height:46px;border:2.5px solid var(--ink);border-radius:14px;overflow:hidden;margin:4px 0 4px}
+.band button{border:0;border-right:2px solid var(--ink);border-radius:0;box-shadow:none;padding:2px;font-size:clamp(10px,1.6vw,14px);line-height:1.1;min-width:0;overflow:hidden}
+.band button:last-child{border-right:0}
+.axis{position:relative;height:18px;font-size:12px;opacity:.75;margin-bottom:12px}.axis span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+.era{display:grid;grid-template-columns:150px 1fr;gap:12px;border:2.5px solid var(--ink);border-radius:18px;background:#fff;padding:12px;margin-bottom:10px;scroll-margin-top:70px}
+.era .yr{font-size:14px;opacity:.75}.era h3{margin:0 0 2px;font-size:21px}
+.era .tag{display:inline-block;width:14px;height:14px;border-radius:5px;margin-right:6px;vertical-align:-1px;border:2px solid var(--ink)}
+.era ul{margin:4px 0 6px;padding-left:18px;font-size:15px;line-height:1.5}
+.era .ppl{font-size:14px;margin:2px 0}
+.era .go{margin-top:6px}
+.era.flash{animation:fl 1.4s}@keyframes fl{0%,50%{box-shadow:0 0 0 5px var(--gold)}100%{box-shadow:none}}
+@media (max-width:640px){.era{grid-template-columns:1fr}}
+/* ---- 분열왕국 ---- */
+.kwrap{overflow:auto;max-height:78vh;border:2.5px solid var(--ink);border-radius:16px;background:#fff;overscroll-behavior:contain}
+.khead{position:sticky;top:0;z-index:5;display:grid;grid-template-columns:var(--kc);background:#fff8e6;border-bottom:2.5px solid var(--ink);font-size:clamp(12px,2vw,16px);text-align:center}
+.khead div{padding:6px 2px;border-right:1px dashed #d8c9b5}
+.kgrid{position:relative;display:grid;grid-template-columns:var(--kc)}
+.kcol{position:relative;border-right:1px dashed #e3d6c4}
+.kb{position:absolute;word-break:keep-all;border:2px solid var(--ink);border-radius:9px;padding:1px 4px;font-size:clamp(10px,1.7vw,13px);line-height:1.15;overflow:hidden;cursor:pointer;text-align:left;box-shadow:none}
+.kb.g{background:#d9f2cf}.kb.b{background:#ffd9d2}.kb.m{background:linear-gradient(135deg,#d9f2cf 50%,#ffd9d2 50%)}.kb.q{background:#ffe9a8}
+.kb .mk{font-size:11px}
+.pb{position:absolute;border:2px dashed var(--proph);background:#e6f1fb;color:#1d5f91;border-radius:9px;padding:1px 3px;font-size:clamp(10px,1.6vw,12px);line-height:1.1;cursor:pointer;text-align:center;box-shadow:none;overflow:hidden}
+.yl{position:absolute;left:0;right:0;font-size:11px;text-align:center;color:var(--muted);transform:translateY(-50%)}
+.ev{position:absolute;left:0;right:0;border-top:2px solid var(--accent);z-index:2;pointer-events:none}
+.ev span{position:absolute;left:50%;transform:translate(-50%,-50%);background:var(--accent);color:#fff;font-size:11px;border-radius:8px;padding:1px 6px;white-space:nowrap;pointer-events:auto;cursor:pointer}
+/* ---- 신약 ---- */
+.tl{position:relative;padding-left:26px}
+.tl:before{content:"";position:absolute;left:10px;top:4px;bottom:4px;width:4px;background:var(--ink);border-radius:4px}
+.tli{position:relative;margin-bottom:12px;background:#fff;border:2.5px solid var(--ink);border-radius:16px;padding:10px 12px}
+.tli:before{content:"";position:absolute;left:-23px;top:14px;width:14px;height:14px;border-radius:50%;background:var(--gold);border:3px solid var(--ink)}
+.tli .d{font-size:13px;color:var(--accent)}.tli h4{margin:0 0 2px;font-size:18px}.tli p{margin:2px 0 4px;font-size:14px;line-height:1.45}
+.dim{opacity:.25}
+/* ---- 지도 ---- */
+.erabar{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 8px;scrollbar-width:thin}
+.erabar button{white-space:nowrap;flex:none}
+.maplay{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:12px}
+#map{height:min(68vh,640px);border:3px solid var(--ink);border-radius:18px;background:#b9dcf0;z-index:1}
+.plist{max-height:min(68vh,640px);overflow:auto;overscroll-behavior:contain;background:#fff;border:2.5px solid var(--ink);border-radius:16px;padding:8px}
+.plist h4{margin:6px 4px;font-size:16px}
+.plist button{display:block;width:100%;text-align:left;margin:0 0 6px;padding:6px 10px;font-size:14px;border-radius:12px;box-shadow:0 2px 0 var(--ink)}
+.plist button small{display:block;font-size:12px;opacity:.7;line-height:1.35}
+.rleg{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:13px;margin:6px 2px}.rleg span{display:inline-flex;align-items:center;gap:4px}.rleg i{width:22px;height:4px;border-radius:3px;display:inline-block}
+.eradesc{font-size:15px;line-height:1.5;margin:4px 2px 10px}
+.lbl{background:transparent;border:0;box-shadow:none;font-family:Jua,sans-serif;color:#3b2a20;font-size:13px;padding:0 3px;text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 3px #fff}
+.lbl:before{display:none}
+.rgn{font-family:Jua,sans-serif;color:rgba(80,50,30,.75);font-size:15px;white-space:nowrap;text-shadow:0 0 4px #fff,0 0 4px #fff;letter-spacing:2px;pointer-events:none}
+.leaflet-popup-content{font-family:Jua,sans-serif;font-size:14px;line-height:1.45;margin:10px 12px}
+.leaflet-popup-content b{font-size:16px}
+@media (max-width:820px){.maplay{grid-template-columns:1fr}.plist{max-height:260px}#map{height:58vh}}
+/* ---- 족보 ---- */
+.ftools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;margin-bottom:10px}
+.ftools input{font:inherit;font-size:15px;padding:6px 12px;border:2px solid var(--ink);border-radius:12px;width:min(260px,70vw)}
+.fwrap{max-height:78vh;overflow:auto;overscroll-behavior:contain;background:#fff;border:2.5px solid var(--ink);border-radius:16px;padding:10px 8px}
+.fn{display:flex;align-items:flex-start;gap:8px;position:relative;padding:2px 0}
+.fn .p{display:inline-block;border:2px solid var(--ink);border-radius:12px;background:#fff8e6;padding:3px 10px;font-size:16px;cursor:default;white-space:nowrap}
+.fn.main>.p{background:#ffe9a8}
+.fn .gnum{font-size:11px;color:var(--muted);width:34px;text-align:right;flex:none;padding-top:7px}
+.fn .dsc{font-size:13px;color:var(--muted);padding-top:6px;line-height:1.35}
+.fn.hit>.p{background:var(--accent);color:#fff}
+.spine{border-left:4px solid var(--gold);margin-left:40px;padding-left:10px}
+.br{margin:2px 0 6px 52px}
+.br>summary{list-style:none;cursor:pointer;font-size:13px;color:#7a4b22;display:inline-block;border:1.5px dashed #b48a5a;border-radius:10px;padding:1px 8px;background:#fffdf5}
+.br>summary::-webkit-details-marker{display:none}
+.br[open]>summary{background:#ffeec2}
+.br .sub2{border-left:3px solid #d9c2a3;margin:4px 0 0 8px;padding-left:10px}
+.br .fn .gnum{display:none}
+.fquick{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-bottom:8px}
+</style>
+</head><body>
+<div class="top"><a href="../">← 목장</a><span class="ttl">📜 성경 트래커</span></div>
+<main>
+  <h1>성경 트래커</h1>
+  <p class="sub">성경 이야기를 시대·장소·사람으로 따라가 봐요</p>
+  <div class="modes" role="tablist">
+    <button type="button" data-mode="history" role="tab"><i>🕰️</i>성경 역사 트래커<small>시대순으로 보는 66권</small></button>
+    <button type="button" data-mode="map" role="tab"><i>🗺️</i>성경 지도 트래커<small>시대별 성경 지도</small></button>
+    <button type="button" data-mode="family" role="tab"><i>🌳</i>성경 족보 트래커<small>아담부터 예수님까지</small></button>
+  </div>
+
+  <!-- 🕰️ 역사 -->
+  <section class="view card" id="v-history" hidden>
+    <div class="seg" id="hseg"><button type="button" class="sm" data-h="ot">📜 구약 시대</button><button type="button" class="sm" data-h="kings">👑 북이스라엘·남유다</button><button type="button" class="sm" data-h="nt">✝️ 신약 시대</button></div>
+    <div id="h-ot"></div>
+    <div id="h-kings" hidden></div>
+    <div id="h-nt" hidden></div>
+    <p class="note">연대는 학자마다 조금씩 달라요. 여기 적힌 연도는 많이 쓰는 추정 연대예요.</p>
+  </section>
+
+  <!-- 🗺️ 지도 -->
+  <section class="view card" id="v-map" hidden>
+    <div class="erabar" id="mera"></div>
+    <p class="eradesc" id="mdesc"></p>
+    <div class="maplay"><div><div id="map" role="region" aria-label="성경 지도"></div><div class="rleg" id="mleg"></div></div><div class="plist" id="mlist"></div></div>
+    <p class="note">지도 위 위치는 대략적인 곳이에요. 정확한 위치가 알려지지 않은 곳(시내산, 홍해를 건넌 곳 등)은 많이 쓰는 추정 위치로 표시했어요.<br>배경 지도: Esri</p>
+  </section>
+
+  <!-- 🌳 족보 -->
+  <section class="view card" id="v-family" hidden>
+    <div class="ftools"><input id="fq" list="fnames" placeholder="이름으로 찾기 (예: 보아스)" aria-label="족보에서 이름 찾기"><datalist id="fnames"></datalist><button type="button" class="sm" id="fopen">가지 모두 펼치기</button><button type="button" class="sm" id="fclose">가지 모두 접기</button></div>
+    <div class="fquick" id="fquick"></div>
+    <div class="fwrap" id="fwrap"></div>
+    <p class="note">노란 줄은 아담에서 예수님까지 이어지는 줄기(창 5·11장, 룻 4장, 마 1장)예요. ▸ 가지를 누르면 형제와 다른 자손이 펼쳐져요.<br>숫자는 아담부터 몇 대인지예요. 마태복음 1장은 몇몇 왕을 건너뛰고 적었어요(아하시야·요아스·아마샤·여호야김).</p>
+  </section>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let tt;function toast(m){let t=$("toast");if(!t){t=document.createElement("div");t.id="toast";t.style.cssText="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#3b2a20;color:#fff;padding:9px 16px;border-radius:14px;z-index:3000;font-size:15px;max-width:90vw;text-align:center";document.body.appendChild(t)}t.innerHTML=m;t.style.display="block";clearTimeout(tt);tt=setTimeout(()=>t.style.display="none",4200)}
+
+/* =========================================================
+   📚 66권: [이름, 분류, 한 줄 설명, 기록 연대(신약)]
+   분류 h 역사서 · p 시가서 · r 예언서 · g 복음서 · l 바울서신 · e 일반서신 · v 예언서(계시록)
+   ========================================================= */
+const BK={
+ "창세기":["h","창조·타락·홍수, 그리고 아브라함·이삭·야곱·요셉 이야기. 모든 것의 시작이에요"],
+ "출애굽기":["h","애굽 종살이에서 구원, 유월절과 홍해, 시내산 율법과 성막"],
+ "레위기":["h","거룩하신 하나님께 나아가는 제사와 정결의 규례"],
+ "민수기":["h","시내산에서 모압 평지까지 40년 광야 여정과 두 번의 인구 조사"],
+ "신명기":["h","가나안에 들어가기 전, 모세가 다시 들려준 율법 설교"],
+ "여호수아":["h","요단강을 건너 가나안을 정복하고 땅을 나눠요"],
+ "사사기":["h","죄 → 압제 → 부르짖음 → 사사를 통한 구원이 되풀이돼요"],
+ "룻기":["h","사사 시대 모압 여인 룻의 신실함. 다윗의 증조할머니가 돼요"],
+ "사무엘상":["h","마지막 사사 사무엘, 첫 왕 사울, 그리고 다윗의 등장"],
+ "사무엘하":["h","다윗의 통치와 다윗 언약, 그리고 다윗 집안의 아픔"],
+ "열왕기상":["h","솔로몬의 영광과 성전, 왕국 분열, 엘리야"],
+ "열왕기하":["h","엘리사, 북 이스라엘(722)과 남 유다(586)의 멸망"],
+ "역대상":["h","아담부터의 족보와 다윗의 통치 (예배·성전 중심으로 다시 쓴 역사)"],
+ "역대하":["h","솔로몬부터 남 유다 왕들, 고레스의 귀환 칙령까지"],
+ "에스라":["h","포로에서 돌아와 성전을 다시 짓고 말씀으로 개혁해요"],
+ "느헤미야":["h","무너진 예루살렘 성벽을 52일 만에 다시 쌓아요"],
+ "에스더":["h","페르시아 왕궁에서 유다 민족을 지키신 하나님의 섭리"],
+ "욥기":["p","족장 시대 한 의인의 고난, 그리고 하나님의 주권"],
+ "시편":["p","150편의 찬양과 기도. 다윗이 가장 많이 썼어요"],
+ "잠언":["p","하나님을 경외하는 것이 지혜의 시작 (주로 솔로몬)"],
+ "전도서":["p","해 아래 모든 것이 헛되니 하나님을 경외하라 (솔로몬)"],
+ "아가":["p","솔로몬이 지은 아름다운 사랑의 노래"],
+ "이사야":["r","심판과 위로, 고난받는 종 메시아의 예언 (웃시야~히스기야 때)"],
+ "예레미야":["r","눈물의 선지자. 유다 멸망 전 회개 촉구와 새 언약 약속"],
+ "예레미야애가":["r","무너진 예루살렘을 바라보며 부른 슬픈 노래"],
+ "에스겔":["r","포로지 그발 강가에서 본 환상, 마른 뼈와 새 성전"],
+ "다니엘":["r","바벨론·페르시아에서 믿음을 지킨 다니엘과 세계 역사의 환상"],
+ "호세아":["r","음란한 아내를 끝까지 사랑하듯 이스라엘을 사랑하시는 하나님 (북)"],
+ "요엘":["r","메뚜기 재앙과 여호와의 날, 성령을 부어 주시리라 (남)"],
+ "아모스":["r","북 이스라엘의 불의를 고발, 정의를 물같이 흐르게 하라 (북)"],
+ "오바댜":["r","형제 유다의 환난을 기뻐한 에돔에 대한 심판 (남)"],
+ "요나":["r","원수의 성 니느웨까지 품으시는 하나님의 긍휼 (북)"],
+ "미가":["r","정의와 인자와 겸손, 베들레헴에서 나실 메시아 (남)"],
+ "나훔":["r","앗수르의 수도 니느웨의 멸망 (남)"],
+ "하박국":["r","왜 악인이 형통한가? 의인은 믿음으로 살리라 (남)"],
+ "스바냐":["r","여호와의 날과 겸손한 남은 자 (요시야 때, 남)"],
+ "학개":["r","돌아온 백성에게: 성전을 다시 지으라"],
+ "스가랴":["r","성전 재건 격려와 오실 메시아의 환상"],
+ "말라기":["r","형식만 남은 신앙 책망, 엘리야를 보내리라. 구약의 마지막 말씀"],
+ "마태복음":["g","유대인에게 전한, 약속된 왕 메시아 예수","AD 60~80년경"],
+ "마가복음":["g","로마 사람에게 전한, 섬기러 오신 종 예수. 가장 짧고 빨라요","AD 55~65년경"],
+ "누가복음":["g","이방인 데오빌로에게, 의사 누가가 차례대로 자세히 쓴 인자 예수","AD 60~63년경"],
+ "요한복음":["g","하나님의 아들 예수를 믿어 생명을 얻게 하려고","AD 85~95년경"],
+ "사도행전":["h","예루살렘 → 유대·사마리아 → 땅끝까지, 베드로와 바울의 복음 전파","AD 62~63년경"],
+ "로마서":["l","복음의 핵심: 믿음으로 의롭게 됨 (3차 여행 중 고린도에서)","AD 57년경"],
+ "고린도전서":["l","분쟁·결혼·은사·부활 문제에 대한 답, 사랑장 (에베소에서)","AD 55년경"],
+ "고린도후서":["l","바울의 사도직 변호, 약할 때 강함 (마게도냐에서)","AD 56년경"],
+ "갈라디아서":["l","율법이 아니라 믿음으로! 그리스도 안의 자유","AD 48~55년경"],
+ "에베소서":["l","그리스도의 몸 된 교회, 하나 됨 (옥중서신)","AD 60~62년경"],
+ "빌립보서":["l","감옥에서 쓴 기쁨의 편지 (옥중서신)","AD 61~62년경"],
+ "골로새서":["l","만물보다 뛰어나신 그리스도, 거짓 가르침 경계 (옥중서신)","AD 60~62년경"],
+ "데살로니가전서":["l","재림의 소망과 거룩한 삶 (2차 여행 중 고린도에서)","AD 51년경"],
+ "데살로니가후서":["l","재림에 대한 오해를 바로잡아요","AD 51~52년경"],
+ "디모데전서":["l","에베소 교회를 맡은 디모데에게 주는 목회 지침 (목회서신)","AD 62~64년경"],
+ "디모데후서":["l","순교 직전 마지막 편지, 선한 싸움을 싸우고 (목회서신)","AD 66~67년경"],
+ "디도서":["l","그레데 교회를 맡은 디도에게 (목회서신)","AD 62~64년경"],
+ "빌레몬서":["l","도망친 종 오네시모를 형제로 받아 주세요 (옥중서신)","AD 60~62년경"],
+ "히브리서":["e","구약의 제사보다 뛰어나신 대제사장 그리스도","AD 64~68년경"],
+ "야고보서":["e","행함으로 드러나는 살아 있는 믿음 (예수님의 동생 야고보)","AD 45~62년경"],
+ "베드로전서":["e","고난 중에도 산 소망","AD 63~64년경"],
+ "베드로후서":["e","거짓 교사를 조심하고 주의 재림을 확신하라","AD 66~68년경"],
+ "요한일서":["e","하나님은 사랑이시라, 빛 가운데 사귐","AD 85~95년경"],
+ "요한이서":["e","진리 안에서 서로 사랑하고 거짓 교사를 받지 말라","AD 85~95년경"],
+ "요한삼서":["e","나그네를 대접한 가이오 칭찬, 디오드레베 책망","AD 85~95년경"],
+ "유다서":["e","믿음의 도를 위하여 힘써 싸우라","AD 65~80년경"],
+ "요한계시록":["v","밧모섬에서 본 환상. 승리하신 그리스도와 새 하늘 새 땅","AD 95년경"]};
+const CATN={h:"역사서",p:"시가서",r:"예언서",g:"복음서",l:"바울서신",e:"일반서신",v:"예언서"};
+const chip=n=>'<button type="button" class="chip '+BK[n][0]+'" data-bk="'+esc(n)+'">'+esc(n)+'</button>';
+function showBook(n){const b=BK[n];toast("<b>"+esc(n)+"</b> · "+CATN[b[0]]+(b[2]?" · "+b[2]:"")+"<br>"+esc(b[1]))}
+document.addEventListener("click",e=>{const c=e.target.closest("[data-bk]");if(c)showBook(c.dataset.bk)});
+
+/* =========================================================
+   🕰️ 구약 시대
+   ========================================================= */
+const OT=[
+ {nm:"창조와 대홍수",yr:"연대 미상",a:null,b:null,c:"#9ad0f5",ppl:"아담·하와, 가인·아벨, 에녹, 노아",ev:["천지 창조와 에덴동산","죄가 들어오고 동산에서 쫓겨남","대홍수와 무지개 언약","바벨탑과 언어의 혼잡"],ref:"창 1~11장",bk:["창세기"]},
+ {nm:"족장 시대",yr:"BC 2100~1876년경",a:2100,b:1876,c:"#ffd27a",ppl:"아브라함, 이삭, 야곱, 요셉",ev:["갈대아 우르에서 부르신 아브라함 (BC 2091년경 가나안으로)","약속의 아들 이삭, 모리아산","야곱과 열두 아들","요셉이 애굽 총리가 되고 야곱 가족이 애굽으로 (BC 1876년경)"],ref:"창 12~50장 · 욥기",bk:["창세기","욥기"]},
+ {nm:"애굽 종살이 · 출애굽 · 광야",yr:"BC 1876~1406년경",a:1876,b:1406,c:"#f7a072",ppl:"모세, 아론, 미리암",ev:["애굽에서 430년","열 가지 재앙과 유월절, 출애굽 (BC 1446년경)","홍해를 건넘, 시내산에서 율법과 성막","40년 광야 생활, 모압 평지에서 모세의 마지막 설교"],ref:"출애굽기~신명기",bk:["출애굽기","레위기","민수기","신명기"]},
+ {nm:"가나안 정복",yr:"BC 1406~1380년경",a:1406,b:1380,c:"#c3a6e8",ppl:"여호수아, 갈렙, 라합",ev:["요단강을 마른 땅으로 건넘","여리고 함락과 가나안 정복","열두 지파에게 땅을 나눔"],ref:"여호수아",bk:["여호수아"]},
+ {nm:"사사 시대",yr:"BC 1380~1050년경",a:1380,b:1050,c:"#a8d88a",ppl:"옷니엘, 에훗, 드보라, 기드온, 입다, 삼손, 룻·보아스, 엘리, 사무엘",ev:["왕이 없어 각자 소견에 옳은 대로","죄 → 압제 → 부르짖음 → 구원의 되풀이","룻과 보아스, 다윗 집안의 시작","마지막 사사 사무엘"],ref:"사사기 · 룻기 · 삼상 1~7장",bk:["사사기","룻기"]},
+ {nm:"통일 왕국",yr:"BC 1050~930년",a:1050,b:930,c:"#7cc6c0",ppl:"사울, 다윗, 솔로몬",ev:["첫 왕 사울 (BC 1050년경)","다윗 왕, 예루살렘을 수도로 (BC 1010년경), 다윗 언약","솔로몬이 성전을 지음 (BC 959년경 완공)","시편·잠언·전도서·아가가 쓰인 때"],ref:"삼상~왕상 11장 · 대상~대하 9장",bk:["사무엘상","사무엘하","열왕기상","역대상","역대하","시편","잠언","전도서","아가"]},
+ {nm:"분열 왕국",yr:"BC 930~586년",a:930,b:586,c:"#f28b8b",ppl:"여로보암·르호보암, 아합·엘리야, 엘리사, 히스기야, 요시야",ev:["왕국이 북 이스라엘과 남 유다로 나뉨 (BC 930년)","북 이스라엘 멸망 — 앗수르 (BC 722년)","남 유다 멸망 — 바벨론 (BC 586년)"],ref:"왕상 12장~왕하 · 대하 10~36장",bk:["열왕기상","열왕기하","역대하","호세아","아모스","요나","오바댜","요엘","이사야","미가","나훔","스바냐","하박국","예레미야"],kings:1},
+ {nm:"바벨론 포로",yr:"BC 586~538년",a:586,b:538,c:"#b0a090",ppl:"다니엘과 세 친구, 에스겔, 예레미야",ev:["1차 포로 (BC 605년, 다니엘)","2차 포로 (BC 597년, 에스겔·여호야긴)","예루살렘과 성전 파괴 (BC 586년)","바사 왕 고레스의 귀환 칙령 (BC 538년)"],ref:"예레미야애가 · 에스겔 · 다니엘",bk:["예레미야애가","에스겔","다니엘"]},
+ {nm:"포로 귀환과 회복",yr:"BC 538~430년경",a:538,b:430,c:"#ffb3c7",ppl:"스룹바벨, 학개, 스가랴, 에스더, 에스라, 느헤미야, 말라기",ev:["1차 귀환과 성전 재건 (BC 516년 완공)","에스더가 유다 민족을 살림 (BC 480년경)","에스라 귀환과 말씀 개혁 (BC 458년)","느헤미야가 성벽을 재건 (BC 445년)","말라기 — 구약의 마지막 예언 (BC 430년경)"],ref:"에스라~에스더 · 학개~말라기",bk:["에스라","느헤미야","에스더","학개","스가랴","말라기"]},
+ {nm:"신구약 중간기 (400년)",yr:"BC 430~5년경",a:430,b:5,c:"#d8d8d8",ppl:"(기록된 선지자 없음)",ev:["바사(페르시아) → 알렉산더의 헬라","프톨레마이오스·셀류코스 왕조의 지배","마카비 혁명, 성전 정결 (BC 164년)","로마의 지배 (BC 63년), 헤롯 대왕"],ref:"성경 기록 없음",bk:[]}];
+function drawOT(){const tot=2100-5,band=OT.filter(e=>e.a).map((e,i)=>{const w=(e.a-e.b)/tot*100;return'<button type="button" style="width:'+Math.max(w,4.5)+'%;background:'+e.c+'" data-era="'+(OT.indexOf(e))+'" title="'+esc(e.nm+" · "+e.yr)+'">'+esc(e.nm.replace(/ ·.*| \(.*/,""))+'</button>'}).join("");
+  const ax=[2000,1500,1000,586,5].map(y=>'<span style="left:'+((2100-y)/tot*100)+'%">BC '+y+'</span>').join("");
+  $("h-ot").innerHTML='<div class="legend"><span><b style="background:var(--hist)"></b>역사서 17</span><span><b style="background:var(--poem)"></b>시가서 5</span><span><b style="background:var(--proph)"></b>예언서 17</span></div>'+
+   '<div class="band">'+band+'</div><div class="axis">'+ax+'</div>'+
+   OT.map((e,i)=>'<div class="era" id="era'+i+'"><div><div class="yr">'+esc(e.yr)+'</div><h3><span class="tag" style="background:'+e.c+'"></span>'+esc(e.nm)+'</h3><div class="ppl">👤 '+esc(e.ppl)+'</div><div class="yr">📖 '+esc(e.ref)+'</div></div><div><ul>'+e.ev.map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul>'+
+    (e.bk.length?e.bk.map(chip).join(""):'<span class="yr">이 시기를 기록한 구약 성경은 없어요</span>')+(e.kings?'<div><button type="button" class="sm go" data-gokings="1">👑 북이스라엘·남유다 왕과 선지자 자세히 보기 →</button></div>':"")+'</div></div>').join("");
+  $("h-ot").querySelectorAll("[data-era]").forEach(b=>b.onclick=()=>{const el=$("era"+b.dataset.era);el.scrollIntoView({behavior:"smooth",block:"start"});el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash")});
+  $("h-ot").querySelector("[data-gokings]").onclick=()=>setH("kings",true)}
+
+/* =========================================================
+   👑 분열 왕국: [이름, 시작, 끝, 재위, 평가(g 선함 · b 악함 · m 선했다 악해짐), 설명, 성경]
+   ========================================================= */
+const KI=[["여로보암 1세",931,910,"22년","b","단과 벧엘에 금송아지를 세운 북 이스라엘 첫 왕","왕상 12~14장"],["나답",910,909,"2년","b","바아사에게 죽임을 당함","왕상 15장"],["바아사",909,886,"24년","b","여로보암 집안을 멸함","왕상 15~16장"],["엘라",886,885,"2년","b","술 취했다가 시므리에게 죽임","왕상 16장"],["시므리",885,885,"7일","b","7일 만에 왕궁에 불을 지르고 죽음","왕상 16장"],["오므리",885,874,"12년","b","사마리아를 수도로 세움","왕상 16장"],["아합",874,853,"22년","b","이세벨과 바알 숭배, 엘리야와 갈멜산","왕상 16~22장"],["아하시야",853,852,"2년","b","바알세붑에게 물음","왕상 22장~왕하 1장"],["요람(여호람)",852,841,"12년","b","예후에게 죽임","왕하 3~9장"],["예후",841,814,"28년","m","아합 집안과 바알을 없앴지만 금송아지는 그대로 둠","왕하 9~10장"],["여호아하스",814,798,"17년","b","아람의 압제","왕하 13장"],["요아스",798,782,"16년","b","엘리사의 죽음을 지켜봄","왕하 13장"],["여로보암 2세",793,753,"41년","b","영토를 넓힌 번영기, 요나·아모스·호세아","왕하 14장"],["스가랴",753,753,"6개월","b","예후 왕조의 끝","왕하 15장"],["살룸",752,752,"1개월","b","한 달 만에 죽임","왕하 15장"],["므나헴",752,742,"10년","b","앗수르에 조공","왕하 15장"],["브가히야",742,740,"2년","b","베가에게 죽임","왕하 15장"],["베가",752,732,"20년","b","아람과 손잡고 유다를 침","왕하 15장"],["호세아",732,722,"9년","b","북 이스라엘 마지막 왕, 사마리아 함락","왕하 17장"]];
+const KJ=[["르호보암",931,913,"17년","b","무거운 멍에를 고집해 왕국이 나뉨","왕상 12~14장"],["아비얌(아비야)",913,911,"3년","b","","왕상 15장"],["아사",911,870,"41년","m","우상을 없앴으나 말년에 하나님보다 사람을 의지","왕상 15장"],["여호사밧",872,848,"25년","g","말씀을 가르친 선한 왕","왕상 22장"],["여호람",853,841,"8년","b","아합의 딸 아달랴와 결혼","왕하 8장"],["아하시야",841,841,"1년","b","예후에게 죽임","왕하 8~9장"],["아달랴",841,835,"6년","b","다윗 자손을 죽이고 왕위를 빼앗은 여왕","왕하 11장"],["요아스",835,796,"40년","m","여호야다 제사장이 죽은 뒤 우상 숭배","왕하 12장"],["아마샤",796,767,"29년","m","에돔을 이긴 뒤 에돔 신을 섬김","왕하 14장"],["웃시야(아사랴)",792,740,"52년","m","강성했으나 교만해 성전에서 분향하다 나병","왕하 15장 · 대하 26장"],["요담",750,732,"16년","g","","왕하 15장"],["아하스",735,715,"16년","b","앗수르를 의지하고 자녀를 불에 바침","왕하 16장"],["히스기야",715,686,"29년","g","종교 개혁, 기도로 앗수르를 이김","왕하 18~20장"],["므낫세",697,642,"55년","b","가장 오래 다스린 악한 왕 (말년에 회개, 대하 33장)","왕하 21장"],["아몬",642,640,"2년","b","","왕하 21장"],["요시야",640,609,"31년","g","율법책을 발견하고 대대적 개혁","왕하 22~23장"],["여호아하스",609,609,"3개월","b","애굽으로 끌려감","왕하 23장"],["여호야김",609,598,"11년","b","예레미야의 두루마리를 불태움","왕하 23~24장"],["여호야긴",598,597,"3개월","b","바벨론으로 끌려감","왕하 24장"],["시드기야",597,586,"11년","b","유다 마지막 왕, 예루살렘 멸망","왕하 24~25장"]];
+const PN=[["엘리야",875,848,"아합 때. 갈멜산의 불, 바알 선지자와 대결 (왕상 17~왕하 2)"],["엘리사",848,797,"엘리야의 뒤를 이음, 갑절의 영감 (왕하 2~13)"],["요나",785,775,"여로보암 2세 때, 니느웨에 가서 회개를 외침","요나"],["아모스",760,750,"남쪽 드고아 목자, 북에 정의를 외침","아모스"],["호세아",755,715,"북 이스라엘 멸망 전까지","호세아"]];
+const PS=[["오바댜",848,841,"여호람 때로 보는 견해 (추정)","오바댜"],["요엘",835,796,"요아스 때로 보는 견해 (추정)","요엘"],["이사야",740,681,"웃시야~히스기야 때","이사야"],["미가",735,700,"요담~히스기야 때","미가"],["나훔",663,612,"므낫세~요시야 때, 니느웨 멸망 예언","나훔"],["스바냐",640,621,"요시야 때","스바냐"],["예레미야",627,586,"요시야~시드기야 때","예레미야"],["하박국",609,598,"여호야김 때","하박국"]];
+const KEV=[[930,"왕국 분열"],[841,"예후의 반란"],[722,"북 이스라엘 멸망 (앗수르)"],[701,"산헤립의 예루살렘 포위"],[622,"요시야의 개혁"],[605,"1차 바벨론 포로"],[597,"2차 포로"],[586,"남 유다 멸망 (바벨론)"]];
+const MK={g:"△ 선한 왕",b:"▼ 악한 왕",m:"◑ 선했다가 악해짐"};
+function drawKings(){const Y0=935,Y1=580,PX=window.innerWidth<640?5:4.2,H=(Y0-Y1)*PX,yOf=y=>(Y0-y)*PX;
+  const place=(list,isP)=>{const cols=[];const os=list.map(k=>{const top=yOf(k[1]),h=Math.max(isP?28:18,(k[1]-k[2])*PX||18);let ci=0;while(cols[ci]!=null&&cols[ci]>top+1)ci++;cols[ci]=top+h;return{k,top,h,ci}});
+    /* 겹치는 묶음끼리만 폭을 나눠요 */
+    const sorted=[...os].sort((a,b)=>a.top-b.top);let grp=[],end=-1;const flush=()=>{const n=Math.max(...grp.map(x=>x.ci))+1;grp.forEach(x=>x.n=n);grp=[]};
+    sorted.forEach(o=>{if(grp.length&&o.top>=end-1){flush();end=-1}grp.push(o);end=Math.max(end,o.top+o.h)});if(grp.length)flush();return os};
+  const col=(list,isP,side)=>{const ps=place(list,isP);return'<div class="kcol">'+ps.map(o=>{const w=100/o.n,l=o.ci*w;const k=o.k;
+    if(isP)return'<button type="button" class="pb" style="top:'+o.top+'px;height:'+o.h+'px;left:calc('+l+'% + 2px);width:calc('+w+'% - 4px)" data-p="'+side+'|'+esc(k[0])+'">'+esc(k[0])+'</button>';
+    return'<button type="button" class="kb '+k[4]+'" style="top:'+o.top+'px;height:'+o.h+'px;left:calc('+l+'% + 2px);width:calc('+w+'% - 4px)" data-k="'+side+'|'+esc(k[0])+'" title="'+esc(k[0]+' '+k[3])+'">'+(o.h<30?'<span style="white-space:nowrap;font-size:10px">'+esc(k[0].replace(/\(.*\)/,''))+'</span>':'<span class="mk">'+MK[k[4]][0]+'</span>'+esc(k[0])+' <small>'+k[3]+'</small>')+'</button>'}).join("")+'</div>'};
+  let ax='<div class="kcol">';for(let y=930;y>=586;y-=(y>600?(y%10?y%10:10):1)){if(y%20&&y!==586&&y!==930)continue;ax+='<div class="yl" style="top:'+yOf(y)+'px">'+y+'</div>'}ax+='</div>';
+  const ev=KEV.map(([y,t])=>'<div class="ev" style="top:'+yOf(y)+'px"><span title="BC '+y+'">'+y+' '+esc(t)+'</span></div>').join("");
+  $("h-kings").innerHTML='<div class="legend"><span>△ 선한 왕 <b style="background:#d9f2cf;border:1px solid #333"></b></span><span>▼ 악한 왕 <b style="background:#ffd9d2;border:1px solid #333"></b></span><span>◑ 선했다가 악해짐</span><span><b style="background:#e6f1fb;border:1px dashed #2f86c4"></b>선지자</span></div>'+
+   '<div class="kwrap" id="kwrap" style="--kc:minmax(0,3fr) minmax(0,1.3fr) '+(innerWidth<640?34:46)+'px minmax(0,1.3fr) minmax(0,3fr)"><div class="khead"><div>👑 북 이스라엘 왕</div><div>📢 선지자</div><div>BC</div><div>📢 선지자</div><div>👑 남 유다 왕</div></div>'+
+   '<div class="kgrid" style="height:'+(H+20)+'px">'+col(KI,0,"n")+col(PN,1,"pn")+ax+col(PS,1,"ps")+col(KJ,0,"s")+ev+'</div></div>'+
+   '<p class="note">왕 이름을 누르면 설명이 나와요. 겹쳐 그려진 왕은 아버지와 함께 다스린 기간(섭정)이 있었던 왕이에요.</p>';
+  $("h-kings").onclick=e=>{const k=e.target.closest("[data-k]"),p=e.target.closest("[data-p]");
+    if(k){const[s,n]=k.dataset.k.split("|"),d=(s==="n"?KI:KJ).find(x=>x[0]===n);toast("<b>"+(s==="n"?"북 이스라엘":"남 유다")+" · "+esc(d[0])+"</b> ("+d[3]+", BC "+d[1]+(d[2]!==d[1]?"~"+d[2]:"")+")<br>"+MK[d[4]]+(d[5]?" — "+esc(d[5]):"")+"<br>📖 "+esc(d[6]))}
+    if(p){const[s,n]=p.dataset.p.split("|"),d=(s==="pn"?PN:PS).find(x=>x[0]===n);toast("<b>📢 "+esc(d[0])+"</b> ("+(s==="pn"?"북 이스라엘":"남 유다")+", BC "+d[1]+"~"+d[2]+"년경)<br>"+esc(d[3]))}}}
+
+/* =========================================================
+   ✝️ 신약 시대: 사건과 그때 쓰인 성경
+   ========================================================= */
+const NT=[
+ {d:"BC 6~4년경",t:"예수님 탄생",p:"베들레헴에서 나심, 애굽 피신, 나사렛에서 자라심",bk:[]},
+ {d:"AD 26~27년경",t:"세례 요한의 사역 · 예수님의 세례",p:"요단강에서 세례받으시고 광야 시험, 공생애 시작 (약 3년)",bk:[]},
+ {d:"AD 27~30년경",t:"예수님의 공생애",p:"갈릴리·유대에서 가르치시고 고치시며 열두 제자를 세우심",bk:["마태복음","마가복음","누가복음","요한복음"],note:"복음서가 기록한 시기"},
+ {d:"AD 30년경",t:"십자가 · 부활 · 승천 · 오순절",p:"예루살렘에서 십자가에 달리시고 사흘 만에 부활, 40일 후 승천, 오순절 성령 강림과 교회의 시작",bk:["사도행전"],note:"행 1~7장"},
+ {d:"AD 34~35년경",t:"스데반 순교 · 바울의 회심",p:"흩어진 성도들이 유대·사마리아로, 사울이 다메섹 길에서 예수님을 만남",bk:[],note:"행 8~12장"},
+ {d:"AD 45~49년경",t:"예루살렘 교회의 야고보",p:"예수님의 동생 야고보가 흩어진 유대인 성도에게 편지",bk:["야고보서"]},
+ {d:"AD 46~48년",t:"바울 1차 전도여행",p:"수리아 안디옥 → 구브로 → 비시디아 안디옥·이고니온·루스드라·더베 (갈라디아 남부)",bk:["갈라디아서"],note:"행 13~14장"},
+ {d:"AD 49년",t:"예루살렘 공의회",p:"이방인도 할례 없이 믿음으로 구원받는다는 결정",bk:[],note:"행 15장"},
+ {d:"AD 50~52년",t:"바울 2차 전도여행",p:"드로아에서 마게도냐 환상 → 빌립보·데살로니가·베뢰아·아덴 → 고린도에서 1년 6개월",bk:["데살로니가전서","데살로니가후서"],note:"행 15:36~18:22"},
+ {d:"AD 53~57년",t:"바울 3차 전도여행",p:"에베소에서 3년 → 마게도냐 → 고린도(헬라)에서 석 달",bk:["고린도전서","고린도후서","로마서"],note:"행 18:23~21:16 · 고전은 에베소, 고후는 마게도냐, 롬은 고린도에서"},
+ {d:"AD 57~59년",t:"예루살렘에서 체포 · 가이사랴 2년",p:"성전에서 붙잡혀 벨릭스·베스도·아그립바 앞에서 변론, 가이사에게 상소",bk:[],note:"행 21~26장"},
+ {d:"AD 59~60년",t:"로마로 가는 길",p:"광풍을 만나 멜리데섬에서 난파, 로마 도착",bk:[],note:"행 27~28장"},
+ {d:"AD 60~62년",t:"로마 1차 구금 (셋집 2년)",p:"갇혀 있으면서도 담대히 복음을 전함",bk:["에베소서","빌립보서","골로새서","빌레몬서","마가복음","누가복음","사도행전"],note:"옥중서신 · 이 무렵 마가·누가복음과 사도행전이 쓰임"},
+ {d:"AD 62~64년",t:"석방 후 사역",p:"에베소·그레데·마게도냐를 다니며 교회를 돌봄",bk:["디모데전서","디도서","베드로전서"],note:"목회서신"},
+ {d:"AD 64년",t:"로마 대화재 · 네로의 박해",p:"그리스도인들이 큰 박해를 받음",bk:["히브리서"]},
+ {d:"AD 66~68년",t:"바울 2차 구금과 순교 · 베드로 순교",p:"차가운 지하 감옥에서 디모데에게 마지막 편지",bk:["디모데후서","베드로후서","유다서","마태복음"],note:"전승: 바울과 베드로가 네로 때 로마에서 순교"},
+ {d:"AD 70년",t:"예루살렘 성전 파괴",p:"로마 장군 디도가 예루살렘을 무너뜨림 (예수님의 예언 성취, 마 24장)",bk:[]},
+ {d:"AD 85~95년경",t:"사도 요한의 기록",p:"에베소에서 요한복음과 요한 서신을 씀",bk:["요한복음","요한일서","요한이서","요한삼서"]},
+ {d:"AD 95년경",t:"밧모섬의 요한",p:"도미티안 황제의 박해 중 밧모섬에서 계시를 받음",bk:["요한계시록"]}];
+function drawNT(){const cats=[["all","전체"],["g","복음서 4"],["h","역사서 1"],["l","바울서신 13"],["e","일반서신 8"],["v","예언서 1"]];
+  $("h-nt").innerHTML='<div class="seg" id="ntf">'+cats.map((c,i)=>'<button type="button" class="sm'+(i?"":" on")+'" data-f="'+c[0]+'">'+c[1]+'</button>').join("")+'</div>'+
+   '<div class="legend"><span><b style="background:var(--gos)"></b>복음서</span><span><b style="background:var(--hist)"></b>역사서</span><span><b style="background:var(--paul)"></b>바울서신</span><span><b style="background:var(--gen)"></b>일반서신</span><span><b style="background:var(--rev)"></b>예언서</span></div>'+
+   '<div class="tl">'+NT.map(e=>'<div class="tli" data-cats="'+[...new Set(e.bk.map(b=>BK[b][0]))].join(" ")+'"><div class="d">'+esc(e.d)+'</div><h4>'+esc(e.t)+'</h4><p>'+esc(e.p)+'</p>'+(e.note?'<p style="font-size:12px;opacity:.7">📖 '+esc(e.note)+'</p>':"")+e.bk.map(chip).join("")+'</div>').join("")+'</div>';
+  $("ntf").onclick=e=>{const b=e.target.closest("[data-f]");if(!b)return;$("ntf").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));const f=b.dataset.f;
+    $("h-nt").querySelectorAll(".tli").forEach(x=>x.classList.toggle("dim",f!=="all"&&!x.dataset.cats.split(" ").includes(f)));
+    $("h-nt").querySelectorAll(".tli .chip").forEach(c=>c.classList.toggle("dim",f!=="all"&&BK[c.dataset.bk][0]!==f))}}
+function setH(k,scroll){["ot","kings","nt"].forEach(x=>$("h-"+x).hidden=x!==k);$("hseg").querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.h===k));
+  if(k==="kings"&&!$("h-kings").innerHTML)drawKings();if(k==="nt"&&!$("h-nt").innerHTML)drawNT();if(scroll)$("v-history").scrollIntoView({behavior:"smooth"})}
+$("hseg").onclick=e=>{const b=e.target.closest("[data-h]");if(b)setH(b.dataset.h)};
+
+/* =========================================================
+   🗺️ 시대별 지도: 장소 [이름, 위도, 경도, 설명], 길 [이름, 색, [장소들]], 지역 이름 [글자, 위도, 경도]
+   ========================================================= */
+const P={우르:[30.96,46.10],하란:[36.87,39.03],세겜:[32.21,35.28],벧엘:[31.93,35.22],헤브론:[31.53,35.10],브엘세바:[31.25,34.79],예루살렘:[31.78,35.23],멤피스:[29.85,31.25],고센:[30.75,31.75],도단:[32.42,35.24],브니엘:[32.18,35.68],소돔:[31.05,35.40],
+ 라암셋:[30.80,31.83],숙곳:[30.55,32.10],홍해:[29.95,32.55],마라:[29.62,32.75],엘림:[29.30,32.95],르비딤:[28.72,33.62],시내산:[28.54,33.98],가데스바네아:[30.65,34.42],에시온게벨:[29.55,34.95],호르산:[30.32,35.41],아르논:[31.45,35.62],모압평지:[31.85,35.60],느보산:[31.77,35.73],
+ 여리고:[31.87,35.44],길갈:[31.86,35.48],아이:[31.92,35.26],기브온:[31.85,35.18],라기스:[31.56,34.85],하솔:[33.02,35.57],실로:[32.05,35.29],므깃도:[32.58,35.18],하롯샘:[32.55,35.36],소라:[31.78,34.98],라마:[31.89,35.20],
+ 기브아:[31.82,35.23],베들레헴:[31.70,35.20],엘라골짜기:[31.69,34.96],가드:[31.70,34.85],가사:[31.50,34.46],아스글론:[31.67,34.57],아스돗:[31.80,34.65],에그론:[31.78,34.85],아둘람:[31.65,35.00],엔게디:[31.46,35.39],길보아산:[32.47,35.40],다메섹:[33.51,36.29],두로:[33.27,35.20],시돈:[33.56,35.37],
+ 사마리아:[32.28,35.19],디르사:[32.30,35.30],단:[33.25,35.65],갈멜산:[32.73,35.05],이스르엘:[32.56,35.33],사르밧:[33.37,35.27],욥바:[32.05,34.75],니느웨:[36.36,43.15],갈그미스:[36.83,38.01],하맛:[35.13,36.75],
+ 바벨론:[32.54,44.42],그발강:[32.13,45.23],수산:[32.19,48.25],악메다:[34.80,48.52],립나:[34.43,36.55],마리:[34.55,40.89],
+ 나사렛:[32.70,35.30],가나:[32.75,35.34],가버나움:[32.88,35.57],벳새다:[32.91,35.63],고라신:[32.91,35.56],막달라:[32.82,35.52],나인:[32.63,35.35],가이사랴빌립보:[33.25,35.69],요단강세례터:[31.84,35.55],수가:[32.21,35.28],베다니:[31.77,35.26],엠마오:[31.84,34.99],가다라:[32.65,35.68],
+ 수리아안디옥:[36.20,36.16],실루기아:[36.12,35.93],살라미:[35.18,33.90],바보:[34.76,32.41],버가:[36.96,30.85],비시디아안디옥:[38.30,31.19],이고니온:[37.87,32.48],루스드라:[37.58,32.45],더베:[37.35,33.25],앗달리아:[36.88,30.70],다소:[36.92,34.89],드로아:[39.75,26.16],빌립보:[41.01,24.29],데살로니가:[40.64,22.94],베뢰아:[40.52,22.20],아덴:[37.97,23.73],고린도:[37.91,22.88],에베소:[37.94,27.34],가이사랴:[32.50,34.89],밀레도:[37.53,27.28],겐그레아:[37.88,22.99],무라:[36.26,29.98],미항:[34.93,24.80],멜리데:[35.90,14.40],수라구사:[37.07,15.29],레기온:[38.11,15.65],보디올:[40.82,14.12],로마:[41.90,12.50],밧모섬:[37.31,26.55],두로2:[33.27,35.20],돌레마이:[32.92,35.08]};
+const PD={우르:"아브라함의 고향, 갈대아 우르 (창 11:31)",하란:"데라가 머물고 죽은 곳, 야곱이 라반 집에서 20년",세겜:"아브라함이 처음 제단을 쌓은 곳, 여호수아의 언약 갱신, 북 이스라엘 첫 수도",벧엘:"야곱의 사닥다리 꿈 (창 28), 여로보암의 금송아지",헤브론:"마므레 상수리나무, 막벨라 굴, 다윗이 7년 반 다스린 곳",브엘세바:"이삭과 야곱이 살던 남쪽 끝 우물",예루살렘:"모리아산, 다윗성과 성전, 예수님의 십자가와 부활",멤피스:"애굽의 옛 수도",고센:"야곱 가족이 살던 애굽의 땅",도단:"요셉이 형들에게 팔린 곳, 엘리사를 둘러싼 불말과 불병거",브니엘:"야곱이 얍복강에서 씨름하고 이스라엘이 된 곳",소돔:"불로 심판받은 성 (사해 남쪽으로 추정)",
+ 라암셋:"출애굽 출발지 (출 12:37)",숙곳:"첫 진 친 곳",홍해:"홍해를 건넌 곳 (추정)",마라:"쓴 물이 단 물로 (출 15)",엘림:"샘 열둘과 종려나무 일흔 그루",르비딤:"반석에서 물, 아말렉과의 싸움",시내산:"십계명과 율법, 성막 (전통적 위치)",가데스바네아:"열두 정탐꾼, 38년 광야 생활의 중심",에시온게벨:"홍해 북쪽 끝 항구, 솔로몬의 배",호르산:"아론이 죽은 산",아르논:"모압과 아모리의 경계 골짜기",모압평지:"모세의 마지막 설교 (신명기)",느보산:"모세가 가나안을 바라보고 죽은 산",
+ 여리고:"성벽이 무너진 첫 정복지, 삭개오와 바디매오",길갈:"요단을 건너 처음 진 친 곳, 할례와 유월절",아이:"아간의 죄로 패한 성",기브온:"속여서 언약을 맺은 성, 해와 달이 멈춤",라기스:"남쪽 요새 성, 산헤립이 함락",하솔:"북쪽 가나안 연합군의 중심",실로:"성막이 있던 곳, 사무엘이 자람",므깃도:"이스르엘 평야의 요새 (아마겟돈)",하롯샘:"기드온의 300 용사",소라:"삼손의 고향",라마:"사무엘의 고향",
+ 기브아:"사울의 고향이자 수도",베들레헴:"룻·보아스·다윗의 고향, 예수님 탄생",엘라골짜기:"다윗과 골리앗",가드:"블레셋 도시, 골리앗의 고향",가사:"블레셋 도시, 삼손이 기둥을 무너뜨림",아스글론:"블레셋 도시",아스돗:"블레셋 도시, 다곤 신전과 언약궤",에그론:"블레셋 도시",아둘람:"다윗이 숨은 굴",엔게디:"다윗이 사울의 옷자락을 벤 곳",길보아산:"사울과 요나단이 죽은 산",다메섹:"아람(시리아)의 수도, 바울의 회심",두로:"히람 왕, 성전 재료를 보낸 페니키아 항구",시돈:"이세벨의 고향",
+ 사마리아:"오므리가 세운 북 이스라엘 수도 (722년 함락)",디르사:"북 이스라엘의 초기 수도",단:"북쪽 끝, 금송아지 제단",갈멜산:"엘리야와 바알 선지자 450명의 대결",이스르엘:"아합의 별궁, 나봇의 포도원",사르밧:"엘리야와 과부의 기름병",욥바:"요나가 배를 탄 항구, 베드로의 환상",니느웨:"앗수르의 수도, 요나의 외침",갈그미스:"바벨론이 애굽을 이긴 전투 (BC 605)",하맛:"북쪽 경계 도시",
+ 바벨론:"느부갓네살의 수도, 다니엘과 세 친구",그발강:"에스겔이 환상을 본 강가",수산:"바사의 궁, 에스더와 느헤미야",악메다:"고레스 칙령 문서가 발견된 곳 (스 6:2)",립나:"시드기야가 눈이 뽑힌 곳",마리:"유브라데 강가의 옛 도시",
+ 나사렛:"예수님이 자라신 마을",가나:"물로 포도주를 만드신 첫 표적",가버나움:"갈릴리 사역의 중심, 베드로의 집",벳새다:"오병이어 근처, 빌립·안드레·베드로의 고향",고라신:"회개하지 않은 고을",막달라:"막달라 마리아의 고향",나인:"과부의 아들을 살리심",가이사랴빌립보:"베드로의 신앙고백 (마 16)",요단강세례터:"예수님의 세례 (요단강 건너편 베다니)",수가:"야곱의 우물, 사마리아 여인",베다니:"마르다·마리아·나사로의 집",엠마오:"부활하신 예수님을 만난 두 제자",가다라:"군대 귀신 들린 사람 (거라사)",
+ 수리아안디옥:"처음 '그리스도인'이라 불린 교회, 전도여행 출발지",실루기아:"안디옥의 항구",살라미:"구브로의 항구",바보:"총독 서기오 바울, 마술사 엘루마",버가:"마가가 돌아간 곳",비시디아안디옥:"바울의 첫 회당 설교",이고니온:"",루스드라:"바울이 돌에 맞은 곳, 디모데의 고향",더베:"1차 여행의 끝",앗달리아:"",다소:"바울의 고향",드로아:"마게도냐 사람의 환상, 유두고",빌립보:"루디아, 감옥 지진, 유럽 첫 교회",데살로니가:"",베뢰아:"말씀을 날마다 상고한 사람들",아덴:"아레오바고 설교 '알지 못하는 신에게'",고린도:"브리스길라와 아굴라, 1년 6개월",에베소:"3년 사역, 두란노 서원",가이사랴:"고넬료, 바울의 2년 구금",밀레도:"에베소 장로들과의 눈물의 작별",겐그레아:"",무라:"알렉산드리아 배로 갈아탐",미항:"그레데섬 항구",멜리데:"난파 후 석 달 머문 섬 (몰타)",수라구사:"",레기온:"",보디올:"",로마:"셋집에서 2년 복음 전파, 순교",밧모섬:"요한계시록",두로2:"제자들과 기도하고 작별",돌레마이:""};
+const MAPS=[
+ {nm:"족장 시대",d:"갈대아 우르에서 부르심을 받은 아브라함이 하란을 거쳐 가나안으로 갔어요. 야곱은 하란에서 20년을 보내고 돌아왔고, 요셉 때 가족이 모두 애굽으로 내려가요. (창 12~50장)",
+  pl:["우르","하란","세겜","벧엘","헤브론","브엘세바","예루살렘","소돔","멤피스","고센","도단","브니엘"],
+  rt:[["아브라함의 여정","#e8503a",["우르","마리","하란","세겜","벧엘","헤브론","브엘세바","멤피스"]],["야곱의 여정","#2f86c4",["브엘세바","벧엘","하란","브니엘","세겜","벧엘","헤브론"]],["야곱 가족이 애굽으로","#8a5cc7",["헤브론","브엘세바","고센"]]],
+  rg:[["갈대아",31.3,46.6],["메소포타미아",35.6,41.5],["가나안",32.6,35.0],["애굽",28.8,30.9]]},
+ {nm:"출애굽과 광야",d:"BC 1446년경 라암셋을 떠나 홍해를 건너고, 시내산에서 율법을 받은 뒤 40년 광야를 지나 모압 평지에 이르렀어요. (경로는 많이 쓰는 추정 경로예요)",
+  pl:["라암셋","숙곳","홍해","마라","엘림","르비딤","시내산","가데스바네아","에시온게벨","호르산","아르논","모압평지","느보산","여리고"],
+  rt:[["출애굽 경로","#e8503a",["라암셋","숙곳","홍해","마라","엘림","르비딤","시내산","가데스바네아","에시온게벨","호르산","아르논","모압평지"]]],
+  rg:[["애굽",29.8,31.0],["시내 광야",29.0,33.9],["바란 광야",30.3,34.4],["에돔",30.5,35.6],["모압",31.3,35.9],["가나안",31.9,34.95]]},
+ {nm:"가나안 정복과 사사 시대",d:"여호수아가 요단강을 건너 여리고를 시작으로 가나안을 정복하고 열두 지파에게 땅을 나눴어요. 이후 사사들이 일어나 이스라엘을 구원했어요.",
+  pl:["길갈","여리고","아이","기브온","라기스","하솔","세겜","실로","므깃도","하롯샘","소라","가사","라마"],
+  rt:[["여호수아의 정복","#e8503a",["모압평지","길갈","여리고","아이","기브온","라기스"]],["북쪽 정복","#d98a00",["길갈","하솔"]]],
+  rg:[["아셀",33.0,35.22],["납달리",33.05,35.48],["스불론",32.76,35.28],["잇사갈",32.6,35.46],["므낫세(서)",32.35,35.12],["므낫세(동)",32.75,35.9],["에브라임",32.1,35.22],["단",31.85,34.88],["단(북)",33.24,35.7],["베냐민",31.83,35.33],["유다",31.45,35.05],["시므온",31.2,34.7],["갓",32.1,35.72],["르우벤",31.62,35.78],["블레셋",31.55,34.5]]},
+ {nm:"통일 왕국",d:"사울(기브아)에 이어 다윗이 헤브론에서 7년 반, 예루살렘에서 33년을 다스렸어요. 솔로몬은 예루살렘에 성전을 짓고 나라를 크게 넓혔어요.",
+  pl:["기브아","라마","베들레헴","엘라골짜기","가드","가사","아스글론","아스돗","에그론","아둘람","엔게디","헤브론","예루살렘","길보아산","다메섹","두로","에시온게벨"],
+  rt:[["다윗의 도망길","#2f86c4",["기브아","라마","아둘람","엔게디","가드"]],["다윗의 수도 이동","#e8503a",["헤브론","예루살렘"]]],
+  rg:[["이스라엘",32.4,35.25],["블레셋",31.6,34.5],["모압",31.3,35.85],["암몬",31.95,35.95],["에돔",30.6,35.5],["아람",33.6,36.5],["두로",33.4,35.4]]},
+ {nm:"분열 왕국",d:"BC 930년 북 이스라엘(수도 사마리아)과 남 유다(수도 예루살렘)로 나뉘었어요. 북은 722년 앗수르에, 남은 586년 바벨론에 멸망했어요.",
+  pl:["사마리아","세겜","디르사","단","벧엘","예루살렘","갈멜산","이스르엘","사르밧","도단","욥바","라기스","다메섹","니느웨"],
+  rt:[["앗수르의 침공 (722)","#5a5a8a",["니느웨","갈그미스","하맛","다메섹","사마리아"]],["요나의 길","#2e9e6a",["욥바","니느웨"]]],
+  rg:[["북 이스라엘",32.55,35.5],["남 유다",31.45,35.05],["아람",33.7,36.6],["블레셋",31.55,34.5],["모압",31.3,35.85],["에돔",30.6,35.5],["앗수르",36.0,43.5]]},
+ {nm:"바벨론 포로와 귀환",d:"유다 백성은 세 차례(605·597·586년) 바벨론으로 끌려갔어요. 바사 왕 고레스의 칙령(538년)으로 스룹바벨·에스라·느헤미야가 차례로 돌아왔어요.",
+  pl:["예루살렘","립나","갈그미스","바벨론","그발강","니느웨","수산","악메다"],
+  rt:[["포로로 끌려간 길","#5a5a8a",["예루살렘","다메섹","립나","하맛","갈그미스","마리","바벨론"]],["귀환의 길","#e8503a",["바벨론","마리","갈그미스","하맛","다메섹","예루살렘"]]],
+  rg:[["바벨론",31.6,45.2],["메대·바사",33.3,49.0],["애굽",29.5,31.0],["유다",31.5,35.0],["아람",34.2,37.3]]},
+ {nm:"예수님의 생애",d:"베들레헴에서 나시고 나사렛에서 자라신 예수님은 갈릴리 가버나움을 중심으로 사역하시고, 예루살렘에서 십자가에 달리셨다가 부활하셨어요.",
+  pl:["베들레헴","나사렛","가나","가버나움","벳새다","고라신","막달라","나인","가이사랴빌립보","요단강세례터","수가","여리고","베다니","예루살렘","엠마오","가다라","두로","시돈"],
+  rt:[["갈릴리에서 예루살렘으로","#e8503a",["가버나움","나사렛","나인","수가","여리고","베다니","예루살렘"]]],
+  rg:[["갈릴리",32.8,35.35],["사마리아",32.25,35.15],["유대",31.6,35.0],["데가볼리",32.6,35.85],["베레아",31.95,35.7],["이두매",31.15,34.85]]},
+ {nm:"바울의 전도여행",d:"바울은 세 번의 전도여행으로 소아시아와 마게도냐·헬라에 교회를 세우고, 죄수가 되어 로마까지 가서 복음을 전했어요. (행 13~28장)",
+  pl:["수리아안디옥","다소","살라미","바보","버가","비시디아안디옥","이고니온","루스드라","더베","드로아","빌립보","데살로니가","베뢰아","아덴","고린도","에베소","밀레도","가이사랴","예루살렘","미항","멜리데","로마","밧모섬","다메섹"],
+  rt:[["1차 여행 (46~48)","#e8503a",["수리아안디옥","실루기아","살라미","바보","버가","비시디아안디옥","이고니온","루스드라","더베","루스드라","이고니온","비시디아안디옥","버가","앗달리아","수리아안디옥"]],
+      ["2차 여행 (50~52)","#2f86c4",["수리아안디옥","다소","더베","루스드라","이고니온","비시디아안디옥","드로아","빌립보","데살로니가","베뢰아","아덴","고린도","겐그레아","에베소","가이사랴","예루살렘","수리아안디옥"]],
+      ["3차 여행 (53~57)","#2e9e6a",["수리아안디옥","다소","더베","루스드라","이고니온","비시디아안디옥","에베소","드로아","빌립보","데살로니가","베뢰아","고린도","베뢰아","데살로니가","빌립보","드로아","밀레도","두로2","돌레마이","가이사랴","예루살렘"]],
+      ["로마로 (59~60)","#8a5cc7",["가이사랴","시돈","무라","미항","멜리데","수라구사","레기온","보디올","로마"]]],
+  rg:[["갈라디아",38.6,32.6],["아시아",38.6,28.4],["마게도냐",40.9,22.6],["아가야",37.6,22.2],["구브로",35.05,33.3],["수리아",35.2,37.0],["이달리야",41.2,15.6]]}];
+let MP=null,LY=null,ERA=0;
+function initMap(){if(MP)return;if(!window.L){$("map").innerHTML='<p style="padding:20px;text-align:center">지도를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침해 주세요.</p>';return}
+  MP=L.map("map",{zoomControl:true,attributionControl:true,minZoom:4,maxZoom:12,worldCopyJump:false});
+  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/{z}/{y}/{x}",{maxNativeZoom:9,maxZoom:12,attribution:"Tiles &copy; Esri — Source: USGS, Esri, TANA, DeLorme, NPS"}).addTo(MP);
+  LY=L.layerGroup().addTo(MP);
+  $("mera").innerHTML=MAPS.map((m,i)=>'<button type="button" class="sm" data-m="'+i+'">'+(i+1)+'. '+esc(m.nm)+'</button>').join("");
+  $("mera").onclick=e=>{const b=e.target.closest("[data-m]");if(b)drawEra(+b.dataset.m)};drawEra(ERA)}
+function drawEra(i){ERA=i;const m=MAPS[i];LY.clearLayers();$("mera").querySelectorAll("button").forEach((b,k)=>b.classList.toggle("on",k===i));$("mdesc").textContent=m.d;
+  const pts=[],mk={};
+  m.rt.forEach(([n,c,ps])=>{const ll=ps.map(p=>P[p]).filter(Boolean);L.polyline(ll,{color:c,weight:4,opacity:.85,dashArray:"9 7"}).addTo(LY);
+    for(let k=1;k<ll.length;k++){const a=ll[k-1],b=ll[k];if(a[0]===b[0]&&a[1]===b[1])continue;const mid=[(a[0]+b[0])/2,(a[1]+b[1])/2],ang=Math.atan2(-(b[0]-a[0]),(b[1]-a[1])*Math.cos(mid[0]*Math.PI/180))*180/Math.PI;
+      L.marker(mid,{interactive:false,icon:L.divIcon({className:"",iconSize:[14,14],iconAnchor:[7,7],html:'<div style="transform:rotate('+ang+'deg);color:'+c+';font-size:14px;line-height:14px;text-align:center">➤</div>'})}).addTo(LY)}
+    ll.forEach(x=>pts.push(x))});
+  m.rg.forEach(([t,a,b])=>L.marker([a,b],{interactive:false,icon:L.divIcon({className:"rgn",html:esc(t),iconSize:null})}).addTo(LY));
+  m.pl.forEach(n=>{const ll=P[n];if(!ll)return;pts.push(ll);const nm=n.replace(/2$/,"").replace("가이사랴빌립보","가이사랴 빌립보").replace("비시디아안디옥","비시디아 안디옥").replace("수리아안디옥","수리아 안디옥").replace("요단강세례터","요단강 (세례받으신 곳)").replace("모압평지","모압 평지").replace("엘라골짜기","엘라 골짜기").replace("하롯샘","하롯 샘").replace("그발강","그발 강");
+    mk[n]=L.circleMarker(ll,{radius:6,color:"#3b2a20",weight:2,fillColor:"#f5b82e",fillOpacity:1}).addTo(LY).bindTooltip(nm,{permanent:true,direction:"right",className:"lbl",offset:[6,0]}).bindPopup("<b>"+esc(nm)+"</b><br>"+esc(PD[n]||""))});
+  $("mleg").innerHTML=m.rt.map(([n,c])=>'<span><i style="background:'+c+'"></i>'+esc(n)+'</span>').join("");
+  $("mlist").innerHTML='<h4>📍 장소 '+m.pl.length+'곳</h4>'+m.pl.map(n=>{const nm=mk[n]?mk[n].getTooltip().getContent():n;return'<button type="button" data-pl="'+esc(n)+'">'+esc(nm)+(PD[n]?'<small>'+esc(PD[n])+'</small>':"")+'</button>'}).join("");
+  $("mlist").onclick=e=>{const b=e.target.closest("[data-pl]");if(!b)return;const o=mk[b.dataset.pl];if(!o)return;MP.flyTo(o.getLatLng(),Math.max(MP.getZoom(),8),{duration:.6});setTimeout(()=>o.openPopup(),650);if(innerWidth<820)$("map").scrollIntoView({behavior:"smooth",block:"center"})};
+  MP.invalidateSize();MP.fitBounds(L.latLngBounds(pts),{padding:[30,30]})}
+
+/* =========================================================
+   🌳 족보: T(이름, 설명, ...자녀)  M = 줄기(아담 → 예수님)로 이어지는 자녀
+   ========================================================= */
+const T=(n,d,...c)=>({n,d:d||"",c}),M=(n,d,...c)=>({n,d:d||"",c,m:1});
+const FAM=M("아담","930세 · 첫 사람 (창 5:5)",
+ T("가인","아벨을 죽이고 놋 땅으로 (창 4)",T("에녹","가인이 쌓은 성의 이름이 됨",T("이랏","",T("므후야엘","",T("므드사엘","",T("라멕","아내 아다와 씰라 (창 4:19)",T("야발","장막에 살며 가축 치는 자의 조상"),T("유발","수금과 퉁소 부는 자의 조상"),T("두발가인","구리와 쇠로 기구를 만드는 자"),T("나아마","두발가인의 누이")))))) ),
+ T("아벨","양 치는 자, 믿음의 제사 (창 4 · 히 11:4)"),
+ M("셋","912세 · 아벨 대신 주신 아들 (창 4:25)",M("에노스","905세 · 이때 사람들이 여호와의 이름을 부름",M("게난","910세",M("마할랄렐","895세",M("야렛","962세",M("에녹","365세 · 하나님과 동행하다 하나님이 데려가심 (창 5:24)",M("므두셀라","969세 · 성경에서 가장 오래 산 사람",M("라멕","777세",
+ M("노아","950세 · 방주와 대홍수 (창 6~9)",
+  T("야벳","북쪽·서쪽 민족의 조상 (창 10:2)",T("고멜"),T("마곡"),T("마대","메대"),T("야완","헬라"),T("두발"),T("메섹"),T("디라스")),
+  T("함","남쪽 민족의 조상 (창 10:6)",T("구스","",T("니므롯","세상의 첫 용사, 바벨과 니느웨를 세움 (창 10:8~11)")),T("미스라임","애굽"),T("붓"),T("가나안","가나안 족속들의 조상")),
+  M("셈","600세 · 셈족의 조상 (창 11:10)",T("엘람"),T("앗수르"),T("룻"),T("아람"),
+  M("아르박삿","438세",M("셀라","433세",M("에벨","464세 · '히브리'라는 이름이 여기서 왔다고 봐요",T("욕단","아라비아 부족들의 조상 (창 10:26)"),
+  M("벨렉","239세 · 이때 세상이 나뉨 (창 10:25)",M("르우","239세",M("스룩","230세",M("나홀","148세",M("데라","205세 · 갈대아 우르에서 하란으로 (창 11:31)",
+   T("하란","우르에서 일찍 죽음",T("롯","아브라함의 조카, 소돔에서 구원받음",T("모압","모압 족속의 조상"),T("벤암미","암몬 족속의 조상")),T("밀가","나홀의 아내"),T("이스가")),
+   T("나홀","아브라함의 형제",T("브두엘","",T("리브가","이삭의 아내 (창 24)"),T("라반","야곱의 외삼촌",T("레아","야곱의 아내"),T("라헬","야곱의 아내")))),
+   M("아브라함","175세 · 믿음의 조상, 본래 이름 아브람 (창 12~25)",
+    T("이스마엘","하갈의 아들 · 137세, 열두 족장의 조상 (창 25:12~16)",T("느바욧","맏아들"),T("게달"),T("… 외 열 아들","앗브엘·밉삼·미스마·두마·맛사·하닷·데마·여둘·나비스·게드마")),
+    T("그두라의 아들들","시므란·욕산·므단·미디안·이스박·수아 (창 25:2)",T("미디안","미디안 족속의 조상")),
+    M("이삭","180세 · 약속의 아들 (창 21)",
+     T("에서","에돔 족속의 조상 (창 36)",T("엘리바스","",T("데만"),T("아말렉","아말렉 족속의 조상")),T("르우엘"),T("여우스"),T("얄람"),T("고라")),
+     M("야곱","147세 · 하나님이 '이스라엘'이라 이름 주심 (창 32:28)",
+      T("르우벤","레아의 아들, 맏아들"),T("시므온","레아의 아들"),
+      T("레위","레아의 아들 · 제사장과 성막을 맡은 지파",T("게르손"),T("므라리"),
+       T("고핫","",T("이스할","",T("고라","모세에게 반역 (민 16)",T("… 엘가나","",T("사무엘","선지자이자 마지막 사사 (삼상 1 · 대상 6:28)")),T("고라 자손","성전 찬양대, 시편 42~49편 등"))),T("헤브론"),T("웃시엘"),
+        T("아므람","아내 요게벳 (출 6:20)",T("미리암","선지자, 홍해의 노래"),
+         T("아론","첫 대제사장",T("나답","다른 불을 드리다 죽음 (레 10)"),T("아비후","다른 불을 드리다 죽음"),T("엘르아살","2대 대제사장",T("비느하스","",T("… 사독","다윗·솔로몬 때 대제사장 (대상 6)"))),T("이다말","",T("… 엘리","실로의 제사장")),T("… 사가랴","아비야 반열의 제사장, 아내 엘리사벳도 아론의 자손 (눅 1:5)",T("세례 요한","예수님의 길을 예비한 사람 (눅 1)"))),
+         T("모세","출애굽의 지도자, 아내 십보라",T("게르솜"),T("엘리에셀"))))),
+      M("유다","레아의 아들 · 왕이 나올 지파 (창 49:10)",T("엘"),T("오난"),T("셀라"),T("세라","다말의 아들, 베레스의 쌍둥이"),
+       M("베레스","다말의 아들 (창 38:29)",M("헤스론","",M("람","",M("암미나답","",M("나손","광야에서 유다 지파의 지휘관 (민 1:7)",M("살몬","아내 라합 (마 1:5)",M("보아스","아내 룻 (룻 4)",M("오벳","",M("이새","베들레헴 사람 (삼상 16)",
+        T("엘리압","맏아들"),T("아비나답"),T("삼마"),T("느다넬"),T("랏대"),T("오셈"),
+        M("다윗","이스라엘 2대 왕, 40년 (삼하 5:4)",
+         T("암논","아히노암의 아들 (삼하 3:2)"),T("길르압","아비가일의 아들"),T("압살롬","마아가의 아들, 반역 (삼하 15)"),T("아도니야","학깃의 아들, 왕위를 노림 (왕상 1)"),T("스바댜"),T("이드르암"),T("시므아","밧세바의 아들"),T("소밥","밧세바의 아들"),
+         T("나단","밧세바의 아들 · 누가복음 족보는 이 줄로 이어져요 (눅 3:31)",T("… 맛다다 … (눅 3:23~31)","",T("헬리","요셉의 아버지(마리아의 아버지로 보기도 함) (눅 3:23)"))),
+         M("솔로몬","밧세바의 아들 · 3대 왕 40년, 성전 건축",M("르호보암","남 유다 1대 왕",M("아비야","아비얌",M("아사","",M("여호사밧","",M("요람","여호람",M("아하시야","마태복음 족보에서 생략",M("요아스","마태복음 족보에서 생략",M("아마샤","마태복음 족보에서 생략",M("웃시야","아사랴",M("요담","",M("아하스","",M("히스기야","",M("므낫세","",M("아몬","",
+         M("요시야","",T("여호아하스","살룸 · 석 달 다스린 왕"),T("시드기야","맛다니야 · 유다의 마지막 왕"),
+          M("여호야김","엘리아김 · 마태복음 족보에서 생략",M("여고냐","여호야긴 · 바벨론 포로 (마 1:12)",M("스알디엘","",M("스룹바벨","포로 귀환 지도자, 성전 재건 (스 3)",M("아비훗","",M("엘리아김","",M("아소르","",M("사독","",M("아킴","",M("엘리웃","",M("엘르아살","",M("맛단","",M("야곱","",
+          M("요셉","마리아의 남편 (마 1:16)",T("야고보","예수님의 동생, 야고보서 (마 13:55)"),T("요셉(요세)","예수님의 동생"),T("시몬","예수님의 동생"),T("유다","예수님의 동생, 유다서"),
+           M("예수","그리스도 · 마리아에게서 나심 (마 1:16)")))))))))))))))))))))))))))))))))))))))))),
+      T("잇사갈","레아의 아들"),T("스불론","레아의 아들"),T("디나","레아의 딸"),
+      T("단","빌하의 아들"),T("납달리","빌하의 아들"),T("갓","실바의 아들"),T("아셀","실바의 아들"),
+      T("요셉","라헬의 아들 · 애굽의 총리 (창 37~50)",T("므낫세","애굽에서 낳은 맏아들"),T("에브라임","애굽에서 낳은 둘째",T("… 눈","",T("여호수아","모세의 후계자 (대상 7:20~27)")))),
+      T("베냐민","라헬의 막내아들",T("… 아비엘","",T("기스","",T("사울","이스라엘 첫 왕 (삼상 9~31)",T("요나단","다윗의 친구",T("므비보셋","다리를 저는 아들, 다윗이 돌봄 (삼하 9)",T("미가"))),T("아비나답"),T("말기수아"),T("이스보셋","사울 뒤 2년 왕"),T("메랍","딸"),T("미갈","딸, 다윗의 아내")))))))))))))))))))))))))));
+let GEN=0;const ALL=[];
+function famHTML(node,g,inBranch){ALL.push(node.n);node.id="f"+ALL.length;
+  const kids=node.c||[],main=kids.find(k=>k.m),br=kids.filter(k=>!k.m);
+  let h='<div class="fn'+(node.m&&!inBranch?" main":"")+'" id="'+node.id+'"><span class="gnum">'+(g?g+"대":"")+'</span><span class="p">'+esc(node.n)+'</span><span class="dsc">'+esc(node.d)+'</span></div>';
+  if(br.length)h+='<details class="br"><summary>▸ '+(main?"형제·다른 자손 ":"자손 ")+br.length+'명</summary><div class="sub2">'+br.map(b=>famHTML(b,0,true)).join("")+'</div></details>';
+  if(main)h+=famHTML(main,inBranch?0:g+1,inBranch);
+  return h}
+function drawFam(){if($("fwrap").innerHTML)return;ALL.length=0;$("fwrap").innerHTML='<div class="spine">'+famHTML(FAM,1,false)+'</div>';
+  $("fnames").innerHTML=[...new Set(ALL)].filter(n=>!/^…/.test(n)).map(n=>'<option value="'+esc(n)+'">').join("");
+  const Q=["아담","노아","아브라함","야곱","유다","보아스","다윗","솔로몬","요시야","스룹바벨","예수","모세","사울","에서","이스마엘"];
+  $("fquick").innerHTML=Q.map(n=>'<button type="button" class="chip" data-fq="'+n+'">'+n+'</button>').join("")}
+function famFind(q){q=q.trim();if(!q)return;const wrap=$("fwrap");wrap.querySelectorAll(".fn.hit").forEach(x=>x.classList.remove("hit"));
+  const hits=[...wrap.querySelectorAll(".fn")].filter(x=>x.querySelector(".p").textContent.replace(/^… /,"")===q||x.querySelector(".p").textContent.includes(q));
+  if(!hits.length){toast("'"+esc(q)+"'을(를) 족보에서 찾지 못했어요");return}
+  hits.forEach(h=>{h.classList.add("hit");let d=h.parentElement;while(d&&d!==wrap){if(d.tagName==="DETAILS")d.open=true;d=d.parentElement}});
+  const f=hits[0];wrap.scrollTop+=f.getBoundingClientRect().top-wrap.getBoundingClientRect().top-wrap.clientHeight/3;
+  if(hits.length>1)toast("'"+esc(q)+"' "+hits.length+"명을 찾았어요 (빨간색)")}
+$("fq").addEventListener("change",()=>famFind($("fq").value));$("fq").addEventListener("keydown",e=>{if(e.key==="Enter")famFind($("fq").value)});
+$("fquick").onclick=e=>{const b=e.target.closest("[data-fq]");if(b){$("fq").value=b.dataset.fq;famFind(b.dataset.fq)}};
+$("fopen").onclick=()=>$("fwrap").querySelectorAll("details").forEach(d=>d.open=true);
+$("fclose").onclick=()=>$("fwrap").querySelectorAll("details").forEach(d=>d.open=false);
+
+/* =========================================================
+   화면 전환 (#history · #map · #family)
+   ========================================================= */
+function setMode(m){if(!["history","map","family"].includes(m))m="history";
+  document.querySelectorAll(".modes button").forEach(b=>{const on=b.dataset.mode===m;b.classList.toggle("on",on);b.setAttribute("aria-selected",on)});
+  ["history","map","family"].forEach(x=>$("v-"+x).hidden=x!==m);
+  if(m==="history"&&!$("h-ot").innerHTML){drawOT();setH("ot")}
+  if(m==="map"){initMap();if(MP)setTimeout(()=>{MP.invalidateSize();drawEra(ERA)},60)}
+  if(m==="family")drawFam();
+  if(location.hash!=="#"+m)history.replaceState(null,"","#"+m);
+  try{gtag("event","tracker_mode",{mode:m})}catch(e){}}
+document.querySelector(".modes").onclick=e=>{const b=e.target.closest("[data-mode]");if(b)setMode(b.dataset.mode)};
+addEventListener("hashchange",()=>setMode(location.hash.slice(1)));
+setMode(location.hash.slice(1));
+</script>
+<script src="../assets/jua.js"></script>
+<script src="../assets/scene.js?v=20261116d"></script><script src="../assets/home.js?v=20261118"></script>
+</body></html>
