@@ -116,6 +116,10 @@ html.sc-night .pen::before{filter:brightness(.6)}html.sc-night .pen::after{opaci
 .done h3{margin:0 0 6px;font-weight:normal;font-size:22px}
 /* reading table */
 .tabs{display:flex;gap:8px;justify-content:center;margin-bottom:12px;flex-wrap:wrap}
+.lambcard{position:relative}.foldb{position:absolute;top:10px;right:10px;z-index:3}
+.lambcard.folded{padding-top:14px;padding-bottom:12px}.lambcard.folded #lambBody,.lambcard.folded #lambMore{display:none}.lambcard.folded .stage{margin:0;padding-right:86px;text-align:left}
+.jump{display:flex;align-items:center;gap:8px;justify-content:center;margin-bottom:10px;font-size:15px}.jump select{font:inherit;font-size:15px;padding:6px 10px;border:2px solid var(--ink);border-radius:12px;background:#fff;max-width:60%}
+#books{max-height:min(62vh,620px);overflow-y:auto;overscroll-behavior:contain;padding-right:4px;scroll-behavior:smooth}
 .tabs button.on{background:var(--gold)}
 .book{border:2px solid var(--ink);border-radius:14px;background:#fff;margin-bottom:8px;overflow:hidden}
 .book summary{list-style:none;display:flex;align-items:center;gap:8px;padding:9px 12px;cursor:pointer}
@@ -124,7 +128,7 @@ html.sc-night .pen::before{filter:brightness(.6)}html.sc-night .pen::after{opaci
 .book summary .cnt{font-size:14px;opacity:.75;white-space:nowrap}
 .book summary .mini{width:70px;height:9px;border:1.5px solid var(--ink);border-radius:9px;overflow:hidden;background:#f3efe6;flex:none}
 .book summary .mini i{display:block;height:100%;background:var(--green)}
-.book.full summary{background:#e9f7dc}
+.book.full summary{background:#e9f7dc}.book.flash{animation:bflash 1.2s}@keyframes bflash{0%,60%{box-shadow:0 0 0 4px var(--gold)}100%{box-shadow:0 0 0 0 transparent}}
 .book summary::after{content:"▾";transition:transform .2s}.book[open] summary::after{transform:rotate(180deg)}
 .chs{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px;padding:4px 12px 12px}
 .ch{padding:7px 0;border-radius:10px;font-size:15px;box-shadow:0 2px 0 var(--ink);background:#fff}
@@ -179,9 +183,12 @@ html.sc-night .pen::before{filter:brightness(.6)}html.sc-night .pen::after{opaci
   </aside>
   <div class="rcol">
 
-  <section class="card">
-    <div class="pen" id="pen" aria-label="양 우리"></div>
+  <section class="card lambcard" id="lambCard">
+    <button type="button" class="sm foldb" id="lambFold" aria-expanded="true" aria-controls="lambBody">▲ 접기</button>
+    <div id="lambBody">
+    <div class="pen" id="pen" aria-label="양 우리"></div></div>
     <div class="stage" id="stage"></div>
+    <div id="lambMore">
     <div class="bar"><i id="bar"></i></div>
     <div class="stats">
       <div class="stat"><b id="kg">3.0kg</b><small>지금 몸무게</small></div>
@@ -194,10 +201,12 @@ html.sc-night .pen::before{filter:brightness(.6)}html.sc-night .pen::after{opaci
       <p style="margin:0 0 10px">이 양을 양 떼로 보내고, 새 아기 양을 키우며 다음 일독을 시작해 보세요.</p>
       <button class="go" id="newLamb">🐑 양 떼로 보내고 새 아기 양 키우기</button>
     </div>
+    </div>
   </section>
 
   <section class="card">
     <div class="tabs" id="tabs"><button data-t="ot" class="on">구약 39권</button><button data-t="nt">신약 27권</button></div>
+    <div class="jump"><label for="bookJump">📖 빨리 찾기</label><select id="bookJump" aria-label="성경 책 빨리 찾기"></select></div>
     <div id="books"></div>
     <div class="tools">
       <button class="sm" id="openAll">모두 펼치기</button>
@@ -459,6 +468,17 @@ $("books").addEventListener("click",e=>{const btn=e.target.closest("button");if(
   try{gtag("event","bible_check",{chapters:delta})}catch(e){}});
 $("tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;tab=b.dataset.t;document.querySelectorAll("#tabs button").forEach(x=>x.classList.toggle("on",x===b));drawBooks()});
 $("openAll").onclick=()=>document.querySelectorAll(".book").forEach(d=>d.open=true);
+/* 📖 빨리 찾기: 고르면 그 책을 펼쳐 목록 안에서만 그 자리로 옮겨요 (화면 전체는 그대로) */
+(()=>{const sel=$("bookJump"),grp=(t,lab)=>'<optgroup label="'+lab+'">'+BOOKS.map((b,i)=>b[2]===t?'<option value="'+i+'">'+b[0]+'</option>':"").join("")+'</optgroup>';
+  sel.innerHTML='<option value="">책 고르기</option>'+grp("ot","구약")+grp("nt","신약");
+  sel.onchange=()=>{if(sel.value==="")return;const i=+sel.value,t=BOOKS[i][2];
+    if(t!==tab){tab=t;document.querySelectorAll("#tabs button").forEach(x=>x.classList.toggle("on",x.dataset.t===t));drawBooks()}
+    const box=$("books"),d=box.querySelector('.book[data-b="'+i+'"]');if(!d)return;d.open=true;
+    box.scrollTop+=d.getBoundingClientRect().top-box.getBoundingClientRect().top-4;d.classList.add("flash");setTimeout(()=>d.classList.remove("flash"),1200);sel.value=""}})();
+/* 🐑 양 우리 접기/펴기 (이 기기에 기억) */
+(()=>{const card=$("lambCard"),b=$("lambFold");const set=f=>{card.classList.toggle("folded",f);b.textContent=f?"▼ 펼치기":"▲ 접기";b.setAttribute("aria-expanded",f?"false":"true");try{localStorage.setItem("bible-lamb-fold",f?"1":"0")}catch(e){}
+    if(!f)setTimeout(()=>dispatchEvent(new Event("resize")),30)};
+  let f=false;try{f=localStorage.getItem("bible-lamb-fold")==="1"}catch(e){}set(f);b.onclick=()=>set(!card.classList.contains("folded"))})();
 $("closeAll").onclick=()=>document.querySelectorAll(".book").forEach(d=>d.open=false);
 
 /* ---------- name, completion, new lamb ---------- */
