@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://js.tosspayments.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' data: blob: https://api.github.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://api.open-meteo.com https://api.met.no https://wttr.in https://api.mymemory.translated.net https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.doubleclick.net https://www.google.com https://*.tosspayments.com https://0.peerjs.com wss://0.peerjs.com wss://broker.emqx.io:8084 wss://broker.hivemq.com:8884 https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self' blob:; frame-src 'self' https://www.bskorea.or.kr https://*.tosspayments.com; object-src 'none'; base-uri 'self'; form-action 'self' https://*.tosspayments.com">
+<meta name="referrer" content="strict-origin-when-cross-origin"><script async src="https://www.googletagmanager.com/gtag/js?id=G-0WTWY3TPES"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-0WTWY3TPES");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>순위맞히기 | 치영의 교회 생활 즐기기 · 휴대폰으로 하는 순위 맞히기 게임</title>
+<meta name="description" content="사회자가 주제를 고르면 각자 몰래 받은 번호만큼의 답을 말하고, 사회자가 모두의 순서를 맞히는 레크리에이션 게임. 주제 약 600개, QR로 초대해 휴대폰으로 함께해요.">
+<link rel="canonical" href="https://zidane7-creator.github.io/nanum-boardgame/rank/">
+<meta property="og:title" content="순위맞히기 — 치영의 교회 생활 즐기기">
+<meta property="og:description" content="내 번호만큼의 답을 말하고, 사회자가 순서를 맞혀요">
+<meta property="og:image" content="https://zidane7-creator.github.io/nanum-boardgame/assets/og.jpg">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔢</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<script src="../assets/jua.js"></script>
+<style>
+:root{--ink:#3b2a20;--cream:#fffaf0;--line:#e3d6c2;--accent:#e8503a;--gold:#f5b82e;--green:#3f9a55;--blue:#2f6fb0;--muted:#7a6a5c;--soft:#f6efe2;--red:#c8322a;--pur:#7a4fb0}
+*{box-sizing:border-box}
+html,body{margin:0;color:var(--ink);background:#f7f1e6;font:16px/1.55 "Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif}
+h1,h2,h3,.j,.top{font-family:"Jua","Apple SD Gothic Neo",sans-serif;font-weight:normal}
+button{font:inherit;color:var(--ink);border:2px solid var(--ink);background:var(--cream);border-radius:14px;padding:8px 14px;cursor:pointer;box-shadow:0 3px 0 var(--ink)}
+button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}button:disabled{opacity:.45;cursor:default;transform:none}
+button.pri{background:var(--accent);color:#fff}button.ok{background:var(--green);color:#fff}button.go{background:var(--blue);color:#fff}
+button.sm{padding:3px 10px;font-size:14px;border-radius:10px;box-shadow:0 2px 0 var(--ink)}button.big{font-size:21px;padding:12px 24px;font-family:Jua,sans-serif}
+input,select{font:inherit;color:var(--ink);border:2px solid #cdbda6;border-radius:12px;padding:7px 10px;background:#fff;min-width:0;max-width:100%}
+.top{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:10px;padding:calc(8px + env(safe-area-inset-top,0px)) 14px 8px;background:rgba(255,255,255,.95);border-bottom:4px solid var(--gold)}
+.top a{color:var(--ink);text-decoration:none;border:2px solid var(--ink);border-radius:14px;padding:3px 10px;background:var(--cream)}.top .ttl{flex:1;font-size:19px}
+main{max-width:780px;margin:0 auto;padding:14px 12px 90px}
+.card{background:#fff;border:3px solid var(--ink);border-radius:20px;padding:16px;margin-bottom:14px;box-shadow:0 5px 0 rgba(0,0,0,.12)}
+.card h2{margin:0 0 8px;font-size:23px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.sp{flex:1}.hint{font-size:14px;color:var(--muted)}.center{text-align:center}
+.big-ico{font-size:62px;line-height:1.1}
+.pick{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.pick button{display:flex;flex-direction:column;align-items:flex-start;text-align:left;background:#fff;border-color:#cdbda6;box-shadow:0 3px 0 #cdbda6}
+.pick button b{font-family:Jua,sans-serif;font-weight:normal;font-size:18px}.pick button span{font-size:13px;color:var(--muted)}
+.pick button.on{background:#fff4e0;border-color:var(--ink);box-shadow:0 3px 0 var(--ink)}
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
+.cats button{font-family:Jua,sans-serif;font-size:18px;background:#fff}.cats button.on{background:var(--gold)}
+.pl{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
+.pp{border:2px solid var(--ink);border-radius:14px;padding:9px 6px;background:#fffdf7;text-align:center;font-family:Jua,sans-serif;font-size:19px;position:relative}
+.pp.pick{cursor:pointer}.pp.pick:hover{background:#fff1cc}.pp.mine{outline:4px solid var(--gold)}.pp.turn{background:#e3efff;border-color:var(--blue)}.pp.liar{background:#ffe0dc;border-color:var(--red)}
+.pp .tag{display:block;font-family:inherit;font-size:12px;opacity:.8}.pp .cnt{position:absolute;top:-8px;right:-6px;background:var(--red);color:#fff;border-radius:999px;font-size:13px;padding:0 7px}
+.word{border-radius:22px;padding:22px 16px;text-align:center;color:#fff;background:linear-gradient(#2f6fb0,#1c3f6a)}
+.word.liar{background:linear-gradient(#c8322a,#7a1d18)}
+.word .w{font-family:Jua,sans-serif;font-size:46px;line-height:1.2}
+.talk{display:flex;flex-direction:column;gap:6px;max-height:340px;overflow:auto}
+.talk .t{background:var(--soft);border-radius:14px;padding:6px 10px}.talk .t b{font-family:Jua,sans-serif;font-weight:normal;color:var(--blue)}
+.qr{background:#fff;padding:8px;border-radius:12px;display:inline-block}.qr svg{width:170px;height:170px;display:block}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#222;color:#fff;padding:10px 18px;border-radius:14px;opacity:0;transition:.25s;z-index:200;pointer-events:none;max-width:90vw;text-align:center}.toast.show{opacity:1}
+.badge{display:inline-block;border-radius:10px;padding:0 8px;font-size:13px;background:var(--soft);border:1px solid var(--line)}
+.ann{font-family:Jua,sans-serif;font-size:24px;text-align:center;padding:12px;border-radius:16px;background:#fff6d8;border:2px solid var(--gold);margin-bottom:12px}
+.topic{border-radius:22px;padding:18px 16px;text-align:center;color:#fff;background:linear-gradient(#7a4fb0,#3f2a6a)}
+.topic .t{font-family:Jua,sans-serif;font-size:clamp(24px,6vw,34px);line-height:1.25}
+.scale{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin-top:12px;font-size:14px;text-align:left}
+.scale .lo,.scale .hi{background:rgba(255,255,255,.16);border-radius:12px;padding:6px 10px}.scale .hi{text-align:right}
+.scale .ar{font-family:Jua,sans-serif;font-size:18px;white-space:nowrap}
+.mynum{margin-top:14px;border-radius:22px;padding:14px;text-align:center;background:#fff6d8;border:3px solid var(--gold)}
+.mynum .n{font-family:Jua,sans-serif;font-size:64px;line-height:1;color:var(--accent)}
+.cands{display:grid;gap:10px}
+.cands button{display:block;text-align:left;background:#fff;width:100%}
+.cands button b{font-family:Jua,sans-serif;font-weight:normal;font-size:19px;display:block}.cands button span{font-size:13px;color:var(--muted)}
+.slots{display:flex;flex-direction:column;gap:8px}
+.slot{display:grid;grid-template-columns:44px 1fr;gap:8px;align-items:stretch}
+.slot .k{display:flex;align-items:center;justify-content:center;font-family:Jua,sans-serif;font-size:22px;border-radius:12px;background:var(--soft);border:2px solid var(--line)}
+.slot .v{min-height:54px;border:2.5px dashed #cdbda6;border-radius:14px;padding:6px 10px;display:flex;flex-direction:column;justify-content:center;cursor:pointer;background:#fffdf7}
+.slot .v.full{border-style:solid;border-color:var(--ink);background:#fff}
+.slot .v.ok{background:#dff5e3;border:2.5px solid var(--green)}.slot .v.no{background:#ffe0dc;border:2.5px solid var(--red)}
+.slot .v b{font-family:Jua,sans-serif;font-weight:normal;font-size:19px}.slot .v small{font-size:13px;color:var(--muted)}
+.slot .v .real{font-family:Jua,sans-serif;font-size:15px}
+.pool{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.pool .cd{border:2.5px solid var(--ink);border-radius:14px;padding:6px 12px;background:#fff;cursor:pointer;text-align:left;box-shadow:0 3px 0 var(--ink)}
+.pool .cd b{font-family:Jua,sans-serif;font-weight:normal;font-size:18px;display:block}.pool .cd small{font-size:13px;color:var(--muted)}
+.pool .cd.sel{background:var(--gold)}
+.endl{font-size:13px;color:var(--muted);margin:2px 0}
+.res{font-family:Jua,sans-serif;font-size:40px}
+</style>
+</head><body>
+<div class="top"><a href="../">← 목장</a><span class="ttl">🔢 순위맞히기</span></div>
+<main id="app"><div class="card center">불러오는 중…</div></main>
+<div class="toast" id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js" integrity="sha384-8FWZA6BGMXhsfO+BLtrJK0We6gg5o1JyO8xQm6peWDEUs17ACA5ziE/NIAkl9z2k" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js" integrity="sha384-u4uqeACkFcoKl57rBQJHVGDd1pqhW4w8X3WjTu1ZksPdxoLqdt34jpoNkJisE25W" crossorigin="anonymous"></script>
+<script src="topics.js?v=20261125"></script>
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clip=(s,n)=>String(s??'').replace(/[\u0000-\u001f]/g,' ').trim().slice(0,n);
+const rnd=n=>{const a=new Uint32Array(1);crypto.getRandomValues(a);return Math.floor(a[0]/4294967296*n)};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
+let tt;function toast(m,ms){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),ms||2600)}
+const app=$('#app');
+/* 주제 [주제, 1에 가까울수록, 끝 숫자에 가까울수록] */
+const TOP=(window.RANK_TOPICS||'').split('\n').map(l=>l.split('|')).filter(x=>x.length===3);
+const BROKERS=["wss://broker.emqx.io:8084/mqtt","wss://broker.hivemq.com:8884/mqtt"];
+const params=new URLSearchParams(location.search);
+let ROOM=(params.get('room')||params.get('host')||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6);
+const HOSTING=!!params.get('host');
+const base=()=>'chiyoung-rank/v1/'+ROOM;
+function mqttOpen(url,ms){return new Promise(res=>{if(typeof mqtt=='undefined')return res(null);let done=false;
+  const cl=mqtt.connect(url,{connectTimeout:ms,reconnectPeriod:3000,clientId:'rk'+Math.random().toString(36).slice(2,12)});
+  cl.on('connect',()=>{if(!done){done=true;res(cl)}});setTimeout(()=>{if(!done){done=true;try{cl.end(true)}catch(e){}res(null)}},ms)})}
+
+/* =================== 방장(호스트) 기기: 게임의 모든 진행을 맡아요 =================== */
+let G=null,isHost=false,MY=null;
+const HK=()=>'rank-host-'+ROOM;
+const saveG=()=>{try{localStorage.setItem(HK(),JSON.stringify(G))}catch(e){}};
+const P=id=>G.players.find(p=>p.id===id);const nm=id=>(P(id)||{}).name||'?';
+function newGame(hostName){ROOM=Array.from({length:4},()=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[rnd(32)]).join('');
+  MY='host-'+Math.random().toString(36).slice(2,8);
+  G={room:ROOM,phase:'lobby',set:{talk:'off'},players:[{id:MY,name:hostName,host:true}],modNext:null,round:0,score:{ok:0,fail:0},used:[],r:null};
+  history.replaceState(null,'','?host='+ROOM);isHost=true;saveG();hostNet();render()}
+function viewFor(pid){const me=P(pid),ph=G.phase,R=G.r;
+  const v={ph,room:G.room,set:G.set,players:G.players.map(p=>({id:p.id,name:p.name})),me:me?{id:me.id,name:me.name,host:!!me.host}:null,score:G.score,round:G.round};
+  if(R){v.mod=R.mod;v.isMod=pid===R.mod;v.topic=R.topic;v.n=R.order?R.order.length:G.players.length-1;
+    if(ph==='pick'&&pid===R.mod)v.cands=R.cands.map(i=>TOP[i]);
+    if(R.nums&&R.nums[pid])v.myNum=R.nums[pid];
+    if(R.order){v.order=R.order;v.ti=R.ti;v.says=R.says;v.talkMode=R.talkMode}
+    if(R.arr)v.arr=R.arr;
+    if(ph==='reveal'){v.nums=R.nums;v.result=R.result}}
+  return v}
+const CONNS={};
+function send(p,m){const c=CONNS[p.id];if(c)try{c.cl.publish(base()+'/c/'+p.id,JSON.stringify(m),{qos:1})}catch(e){}}
+function broadcast(){G.players.forEach(p=>{if(!p.host)send(p,{t:'state',v:viewFor(p.id)})});saveG();render()}
+function hostNet(){BROKERS.forEach(async url=>{const cl=await mqttOpen(url,8000);if(!cl)return;const b=base();
+  cl.subscribe(b+'/h',{qos:1});cl.on('connect',()=>cl.subscribe(b+'/h',{qos:1}));
+  cl.on('message',(tp,buf)=>{let d;try{d=JSON.parse(buf.toString())}catch(_){return}if(!d||!d.from||!d.m)return;
+    const from=String(d.from).replace(/[^a-z0-9-]/gi,'').slice(0,24);CONNS[from]={cl};hostHandle(from,d.m)});
+  const s=$('#netSt');if(s)s.textContent='📡 초대 받는 중'})}
+function reply(id,m){const c=CONNS[id];if(c)c.cl.publish(base()+'/c/'+id,JSON.stringify(m),{qos:1})}
+function hostHandle(from,m){
+  if(m.t==='join'){const name=clip(m.name,10);let p=P(from);
+    if(!p){if(G.phase!=='lobby')return reply(from,{t:'err',msg:'이미 게임 중이에요. 이번 판이 끝나고 대기실로 돌아오면 들어와 주세요'});if(!name)return reply(from,{t:'err',msg:'이름을 적어 주세요'});
+      if(G.players.some(x=>x.name===name))return reply(from,{t:'err',msg:'같은 이름이 있어요. 다르게 적어 주세요'});if(G.players.length>=16)return reply(from,{t:'err',msg:'방이 꽉 찼어요'});
+      p={id:from,name};G.players.push(p)}
+    reply(from,{t:'state',v:viewFor(from)});broadcast();return}
+  const p=P(from);if(!p)return reply(from,{t:'err',msg:'방에 다시 들어와 주세요'});
+  if(m.t==='ping')return reply(from,{t:'state',v:viewFor(from)});act(p,m)}
+/* --- 진행 --- */
+function pickCands(){const R=G.r,used=new Set(G.used),pool=TOP.map((_,i)=>i).filter(i=>!used.has(i)&&!(R.seen||[]).includes(i));
+  const src=pool.length>=3?pool:TOP.map((_,i)=>i);R.cands=shuffle(src).slice(0,3);R.seen=(R.seen||[]).concat(R.cands)}
+function startRound(){if(G.players.length<3){toast('사회자를 빼고 2명 이상, 모두 3명 이상이 들어와야 해요');return}
+  const ids=G.players.map(p=>p.id);let mi=G.modNext==null?rnd(ids.length):G.modNext%ids.length;
+  G.r={mod:ids[mi],topic:null,cands:[],seen:[]};G.modNext=mi+1;pickCands();G.round++;G.phase='pick';broadcast()}
+function setTopic(t){const R=G.r;R.topic=t;const others=shuffle(G.players.filter(p=>p.id!==R.mod).map(p=>p.id)),n=others.length,nums=shuffle(Array.from({length:n},(_,i)=>i+1));
+  R.nums={};others.forEach((id,i)=>R.nums[id]=nums[i]);R.order=shuffle(others);R.ti=0;R.says={};R.talkMode=G.set.talk;R.arr=Array(n).fill(null);G.phase='talk';broadcast()}
+function nextTurn(){const R=G.r;R.ti++;if(R.ti>=R.order.length){G.phase='arrange';}broadcast()}
+function act(p,m){const R=G.r,ph=G.phase;if(!R)return;const isMod=p.id===R.mod;
+  if(m.t==='reroll'&&ph==='pick'&&(isMod||p.host)){pickCands();broadcast();return}
+  if(m.t==='pick'&&ph==='pick'&&(isMod||p.host)){const i=+m.i;if(!(i>=0&&i<3))return;const ti=R.cands[i];G.used.push(ti);setTopic(TOP[ti]);return}
+  if(m.t==='custom'&&ph==='pick'&&(isMod||p.host)){const t=[clip(m.a,60),clip(m.b,60),clip(m.c,60)];if(!t[0]||!t[1]||!t[2])return;setTopic(t);return}
+  if(m.t==='say'&&ph==='talk'&&R.order[R.ti]===p.id){const text=clip(m.text,60);if(R.talkMode==='on'&&!text)return;R.says[p.id]=text||'(말로 했어요)';nextTurn();return}
+  if(m.t==='skip'&&ph==='talk'&&(isMod||p.host)){if(!R.says[R.order[R.ti]])R.says[R.order[R.ti]]='(건너뜀)';nextTurn();return}
+  if(m.t==='toArr'&&ph==='talk'&&(isMod||p.host)){G.phase='arrange';broadcast();return}
+  if(m.t==='place'&&ph==='arrange'&&isMod){const k=+m.k,id=m.id;if(!(k>=0&&k<R.arr.length))return;if(id&&!R.order.includes(id))return;
+    if(id){const was=R.arr.indexOf(id);if(was>=0)R.arr[was]=null;R.arr[k]=id}else R.arr[k]=null;broadcast();return}
+  if(m.t==='submit'&&ph==='arrange'&&isMod){if(R.arr.some(x=>!x))return;const right=R.arr.filter((id,k)=>R.nums[id]===k+1).length,ok=right===R.arr.length;
+    R.result={ok,right};G.score[ok?'ok':'fail']++;G.phase='reveal';broadcast();return}}
+
+/* =================== 화면 =================== */
+let LV=null,SEL=null;
+function render(){if(isHost&&G){LV=viewFor(MY);vGame(true);return}if(CL.joined&&LV){vGame(false);return}vEntry()}
+function vEntry(){if(ROOM&&!HOSTING){app.innerHTML=`<div class="card center"><div class="big-ico">🔢</div><h2>순위맞히기 방 ${esc(ROOM)}</h2><p>내 이름을 적고 들어와요</p><input id="jName" placeholder="내 이름" maxlength="10" style="font-size:22px;text-align:center;width:100%;max-width:300px" value="${esc(CL.name||'')}"><div class="row" style="justify-content:center;margin-top:10px"><button class="pri big" id="jGo">들어가기</button></div><p class="hint" id="jSt"></p></div>`;
+    $('#jGo').onclick=()=>{const n=clip($('#jName').value,10);if(!n){toast('이름을 적어 주세요');return}joinRoom(n)};$('#jName').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing)$('#jGo').click()};return}
+  app.innerHTML=`<div class="card center"><div class="big-ico">🔢</div><h1 style="margin:0">순위맞히기</h1><p>사회자가 주제를 고르면, 모두 <b>몰래 받은 번호</b>만큼의 답을 말해요.<br>사회자는 그 답만 듣고 모두의 번호 순서를 맞혀요!</p><p class="hint">사회자를 빼고 5~9명이 하면 가장 재미있어요 · 주제 ${TOP.length}개</p></div>
+  <div class="card"><h2>🏠 방 만들기</h2><div class="row"><input id="hName" placeholder="내 이름" maxlength="10" style="flex:1;min-width:160px"><button class="pri" id="mk">방 만들기</button></div><p class="hint">방을 만든 사람도 함께 게임해요. 다른 사람은 QR이나 링크로 초대해요.</p></div>
+  <div class="card"><h2>🚪 방에 들어가기</h2><div class="row"><input id="code" placeholder="방 코드 4자리" maxlength="6" style="text-transform:uppercase;width:150px"><button id="goCode">들어가기</button></div></div>
+  <div class="card"><h2>📋 이렇게 해요</h2><ol style="margin:0;padding-left:20px;line-height:1.7"><li>사회자(돌아가며 맡아요)가 주제를 골라요. 예) <b>음식의 매운 정도</b> — 1에 가까울수록 생수, 끝 숫자에 가까울수록 극도로 매운 것</li><li>사회자를 뺀 사람들은 1부터 인원수까지 번호를 하나씩 몰래 받아요</li><li>돌아가며 <b>내 번호만큼</b>의 답을 말해요. 1번이면 "생수", 끝 번호면 "청양고추 범벅 라면"처럼!</li><li>사회자가 이름을 1번부터 끝 번호 자리에 놓아요</li><li>모두 맞으면 성공! 그리고 각자의 번호를 공개해요</li></ol></div>`;
+  $('#mk').onclick=()=>{const n=clip($('#hName').value,10);if(!n){toast('이름을 적어 주세요');$('#hName').focus();return}newGame(n)};
+  $('#goCode').onclick=()=>{const c=$('#code').value.toUpperCase().replace(/[^A-Z0-9]/g,'');if(c)location.href='?room='+c}}
+const nmV=(v,id)=>(v.players.find(p=>p.id===id)||{}).name||'?';
+function topicBox(v){const t=v.topic;if(!t)return'';return`<div class="topic"><div class="hint" style="color:#e6dcff">주제 · 사회자 ${esc(nmV(v,v.mod))}</div><div class="t">${esc(t[0])}</div>
+  <div class="scale"><div class="lo"><b>1</b>에 가까울수록<br>${esc(t[1])}</div><div class="ar">1 ⟶ ${v.n}</div><div class="hi"><b>${v.n}</b>에 가까울수록<br>${esc(t[2])}</div></div></div>`}
+function myNumBox(v){if(v.isMod)return`<div class="mynum"><div class="j" style="font-size:22px">🎤 나는 사회자예요</div><div class="hint">모두의 답을 잘 듣고 순서를 맞혀 보세요</div></div>`;
+  if(!v.myNum)return'';return`<div class="mynum"><div class="hint">내 번호 (나만 볼 수 있어요)</div><div class="n">${v.myNum}</div><div class="hint">1 ~ ${v.n} 중에서 · ${v.myNum<=Math.ceil(v.n/3)?'1에 가까워요':v.myNum>v.n-Math.ceil(v.n/3)?'끝 숫자에 가까워요':'가운데쯤이에요'}</div></div>`}
+function saysList(v,withNum){return`<div class="talk">${v.order.map((id,i)=>{const s=v.says[id];return`<div class="t" style="${i===v.ti&&v.ph==='talk'?'outline:3px solid var(--blue)':''}"><b>${i+1}. ${esc(nmV(v,id))}</b> ${s!=null?esc(s):'<span class="hint">'+(i===v.ti&&v.ph==='talk'?'말하는 중…':'기다리는 중')+'</span>'}${withNum?` <span class="badge">${v.nums[id]}번</span>`:''}</div>`}).join('')}</div>`}
+function vGame(host){const v=LV,ph=v.ph;let h='';
+  if(ph==='lobby'){const url=location.origin+location.pathname+'?room='+v.room;let qr='';try{const q=qrcode(0,'M');q.addData(url);q.make();qr=q.createSvgTag(5,2)}catch(_){}
+    h+=`<div class="card"><div class="row"><h2 style="margin:0">🙋 대기실 · 방 ${esc(v.room)}</h2><span class="sp"></span>${host?'<span class="badge" id="netSt">연결 준비 중…</span>':''}</div>
+     ${host?`<div class="row" style="align-items:flex-start;margin-top:8px"><div class="qr">${qr}</div><div style="flex:1;min-width:200px"><p style="margin:0">QR을 찍거나 링크로 들어와서 이름을 적으면 돼요.</p><input readonly value="${esc(url)}" style="width:100%;font-size:13px;margin-top:6px" onclick="this.select()"><div class="row" style="margin-top:6px"><button class="sm" data-a="copy">🔗 링크 복사</button></div></div></div>`:'<p>방장이 시작하기를 기다리고 있어요…</p>'}
+     <h3 style="margin:12px 0 6px">들어온 사람 ${v.players.length}명 <span class="hint">(사회자를 빼고 5~9명이면 딱 좋아요)</span></h3><div class="pl">${v.players.map(p=>`<div class="pp">${esc(p.name)}${host&&!G.players.find(x=>x.id===p.id).host?`<button class="sm" data-kick="${p.id}" style="display:block;margin:4px auto 0">빼기</button>`:''}</div>`).join('')}</div></div>`;
+    if(v.round)h+=`<div class="card center"><b class="j" style="font-size:19px">🏆 지금까지 성공 ${v.score.ok}번 · 실패 ${v.score.fail}번</b></div>`;
+    if(host){const s=G.set;h+=`<div class="card"><h2>⚙️ 설정</h2><h3 style="margin:4px 0 6px">답을 말하는 방법</h3><div class="pick"><button class="${s.talk==='off'?'on':''}" data-set="talk" data-v="off"><b>🗣️ 모여서 말로</b><span>차례가 되면 말로 하고 '말했어요'를 눌러요 (적어도 돼요)</span></button><button class="${s.talk==='on'?'on':''}" data-set="talk" data-v="on"><b>💬 온라인으로 글로</b><span>차례가 되면 답을 화면에 적어요</span></button></div>
+      <p class="hint">사회자는 들어온 순서대로 돌아가며 맡아요 (첫 사회자는 무작위).</p>
+      <div class="row" style="justify-content:center;margin-top:14px"><button class="pri big" data-a="start" ${v.players.length<3?'disabled':''}>🎮 게임 시작</button></div>${v.players.length<3?'<p class="hint center">3명 이상이 들어와야 해요</p>':''}</div>`}
+    app.innerHTML=h;bind();return}
+  h+=`<div class="row" style="margin-bottom:8px"><span class="badge">${v.round}번째 판</span><span class="badge">🎤 사회자 ${esc(nmV(v,v.mod))}</span><span class="sp"></span><span class="badge">👤 ${esc(v.me.name)}</span></div>`;
+  if(ph==='pick'){if(v.isMod){h+=`<div class="card"><h2>🎤 사회자님, 주제를 골라 주세요</h2><div class="cands">${v.cands.map((t,i)=>`<button data-pick="${i}"><b>${esc(t[0])}</b><span>1에 가까울수록: ${esc(t[1])}<br>끝 숫자에 가까울수록: ${esc(t[2])}</span></button>`).join('')}</div>
+      <div class="row" style="margin-top:10px"><button class="sm" data-a="reroll">🔀 다른 주제 3개</button></div>
+      <details style="margin-top:12px"><summary class="j" style="cursor:pointer;font-size:17px">✍️ 주제 직접 만들기</summary><div style="display:grid;gap:6px;margin-top:8px"><input id="cA" placeholder="주제 (예: 여행 가방에 챙길 물건)" maxlength="60"><input id="cB" placeholder="1에 가까울수록 (예: 없어도 되는 것)" maxlength="60"><input id="cC" placeholder="끝 숫자에 가까울수록 (예: 꼭 필요한 것)" maxlength="60"><button class="go" data-a="custom">이 주제로 하기</button></div></details></div>`}
+    else h+=`<div class="card center"><div class="big-ico">🎤</div><h2>사회자 ${esc(nmV(v,v.mod))}님이 주제를 고르고 있어요</h2><p class="hint">주제가 정해지면 내 번호가 나와요</p>${host?'<button class="sm" data-a="reroll">🔀 (방장) 주제 다시 뽑기</button>':''}</div>`}
+  if(ph==='talk'){const cur=v.order[v.ti],myTurn=cur===v.me.id;
+    h+=topicBox(v)+myNumBox(v)+`<div class="card" style="margin-top:14px"><h2>${v.talkMode==='on'?'💬':'🗣️'} 돌아가며 말해요</h2>
+     <p class="hint">내 번호만큼의 답을 말해요. 번호는 말하면 안 돼요!</p>${saysList(v)}
+     ${myTurn?`<div class="ann" style="margin-top:10px">🙋 내 차례예요!</div><div class="row"><input id="say" placeholder="${v.talkMode==='on'?'내 번호만큼의 답 (예: 청양고추)':'말로 했다면 비워도 돼요 (적어도 좋아요)'}" maxlength="60" style="flex:1"><button class="pri" data-a="say">${v.talkMode==='on'?'말하기':'말했어요'}</button></div>`
+       :`<p class="center" style="margin-top:10px">🙋 <b>${esc(nmV(v,cur))}</b>님 차례예요</p>`}
+     ${(v.isMod||host)?'<div class="row" style="margin-top:8px"><button class="sm" data-a="skip">⏭ 이 사람 건너뛰기</button><button class="sm" data-a="toArr">👉 바로 순서 맞히기</button></div>':''}</div>`}
+  if(ph==='arrange'){const used=new Set(v.arr.filter(Boolean)),pool=v.order.filter(id=>!used.has(id));
+    h+=topicBox(v);
+    if(v.isMod){h+=`<div class="card" style="margin-top:14px"><h2>🧩 이름을 자리에 놓아 주세요</h2><p class="hint">아래 이름을 누르고 → 번호 자리를 눌러요. 놓인 이름을 누르면 다시 빠져요.</p>
+      <div class="slots">${v.arr.map((id,k)=>`<div class="slot"><div class="k">${k+1}</div><div class="v ${id?'full':''}" data-slot="${k}">${id?`<b>${esc(nmV(v,id))}</b><small>${esc(v.says[id]||'')}</small>`:`<small>${k===0?'1에 가까울수록 · '+esc(v.topic[1]):k===v.arr.length-1?'끝 숫자 · '+esc(v.topic[2]):'여기에 놓기'}</small>`}</div></div>`).join('')}</div>
+      <div class="pool">${pool.map(id=>`<button class="cd ${SEL===id?'sel':''}" data-card="${id}"><b>${esc(nmV(v,id))}</b><small>${esc(v.says[id]||'')}</small></button>`).join('')||'<span class="hint">모두 놓았어요!</span>'}</div>
+      <div class="row" style="justify-content:center;margin-top:14px"><button class="pri big" data-a="submit" ${pool.length?'disabled':''}>✅ 이 순서로 정답 확인</button></div></div>`}
+    else h+=`<div class="card" style="margin-top:14px"><h2>🧩 사회자 ${esc(nmV(v,v.mod))}님이 순서를 맞히는 중</h2>${myNumBox(v)}<div class="slots" style="margin-top:10px">${v.arr.map((id,k)=>`<div class="slot"><div class="k">${k+1}</div><div class="v ${id?'full':''}">${id?`<b>${esc(nmV(v,id))}${id===v.me.id?' (나)':''}</b><small>${esc(v.says[id]||'')}</small>`:'<small>비어 있어요</small>'}</div></div>`).join('')}</div></div>`}
+  if(ph==='reveal'){const R=v.result,n=v.arr.length;
+    h+=`<div class="card center"><div class="big-ico">${R.ok?'🎉':'😅'}</div><div class="res" style="color:${R.ok?'var(--green)':'var(--red)'}">${R.ok?'성공!':'아쉽게 실패!'}</div><p>${n}명 중 <b>${R.right}명</b>의 자리를 맞혔어요</p></div>`+topicBox(v)+
+     `<div class="card" style="margin-top:14px"><h2>🔓 모두의 번호 공개</h2><div class="slots">${v.arr.map((id,k)=>{const real=v.nums[id],ok=real===k+1;return`<div class="slot"><div class="k">${k+1}</div><div class="v ${ok?'ok':'no'}"><b>${ok?'⭕':'❌'} ${esc(nmV(v,id))}${id===v.me.id?' (나)':''}</b><small>${esc(v.says[id]||'')}</small><span class="real">진짜 번호: ${real}번</span></div></div>`}).join('')}</div></div>
+     <div class="card center"><b class="j" style="font-size:19px">🏆 지금까지 성공 ${v.score.ok}번 · 실패 ${v.score.fail}번</b>
+     ${host?'<div class="row" style="justify-content:center;margin-top:12px"><button class="pri big" data-a="start">➡️ 다음 판 (다음 사회자)</button><button data-a="lobby">🏠 대기실로</button></div>':'<p class="hint">방장이 다음 판을 시작해요. 다음 사회자는 '+esc(nmV(v,v.players[(v.players.findIndex(p=>p.id===v.mod)+1)%v.players.length].id))+'님이에요</p>'}</div>`}
+  app.innerHTML=h;bind()}
+function doAct(m){if(isHost){const p=P(MY);if(p)act(p,m)}else CL.send(m)}
+function bind(){
+  $$('[data-set]').forEach(b=>b.onclick=()=>{G.set[b.dataset.set]=b.dataset.v;broadcast()});
+  $$('[data-kick]').forEach(b=>b.onclick=()=>{const id=b.dataset.kick;if(!confirm(nm(id)+'님을 방에서 뺄까요?'))return;G.players=G.players.filter(p=>p.id!==id);send({id},{t:'err',msg:'방장이 방에서 뺐어요'});broadcast()});
+  $$('[data-pick]').forEach(b=>b.onclick=()=>doAct({t:'pick',i:+b.dataset.pick}));
+  $$('[data-card]').forEach(b=>b.onclick=()=>{SEL=SEL===b.dataset.card?null:b.dataset.card;render()});
+  $$('[data-slot]').forEach(b=>b.onclick=()=>{const k=+b.dataset.slot,cur=LV.arr[k];if(SEL){doAct({t:'place',k,id:SEL});SEL=null}else if(cur)doAct({t:'place',k,id:null})});
+  const sy=$('#say');if(sy){sy.onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing)$('[data-a=say]').click()};setTimeout(()=>sy.focus(),50)}
+  $$('[data-a]').forEach(b=>b.onclick=()=>{const a=b.dataset.a;
+    if(a==='copy'){navigator.clipboard.writeText(location.origin+location.pathname+'?room='+G.room).then(()=>toast('링크를 복사했어요'));return}
+    if(a==='start')return startRound();
+    if(a==='lobby'){G.phase='lobby';G.r=null;broadcast();return}
+    if(a==='reroll')return doAct({t:'reroll'});
+    if(a==='custom'){const A=clip($('#cA').value,60),B=clip($('#cB').value,60),C=clip($('#cC').value,60);if(!A||!B||!C){toast('세 칸을 모두 적어 주세요');return}doAct({t:'custom',a:A,b:B,c:C});return}
+    if(a==='say'){const t=clip($('#say').value,60);if(LV.talkMode==='on'&&!t){toast('답을 적어 주세요');return}doAct({t:'say',text:t});return}
+    if(a==='skip')return doAct({t:'skip'});if(a==='toArr')return doAct({t:'toArr'});
+    if(a==='submit'){if(!confirm('이 순서로 정답을 확인할까요?'))return;doAct({t:'submit'});return}})}
+
+/* =================== 참가자 기기 =================== */
+const CL={joined:false,name:'',id:null,cl:null,send(m){if(this.cl)this.cl.publish(base()+'/h',JSON.stringify({from:this.id,m}),{qos:1})}};
+async function joinRoom(name){CL.name=name;try{CL.id=sessionStorage.getItem('rk-id-'+ROOM)}catch(_){}if(!CL.id){CL.id='p'+Math.random().toString(36).slice(2,10);try{sessionStorage.setItem('rk-id-'+ROOM,CL.id)}catch(_){}}try{sessionStorage.setItem('rk-name-'+ROOM,name)}catch(_){}
+  const st=$('#jSt');if(st)st.textContent='방에 연결하는 중…';
+  for(const url of BROKERS){const cl=await mqttOpen(url,7000);if(!cl)continue;let heard=false;
+    cl.subscribe(base()+'/c/'+CL.id,{qos:1});cl.on('connect',()=>{cl.subscribe(base()+'/c/'+CL.id,{qos:1});if(CL.joined)CL.send({t:'join',name:CL.name})});
+    cl.on('message',(tp,buf)=>{let m;try{m=JSON.parse(buf.toString())}catch(_){return}heard=true;
+      if(m.t==='state'){const ch=!LV||LV.ph!==m.v.ph;LV=m.v;CL.joined=true;render();if(ch&&navigator.vibrate)try{navigator.vibrate(100)}catch(_){}}
+      else if(m.t==='err'){toast(m.msg,3500);const s=$('#jSt');if(s)s.textContent=m.msg}});
+    CL.cl=cl;CL.send({t:'join',name});for(let i=0;i<25&&!heard;i++){await new Promise(r=>setTimeout(r,300));if(i===10)CL.send({t:'join',name})}
+    if(heard){setInterval(()=>CL.send({t:'ping'}),15000);return}try{cl.end(true)}catch(_){}CL.cl=null}
+  const s=$('#jSt');if(s)s.textContent='방에 연결하지 못했어요. 방 코드와 방장 화면이 켜져 있는지 확인해 주세요'}
+
+if(HOSTING&&ROOM){try{G=JSON.parse(localStorage.getItem(HK())||'null')}catch(_){}if(G){isHost=true;MY=(G.players.find(p=>p.host)||{}).id;hostNet()}else{history.replaceState(null,'','./');ROOM=''}}
+else if(ROOM){let n='';try{n=sessionStorage.getItem('rk-name-'+ROOM)||''}catch(_){}if(n)joinRoom(n)}
+render();
+window.__rankTest={G:()=>G,act:(id,m)=>{const p=P(id);if(p)act(p,m)},addBot:n=>{const id='bot'+G.players.length;G.players.push({id,name:n});broadcast();return id}};
+})();
+</script>
+<script src="../assets/scene.js?v=20261116d"></script>
+<script src="../assets/home.js?v=20261118"></script>
+</body></html>
