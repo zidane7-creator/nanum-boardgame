@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://js.tosspayments.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' data: blob: https://api.github.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://api.open-meteo.com https://api.met.no https://wttr.in https://api.mymemory.translated.net https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.doubleclick.net https://www.google.com https://*.tosspayments.com https://0.peerjs.com wss://0.peerjs.com wss://broker.emqx.io:8084 wss://broker.hivemq.com:8884 https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self' blob:; frame-src 'self' https://www.bskorea.or.kr https://*.tosspayments.com; object-src 'none'; base-uri 'self'; form-action 'self' https://*.tosspayments.com">
+<meta name="referrer" content="strict-origin-when-cross-origin"><script async src="https://www.googletagmanager.com/gtag/js?id=G-0WTWY3TPES"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-0WTWY3TPES");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>뇌구조 | 치영의 교회 생활 즐기기 · 나의 뇌구조 만들기</title>
+<meta name="description" content="뇌 모양을 내 생각으로 100% 채우는 뇌구조 만들기. 항목과 %를 적고 확정하면 크기에 맞게 뇌 안에 쏙 들어가요. 셀모임·소그룹 아이스브레이킹, 이미지로 저장·공유.">
+<link rel="canonical" href="https://zidane7-creator.github.io/nanum-boardgame/brain/">
+<meta property="og:title" content="뇌구조 — 치영의 교회 생활 즐기기">
+<meta property="og:description" content="요즘 내 머릿속은? 뇌구조를 100% 채워 보세요">
+<meta property="og:url" content="https://zidane7-creator.github.io/nanum-boardgame/brain/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<script src="../assets/jua.js"></script>
+<style>
+:root{--ink:#3b2a20;--cream:#fffaf0;--accent:#e8503a;--gold:#f5b82e;--green:#5aa957;--muted:#7a6a5c;--pink:#ff8fb3}
+*{box-sizing:border-box}
+html,body{margin:0;color:var(--ink);font-family:"Jua","Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+body{min-height:100vh;background:linear-gradient(#ffe8b8,#fff3d6 220px,#c3e78f 221px)}
+button{font:inherit;color:inherit;border:2px solid var(--ink);background:var(--cream);border-radius:16px;padding:8px 16px;cursor:pointer;box-shadow:0 3px 0 var(--ink)}
+button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}button:disabled{opacity:.45;cursor:default;transform:none}
+button.pri{background:var(--accent);color:#fff}button.go{background:var(--green);color:#fff}
+button.sm{padding:4px 10px;font-size:14px;border-radius:12px;box-shadow:0 2px 0 var(--ink)}
+input{font:inherit;color:var(--ink);border:2px solid #cdbda6;border-radius:12px;padding:7px 10px;background:#fff;min-width:0}
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:calc(8px + env(safe-area-inset-top,0px)) 14px 8px;background:rgba(255,255,255,.92);border-bottom:4px solid var(--gold)}
+.top a{color:var(--ink);text-decoration:none;font-size:15px;border:2px solid var(--ink);border-radius:14px;padding:3px 10px;background:var(--cream)}
+.top .ttl{flex:1;font-size:19px}
+main{max-width:1100px;margin:0 auto;padding:16px 10px 80px}
+h1{text-align:center;margin:6px 0 2px;font-size:clamp(28px,6vw,40px)}
+.sub{text-align:center;margin:0 0 14px;opacity:.75;font-size:15px}
+.card{background:var(--cream);border:3px solid var(--ink);border-radius:22px;padding:16px;margin-bottom:16px;box-shadow:0 5px 0 rgba(0,0,0,.12)}
+.lay{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:16px;align-items:start}
+@media (max-width:860px){.lay{grid-template-columns:1fr}}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.it{display:grid;grid-template-columns:22px minmax(0,1fr) 92px 34px;gap:6px;align-items:center;margin-bottom:6px}
+.it .dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--ink);cursor:pointer}
+.it input.lb{width:100%}
+.pc{display:flex;align-items:center;border:2px solid #cdbda6;border-radius:12px;background:#fff;overflow:hidden}
+.pc input{border:0;border-radius:0;width:100%;text-align:right;padding:7px 2px 7px 6px}.pc span{padding:0 8px 0 2px;color:var(--muted)}
+.it .x{padding:0;width:34px;height:34px;border-radius:50%;box-shadow:none;font-size:15px}
+.tot{margin:10px 0 6px}
+.tbar{height:22px;border:2.5px solid var(--ink);border-radius:12px;overflow:hidden;display:flex;background:#fff}
+.tbar i{display:block;height:100%}
+.tnum{font-size:18px;margin:6px 0 0;text-align:center}.tnum b{font-size:24px}
+.tnum.ok b{color:var(--green)}.tnum.over b{color:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.chips button{font-size:13px;padding:2px 9px;border-radius:999px;box-shadow:none;border-width:1.5px;background:#fff}
+.note{font-size:13px;opacity:.72;line-height:1.5;margin:8px 0 0}
+.stage{position:relative}
+#cv{width:100%;height:auto;display:block;border:3px solid var(--ink);border-radius:20px;background:#fff}
+.acts{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#3b2a20;color:#fff;padding:9px 16px;border-radius:14px;z-index:300;font-size:15px;opacity:0;transition:.25s;pointer-events:none;max-width:90vw;text-align:center}.toast.show{opacity:1}
+.colors{display:flex;flex-wrap:wrap;gap:6px;position:absolute;z-index:30;background:#fff;border:2px solid var(--ink);border-radius:14px;padding:8px;box-shadow:0 4px 0 rgba(0,0,0,.15);width:190px}
+.colors button{width:28px;height:28px;padding:0;border-radius:50%;box-shadow:none}
+</style>
+</head><body>
+<div class="top"><a href="../">← 목장</a><span class="ttl">🧠 뇌구조</span></div>
+<main>
+  <h1>🧠 나의 뇌구조</h1>
+  <p class="sub">요즘 내 머릿속은 무엇으로 가득할까요? 뇌를 100%로 채워 보세요</p>
+  <div class="lay">
+    <section class="card">
+      <div class="row" style="margin-bottom:10px"><label for="who" style="flex:none">이름</label><input id="who" maxlength="12" placeholder="이름 (예: 치영)" style="flex:1"><span style="flex:none">의 뇌구조</span></div>
+      <div id="items"></div>
+      <div class="row"><button type="button" class="sm" id="add">＋ 항목 추가</button><button type="button" class="sm" id="fill">남은 %를 '멍~'으로 채우기</button><button type="button" class="sm" id="fit">합계를 100%로 맞추기</button></div>
+      <div class="tot"><div class="tbar" id="tbar"></div><p class="tnum" id="tnum"></p></div>
+      <div class="note">이런 건 어때요? 누르면 항목에 들어가요</div>
+      <div class="chips" id="sugg"></div>
+      <div class="acts"><button type="button" class="pri" id="go" style="font-size:20px">🧠 확정하고 뇌에 넣기</button></div>
+      <p class="note">항목은 2~12개까지 넣을 수 있어요. 합계가 딱 100%가 되면 확정할 수 있어요. 적은 %만큼 크기가 정해져서 뇌 안에 쏙 들어가요.</p>
+    </section>
+    <section class="card stage">
+      <canvas id="cv" width="760" height="680" aria-label="뇌구조 그림"></canvas>
+      <div class="acts"><button type="button" class="sm" id="shuffle" disabled>🔀 다시 배치하기</button><button type="button" class="go sm" id="save" disabled>💾 이미지 저장</button><button type="button" class="sm" id="share" disabled>📤 공유하기</button></div>
+      <p class="note" style="text-align:center">‘다시 배치하기’를 누르면 같은 %로 자리만 새로 정해요.</p>
+    </section>
+  </div>
+</main>
+<div class="toast" id="toast"></div>
+<script>
+const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let tt;function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("show"),2600)}
+const PAL=["#ffb3c1","#ffd59e","#fff1a8","#c8f0a8","#a8e6d8","#a8d4ff","#c9b8ff","#f5b8f0","#ffc8a8","#d8e8b0","#b8e0f0","#e8c8a8"];
+const SUG=["잠","먹을 것","기도","셀모임","게임","유튜브","공부","일","걱정","사랑","가족","친구","운동","여행","돈","주일 준비","찬양","다이어트","반려동물","멍때리기","연애","시험","치킨","커피","내일 할 일"];
+const KEY="brain-v1";
+let S={who:"",items:[{l:"",p:""},{l:"",p:""},{l:"",p:""}]};
+try{const o=JSON.parse(localStorage.getItem(KEY)||"null");if(o&&o.items)S=o}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const num=v=>{const n=parseFloat(v);return isFinite(n)&&n>0?Math.round(n*10)/10:0};
+const total=()=>Math.round(S.items.reduce((a,x)=>a+num(x.p),0)*10)/10;
+const colOf=i=>S.items[i].c||PAL[i%PAL.length];
+
+/* ---------- 입력 ---------- */
+function drawItems(){$("items").innerHTML=S.items.map((x,i)=>'<div class="it"><span class="dot" data-col="'+i+'" title="색 바꾸기" style="background:'+colOf(i)+'"></span><input class="lb" data-l="'+i+'" maxlength="14" placeholder="'+(i===0?"예: 잠":i===1?"예: 먹을 것":"항목 이름")+'" value="'+esc(x.l)+'"><label class="pc"><input data-p="'+i+'" type="number" inputmode="decimal" min="0" max="100" step="1" placeholder="0" value="'+esc(x.p)+'"><span>%</span></label><button type="button" class="x" data-del="'+i+'" aria-label="항목 지우기" '+(S.items.length<=2?"disabled":"")+'>✕</button></div>').join("");
+  $("who").value=S.who||"";drawTot()}
+function drawTot(){const t=total(),ok=Math.abs(t-100)<.05;
+  $("tbar").innerHTML=S.items.map((x,i)=>num(x.p)?'<i style="width:'+Math.min(100,num(x.p))+'%;background:'+colOf(i)+'"></i>':"").join("");
+  $("tnum").className="tnum"+(ok?" ok":t>100?" over":"");$("tnum").innerHTML="합계 <b>"+t+"%</b> "+(ok?"딱 맞아요! 🎉":t>100?"· "+Math.round((t-100)*10)/10+"% 넘쳤어요":"· "+Math.round((100-t)*10)/10+"% 남았어요");
+  $("go").disabled=!ok;$("add").disabled=S.items.length>=12}
+$("items").addEventListener("input",e=>{const t=e.target;if(t.dataset.l!=null)S.items[+t.dataset.l].l=t.value;if(t.dataset.p!=null)S.items[+t.dataset.p].p=t.value;save();drawTot()});
+$("items").addEventListener("click",e=>{const d=e.target.closest("[data-del]");if(d){S.items.splice(+d.dataset.del,1);save();drawItems();return}
+  const c=e.target.closest("[data-col]");if(c){const i=+c.dataset.col;document.querySelectorAll(".colors").forEach(x=>x.remove());const box=document.createElement("div");box.className="colors";
+    box.innerHTML=PAL.map(p=>'<button type="button" style="background:'+p+'" data-pc="'+p+'"></button>').join("");c.parentElement.style.position="relative";c.parentElement.appendChild(box);
+    box.onclick=ev=>{const b=ev.target.closest("[data-pc]");if(b){S.items[i].c=b.dataset.pc;save();drawItems()}}}});
+document.addEventListener("click",e=>{if(!e.target.closest(".colors")&&!e.target.closest("[data-col]"))document.querySelectorAll(".colors").forEach(x=>x.remove())});
+$("who").oninput=()=>{S.who=$("who").value;save()};
+$("add").onclick=()=>{if(S.items.length>=12)return;S.items.push({l:"",p:""});save();drawItems();const ins=document.querySelectorAll("[data-l]");ins[ins.length-1].focus()};
+$("fill").onclick=()=>{const t=total();if(t>=100){toast(t>100?"이미 100%를 넘었어요":"이미 100%예요");return}const r=Math.round((100-t)*10)/10;
+  const empty=S.items.find(x=>!x.l.trim()&&!num(x.p));if(empty){empty.l="멍~";empty.p=String(r)}else if(S.items.length<12)S.items.push({l:"멍~",p:String(r)});else{toast("항목이 꽉 찼어요");return}save();drawItems()};
+$("fit").onclick=()=>{const t=total();if(!t){toast("먼저 %를 적어 주세요");return}const ks=S.items.filter(x=>num(x.p));let acc=0;
+  ks.forEach((x,i)=>{let v=i===ks.length-1?Math.round((100-acc)*10)/10:Math.round(num(x.p)/t*1000)/10;acc+=v;x.p=String(v)});save();drawItems()};
+$("sugg").innerHTML=SUG.map(s=>'<button type="button" data-sg="'+esc(s)+'">'+esc(s)+'</button>').join("");
+$("sugg").onclick=e=>{const b=e.target.closest("[data-sg]");if(!b)return;const empty=S.items.find(x=>!x.l.trim());if(empty)empty.l=b.dataset.sg;else if(S.items.length<12)S.items.push({l:b.dataset.sg,p:""});else{toast("항목이 꽉 찼어요");return}save();drawItems()};
+
+/* ---------- 뇌 모양 ---------- */
+const cv=$("cv"),cx=cv.getContext("2d"),W=cv.width,H=cv.height,BX=380,BY=370,RA=320,RB=230;
+function brainPath(){const p=new Path2D(),N=240;
+  for(let k=0;k<=N;k++){const t=k/N*Math.PI*2,bump=1+.035*Math.sin(13*t)+.02*Math.sin(7*t+1),s=Math.sin(t);
+    const x=BX+RA*Math.cos(t)*bump,y=BY+RB*s*bump*(s>0?.74:1);k?p.lineTo(x,y):p.moveTo(x,y)}
+  p.closePath();return p}
+const BP=brainPath();
+function stem(c){c.save();c.fillStyle="#f6c9d2";c.strokeStyle="#3b2a20";c.lineWidth=5;c.beginPath();c.ellipse(BX+190,BY+150,100,60,-.15,0,Math.PI*2);c.fill();c.stroke();
+  c.strokeStyle="rgba(150,70,100,.45)";c.lineWidth=3;for(let k=-2;k<=2;k++){c.beginPath();c.ellipse(BX+195,BY+150+k*14,80-Math.abs(k)*14,8,-.15,0,Math.PI);c.stroke()}c.restore();c.save();c.fillStyle="#f6c9d2";c.strokeStyle="#3b2a20";c.lineWidth=5;c.beginPath();c.moveTo(BX+40,BY+150);c.quadraticCurveTo(BX+55,BY+250,BX+35,BY+300);c.lineTo(BX+110,BY+300);c.quadraticCurveTo(BX+115,BY+240,BX+135,BY+170);c.closePath();c.fill();c.stroke();c.restore()}
+function title(){cx.fillStyle="#3b2a20";cx.textAlign="center";cx.textBaseline="middle";cx.font="44px Jua, sans-serif";cx.fillText((S.who.trim()?S.who.trim()+"의 ":"나의 ")+"뇌구조",W/2,62)}
+function blank(){cx.clearRect(0,0,W,H);cx.fillStyle="#fffdf7";cx.fillRect(0,0,W,H);title();stem(cx);
+  cx.save();cx.fillStyle="#ffe3ea";cx.fill(BP,"nonzero");cx.clip(BP);cx.strokeStyle="rgba(200,110,140,.35)";cx.lineWidth=4;cx.lineCap="round";
+  for(let i=0;i<14;i++){const x=BX-280+i*42,y=BY-150+((i*53)%260);cx.beginPath();cx.moveTo(x,y);cx.bezierCurveTo(x+30,y-40,x+50,y+40,x+80,y);cx.stroke()}cx.restore();
+  cx.lineWidth=7;cx.strokeStyle="#3b2a20";cx.stroke(BP);
+  cx.fillStyle="#7a6a5c";cx.font="22px Jua, sans-serif";cx.fillText("항목과 %를 적고 ‘확정하고 뇌에 넣기’를 눌러요",W/2,H-30)}
+
+/* ---------- 채우기: 뇌 안을 작은 칸으로 나눠 %만큼씩 영역을 키워요 ---------- */
+const CELL=4;let GRID=null;
+function makeGrid(){const x0=BX-RA-20,y0=BY-RB-20,gw=Math.ceil((RA*2+40)/CELL),gh=Math.ceil((RB*2+60)/CELL),inside=new Int32Array(gw*gh).fill(-1),cells=[];
+  for(let j=0;j<gh;j++)for(let i=0;i<gw;i++){const px=x0+i*CELL+CELL/2,py=y0+j*CELL+CELL/2;if(cx.isPointInPath(BP,px,py)){inside[j*gw+i]=cells.length;cells.push(j*gw+i)}}
+  return{x0,y0,gw,gh,inside,cells}}
+function rnd(a,b){return a+Math.random()*(b-a)}
+function layout(items){const G=GRID||(GRID=makeGrid()),{gw,gh,cells}=G,n=cells.length,lab=new Int16Array(gw*gh).fill(-1);
+  const tot=items.reduce((a,x)=>a+x.p,0),quota=items.map(x=>Math.round(x.p/tot*n));
+  /* 씨앗: 서로 멀리 떨어지게 (큰 항목부터) */
+  const order=items.map((_,i)=>i).sort((a,b)=>items[b].p-items[a].p),seeds=[];
+  order.forEach((it,k)=>{let best=null,bd=-1;for(let t=0;t<60;t++){const c=cells[Math.floor(Math.random()*n)],x=c%gw,y=(c/gw)|0;
+      const d=seeds.length?Math.min(...seeds.map(s=>{const dx=x-s.x,dy=y-s.y;return Math.sqrt(dx*dx+dy*dy)/Math.sqrt(items[s.it].p+items[it].p)})):Math.random();if(d>bd){bd=d;best={x,y,c,it}}}seeds.push(best)});
+  const grow=seedPos=>{lab.fill(-1);const fr=items.map(()=>[]),head=items.map(()=>0),cnt=items.map(()=>0);
+    seedPos.forEach(s=>{if(lab[s.c]===-1){lab[s.c]=s.it;cnt[s.it]++;fr[s.it].push(s.c)}});
+    let left=n-seedPos.length;const nb=c=>{const x=c%gw,r=[];if(x>0)r.push(c-1);if(x<gw-1)r.push(c+1);if(c>=gw)r.push(c-gw);if(c<gw*(gh-1))r.push(c+gw);return r};
+    while(left>0){let pick=-1,pr=1e9;for(let i=0;i<items.length;i++){if(head[i]>=fr[i].length)continue;const r=cnt[i]/Math.max(1,quota[i]);if(r<pr){pr=r;pick=i}}
+      if(pick<0)break;let grown=false;
+      while(head[pick]<fr[pick].length&&!grown){const c=fr[pick][head[pick]];const ns=nb(c).filter(m=>G.inside[m]>=0&&lab[m]===-1);
+        if(!ns.length){head[pick]++;continue}const m=ns[Math.floor(Math.random()*ns.length)];lab[m]=pick;cnt[pick]++;fr[pick].push(m);left--;grown=true;if(ns.length===1)head[pick]++}}
+    /* 남은 칸은 가까운 영역으로 */
+    let q=cells.filter(c=>lab[c]>=0),qi=0;while(qi<q.length){const c=q[qi++];for(const m of nb(c))if(G.inside[m]>=0&&lab[m]===-1){lab[m]=lab[c];q.push(m)}}
+    return cnt};
+  grow(seeds);
+  /* 가운데로 한 번 다듬기 */
+  const cen=items.map(()=>({x:0,y:0,k:0}));cells.forEach(c=>{const l=lab[c];if(l<0)return;cen[l].x+=c%gw;cen[l].y+=(c/gw)|0;cen[l].k++});
+  const s2=items.map((_,i)=>{const e=cen[i];if(!e.k)return seeds.find(s=>s.it===i);const tx=e.x/e.k,ty=e.y/e.k;let best=null,bd=1e9;cells.forEach(c=>{if(lab[c]!==i)return;const d=(c%gw-tx)**2+(((c/gw)|0)-ty)**2;if(d<bd){bd=d;best=c}});return{c:best,x:best%gw,y:(best/gw)|0,it:i}});
+  grow(s2);return lab}
+/* 영역마다 글자를 놓을 가장 넓은 자리 */
+function labelSpots(lab,k){const G=GRID,{gw,gh,cells}=G,dist=new Int16Array(gw*gh).fill(0),q=[];
+  cells.forEach(c=>{const x=c%gw,l=lab[c];const edge=[c-1,c+1,c-gw,c+gw].some((m,j)=>{if(j===0&&x===0)return true;if(j===1&&x===gw-1)return true;return m<0||m>=gw*gh||G.inside[m]<0||lab[m]!==l});if(edge){dist[c]=1;q.push(c)}});
+  let qi=0;while(qi<q.length){const c=q[qi++],x=c%gw;for(const [m,ok] of [[c-1,x>0],[c+1,x<gw-1],[c-gw,c>=gw],[c+gw,c<gw*(gh-1)]])if(ok&&G.inside[m]>=0&&!dist[m]&&lab[m]===lab[c]){dist[m]=dist[c]+1;q.push(m)}}
+  const best=Array.from({length:k},()=>({c:-1,d:0,n:0}));cells.forEach(c=>{const l=lab[c];if(l<0)return;best[l].n++;if(dist[c]>best[l].d){best[l].d=dist[c];best[l].c=c}});return best}
+let LAST=null,ANIM=0;
+function render(items,lab,upto){const G=GRID,{gw,x0,y0,cells}=G;cx.clearRect(0,0,W,H);cx.fillStyle="#fffdf7";cx.fillRect(0,0,W,H);title();stem(cx);
+  cx.save();cx.clip(BP);cx.fillStyle="#ffe3ea";cx.fillRect(0,0,W,H);
+  cells.forEach(c=>{const l=lab[c];if(l<0||l>=upto)return;cx.fillStyle=items[l].c;cx.fillRect(x0+(c%gw)*CELL,y0+((c/gw)|0)*CELL,CELL+.6,CELL+.6)});
+  /* 경계선 */
+  cx.fillStyle="#3b2a20";cells.forEach(c=>{const l=lab[c];if(l<0||l>=upto)return;const x=c%gw,y=(c/gw)|0;
+    if(x<gw-1&&G.inside[c+1]>=0&&lab[c+1]!==l&&lab[c+1]<upto)cx.fillRect(x0+(x+1)*CELL-1.5,y0+y*CELL,3,CELL+.6);
+    if(G.inside[c+gw]>=0&&lab[c+gw]!==l&&lab[c+gw]<upto)cx.fillRect(x0+x*CELL,y0+(y+1)*CELL-1.5,CELL+.6,3)});
+  cx.restore();cx.lineWidth=7;cx.strokeStyle="#3b2a20";cx.stroke(BP);
+  const sp=labelSpots(lab,items.length);cx.textAlign="center";cx.textBaseline="middle";
+  items.forEach((it,i)=>{if(i>=upto)return;const s=sp[i];if(s.c<0)return;const px=x0+(s.c%gw)*CELL+CELL/2,py=y0+((s.c/gw)|0)*CELL+CELL/2,r=s.d*CELL;
+    let fs=Math.max(11,Math.min(58,r*.62,Math.sqrt(s.n)*CELL*.24));const t1=it.l,t2=it.p+"%";
+    cx.font=fs+"px Jua, sans-serif";const w=Math.max(cx.measureText(t1).width,cx.measureText(t2).width*.8);if(w>r*2.1)fs=Math.max(10,fs*r*2.1/w);
+    cx.font=fs+"px Jua, sans-serif";cx.lineWidth=Math.max(2,fs*.12);cx.strokeStyle="rgba(255,255,255,.85)";cx.fillStyle="#3b2a20";
+    cx.strokeText(t1,px,py-fs*.38);cx.fillText(t1,px,py-fs*.38);cx.font=(fs*.72)+"px Jua, sans-serif";cx.strokeText(t2,px,py+fs*.5);cx.fillText(t2,px,py+fs*.5)})}
+function build(anim){const items=S.items.map((x,i)=>({l:x.l.trim()||"???",p:num(x.p),c:colOf(i)})).filter(x=>x.p>0);
+  if(items.length<1)return;const lab=layout(items);LAST={items,lab};
+  /* 큰 것부터 하나씩 뇌에 쏙 */
+  const ord=items.map((_,i)=>i).sort((a,b)=>items[b].p-items[a].p),rank=new Int16Array(items.length);ord.forEach((it,k)=>rank[it]=k);
+  const its=ord.map(i=>items[i]),lb=lab.map(l=>l<0?-1:rank[l]);LAST={items:its,lab:lb};
+  cancelAnimationFrame(ANIM);if(!anim){render(its,lb,its.length);return}
+  let k=0,t0=0;const step=ts=>{if(!t0)t0=ts;if(ts-t0>380){t0=ts;k++}render(its,lb,Math.min(k+1,its.length));if(k<its.length-1)ANIM=requestAnimationFrame(step)};ANIM=requestAnimationFrame(step)}
+$("go").onclick=()=>{const bad=S.items.filter(x=>num(x.p)&&!x.l.trim()).length;if(bad&&!confirm("이름이 없는 항목이 "+bad+"개 있어요. ???로 넣을까요?"))return;
+  if(S.items.filter(x=>num(x.p)).length<2){toast("항목을 2개 이상 넣어 주세요");return}
+  build(true);["shuffle","save","share"].forEach(id=>$(id).disabled=false);if(innerWidth<=860)$("cv").scrollIntoView({behavior:"smooth",block:"center"});
+  try{gtag("event","brain_make",{items:S.items.length})}catch(e){}};
+$("shuffle").onclick=()=>build(true);
+const fname=()=>((S.who.trim()||"나")+"의_뇌구조.png").replace(/[\\/:*?"<>|]/g,"");
+$("save").onclick=()=>{cancelAnimationFrame(ANIM);if(LAST)render(LAST.items,LAST.lab,LAST.items.length);cv.toBlob(b=>{const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=fname();document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);toast("이미지를 저장했어요")},"image/png")};
+$("share").onclick=()=>{cancelAnimationFrame(ANIM);if(LAST)render(LAST.items,LAST.lab,LAST.items.length);cv.toBlob(async b=>{const f=new File([b],fname(),{type:"image/png"});
+  if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:"나의 뇌구조"})}catch(e){}}else{toast("이 기기에서는 공유가 안 돼요. 이미지 저장을 눌러 주세요")}},"image/png")};
+drawItems();
+(document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(()=>{blank()});blank();
+window.__brain={S:()=>S,build,LAST:()=>LAST};
+</script>
+<script src="../assets/scene.js?v=20261116d"></script><script src="../assets/home.js?v=20261118"></script>
+</body></html>
