@@ -3,11 +3,11 @@
 <meta name="referrer" content="strict-origin-when-cross-origin"><script async src="https://www.googletagmanager.com/gtag/js?id=G-0WTWY3TPES"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-0WTWY3TPES");</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>주일에 뭐 먹지? | 치영의 교회 생활 즐기기 · 점심 메뉴 추천</title>
-<meta name="description" content="주일 예배 끝나고 뭐 먹지? 메뉴 1,000개 중에서 질문 5개로 후보를 줄이고 랜덤으로 골라 주는 점심 메뉴 추천. 교회 식구들과 함께 정해 보세요.">
+<meta name="description" content="주일 예배 끝나고 뭐 먹지? 메뉴 1,000개 중에서 질문 6개로 후보를 줄이고 랜덤으로 골라 주는 점심 메뉴 추천. 교회 식구들과 함께 정해 보세요.">
 <meta name="keywords" content="점심 메뉴 추천, 오늘 뭐 먹지, 메뉴 고르기, 메뉴 룰렛, 주일 점심, 교회 점심, 메뉴 랜덤">
 <link rel="canonical" href="https://zidane7-creator.github.io/nanum-boardgame/food/">
 <meta property="og:title" content="주일에 뭐 먹지? — 치영의 교회 생활 즐기기">
-<meta property="og:description" content="메뉴 1,000개 중 질문 5개로 골라 주는 점심 메뉴 추천">
+<meta property="og:description" content="메뉴 1,000개 중 질문 6개로 골라 주는 점심 메뉴 추천">
 <meta property="og:url" content="https://zidane7-creator.github.io/nanum-boardgame/food/">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍚</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
@@ -63,11 +63,20 @@ main{max-width:760px;margin:0 auto;padding:16px 14px 50px}
 const $=s=>document.querySelector(s),app=$("#app");
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const CU={k:"한식",c:"중식",j:"일식",w:"양식",a:"동양"};
+/* 🍚 밥 · 🍜 면 · 기타: 메뉴 이름으로 나눠요 (m[6] = r 밥 / n 면 / e 기타) */
+const ETC_X=/^(마라탕|백탕 훠궈|완탕|그라탕|감자 그라탕|케밥|도네르 케밥|가츠산도|산라탕|옥수수 계란탕|오뎅탕|어묵탕|함박 스테이크|함박스테이크|짜장떡볶이|잡채|고추잡채|부추잡채)$/,
+ NOO_X=/^(반깐|후띠우|미꽝|분보후에|분보싸오|카오소이|랏나|판싯|차퀘이테오|미고렝|츠케멘|얌운센|마카로니 앤 치즈|라자냐|라비올리|카치오 에 페페|라구 라자냐|반깐꾸어)$/,
+ RICE_X=/^(청국장|짜글이|육개장|닭개장|대구지리|복지리|카오팟|카오만까이|루로우판|빠에야|도리아|오니기리|탈리|카오카무|후토마키|팟카파오무쌉)$|조림$|롤$|포케|오차즈케|부리또볼/,
+ NOO=/면|국수|라면|라멘|우동|소바|짬뽕|짜장|파스타|뇨끼|팟타이|분짜|미고랭|탄탄|쌀국수|당면|짜파|라볶이|쫄면|누들|팟씨유|락사/,
+ RICE=/밥|라이스|리조또|초밥|스시|오므|동$|카레|커리|정식|백반|도시락|찌개|국$|탕$|탕 |죽$|비리야니|나시|돈가스 김치나베/;
+const carb=n=>ETC_X.test(n)?"e":NOO_X.test(n)?"n":RICE_X.test(n)?"r":/밥$|볶음밥|덮밥|순두부/.test(n)?"r":NOO.test(n)?"n":RICE.test(n)?"r":"e";
+MENUS.forEach(m=>{m[6]=carb(m[0])});
 /* questions: each option filters the list (null = 상관없음) */
 const Q=[
  {q:"오늘은 어떻게 먹을까요?",opts:[{t:"가볍게",e:"🥗",f:m=>m[1]==0},{t:"든든하게",e:"🍖",f:m=>m[1]==1}]},
  {q:"차가운 거? 뜨거운 거?",opts:[{t:"차가운 거",e:"🧊",f:m=>m[2]=="c"},{t:"뜨거운 거",e:"🔥",f:m=>m[2]=="h"},{t:"상관없음",e:"🤷",f:null}]},
  {q:"국물은요?",opts:[{t:"국물 O",e:"🍲",f:m=>m[3]==1},{t:"국물 X",e:"🍛",f:m=>m[3]==0},{t:"상관없음",e:"🤷",f:null}]},
+ {q:"밥? 면?",opts:[{t:"밥",e:"🍚",f:m=>m[6]=="r"},{t:"면",e:"🍜",f:m=>m[6]=="n"},{t:"기타",e:"🥪",f:m=>m[6]=="e",note:"고기·전·피자·샐러드 등"},{t:"상관없음",e:"🤷",f:null}]},
  {q:"매운 건 어때요?",opts:[{t:"매움",e:"🌶️",f:m=>m[4]==2},{t:"적당",e:"🙂",f:m=>m[4]==1},{t:"안 매움",e:"🍼",f:m=>m[4]==0},{t:"상관없음",e:"🤷",f:null}]},
  {q:"어떤 음식이 좋아요?",multi:true,sub:"여러 개 골라도 돼요",opts:[{t:"한식",e:"🍚",k:"k"},{t:"중식",e:"🥟",k:"c"},{t:"일식",e:"🍣",k:"j"},{t:"양식",e:"🍝",k:"w"},{t:"동양",e:"🍜",k:"a",note:"베트남·태국·인도 등"},{t:"상관없음",e:"🤷",k:"*"}]}
 ];
@@ -78,7 +87,7 @@ function flyAway(before,after){const gone=before.filter(m=>!after.includes(m));f
 function stepsHTML(){return'<div class="steps">'+Q.map((_,i)=>'<i class="'+(i<step?"done":i==step?"on":"")+'"></i>').join("")+'</div>'}
 
 function renderHome(){step=-1;picks=[];multi=new Set();setLeft(MENUS.length);
-  app.innerHTML='<div class="hero"><div class="em">🍚</div><h1>주일에 뭐 먹지?</h1><p class="muted">예배 끝나고 다 같이 고민될 때!<br>메뉴 '+MENUS.length.toLocaleString()+'개 중에서 질문 5개로 줄여 드려요.</p></div><div class="card center"><button class="pri" id="go" style="font-size:24px;padding:12px 44px">시작하기 ▶</button><p class="muted" style="margin:14px 0 0">질문에 답할 때마다 후보가 줄어들고,<br>마지막엔 남은 메뉴 중에서 랜덤으로 골라 줘요 🎲</p></div>';
+  app.innerHTML='<div class="hero"><div class="em">🍚</div><h1>주일에 뭐 먹지?</h1><p class="muted">예배 끝나고 다 같이 고민될 때!<br>메뉴 '+MENUS.length.toLocaleString()+'개 중에서 질문 6개로 줄여 드려요.</p></div><div class="card center"><button class="pri" id="go" style="font-size:24px;padding:12px 44px">시작하기 ▶</button><p class="muted" style="margin:14px 0 0">질문에 답할 때마다 후보가 줄어들고,<br>마지막엔 남은 메뉴 중에서 랜덤으로 골라 줘요 🎲</p></div>';
   $("#go").onclick=()=>{step=0;renderQ()}}
 function renderQ(){const q=Q[step],base=pool(step);setLeft(base.length);
   let h='<div class="card">'+stepsHTML()+'<div class="muted center">질문 '+(step+1)+' / '+Q.length+'</div><div class="q">'+esc(q.q)+'</div>'+(q.sub?'<p class="muted center" style="margin:-8px 0 12px">'+esc(q.sub)+'</p>':'')+'<div class="opts">';
@@ -89,7 +98,7 @@ function renderQ(){const q=Q[step],base=pool(step);setLeft(base.length);
   app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{const i=+b.dataset.i,o=q.opts[i];
     if(q.multi){if(o.k=="*"){multi=new Set(["*"])}else{multi.delete("*");multi.has(o.k)?multi.delete(o.k):multi.add(o.k)}picks[step]=new Set(multi);setLeft(pool(step+1).length);renderQ();return}
     const before=pool(step);picks[step]=i;const after=pool(step+1);flyAway(before,after);step++;renderQ()});
-  $("#back").onclick=()=>{if(step==0){renderHome();return}step--;picks.length=step;if(step<4)multi=new Set();renderQ()};
+  $("#back").onclick=()=>{if(step==0){renderHome();return}step--;picks.length=step;if(step<Q.length-1)multi=new Set();renderQ()};
   const nx=$("#next");if(nx)nx.onclick=()=>{picks[step]=new Set(multi);const before=pool(step),after=pool(step+1);flyAway(before,after);step++;renderResult()};
 }
 function summary(){const t=[];picks.forEach((p,i)=>{if(Q[i].multi){t.push(p.has("*")?"아무 음식":[...p].map(k=>CU[k]).join("·"))}else{const o=Q[i].opts[p];if(o.f)t.push(o.t)}});return t}
@@ -105,7 +114,7 @@ function spin(L){if(spinning||!L.length)return;spinning=true;$("#spin").disabled
   let pick=L[Math.floor(Math.random()*L.length)];if(L.length>1)while(pick===last)pick=L[Math.floor(Math.random()*L.length)];last=pick;
   let k=0;const total=22;const tick=()=>{s.textContent=k<total?L[Math.floor(Math.random()*L.length)][0]:pick[0];k++;
     if(k<=total)setTimeout(tick,40+k*k*0.6);else{s.classList.add("done");spinning=false;$("#spin").disabled=false;$("#spin").textContent="🎲 다시 뽑기";
-      const tag=[CU[pick[5]],pick[1]?"든든":"가볍게",pick[2]=="c"?"차가운":"뜨거운",pick[3]?"국물":"",["안 매움","적당히 매움","매움"][pick[4]]].filter(Boolean);
+      const tag=[CU[pick[5]],pick[1]?"든든":"가볍게",pick[2]=="c"?"차가운":"뜨거운",pick[3]?"국물":"",{r:"밥",n:"면",e:""}[pick[6]],["안 매움","적당히 매움","매움"][pick[4]]].filter(Boolean);
       $("#links").innerHTML='<div class="tags" style="width:100%">'+tag.map(t=>'<span>'+esc(t)+'</span>').join("")+'</div><button class="pri" id="near" style="font-size:17px">📍 네이버 지도에서 내 주변 '+esc(pick[0])+' 찾기</button><div class="links" style="width:100%"><a href="https://map.naver.com/p/search/'+encodeURIComponent(pick[0])+'" target="_blank" rel="noopener">네이버 지도</a><a href="https://map.kakao.com/link/search/'+encodeURIComponent(pick[0])+'" target="_blank" rel="noopener">카카오맵</a><a href="https://www.google.com/maps/search/'+encodeURIComponent(pick[0])+'" target="_blank" rel="noopener">구글 지도</a></div><p class="muted" id="nearMsg" style="width:100%;margin:6px 0 0"></p>';$("#near").onclick=()=>nearMe(pick[0])}};
   tick()}
 /* search restaurants serving this menu around the user's current location — on 네이버 지도 */
