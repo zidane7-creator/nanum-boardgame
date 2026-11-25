@@ -2,7 +2,7 @@
 <html lang="ko"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://js.tosspayments.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' data: blob: https://api.github.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://api.open-meteo.com https://api.met.no https://wttr.in https://api.mymemory.translated.net https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.doubleclick.net https://www.google.com https://*.tosspayments.com https://0.peerjs.com wss://0.peerjs.com wss://broker.emqx.io:8084 wss://broker.hivemq.com:8884 https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self' blob:; frame-src 'self' https://www.bskorea.or.kr https://*.tosspayments.com; object-src 'none'; base-uri 'self'; form-action 'self' https://*.tosspayments.com">
 <meta name="referrer" content="strict-origin-when-cross-origin"><script async src="https://www.googletagmanager.com/gtag/js?id=G-0WTWY3TPES"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-0WTWY3TPES");</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>성경 트래커 | 치영의 교회 생활 즐기기 · 성경 역사·지도·족보·인물 한눈에</title>
+<title>성경 트래커 | 치영의 교회 생활 즐기기 · 성경 개관·역사·지도·족보·인물 한눈에</title>
 <meta name="description" content="성경을 시대순으로 보는 성경 역사 트래커, 시대별 성경 지도 트래커, 아담부터 예수님까지 이어지는 성경 족보 트래커. 구약 시대 구분, 북이스라엘·남유다 역대 왕과 선지자, 신약 성경과 바울의 전도여행을 한눈에.">
 <meta name="keywords" content="성경 연대표, 구약 시대 구분, 분열왕국 왕 연대표, 북이스라엘 남유다 왕, 성경 지도, 바울 전도여행 지도, 출애굽 경로, 성경 족보, 예수님 족보, 신약 성경 기록 연대">
 <link rel="canonical" href="https://zidane7-creator.github.io/nanum-boardgame/tracker/">
@@ -29,7 +29,7 @@ main{max-width:1200px;margin:0 auto;padding:16px 10px 80px}
 h1{text-align:center;margin:6px 0 4px;font-size:clamp(26px,5vw,38px)}
 .sub{text-align:center;margin:0 0 14px;opacity:.75;font-size:15px}
 .card{background:var(--cream);border:3px solid var(--ink);border-radius:22px;padding:16px;margin-bottom:16px;box-shadow:0 5px 0 rgba(0,0,0,.12)}
-.modes{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}@media (max-width:640px){.modes{grid-template-columns:repeat(2,1fr)}}
+.modes{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px}@media (max-width:900px){.modes{grid-template-columns:repeat(3,1fr)}}@media (max-width:560px){.modes{grid-template-columns:repeat(2,1fr)}}
 .modes button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:12px 6px;border-radius:20px;font-size:clamp(15px,2.6vw,20px);background:#fff}
 .modes button i{font-style:normal;font-size:clamp(26px,5vw,36px)}
 .modes button small{font-size:12px;opacity:.7}
@@ -108,6 +108,26 @@ a.chip{text-decoration:none}.chip small{font-size:11px;opacity:.8}
 .pc .gr{font-size:11px;border-radius:999px;padding:0 7px;border:1.5px solid var(--ink);background:rgba(255,255,255,.75);margin-left:auto;white-space:nowrap}
 .s3{background:#2e9e4f;color:#fff}.s2{background:#7cc242}.s1{background:#cdeea4}.s0{background:#fff}.s-1{background:#ffd5df}.s-2{background:#ff8fb3}.s-3{background:#e0383a;color:#fff}
 .s3 .gr,.s-3 .gr{color:var(--ink)}
+/* ---- 개관 ---- */
+.olay{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:14px;align-items:start}
+.otiles h4{margin:8px 2px 6px;font-size:17px}
+.ogrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:5px}
+.ot{border:2px solid var(--ink);border-radius:10px;padding:5px 2px;font-size:13px;line-height:1.15;text-align:center;background:#fff;cursor:pointer;box-shadow:0 2px 0 var(--ink);border-top:6px solid var(--oc)}
+.ot small{display:block;font-size:10px;opacity:.6}
+.ot.on{background:var(--gold)}
+.odet{position:sticky;top:70px;background:#fff;border:3px solid var(--ink);border-radius:18px;padding:14px;max-height:calc(100vh - 90px);overflow:auto;overscroll-behavior:contain}
+.odet .hd{border-radius:12px;padding:10px 12px;color:#fff;margin-bottom:10px}
+.odet .hd h3{margin:0;font-size:28px}.odet .hd span{font-size:13px;opacity:.9}
+.odet dl{margin:0;display:grid;gap:8px}
+.odet dt{font-family:Jua,sans-serif;font-size:15px;color:#7a4b22}
+.odet dd{margin:0 0 2px;font-size:15px;line-height:1.55}
+.odet ol{margin:0;padding-left:20px;font-size:15px;line-height:1.55}
+.odet .kw{display:flex;flex-wrap:wrap;gap:4px}.odet .kw span{border:1.5px solid var(--ink);border-radius:999px;padding:0 9px;font-size:13px;background:#fff8e6}
+.odet .acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.odet .acts a,.odet .acts button{font-size:14px}
+a.btn{display:inline-block;text-decoration:none;color:var(--ink);border:2px solid var(--ink);background:var(--cream);border-radius:12px;padding:4px 10px;box-shadow:0 2px 0 var(--ink)}
+.fsx .odet{max-height:calc(100vh - 120px);top:50px}
+@media (max-width:820px){.olay{grid-template-columns:1fr}.odet{position:static;max-height:none;scroll-margin-top:64px}}
 /* ---- 전체화면 ---- */
 .fsrow{display:flex;align-items:center;justify-content:flex-end;gap:8px;margin:-4px 0 8px}.fsrow .fst{display:none;flex:1;font-family:Jua,sans-serif;font-size:19px}
 .mapwrap{position:relative}.fsin{position:absolute;top:10px;right:10px;z-index:500}
@@ -151,13 +171,22 @@ a.chip{text-decoration:none}.chip small{font-size:11px;opacity:.8}
 <div class="top"><a href="../">← 목장</a><span class="ttl">📜 성경 트래커</span></div>
 <main>
   <h1>성경 트래커</h1>
-  <p class="sub">성경 이야기를 시대·장소·족보·인물로 따라가 봐요</p>
+  <p class="sub">66권 개관부터 시대·장소·족보·인물까지 성경을 따라가 봐요</p>
   <div class="modes" role="tablist">
+    <button type="button" data-mode="overview" role="tab"><i>📚</i>성경 개관 트래커<small>66권 누가·왜·언제</small></button>
     <button type="button" data-mode="history" role="tab"><i>🕰️</i>성경 역사 트래커<small>시대순으로 보는 66권</small></button>
     <button type="button" data-mode="map" role="tab"><i>🗺️</i>성경 지도 트래커<small>시대별 성경 지도</small></button>
     <button type="button" data-mode="family" role="tab"><i>🌳</i>성경 족보 트래커<small>아담부터 예수님까지</small></button>
     <button type="button" data-mode="people" role="tab"><i>🧑‍🤝‍🧑</i>성경 인물 트래커<small>책별 인물·이름 뜻·평가</small></button>
   </div>
+
+  <!-- 📚 개관 -->
+  <section class="view card" id="v-overview" hidden>
+    <div class="fsrow"><span class="fst">📚 성경 개관 트래커</span><button type="button" class="sm fsb" data-fs="v-overview">⛶ 전체화면</button></div>
+    <div class="legend" id="oleg"></div>
+    <div class="olay"><div class="otiles" id="otiles"></div><div class="odet" id="odet"></div></div>
+    <p class="note">저자와 기록 연대는 전통적으로 받아들여 온 견해를 중심으로 적었어요 (학자마다 다른 견해가 있어요). 핵심 구절은 뜻을 간추려 적었어요.</p>
+  </section>
 
   <!-- 🕰️ 역사 -->
   <section class="view card" id="v-history" hidden>
@@ -200,6 +229,7 @@ a.chip{text-decoration:none}.chip small{font-size:11px;opacity:.8}
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="people.js?v=20261125"></script>
+<script src="overview.js?v=20261125"></script>
 <script>
 const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 let tt;function toast(m){let t=$("toast");if(!t){t=document.createElement("div");t.id="toast";t.style.cssText="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#3b2a20;color:#fff;padding:9px 16px;border-radius:14px;z-index:3000;font-size:15px;max-width:90vw;text-align:center";document.body.appendChild(t)}t.innerHTML=m;t.style.display="block";clearTimeout(tt);tt=setTimeout(()=>t.style.display="none",4200)}
@@ -576,6 +606,31 @@ $("pleg").onclick=e=>{const b=e.target.closest("[data-g]");if(!b)return;const g=
 $("pgrid").onclick=e=>{const b=e.target.closest("[data-pb]");if(!b)return;PB=b.dataset.pb;PT=OTB.includes(PB)?"ot":"nt";bookOpts();$("pbook").value=PB;drawPeople();$("v-people").scrollIntoView({behavior:"smooth"})};
 
 /* =========================================================
+   📚 성경 개관: 66권 — 누가, 언제, 왜, 어떤 시대에, 어떤 흐름으로
+   ========================================================= */
+const OV=(window.BIBLE_OVERVIEW||"").split("\n").map(l=>l.split("|")).filter(x=>x.length===10).map(([n,c,ch,a,d,w,t,o,k,kw])=>({n,c,ch:+ch,a,d,w,t,o,k,kw}));
+const OC={"율법서":"#c0392b","역사서":"#e8803a","시가서":"#8a5cc7","대선지서":"#2f6fb0","소선지서":"#4fa3d9","복음서":"#d98a00","바울서신":"#2e9e6a","일반서신":"#c2457a","예언서":"#5a5a8a"};
+let OSEL=0;
+function drawOv(){if(!$("otiles").innerHTML){
+    const grp=(t,list)=>'<h4>'+t+'</h4><div class="ogrid">'+list.map(b=>{const i=OV.indexOf(b);return'<button type="button" class="ot" data-ov="'+i+'" style="--oc:'+OC[b.c]+'">'+esc(b.n)+'<small>'+b.ch+'장</small></button>'}).join("")+'</div>';
+    $("otiles").innerHTML=grp("📜 구약 39권 (929장)",OV.slice(0,39))+grp("✝️ 신약 27권 (260장)",OV.slice(39));
+    const cnt=c=>OV.filter(b=>b.c===c).length;
+    $("oleg").innerHTML=Object.keys(OC).map(c=>'<span><b style="background:'+OC[c]+'"></b>'+c+' '+cnt(c)+'</span>').join("")}
+  ovShow(OSEL,false)}
+function ovShow(i,scroll){OSEL=i;const b=OV[i];if(!b)return;$("otiles").querySelectorAll(".ot").forEach(x=>x.classList.toggle("on",+x.dataset.ov===i));
+  const sec=(ico,t,v)=>'<dt>'+ico+' '+t+'</dt><dd>'+v+'</dd>';
+  $("odet").innerHTML='<div class="hd" style="background:'+OC[b.c]+'"><span>'+esc(b.c)+' · '+(i<39?"구약 ":"신약 ")+(i<39?i+1:i-38)+'번째 책 · '+b.ch+'장</span><h3>'+esc(b.n)+'</h3></div><dl>'+
+    sec("✍️","누가 썼나",esc(b.a))+sec("🗓️","언제·어디서",esc(b.d))+sec("🎯","왜 썼나",esc(b.w))+sec("🏛️","그때의 시대 배경",esc(b.t))+
+    sec("🧭","큰 흐름","<ol>"+b.o.split(" / ").map(x=>"<li>"+esc(x)+"</li>").join("")+"</ol>")+
+    sec("⭐","핵심 구절",esc(b.k).split(" · ").join("<br>"))+sec("🔑","핵심 단어",'<div class="kw">'+b.kw.split(",").map(x=>"<span>"+esc(x.trim())+"</span>").join("")+"</div>")+'</dl>'+
+    '<div class="acts"><a class="btn" href="../bible/?b='+encodeURIComponent(b.n)+'&c=1">📖 성경 읽기에서 1장부터</a>'+(typeof PPL!=="undefined"&&PPL.some(p=>p.b.includes(b.n))?'<button type="button" class="sm" data-ovp="'+esc(b.n)+'">🧑‍🤝‍🧑 이 책의 인물</button>':'')+
+    '<button type="button" class="sm" data-ovn="-1" '+(i?'':'disabled')+'>◀ 이전 책</button><button type="button" class="sm" data-ovn="1" '+(i<65?'':'disabled')+'>다음 책 ▶</button></div>';
+  $("odet").scrollTop=0;if(scroll&&innerWidth<=820)$("odet").scrollIntoView({behavior:"smooth",block:"start"})}
+$("otiles").onclick=e=>{const b=e.target.closest("[data-ov]");if(b)ovShow(+b.dataset.ov,true)};
+$("odet").onclick=e=>{const n=e.target.closest("[data-ovn]");if(n){ovShow(OSEL+(+n.dataset.ovn),false);return}
+  const p=e.target.closest("[data-ovp]");if(p){PB=p.dataset.ovp;PT=OTB.includes(PB)?"ot":"nt";setMode("people");bookOpts();$("pbook").value=PB;drawPeople();$("v-people").scrollIntoView({behavior:"smooth"})}};
+
+/* =========================================================
    ⛶ 전체화면: 메뉴마다, 지도만, 족보만 (지원하지 않는 휴대폰은 화면 가득 채우기로)
    ========================================================= */
 let FSEL=null;
@@ -592,13 +647,14 @@ addEventListener("keydown",e=>{if(e.key==="Escape"&&FSEL)fsSet(FSEL,false)});
 /* =========================================================
    화면 전환 (#history · #map · #family · #people)
    ========================================================= */
-function setMode(m){if(!["history","map","family","people"].includes(m))m="history";if(FSEL)fsToggle(FSEL.id);
+function setMode(m){if(!["overview","history","map","family","people"].includes(m))m="overview";if(FSEL)fsToggle(FSEL.id);
   document.querySelectorAll(".modes button").forEach(b=>{const on=b.dataset.mode===m;b.classList.toggle("on",on);b.setAttribute("aria-selected",on)});
-  ["history","map","family","people"].forEach(x=>$("v-"+x).hidden=x!==m);
+  ["overview","history","map","family","people"].forEach(x=>$("v-"+x).hidden=x!==m);
   if(m==="history"&&!$("h-ot").innerHTML){drawOT();setH("ot")}
   if(m==="map"){initMap();if(MP)setTimeout(()=>{MP.invalidateSize();drawEra(ERA)},60)}
   if(m==="family")drawFam();
   if(m==="people")drawPeople();
+  if(m==="overview")drawOv();
   if(location.hash!=="#"+m)history.replaceState(null,"","#"+m);
   try{gtag("event","tracker_mode",{mode:m})}catch(e){}}
 document.querySelector(".modes").onclick=e=>{const b=e.target.closest("[data-mode]");if(b)setMode(b.dataset.mode)};
