@@ -718,7 +718,7 @@ function vSup(){const L=R.sup,f=SUB.supF||'all',td=todayStr(),cands=prepList().l
   const done=L.filter(fin).length;
   const rows=L.filter(s=>f==='all'||(f==='todo'?!fin(s):f==='done'?fin(s):s.method===f));
   return `<div class="card"><div class="row"><h2 style="margin:0">📦 준비물</h2><span class="badge ${done===L.length&&L.length?'b-ok':'b-mid'}">준비완료 ${done}/${L.length}</span><span class="sp"></span>
-   <a class="btn" href="../image/" target="_blank">🏷️ 명찰 시안 만들기 ↗</a><a class="btn" href="../image/" target="_blank">🎌 현수막 시안 만들기 ↗</a><button class="pri" data-act="supAdd">+ 준비물</button></div>
+   <a class="btn" href="../image/" target="_blank">🏷️ 명찰 시안 만들기 ↗</a><a class="btn" href="../image/" target="_blank">🎌 현수막 시안 만들기 ↗</a><a class="btn" href="../tshirt/" target="_blank">👕 단체티 만들기 ↗</a><button class="pri" data-act="supAdd">+ 준비물</button></div>
    <div class="prog" style="margin:8px 0"><i style="width:${L.length?done/L.length*100:0}%"></i></div>
    <div class="row">${[['all','전체'],['todo','준비 중'],['done','준비완료'],...Object.keys(METHODS).map(m=>[m,m])].map(([k,l])=>`<span class="chip tog ${f===k?'on':''}" data-act="supF" data-v="${k}">${l}</span>`).join('')}</div>
   ${rows.length?`<div class="hs" style="margin-top:8px"><table class="t"><tr><th style="min-width:130px">준비물</th><th>수량</th><th>준비방법</th><th style="min-width:250px">준비도 (단계를 눌러 체크)</th><th>언제까지</th><th>담당</th><th style="min-width:120px">둔 곳</th><th>메모</th><th></th></tr>
