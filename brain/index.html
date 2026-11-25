@@ -112,7 +112,7 @@ $("sugg").innerHTML=SUG.map(s=>'<button type="button" data-sg="'+esc(s)+'">'+esc
 $("sugg").onclick=e=>{const b=e.target.closest("[data-sg]");if(!b)return;const empty=S.items.find(x=>!x.l.trim());if(empty)empty.l=b.dataset.sg;else if(S.items.length<12)S.items.push({l:b.dataset.sg,p:""});else{toast("항목이 꽉 찼어요");return}save();drawItems()};
 
 /* ---------- 머리 옆모습과 뇌 자리 (손그림 느낌) ---------- */
-const cv=$("cv"),cx=cv.getContext("2d"),W=cv.width,H=cv.height,BX=452,BY=300,RA=238,RB=196,INK="#2f6db5",HF='"Nanum Pen Script", "Jua", cursive';
+const cv=$("cv"),cx=cv.getContext("2d"),W=cv.width,H=cv.height,BX=448,BY=302,RA=262,RB=214,INK="#2f6db5",HF='"Nanum Pen Script", "Jua", cursive';
 const BP=(()=>{const p=new Path2D();p.ellipse(BX,BY,RA,RB,-.06,0,Math.PI*2);return p})();
 const HEAD=(()=>{const p=new Path2D();p.moveTo(300,H);p.lineTo(292,640);p.bezierCurveTo(250,628,190,612,170,590);p.bezierCurveTo(150,575,140,555,148,540);
   p.bezierCurveTo(132,532,128,515,140,505);p.bezierCurveTo(128,498,126,485,138,478);p.bezierCurveTo(118,470,96,462,92,448);p.bezierCurveTo(90,436,104,418,128,395);
@@ -157,7 +157,7 @@ function labelSpots(lab,k){const G=GRID,{gw,gh,cells}=G,dist=new Int16Array(gw*g
   const best=Array.from({length:k},()=>({c:-1,d:0,n:0}));cells.forEach(c=>{const l=lab[c];if(l<0)return;best[l].n++;if(dist[c]>best[l].d){best[l].d=dist[c];best[l].c=c}});return best}
 let LAST=null,ANIM=0;
 /* 영역마다 둥근 덩어리 테두리(간격을 두고)를 미리 그려 둬요 */
-function blobs(items,lab){const G=GRID,{gw,gh,x0,y0,cells}=G,sp=labelSpots(lab,items.length),GAP=3,out=[];
+function blobs(items,lab){const G=GRID,{gw,gh,x0,y0,cells}=G,sp=labelSpots(lab,items.length),GAP=1,out=[];
   /* 영역 안쪽까지의 거리 */
   const dist=new Int16Array(gw*gh).fill(0),q=[];
   cells.forEach(c=>{const x=c%gw,l=lab[c];const edge=[[c-1,x>0],[c+1,x<gw-1],[c-gw,c>=gw],[c+gw,c<gw*(gh-1)]].some(([m,ok])=>!ok||G.inside[m]<0||lab[m]!==l);if(edge){dist[c]=1;q.push(c)}});
@@ -169,10 +169,10 @@ function blobs(items,lab){const G=GRID,{gw,gh,x0,y0,cells}=G,sp=labelSpots(lab,i
     /* 그 영역 둘레만: 칸 격자를 부드럽게 번지게 한 뒤 매끈한 테두리를 그려요 */
     const gx0=Math.max(0,Math.floor((mx-x0)/CELL)-8),gy0=Math.max(0,Math.floor((my-y0)/CELL)-8),gx1=Math.min(gw-1,Math.ceil((Mx-x0)/CELL)+8),gy1=Math.min(gh-1,Math.ceil((My-y0)/CELL)+8),sw=gx1-gx0+1,sh=gy1-gy0+1;
     let f=new Float32Array(sw*sh);for(let y=0;y<sh;y++)for(let x=0;x<sw;x++){const c=(gy0+y)*gw+gx0+x;if(G.inside[c]>=0&&lab[c]===i&&dist[c]>GAP)f[y*sw+x]=1}
-    for(let pass=0;pass<6;pass++){const g2=new Float32Array(sw*sh);for(let y=0;y<sh;y++)for(let x=0;x<sw;x++){let a=0,k=0;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const xx=x+dx,yy=y+dy;if(xx<0||yy<0||xx>=sw||yy>=sh)continue;a+=f[yy*sw+xx];k++}g2[y*sw+x]=a/k}f=g2}
+    for(let pass=0;pass<4;pass++){const g2=new Float32Array(sw*sh);for(let y=0;y<sh;y++)for(let x=0;x<sw;x++){let a=0,k=0;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const xx=x+dx,yy=y+dy;if(xx<0||yy<0||xx>=sw||yy>=sh)continue;a+=f[yy*sw+xx];k++}g2[y*sw+x]=a/k}f=g2}
     const ox=x0+gx0*CELL,oy=y0+gy0*CELL,w=sw*CELL,h=sh*CELL,M=new Uint8Array(w*h);
     for(let y=0;y<h;y++){const fy=Math.min(sh-1.001,Math.max(0,y/CELL-.5)),iy=fy|0,ty=fy-iy;for(let x=0;x<w;x++){const fx=Math.min(sw-1.001,Math.max(0,x/CELL-.5)),ix=fx|0,tx=fx-ix,b=iy*sw+ix;
-      const v=(f[b]*(1-tx)+f[b+1]*tx)*(1-ty)+(f[b+sw]*(1-tx)+f[b+sw+1]*tx)*ty;M[y*w+x]=v>.46?1:0}}
+      const v=(f[b]*(1-tx)+f[b+1]*tx)*(1-ty)+(f[b+sw]*(1-tx)+f[b+sw+1]*tx)*ty;M[y*w+x]=v>.36?1:0}}
     const fin=document.createElement("canvas");fin.width=w;fin.height=h;const fc=fin.getContext("2d"),res=fc.createImageData(w,h),R=res.data;
     for(let y=3;y<h-3;y++)for(let x=3;x<w-3;x++){const k=y*w+x;if(!M[k])continue;if(!M[k-3]||!M[k+3]||!M[k-3*w]||!M[k+3*w]||!M[k-2-2*w]||!M[k+2+2*w]||!M[k+2-2*w]||!M[k-2+2*w]){const q=k*4;R[q]=47;R[q+1]=109;R[q+2]=181;R[q+3]=255}}
     fc.putImageData(res,0,0);out.push({it,img:fin,ox,oy,pole,r:Math.max(4,(s.d-GAP)*CELL)})});
