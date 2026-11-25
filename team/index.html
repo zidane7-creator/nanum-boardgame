@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://js.tosspayments.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' data: blob: https://api.github.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://api.open-meteo.com https://api.met.no https://wttr.in https://api.mymemory.translated.net https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.doubleclick.net https://www.google.com https://*.tosspayments.com https://0.peerjs.com wss://0.peerjs.com wss://broker.emqx.io:8084 wss://broker.hivemq.com:8884 https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self' blob:; frame-src 'self' https://www.bskorea.or.kr https://*.tosspayments.com; object-src 'none'; base-uri 'self'; form-action 'self' https://*.tosspayments.com">
+<html lang="ko"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://js.tosspayments.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' data: blob: https://firestore.googleapis.com https://api.github.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://api.open-meteo.com https://api.met.no https://wttr.in https://api.mymemory.translated.net https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.doubleclick.net https://www.google.com https://*.tosspayments.com https://0.peerjs.com wss://0.peerjs.com wss://broker.emqx.io:8084 wss://broker.hivemq.com:8884 https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self' blob:; frame-src 'self' https://www.bskorea.or.kr https://*.tosspayments.com; object-src 'none'; base-uri 'self'; form-action 'self' https://*.tosspayments.com">
 <meta name="referrer" content="strict-origin-when-cross-origin"><script async src="https://www.googletagmanager.com/gtag/js?id=G-0WTWY3TPES"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-0WTWY3TPES");</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>사역팀 관리부 | 치영의 교회 생활 즐기기 · 출석부·회의록·회계</title>
@@ -14,6 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Jua&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=Gaegu:wght@400;700&family=Gamja+Flower&family=Hi+Melody&family=Jua&family=Do+Hyeon&family=Gowun+Dodum&family=Nanum+Myeongjo:wght@400;700&family=Poor+Story&family=Yeon+Sung&family=Single+Day&family=Dongle:wght@400;700&family=Cute+Font&display=swap">
+<script src="../assets/share.js?v=20261125"></script>
 <script src="../assets/jua.js"></script>
 <style>
 /* Layout: harbor-navy header band with tabs; one working column below. Tables scroll inside their own frame. */
@@ -624,6 +625,7 @@ label.lb{color:var(--ink);font-weight:normal}
     <div class="brand">
       <h1 data-home-bar><a class="back" id="backHome" href="./" hidden title="사역팀 목록으로">‹</a><span id="teamName">사역팀 관리부</span></h1>
       <div class="sync" id="sync"><span class="dot"></span><span id="syncText">연결 중…</span></div>
+      <button type="button" id="shareBtn" hidden style="font:inherit;font-size:14px;border:2px solid #3b2a20;border-radius:12px;padding:3px 10px;background:#fffaf0;cursor:pointer;box-shadow:0 2px 0 #3b2a20;white-space:nowrap">🔗 함께 쓰기</button>
     </div>
     <nav class="tabs" id="tabs">
       <a href="#attendance" data-v="attendance">출석부</a>
@@ -727,6 +729,14 @@ function loadTeams(){let L=[];try{L=JSON.parse(localStorage.getItem(TL_KEY)||'[]
   try{if(!L.length&&localStorage.getItem('team-admin-v1')){L=[{id:'t0',name:'우리 사역팀',year:2027,start:'2026-11-09',key:'team-admin-v1',created:Date.now()}];localStorage.setItem(TL_KEY,JSON.stringify(L))}}catch(e){}
   return L}
 function saveTeams(L){try{localStorage.setItem(TL_KEY,JSON.stringify(L))}catch(e){}}
+const SHID=new URLSearchParams(location.search).get('share');
+if(SHID){(async()=>{const L=loadTeams(),ex=L.find(x=>x.shareId===SHID);if(ex){location.replace('?t='+ex.id);return}
+  document.body.insertAdjacentHTML('beforeend','<div id="joinMsg" style="position:fixed;inset:0;z-index:6000;background:#fff8e6;display:flex;align-items:center;justify-content:center;font-family:Jua,sans-serif;font-size:22px;text-align:center;padding:20px">🔗 함께 쓰는 사역팀에 들어가는 중…</div>');
+  const msg=t=>{const m=document.getElementById('joinMsg');if(m)m.innerHTML=t};
+  try{if(!window.SHARE||!SHARE.enabled())throw new Error('함께 쓰기가 아직 준비되지 않았어요');const sp=await SHARE.space(SHID),m=await sp.doc('settings/meta').get();
+    if(!m.exists){msg('😢 링크가 잘못됐거나 공유가 끝났어요<br><a href="./" style="font-size:18px">사역팀 목록으로</a>');return}
+    const d=m.data(),t={id:'s'+Date.now().toString(36),name:d.name||'함께 쓰는 사역팀',year:+d.year||new Date().getFullYear(),start:d.start||'',key:'team-share-'+SHID,shareId:SHID,created:Date.now()};
+    L.push(t);saveTeams(L);location.replace('?t='+t.id)}catch(e){msg('😢 연결하지 못했어요<br><span style="font-size:15px">'+String(e&&e.message||e)+'</span><br><a href="./" style="font-size:18px">사역팀 목록으로</a>')}})();return}
 const TID=new URLSearchParams(location.search).get('t');
 const TEAM=TID?loadTeams().find(x=>x.id===TID):null;
 if(TID&&!TEAM){location.replace('./');return}
@@ -2269,6 +2279,8 @@ function startDb(db){
   db.collection('worship').onSnapshot(s=>{const next={};s.docs.forEach(d=>next[d.id]=clone(d.data()));for(const k in wDirty)if(S.worship[k])next[k]=S.worship[k];S.worship=next;requestRender()},()=>{});
   db.collection('prayer').onSnapshot(s=>{const next={};s.docs.forEach(d=>next[d.id]=clone(d.data()));for(const k in pDirty)if(S.prayer[k])next[k]=S.prayer[k];S.prayer=next;requestRender()},()=>{});
   db.doc('settings/prayer').onSnapshot(s=>{if(s.exists&&!pxDirty){S.pextra=clone((s.data()||{}).extras||[]);requestRender()}},()=>{});
+  db.collection('album').onSnapshot(s=>{const next=s.docs.map(d=>Object.assign({id:d.id},clone(d.data())));for(const k in aDirty){const loc=S.album.find(x=>x.id===k);if(!loc)continue;const i=next.findIndex(x=>x.id===k);if(i>=0)next[i]=loc;else next.push(loc)}S.album=next;requestRender()},()=>{});
+  db.doc('settings/albumlines').onSnapshot(s=>{if(s.exists){S.albumLines=clone((s.data()||{}).lines||[]);requestRender()}},()=>{});
   db.collection('groups').onSnapshot(s=>{const next=s.docs.map(d=>Object.assign({id:d.id},clone(d.data())));
     for(const k in gDirty){const loc=S.groups.find(x=>x.id===k);if(!loc)continue;const i=next.findIndex(x=>x.id===k);if(i>=0)next[i]=loc;else next.push(loc)}
     S.groups=next;requestRender()},()=>{});
@@ -2284,6 +2296,8 @@ function startDb(db){
 }
 async function boot(){
   route();
+  if(TEAM.shareId){S.shared=true;shareUI();try{const sp=await SHARE.space(TEAM.shareId);startDb(sp)}catch(e){startLocal();S.loadNote='함께 쓰기 저장소에 연결하지 못했어요. 이 기기에 있던 내용을 보여 줘요. ('+(e&&e.message||e)+')';render()}return}
+  shareUI();
   let tries=0;while(!(window.claude&&typeof window.claude.use==='function')&&tries<15){await new Promise(r=>setTimeout(r,100));tries++}
   if(!(window.claude&&typeof window.claude.use==='function')){startLocal();return}
   let db=null;try{db=await window.claude.use('db')}catch(e){}
@@ -2291,6 +2305,20 @@ async function boot(){
   try{const u=await window.claude.use('user');if(u){const own=await u.isOwner(),cw=await u.can('data.write');S.who=own?'owner':cw===false?'readonly':cw?'writer':'unknown';if(own!==true&&cw===false)S.readOnly=true}}catch(e){}
   startDb(db);
 }
+/* 🔗 함께 쓰기: 링크를 아는 사람끼리 같은 사역팀 기록을 실시간으로 함께 써요 */
+function shareUI(){const b=document.getElementById('shareBtn');if(!b||!window.SHARE)return;b.hidden=!SHARE.enabled()&&!TEAM.shareId;b.textContent=TEAM.shareId?'🔗 함께 쓰는 중':'🔗 함께 쓰기';b.style.background=TEAM.shareId?'#e6f6df':'#fffaf0';b.onclick=shareDialog}
+function shareDialog(){const E=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  if(TEAM.shareId){const url=SHARE.link(TEAM.shareId);
+    SHARE.dialog({html:'<h3 style="margin:0 0 8px;font-size:22px">🔗 함께 쓰는 중이에요</h3><p style="margin:0 0 10px;font-size:15px;line-height:1.5">이 링크를 받은 사람은 <b>'+E(TNAME)+'</b>의 출석부·회의록·명부·회계를 함께 보고 고칠 수 있어요. 누가 고치면 다른 사람 화면에도 바로 반영돼요.</p><input readonly value="'+E(url)+'" style="width:100%;font-size:13px;padding:8px;border:2px solid #cdbda6;border-radius:10px" onclick="this.select()"><p style="font-size:13px;color:#7a6a5c;margin:8px 0 0;line-height:1.5">⚠️ 링크를 아는 사람은 누구나 볼 수 있으니 사역팀 안에서만 나눠 주세요. 사진(앨범 이미지)은 올린 기기에만 저장돼요.</p>',
+      buttons:[['🔗 링크 복사',async()=>{try{await navigator.clipboard.writeText(url);alert('링크를 복사했어요')}catch(e){prompt('복사해 주세요',url)}return true},true],['이 기기에서 함께 쓰기 끄기',()=>{if(!confirm('이 기기에서는 함께 쓰기를 끄고, 지금 내용을 이 기기에만 저장할까요? (다른 사람은 계속 함께 써요)'))return true;saveLocal();const L=loadTeams(),t=L.find(x=>x.id===TEAM.id);delete t.shareId;t.key=t.key||LS_KEY;saveTeams(L);location.reload()}]]});return}
+  SHARE.dialog({html:'<h3 style="margin:0 0 8px;font-size:22px">🔗 여러 사람과 함께 쓰기</h3><p style="margin:0 0 8px;font-size:15px;line-height:1.6">지금 이 기기에 있는 <b>'+E(TNAME)+'</b> 기록을 온라인 저장소에 올리고, 함께 쓸 수 있는 링크를 만들어요.</p><ul style="font-size:14px;line-height:1.6;margin:0;padding-left:18px"><li>링크를 받은 사람은 같은 기록을 실시간으로 보고 고쳐요</li><li>링크를 아는 사람만 들어올 수 있어요 (사역팀 안에서만 나눠 주세요)</li><li>앨범 사진 파일은 올린 기기에만 남아요</li></ul>',
+    buttons:[['함께 쓰기 시작',async w=>{w.querySelector('h3').textContent='⏳ 올리는 중…';await startShare()},true]]})}
+async function startShare(){const id=SHARE.newId(),sp=await SHARE.space(id),ops=[];
+  ops.push(['settings/meta',{name:TNAME,year:TYEAR,start:TSTART,created:Date.now()}]);ops.push(['settings/cfg',clone(S.cfg||{})]);
+  if(S.acct)ops.push(['settings/acct',clone(S.acct)]);ops.push(['settings/prayer',{extras:clone(S.pextra||[])}]);ops.push(['settings/albumlines',{lines:clone(S.albumLines||[])}]);
+  const arr=(c,l)=>(l||[]).forEach(x=>{if(x&&x.id!=null)ops.push([c+'/'+x.id,strip(x)])}),obj=(c,o)=>Object.keys(o||{}).forEach(k=>ops.push([c+'/'+k,clone(o[k])]));
+  arr('members',S.members);obj('attendance',S.att);arr('minutes',S.minutes);arr('events',S.events);obj('worship',S.worship);obj('prayer',S.prayer);arr('notes',S.notes);arr('groups',S.groups);arr('album',S.album);obj('dues',S.dues);arr('ledger',S.ledger);
+  await sp.putMany(ops);const L=loadTeams(),t=L.find(x=>x.id===TEAM.id);t.shareId=id;saveTeams(L);location.reload()}
 function teamHome(){
   let ht;const toast=m=>{const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(ht);ht=setTimeout(()=>t.hidden=true,2600)};
   $('#tabs').hidden=true;$('#sync').hidden=true;

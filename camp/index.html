@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://js.tosspayments.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' data: blob: https://api.github.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://api.open-meteo.com https://api.met.no https://wttr.in https://api.mymemory.translated.net https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.doubleclick.net https://www.google.com https://*.tosspayments.com https://0.peerjs.com wss://0.peerjs.com wss://broker.emqx.io:8084 wss://broker.hivemq.com:8884 https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self' blob:; frame-src 'self' https://www.bskorea.or.kr https://*.tosspayments.com; object-src 'none'; base-uri 'self'; form-action 'self' https://*.tosspayments.com">
+<html lang="ko"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://js.tosspayments.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' data: blob: https://firestore.googleapis.com https://api.github.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://api.open-meteo.com https://api.met.no https://wttr.in https://api.mymemory.translated.net https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.doubleclick.net https://www.google.com https://*.tosspayments.com https://0.peerjs.com wss://0.peerjs.com wss://broker.emqx.io:8084 wss://broker.hivemq.com:8884 https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self' blob:; frame-src 'self' https://www.bskorea.or.kr https://*.tosspayments.com; object-src 'none'; base-uri 'self'; form-action 'self' https://*.tosspayments.com">
 <meta name="referrer" content="strict-origin-when-cross-origin"><script async src="https://www.googletagmanager.com/gtag/js?id=G-0WTWY3TPES"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-0WTWY3TPES");</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>수련회 준비 패키지 | 치영의 교회 생활 즐기기 · 참석인원·준비인원·일정·장소·회계·조배정·방배정</title>
@@ -10,6 +10,7 @@
 <meta property="og:image" content="https://zidane7-creator.github.io/nanum-boardgame/assets/og.jpg">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⛺</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<script src="../assets/share.js?v=20261125"></script>
 <script src="../assets/jua.js"></script>
 <style>
 :root{--ink:#3b2a20;--cream:#fffaf0;--paper:#fff;--line:#e3d6c2;--accent:#e8503a;--gold:#f5b82e;--green:#3f9a55;--blue:#2f6fb0;--pink:#c8507a;--muted:#7a6a5c;--soft:#f6efe2}
@@ -326,7 +327,7 @@ const idb={db:null,
   del(st,k){return this.tx(st,'readwrite',s=>s.delete(k))},all(st){return this.tx(st,'readonly',s=>s.getAll())}};
 
 let R=null,TAB='staff';const SUB={dir:'in',folder:'',min:null,ledEdit:null};
-let saveT;function save(){clearTimeout(saveT);const s=$('#sync');if(s)s.textContent='저장 중…';saveT=setTimeout(async()=>{try{R.updated=Date.now();await idb.put('camps',R.id,R);const s=$('#sync');if(s)s.textContent='✔ 이 기기에 저장됨 '+new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}catch(e){toast('저장하지 못했어요: '+(e&&e.message||e))}},250)}
+let saveT;function save(){clearTimeout(saveT);const s=$('#sync');if(s)s.textContent='저장 중…';saveT=setTimeout(async()=>{try{R.updated=Date.now();await idb.put('camps',R.id,R);if(R.shareId)campPush();const s=$('#sync');if(s)s.textContent='✔ 이 기기에 저장됨 '+new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}catch(e){toast('저장하지 못했어요: '+(e&&e.message||e))}},250)}
 addEventListener('pagehide',()=>{if(R&&saveT){clearTimeout(saveT);try{idb.put('camps',R.id,R)}catch(e){}}});
 
 const METHODS={'온라인':['구입필요','구입완료','배송완료','준비완료'],'오프라인':['구입필요','구입완료','준비완료'],'챙기기':['준비필요','준비완료'],'제작':['준비전','시안제작완료','발주완료','배송완료','준비완료'],'인쇄':['준비전','작성완료','인쇄완료','준비완료']};
@@ -437,7 +438,7 @@ function render(){
   const dd=R.start?diffD(todayStr(),R.start):null;
   if(TAB==='cars'||TAB==='people'){let n=0;while(n<3&&syncCars())n++;if(n)save()}
   const V={staff:vStaff,praise:vPraise,minutes:vMinutes,sched:vSched,theme:vTheme,venue:vVenue,spaces:vSpaces,speaker:vSpeaker,program:vProgram,tt:vTT,confirm:vConfirm,sup:vSup,chk:vChk,files:vFiles,acc:vAcc,people:vPeople,cars:vCars,grp:vGrp,rooms:vRooms,notice:vNotice}[TAB]||vPeople;
-  app.innerHTML=`<div class="head no-print"><a class="btn" href="./">☰ 수련회 목록</a><h1 class="j">${esc(R.name)}</h1>${dd!=null?`<span class="dday">${dd>0?'D-'+dd:dd===0?'D-DAY':dd>=-(+R.nights)?'수련회 중':'끝났어요'}</span>`:''}<span class="hint">${esc(campRange()||'날짜 미정')}</span><button class="sm" data-act="campSet">⚙️ 설정·백업</button><span class="sync" id="sync">✔ 이 기기에 저장됨</span></div>
+  app.innerHTML=`<div class="head no-print"><a class="btn" href="./">☰ 수련회 목록</a><h1 class="j">${esc(R.name)}</h1>${dd!=null?`<span class="dday">${dd>0?'D-'+dd:dd===0?'D-DAY':dd>=-(+R.nights)?'수련회 중':'끝났어요'}</span>`:''}<span class="hint">${esc(campRange()||'날짜 미정')}</span><button class="sm" data-act="campSet">⚙️ 설정·백업</button>${(window.SHARE&&SHARE.enabled())||R.shareId?`<button class="sm" data-act="campShare" style="${R.shareId?"background:#e6f6df":""}">${R.shareId?"🔗 함께 쓰는 중":"🔗 함께 쓰기"}</button>`:""}<span class="sync" id="sync">${R.shareId?"🔗 함께 쓰는 중":"✔ 이 기기에 저장됨"}</span></div>
   <nav class="tabs">${TABS.map(([k,l])=>`<button data-act="tab" data-v="${k}" class="${k===TAB?'on':''}">${l}</button>`).join('')}</nav>
   <div id="view">${V()}</div>`;
   for(const k in keep){const e=$(`[data-keep="${k}"]`);if(e){e.scrollLeft=keep[k][0];e.scrollTop=keep[k][1]}}
@@ -1049,6 +1050,7 @@ const ACT={
     const c=fill({id:uid(),name:n,start:$('#nStart').value,nights:+$('#nNights').value,created:Date.now()});await idb.put('camps',c.id,c);location.href='./?c='+c.id},
   openCamp:t=>{location.href='./?c='+t.dataset.v},
   bakIn:()=>{$('#bakUp').value='';$('#bakUp').click()},
+  campShare:()=>campShareDialog(),
   campSet:()=>{const m=modal(`<h2>⚙️ 수련회 설정·백업</h2><div class="f2"><label class="fld" style="grid-column:1/-1">이름<input id="sN" value="${esc(R.name)}"></label><label class="fld">시작일<input id="sS" type="date" value="${esc(R.start||'')}"></label><label class="fld">끝나는 날<input id="sE" type="date" value="${esc(R.start?addD(R.start,+R.nights||0):'')}"></label><label class="fld">기간<select id="sT">${[0,1,2,3,4,5,6,7].map(n=>`<option value="${n}"${n===+R.nights?' selected':''}>${n}박 ${n+1}일</option>`).join('')}</select></label></div>
     <p class="hint" id="sInfo" style="margin:6px 0 0"></p>
     <h3>🏠 셀 이름</h3><p class="hint" style="margin:0 0 4px">쉼표나 줄바꿈으로 나눠 적어요. [참석인원]의 셀이름 칸에서 골라 넣을 수 있어요(목록에 없으면 직접 적어도 돼요).</p><textarea id="sCells" rows="3" style="width:100%" placeholder="예: 다윗셀, 요셉셀, 에스더셀">${esc((R.cfg.cells||[]).join(', '))}</textarea>
@@ -1308,10 +1310,44 @@ $('#rcpUp').onchange=e=>{const f=e.target.files[0];if(f){SUB.rcpFile=f;const n=$
 /* ============ 시작 ============ */
 (async()=>{try{await idb.open()}catch(e){$('#app').innerHTML='<div class="card"><div class="empty">이 브라우저에서는 저장소를 쓸 수 없어요. (시크릿 창이면 일반 창에서 열어 주세요)</div></div>';return}
   try{TAB=localStorage.getItem('camp-tab')||'people';SUB.carView=localStorage.getItem('camp-carview')||'card';SUB.pFit=localStorage.getItem('camp-pfit')!=='0'}catch(_){}if(!TABS.some(x=>x[0]===TAB))TAB='people';
+  const SHID=new URLSearchParams(location.search).get('share');
+  if(SHID){app.innerHTML='<div class="card" style="text-align:center;font-size:20px;padding:30px">🔗 함께 쓰는 수련회에 들어가는 중…</div>';
+    try{const all=(await idb.all('camps'))||[],ex=all.find(c=>c.shareId===SHID);if(ex){location.replace('?c='+ex.id);return}
+      if(!window.SHARE||!SHARE.enabled())throw new Error('함께 쓰기가 아직 준비되지 않았어요');
+      const sp=await SHARE.space(SHID),snap=await sp.doc('camp/main').get();
+      if(!snap.exists){app.innerHTML='<div class="card" style="text-align:center;font-size:20px;padding:30px">😢 링크가 잘못됐거나 공유가 끝났어요<br><a href="./">수련회 목록으로</a></div>';return}
+      const d=snap.data(),c={};for(const k in d){if(k[0]!=='_')try{c[k]=JSON.parse(d[k])}catch(_){}}c.shareId=SHID;c.id=uid();c.created=c.created||Date.now();
+      await idb.put('camps',c.id,c);location.replace('?c='+c.id);return}
+    catch(e){app.innerHTML='<div class="card" style="text-align:center;font-size:18px;padding:30px">😢 연결하지 못했어요<br><small>'+esc(String(e&&e.message||e))+'</small><br><a href="./">수련회 목록으로</a></div>';return}}
   const cid=new URLSearchParams(location.search).get('c');
   if(cid){const c=await idb.get('camps',cid);if(!c){location.replace('./');return}R=fill(c);confList().forEach(([k])=>{try{if(k!=='snack'&&R.conf[k].v&&R.conf[k].v.trim()===confSrc(k).trim())R.conf[k].v=''}catch(_){}});R.people.forEach(p=>['in','out'].forEach(k=>{if((p[k+'H']==null||p[k+'H']==='')&&p[k+'T'])setWhenFromText(p,k)}));document.title=R.name+' | 수련회 준비 패키지'}
   else CAMPS=(await idb.all('camps'))||[];
-  render()})();
+  render();if(R&&R.shareId)campSync()})();
+/* 🔗 함께 쓰기: 수련회 기록을 항목(명단·일정·차량·회의록…)별로 나눠 온라인에 저장해서, 서로 다른 탭을 고쳐도 덮어쓰지 않아요 */
+const CS_SKIP=new Set(['id','updated','shareId','created']);let CS=null,csHold=false;
+async function campSync(){try{const sp=await SHARE.space(R.shareId),d=sp.doc('camp/main');CS={d,base:{},pend:new Set(),first:true};
+    d.onSnapshot(s=>{if(!s.exists)return;const data=s.data()||{};let ch=false;
+      for(const k in data){if(k[0]==='_'||CS_SKIP.has(k)||CS.pend.has(k)||CS.base[k]===data[k])continue;CS.base[k]=data[k];
+        const cur=JSON.stringify(R[k]===undefined?null:R[k]);if(cur!==data[k]){try{R[k]=JSON.parse(data[k]);ch=true}catch(_){}}}
+      const first=CS.first;CS.first=false;if(ch)campApply();if(first)campPush();
+      const el=$('#sync');if(el&&!CS.pend.size)el.textContent='🔗 함께 쓰는 중 · 최신';},e=>{toast('함께 쓰기 연결이 끊겼어요. 새로고침해 주세요 ('+(e&&e.code||'')+')')})}
+  catch(e){toast('함께 쓰기 저장소에 연결하지 못했어요: '+(e&&e.message||e))}}
+function campApply(){fill(R);idb.put('camps',R.id,R).catch(()=>{});
+  const a=document.activeElement;if(a&&a!==document.body&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)&&app.contains(a)){if(!csHold){csHold=true;a.addEventListener('blur',()=>setTimeout(()=>{csHold=false;campApply()},250),{once:true})}return}
+  const y=window.scrollY;render();window.scrollTo(0,y)}
+function campPush(){if(!CS||CS.first)return;const upd={};let size=0;
+  for(const k in R){if(CS_SKIP.has(k))continue;const j=JSON.stringify(R[k]===undefined?null:R[k]);size+=j.length;if(CS.base[k]!==j)upd[k]=j}
+  const ks=Object.keys(upd);if(!ks.length)return;if(size>950000){toast('⚠️ 수련회 기록이 너무 커서 온라인에 다 올리지 못할 수 있어요');}
+  ks.forEach(k=>CS.pend.add(k));upd._t=Date.now();const el=$('#sync');if(el)el.textContent='🔗 함께 저장 중…';
+  CS.d.update(upd).then(()=>{ks.forEach(k=>{CS.base[k]=upd[k];CS.pend.delete(k)});const e2=$('#sync');if(e2&&!CS.pend.size)e2.textContent='🔗 함께 저장됨 '+new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})})
+    .catch(e=>{ks.forEach(k=>CS.pend.delete(k));toast('온라인에 저장하지 못했어요: '+(e&&e.message||e))})}
+function campShareDialog(){const E=esc;
+  if(R.shareId){const url=SHARE.link(R.shareId);
+    SHARE.dialog({html:'<h3 style="margin:0 0 8px;font-size:22px">🔗 함께 쓰는 중이에요</h3><p style="margin:0 0 10px;font-size:15px;line-height:1.5">이 링크를 받은 사람은 <b>'+E(R.name)+'</b>의 명단·일정·차량·회의록 등을 함께 보고 고칠 수 있어요. 서로 다른 탭을 고치면 각자 반영되고, 같은 탭을 동시에 고치면 나중에 저장한 쪽이 남아요.</p><input readonly value="'+E(url)+'" style="width:100%;font-size:13px;padding:8px;border:2px solid #cdbda6;border-radius:10px" onclick="this.select()"><p style="font-size:13px;color:#7a6a5c;margin:8px 0 0;line-height:1.5">⚠️ 링크를 아는 사람은 누구나 볼 수 있으니 준비팀 안에서만 나눠 주세요. 첨부한 사진·영수증 파일은 올린 기기에만 저장돼요.</p>',
+      buttons:[['🔗 링크 복사',async()=>{try{await navigator.clipboard.writeText(url);toast('링크를 복사했어요')}catch(e){prompt('복사해 주세요',url)}return true},true],['이 기기에서 함께 쓰기 끄기',async()=>{if(!confirm('이 기기에서는 함께 쓰기를 끄고 지금 내용을 이 기기에만 저장할까요? (다른 사람은 계속 함께 써요)'))return true;delete R.shareId;await idb.put('camps',R.id,R);location.reload()}]]});return}
+  SHARE.dialog({html:'<h3 style="margin:0 0 8px;font-size:22px">🔗 여러 사람과 함께 쓰기</h3><p style="margin:0 0 8px;font-size:15px;line-height:1.6">지금 이 기기에 있는 <b>'+E(R.name)+'</b> 기록을 온라인 저장소에 올리고, 준비팀이 함께 쓸 수 있는 링크를 만들어요.</p><ul style="font-size:14px;line-height:1.6;margin:0;padding-left:18px"><li>링크를 받은 사람은 같은 기록을 실시간으로 보고 고쳐요</li><li>링크를 아는 사람만 들어올 수 있어요</li><li>첨부한 사진·영수증 파일은 올린 기기에만 남아요</li></ul>',
+    buttons:[['함께 쓰기 시작',async w=>{w.querySelector('h3').textContent='⏳ 올리는 중…';const id=SHARE.newId(),sp=await SHARE.space(id),d={_t:Date.now(),_name:R.name};
+      for(const k in R){if(!CS_SKIP.has(k))d[k]=JSON.stringify(R[k]===undefined?null:R[k])}await sp.doc('camp/main').set(d);R.shareId=id;await idb.put('camps',R.id,R);location.reload()},true]]})}
 })();
 </script>
 <script src="../assets/scene.js?v=20261116d"></script>
