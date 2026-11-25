@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://js.tosspayments.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' data: blob: https://api.github.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://api.open-meteo.com https://api.met.no https://wttr.in https://api.mymemory.translated.net https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.doubleclick.net https://www.google.com https://*.tosspayments.com https://0.peerjs.com wss://0.peerjs.com wss://broker.emqx.io:8084 wss://broker.hivemq.com:8884 https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self' blob:; frame-src 'self' https://www.bskorea.or.kr https://*.tosspayments.com; object-src 'none'; base-uri 'self'; form-action 'self' https://*.tosspayments.com">
+<meta name="referrer" content="strict-origin-when-cross-origin"><script async src="https://www.googletagmanager.com/gtag/js?id=G-0WTWY3TPES"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-0WTWY3TPES");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>마니또 | 치영의 교회 생활 즐기기 · 마니또 뽑기</title>
+<meta name="description" content="한 기기로 차례대로, 또는 QR로 초대해서 마니또를 뽑아요. 자기 자신은 절대 안 뽑혀요. 미션 뽑기, 도우미·위장 마니또 같은 추가 역할도 넣을 수 있어요.">
+<link rel="canonical" href="https://zidane7-creator.github.io/nanum-boardgame/manito/">
+<meta property="og:title" content="마니또 — 치영의 교회 생활 즐기기">
+<meta property="og:description" content="몰래 챙겨 주는 비밀 친구, 마니또를 뽑아요">
+<meta property="og:image" content="https://zidane7-creator.github.io/nanum-boardgame/assets/og.jpg">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎁</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<script src="../assets/jua.js"></script>
+<style>
+:root{--ink:#3b2a20;--cream:#fffaf0;--line:#e3d6c2;--accent:#e8503a;--gold:#f5b82e;--green:#3f9a55;--blue:#2f6fb0;--muted:#7a6a5c;--soft:#f6efe2;--red:#c8322a;--pur:#7a4fb0}
+*{box-sizing:border-box}
+html,body{margin:0;color:var(--ink);background:#f7f1e6;font:16px/1.55 "Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif}
+h1,h2,h3,.j,.top{font-family:"Jua","Apple SD Gothic Neo",sans-serif;font-weight:normal}
+button{font:inherit;color:var(--ink);border:2px solid var(--ink);background:var(--cream);border-radius:14px;padding:8px 14px;cursor:pointer;box-shadow:0 3px 0 var(--ink)}
+button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}button:disabled{opacity:.45;cursor:default;transform:none}
+button.pri{background:var(--accent);color:#fff}button.ok{background:var(--green);color:#fff}button.go{background:var(--blue);color:#fff}
+button.sm{padding:3px 10px;font-size:14px;border-radius:10px;box-shadow:0 2px 0 var(--ink)}button.big{font-size:21px;padding:12px 24px;font-family:Jua,sans-serif}
+input,select{font:inherit;color:var(--ink);border:2px solid #cdbda6;border-radius:12px;padding:7px 10px;background:#fff;min-width:0;max-width:100%}
+.top{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:10px;padding:calc(8px + env(safe-area-inset-top,0px)) 14px 8px;background:rgba(255,255,255,.95);border-bottom:4px solid var(--gold)}
+.top a{color:var(--ink);text-decoration:none;border:2px solid var(--ink);border-radius:14px;padding:3px 10px;background:var(--cream)}.top .ttl{flex:1;font-size:19px}
+main{max-width:780px;margin:0 auto;padding:14px 12px 90px}
+.card{background:#fff;border:3px solid var(--ink);border-radius:20px;padding:16px;margin-bottom:14px;box-shadow:0 5px 0 rgba(0,0,0,.12)}
+.card h2{margin:0 0 8px;font-size:23px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.sp{flex:1}.hint{font-size:14px;color:var(--muted)}.center{text-align:center}
+.big-ico{font-size:62px;line-height:1.1}
+.pick{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.pick button{display:flex;flex-direction:column;align-items:flex-start;text-align:left;background:#fff;border-color:#cdbda6;box-shadow:0 3px 0 #cdbda6}
+.pick button b{font-family:Jua,sans-serif;font-weight:normal;font-size:18px}.pick button span{font-size:13px;color:var(--muted)}
+.pick button.on{background:#fff4e0;border-color:var(--ink);box-shadow:0 3px 0 var(--ink)}
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
+.cats button{font-family:Jua,sans-serif;font-size:18px;background:#fff}.cats button.on{background:var(--gold)}
+.pl{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
+.pp{border:2px solid var(--ink);border-radius:14px;padding:9px 6px;background:#fffdf7;text-align:center;font-family:Jua,sans-serif;font-size:19px;position:relative}
+.pp.pick{cursor:pointer}.pp.pick:hover{background:#fff1cc}.pp.mine{outline:4px solid var(--gold)}.pp.turn{background:#e3efff;border-color:var(--blue)}.pp.liar{background:#ffe0dc;border-color:var(--red)}
+.pp .tag{display:block;font-family:inherit;font-size:12px;opacity:.8}.pp .cnt{position:absolute;top:-8px;right:-6px;background:var(--red);color:#fff;border-radius:999px;font-size:13px;padding:0 7px}
+.word{border-radius:22px;padding:22px 16px;text-align:center;color:#fff;background:linear-gradient(#2f6fb0,#1c3f6a)}
+.word.liar{background:linear-gradient(#c8322a,#7a1d18)}
+.word .w{font-family:Jua,sans-serif;font-size:46px;line-height:1.2}
+.talk{display:flex;flex-direction:column;gap:6px;max-height:340px;overflow:auto}
+.talk .t{background:var(--soft);border-radius:14px;padding:6px 10px}.talk .t b{font-family:Jua,sans-serif;font-weight:normal;color:var(--blue)}
+.qr{background:#fff;padding:8px;border-radius:12px;display:inline-block}.qr svg{width:170px;height:170px;display:block}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#222;color:#fff;padding:10px 18px;border-radius:14px;opacity:0;transition:.25s;z-index:200;pointer-events:none;max-width:90vw;text-align:center}.toast.show{opacity:1}
+.badge{display:inline-block;border-radius:10px;padding:0 8px;font-size:13px;background:var(--soft);border:1px solid var(--line)}
+.ann{font-family:Jua,sans-serif;font-size:24px;text-align:center;padding:12px;border-radius:16px;background:#fff6d8;border:2px solid var(--gold);margin-bottom:12px}
+.lst{display:flex;flex-direction:column;gap:6px}
+.lr{display:flex;align-items:center;gap:6px;border:2px solid var(--line);border-radius:12px;padding:5px 8px;background:#fffdf7}
+.lr .n{font-family:Jua,sans-serif;font-size:18px;flex:1;min-width:0;word-break:keep-all}
+.lr .k{font-family:Jua,sans-serif;color:var(--muted);width:26px;text-align:right}
+.lr button{padding:2px 8px;font-size:13px;border-radius:9px;box-shadow:0 2px 0 var(--ink)}
+.lr.done{opacity:.55}.lr.cur{background:#fff6d8;border-color:var(--gold)}
+.rl{display:grid;grid-template-columns:minmax(0,1fr) 70px 34px;gap:6px;align-items:center;margin-bottom:6px}
+.rl input.d{grid-column:1/-1}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.chips button{font-size:13px;padding:2px 9px;border-radius:999px;box-shadow:none;border-width:1.5px;background:#fff}
+.gift{border-radius:24px;padding:22px 16px;text-align:center;color:#fff;background:linear-gradient(#e8503a,#9a2a1e);position:relative;overflow:hidden}
+.gift .t{font-family:Jua,sans-serif;font-size:clamp(40px,11vw,64px);line-height:1.15;margin:4px 0}
+.gift .m{background:rgba(255,255,255,.16);border-radius:14px;padding:10px 12px;margin-top:10px;font-size:17px;line-height:1.5}
+.gift .rr{background:#fff6d8;color:var(--ink);border-radius:14px;padding:10px 12px;margin-top:10px;font-size:16px;line-height:1.5}
+.spin{font-family:Jua,sans-serif;font-size:46px;min-height:62px}
+.big-btn{font-size:24px;padding:14px 26px;font-family:Jua,sans-serif}
+.pair{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;border:2px solid var(--line);border-radius:14px;padding:8px 10px;background:#fff;margin-bottom:6px}
+.pair b{font-family:Jua,sans-serif;font-weight:normal;font-size:19px}.pair small{display:block;color:var(--muted);font-size:13px}
+.pair .ar{font-size:22px}
+.tabs2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tabs2 button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:16px 8px;font-family:Jua,sans-serif;font-size:20px;background:#fff}
+.tabs2 button span{font-family:inherit;font-size:13px;color:var(--muted)}
+@keyframes wob{0%,100%{transform:rotate(0)}25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}.wob{display:inline-block;animation:wob .5s infinite}
+</style>
+</head><body>
+<div class="top"><a href="../">← 목장</a><span class="ttl">🎁 마니또</span></div>
+<main id="app"><div class="card center">불러오는 중…</div></main>
+<div class="toast" id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js" integrity="sha384-8FWZA6BGMXhsfO+BLtrJK0We6gg5o1JyO8xQm6peWDEUs17ACA5ziE/NIAkl9z2k" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js" integrity="sha384-u4uqeACkFcoKl57rBQJHVGDd1pqhW4w8X3WjTu1ZksPdxoLqdt34jpoNkJisE25W" crossorigin="anonymous"></script>
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clip=(s,n)=>String(s??'').replace(/[\u0000-\u001f]/g,' ').trim().slice(0,n);
+const rnd=n=>{const a=new Uint32Array(1);crypto.getRandomValues(a);return Math.floor(a[0]/4294967296*n)};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
+let tt;function toast(m,ms){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),ms||2600)}
+const app=$('#app');
+const BROKERS=["wss://broker.emqx.io:8084/mqtt","wss://broker.hivemq.com:8884/mqtt"];
+const params=new URLSearchParams(location.search);
+let ROOM=(params.get('room')||params.get('host')||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6);
+const HOSTING=!!params.get('host');
+const base=()=>'chiyoung-manito/v1/'+ROOM;
+function mqttOpen(url,ms){return new Promise(res=>{if(typeof mqtt=='undefined')return res(null);let done=false;
+  const cl=mqtt.connect(url,{connectTimeout:ms,reconnectPeriod:3000,clientId:'mn'+Math.random().toString(36).slice(2,12)});
+  cl.on('connect',()=>{if(!done){done=true;res(cl)}});setTimeout(()=>{if(!done){done=true;try{cl.end(true)}catch(e){}res(null)}},ms)})}
+
+/* =================== 설정 (이 기기에 저장) =================== */
+const SK='manito-set';
+const ROLE_PRESET={"도우미":"{t}의 마니또를 몰래 도와줘요. 마니또가 누군지 눈치채도 비밀!","위장 마니또":"{t}에게 진짜 마니또인 척 헷갈리게 해요. 들키지 않게 연기하기!","천사":"{t}을(를) 위해 매일 기도해 줘요","스파이":"{t}의 마니또가 누구인지 몰래 알아내 보세요"};
+const MISSION_PRESET=["응원 쪽지 몰래 전하기","간식 몰래 두고 오기","하루에 한 번 칭찬하기","기도 제목 물어보고 기도해 주기","모임 때 먼저 인사하기","좋아하는 찬양 추천해 주기","손편지 써 주기","작은 선물 준비하기","커피나 음료 사 주기","장점 3가지 찾아서 전해 주기"];
+let SET={names:[],roles:[],missions:[],shuffleOnline:false};
+try{const o=JSON.parse(localStorage.getItem(SK)||'null');if(o&&o.names)SET=Object.assign(SET,o)}catch(e){}
+const saveSet=()=>{try{localStorage.setItem(SK,JSON.stringify(SET))}catch(e){}};
+
+/* =================== 뽑기 계산: 자기 자신은 절대 안 뽑혀요 =================== */
+function makeDraw(names){const n=names.length;let perm;
+  do{perm=shuffle(names.map((_,i)=>i))}while(perm.some((v,i)=>v===i));
+  const res=names.map((nm,i)=>({name:nm,target:names[perm[i]],role:null,mission:null}));
+  /* 미션: 섞어서 하나씩 (모자라면 다시 섞어서) */
+  const ms=SET.missions.filter(x=>x.trim());let pool=[];
+  res.forEach(r=>{if(!ms.length)return;if(!pool.length)pool=shuffle(ms);r.mission=pool.pop()});
+  /* 추가 역할: 마니또 말고 한 가지 더 (사람마다 하나까지) */
+  let free=shuffle(res.map((_,i)=>i));
+  SET.roles.forEach(rl=>{const c=Math.max(0,Math.min(+rl.n||0,n));for(let k=0;k<c&&free.length;k++){const i=free.pop(),r=res[i];
+    const cand=names.filter(x=>x!==r.name&&x!==r.target),t=cand.length?cand[rnd(cand.length)]:names.filter(x=>x!==r.name)[0];
+    r.role={name:rl.name||'추가 역할',desc:(rl.desc||ROLE_PRESET[rl.name]||'{t}과(와) 관련된 비밀 역할이에요').replace(/\{t\}/g,t),target:t}}});
+  return res}
+function cardHTML(r,me){return`<div class="gift"><div style="font-size:15px;opacity:.9">${esc(me||r.name)}님의 마니또는…</div><div class="t">🎁 ${esc(r.target)}</div>
+  <div style="font-size:14px;opacity:.9">${esc(r.target)}님을 몰래 챙겨 주세요! (비밀이에요 🤫)</div>
+  <div class="m">🎯 미션: <b>${r.mission?esc(r.mission):'자유롭게 마니또를 해요 — 몰래 응원하고 챙겨 주기'}</b></div>
+  ${r.role?`<div class="rr">✨ 추가 역할: <b>${esc(r.role.name)}</b><br>${esc(r.role.desc)}</div>`:''}</div>
+  <div class="row" style="justify-content:center;margin-top:10px"><button class="go" data-dl='${esc(JSON.stringify({r,me:me||r.name}))}'>📥 내 마니또 카드 이미지로 저장</button></div>`}
+/* 📥 "누구에게 무엇을 해야 하는지" 카드를 이미지로 */
+function wrapText(c,t,x,y,maxW,lh){const words=String(t).split("");let line="",yy=y;for(const ch of words){const test=line+ch;if(c.measureText(test).width>maxW&&line){c.fillText(line,x,yy);line=ch;yy+=lh}else line=test}if(line)c.fillText(line,x,yy);return yy+lh}
+function dlCard(r,me){const W=720,H=1000,cv=document.createElement("canvas");cv.width=W;cv.height=H;const c=cv.getContext("2d");
+  const g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,"#e8503a");g.addColorStop(1,"#9a2a1e");c.fillStyle=g;c.fillRect(0,0,W,H);
+  c.fillStyle="rgba(255,255,255,.12)";for(let i=0;i<26;i++){c.beginPath();c.arc((i*137)%W,(i*263)%H,8+(i%5)*6,0,7);c.fill()}
+  const F='"Jua", sans-serif';c.textAlign="center";c.textBaseline="middle";c.fillStyle="#fff";
+  c.font="40px "+F;c.fillText("🎁 마니또 카드",W/2,80);c.font="30px "+F;c.fillText(me+"님의 마니또는",W/2,150);
+  c.font="92px "+F;c.fillText(r.target,W/2,250);c.font="26px "+F;c.fillText(r.target+"님을 몰래 챙겨 주세요! 🤫",W/2,330);
+  const box=(y,h,bg,fg)=>{c.fillStyle=bg;c.beginPath();c.roundRect?c.roundRect(50,y,W-100,h,28):c.rect(50,y,W-100,h);c.fill();c.fillStyle=fg};
+  let y=390;box(y,250,"rgba(255,255,255,.95)","#3b2a20");c.font="30px "+F;c.fillText("🎯 미션",W/2,y+45);c.font="34px "+F;
+  wrapText(c,r.mission||"자유롭게 마니또를 해요 — 몰래 응원하고 챙겨 주기",W/2,y+110,W-160,48);
+  y=670;if(r.role){box(y,230,"#fff6d8","#3b2a20");c.font="30px "+F;c.fillText("✨ 추가 역할: "+r.role.name,W/2,y+45);c.font="28px "+F;wrapText(c,r.role.desc,W/2,y+105,W-160,42)}
+  c.fillStyle="rgba(255,255,255,.85)";c.font="22px "+F;c.fillText("치영의 교회 생활 즐기기 · 마니또",W/2,H-40);
+  cv.toBlob(b=>{const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=(me+"_마니또카드.png").replace(/[\\/:*?"<>|]/g,"");document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);toast("카드 이미지를 저장했어요")},"image/png")}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-dl]");if(!b)return;try{const o=JSON.parse(b.getAttribute("data-dl"));dlCard(o.r,o.me)}catch(_){toast("저장하지 못했어요")}});
+function pairsHTML(res){return res.map(r=>`<div class="pair"><div><b>${esc(r.name)}</b>${r.role?`<small>✨ ${esc(r.role.name)} → ${esc(r.role.target)}</small>`:''}</div><div class="ar">🎁➡</div><div><b>${esc(r.target)}</b>${r.mission?`<small>🎯 ${esc(r.mission)}</small>`:''}</div></div>`).join('')}
+
+/* =================== 첫 화면 · 설정 =================== */
+let LOCAL=null;const LK='manito-local';
+try{LOCAL=JSON.parse(localStorage.getItem(LK)||'null')}catch(e){}
+const saveLocal=()=>{try{LOCAL?localStorage.setItem(LK,JSON.stringify(LOCAL)):localStorage.removeItem(LK)}catch(e){}};
+function vHome(){
+  app.innerHTML=`<div class="card center"><div class="big-ico">🎁</div><h1 style="margin:0">마니또</h1><p>몰래 챙겨 주는 비밀 친구! 자기 자신은 절대 뽑히지 않아요.</p>
+   ${LOCAL&&LOCAL.res?`<div class="ann">📱 한 기기 뽑기가 진행 중이에요 (${LOCAL.i}/${LOCAL.res.length}명) <button class="sm" data-a="resume">이어서 하기</button></div>`:''}
+   <div class="tabs2"><button data-a="local">📱 한 기기로 뽑기<span>투표하듯 한 사람씩 나와서 뽑아요</span></button><button data-a="host">📡 초대해서 뽑기<span>QR·링크로 초대, 각자 휴대폰으로 뽑아요</span></button></div>
+   <div class="row" style="justify-content:center;margin-top:12px"><input id="code" placeholder="방 코드 4자리" maxlength="6" style="text-transform:uppercase;width:150px"><button data-a="code">🚪 방에 들어가기</button></div></div>
+  <div class="card"><h2>👥 참가자 <span class="hint">(한 기기로 뽑을 때 · ${SET.names.length}명)</span></h2>
+   <div class="row"><input id="nIn" placeholder="이름 (여러 명은 쉼표·줄바꿈으로 한꺼번에)" style="flex:1;min-width:180px"><button class="ok" data-a="addN">추가</button></div>
+   <div class="row" style="margin:8px 0"><button class="sm" data-a="shuf">🔀 순서 섞기</button><button class="sm" data-a="clrN">모두 지우기</button><span class="hint">▲▼로 뽑는 순서를 바꿔요</span></div>
+   <div class="lst">${SET.names.map((n,i)=>`<div class="lr"><span class="k">${i+1}</span><span class="n">${esc(n)}</span><button data-up="${i}" ${i?'':'disabled'}>▲</button><button data-dn="${i}" ${i<SET.names.length-1?'':'disabled'}>▼</button><button data-rm="${i}">✕</button></div>`).join('')||'<p class="hint">아직 참가자가 없어요. 3명 이상 넣어 주세요.</p>'}</div></div>
+  <div class="card"><h2>✨ 추가 역할 <span class="hint">(선택 · 마니또 말고 한 가지 더)</span></h2>
+   <p class="hint" style="margin-top:0">모두 마니또를 하면서, 몇 명에게는 아래 역할이 하나씩 더 주어져요. 설명의 {t} 자리에 다른 사람 이름이 들어가요.</p>
+   ${SET.roles.map((r,i)=>`<div class="rl"><input data-rn="${i}" value="${esc(r.name)}" placeholder="역할 이름" maxlength="12"><label class="row" style="gap:4px"><input data-rc="${i}" type="number" min="0" max="20" value="${esc(r.n)}" style="width:52px">명</label><button class="sm" data-rx="${i}">✕</button><input class="d" data-rd="${i}" value="${esc(r.desc)}" placeholder="설명 (예: {t}의 마니또를 몰래 도와줘요)" maxlength="80"></div>`).join('')}
+   <div class="chips">${Object.keys(ROLE_PRESET).map(k=>`<button data-rp="${esc(k)}">＋ ${esc(k)}</button>`).join('')}<button data-rp="">＋ 직접 만들기</button></div></div>
+  <div class="card"><h2>🎯 미션 <span class="hint">(선택 · ${SET.missions.length}개)</span></h2>
+   <p class="hint" style="margin-top:0">미션을 넣어 두면 뽑을 때 하나씩 랜덤으로 뽑혀요. 비워 두면 각자 알아서 마니또를 해요.</p>
+   <div class="row"><input id="mIn" placeholder="미션 (예: 응원 쪽지 몰래 전하기)" maxlength="60" style="flex:1;min-width:180px"><button class="ok" data-a="addM">추가</button></div>
+   <div class="lst" style="margin-top:8px">${SET.missions.map((m,i)=>`<div class="lr"><span class="n" style="font-size:16px">🎯 ${esc(m)}</span><button data-mx="${i}">✕</button></div>`).join('')}</div>
+   <div class="chips">${MISSION_PRESET.filter(m=>!SET.missions.includes(m)).map(m=>`<button data-mp="${esc(m)}">＋ ${esc(m)}</button>`).join('')}</div></div>`;
+  bindHome()}
+function addNames(txt){const add=String(txt).split(/[,\n，、]+/).map(x=>clip(x,12)).filter(Boolean);let dup=0;add.forEach(n=>{if(SET.names.includes(n))dup++;else SET.names.push(n)});if(dup)toast('같은 이름 '+dup+'개는 빼고 넣었어요');saveSet();vHome();setTimeout(()=>{const i=$('#nIn');if(i)i.focus()},30)}
+function bindHome(){
+  const nIn=$('#nIn');nIn.onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing)addNames(nIn.value)};nIn.onpaste=e=>{setTimeout(()=>{if(/[,\n]/.test(nIn.value))addNames(nIn.value)},0)};
+  const mIn=$('#mIn');mIn.onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing)$('[data-a=addM]').click()};
+  $$('[data-up]').forEach(b=>b.onclick=()=>{const i=+b.dataset.up;[SET.names[i-1],SET.names[i]]=[SET.names[i],SET.names[i-1]];saveSet();vHome()});
+  $$('[data-dn]').forEach(b=>b.onclick=()=>{const i=+b.dataset.dn;[SET.names[i+1],SET.names[i]]=[SET.names[i],SET.names[i+1]];saveSet();vHome()});
+  $$('[data-rm]').forEach(b=>b.onclick=()=>{SET.names.splice(+b.dataset.rm,1);saveSet();vHome()});
+  $$('[data-rn]').forEach(x=>x.oninput=()=>{SET.roles[+x.dataset.rn].name=x.value;saveSet()});
+  $$('[data-rc]').forEach(x=>x.oninput=()=>{SET.roles[+x.dataset.rc].n=x.value;saveSet()});
+  $$('[data-rd]').forEach(x=>x.oninput=()=>{SET.roles[+x.dataset.rd].desc=x.value;saveSet()});
+  $$('[data-rx]').forEach(b=>b.onclick=()=>{SET.roles.splice(+b.dataset.rx,1);saveSet();vHome()});
+  $$('[data-rp]').forEach(b=>b.onclick=()=>{const k=b.dataset.rp;SET.roles.push({name:k,n:1,desc:k?ROLE_PRESET[k]:''});saveSet();vHome()});
+  $$('[data-mx]').forEach(b=>b.onclick=()=>{SET.missions.splice(+b.dataset.mx,1);saveSet();vHome()});
+  $$('[data-mp]').forEach(b=>b.onclick=()=>{SET.missions.push(b.dataset.mp);saveSet();vHome()});
+  $$('[data-a]').forEach(b=>b.onclick=()=>{const a=b.dataset.a;
+    if(a==='addN')return addNames(nIn.value);
+    if(a==='addM'){const m=clip(mIn.value,60);if(!m)return;SET.missions.push(m);saveSet();vHome();setTimeout(()=>$('#mIn').focus(),30);return}
+    if(a==='shuf'){SET.names=shuffle(SET.names);saveSet();vHome();toast('순서를 섞었어요');return}
+    if(a==='clrN'){if(SET.names.length&&confirm('참가자를 모두 지울까요?')){SET.names=[];saveSet();vHome()}return}
+    if(a==='local'){if(SET.names.length<3){toast('참가자를 3명 이상 넣어 주세요');$('#nIn').focus();return}
+      if(LOCAL&&LOCAL.res&&!confirm('진행 중인 뽑기가 있어요. 새로 시작할까요?'))return;
+      const rq=SET.roles.reduce((a,r)=>a+(+r.n||0),0);if(rq>SET.names.length){toast('추가 역할 인원이 참가자보다 많아요');return}
+      LOCAL={res:makeDraw(SET.names),i:0,missions:SET.missions.filter(x=>x.trim()),roleNames:SET.roles.filter(r=>+r.n>0).map(r=>r.name||'추가 역할')};saveLocal();vLocal();return}
+    if(a==='resume'){vLocal();return}
+    if(a==='host'){vHostSetup();return}
+    if(a==='code'){const c=$('#code').value.toUpperCase().replace(/[^A-Z0-9]/g,'');if(c)location.href='?room='+c;return}})}
+
+/* =================== 📱 한 기기로 뽑기 =================== */
+function vLocal(){const L=LOCAL,n=L.res.length;
+  if(L.i>=n){app.innerHTML=`<div class="card center"><div class="big-ico">🎉</div><h2>모두 뽑았어요!</h2><p>이제 들키지 않게 마니또를 시작해요 🤫</p>
+    <div class="row" style="justify-content:center"><button class="pri" data-a="reveal">🎉 마니또 공개하기</button><button data-a="peek">🔐 한 사람 결과 다시 보기</button></div>
+    <div class="row" style="justify-content:center;margin-top:10px"><button class="sm" data-a="restart">처음부터 다시 뽑기</button><button class="sm" data-a="home">설정으로</button></div></div><div id="extra"></div>`;bindLocal();return}
+  const cur=L.res[L.i];
+  app.innerHTML=`<div class="card center"><div class="hint">${L.i+1} / ${n}번째</div><div class="big-ico wob">🙋</div><h2 style="font-size:30px">${esc(cur.name)}님 차례예요</h2>
+    <p>${esc(cur.name)}님이 나와서 뽑아 주세요.<br><b>다른 사람은 화면을 보지 마세요!</b></p><div id="draw"><button class="pri big-btn" data-a="draw">🎁 마니또 뽑기</button></div></div>
+   <div class="card"><h3 style="margin:0 0 8px">📋 뽑는 순서</h3><div class="lst">${L.res.map((r,i)=>`<div class="lr ${i<L.i?'done':''} ${i===L.i?'cur':''}"><span class="k">${i+1}</span><span class="n">${esc(r.name)}</span><span class="hint">${i<L.i?'✅ 뽑음':i===L.i?'👉 지금':''}</span></div>`).join('')}</div>
+   <div class="row" style="margin-top:10px"><button class="sm" data-a="home">설정으로 (진행은 저장돼요)</button><button class="sm" data-a="restart">처음부터 다시</button></div></div>`;bindLocal()}
+function spinThen(box,me,cands,done){let k=0,t0=performance.now();box.innerHTML='<div class="spin" id="sp"></div>';const sp=$('#sp');
+  const tick=()=>{const el=performance.now()-t0;sp.textContent='🎁 '+cands[k++%cands.length];if(el<1800)setTimeout(tick,60+el/25);else done()};tick()}
+/* 🎁 마니또 → 🎯 미션 → ✨ 추가 역할을 차례로 뽑아요 (결과는 미리 정해져 있어서 자기 자신은 절대 안 나와요) */
+function drawSeq(box,r,names,missions,roleNames,done){const steps=[];
+  steps.push({lab:"🎁 마니또 뽑는 중…",pool:names.filter(x=>x!==r.name),ans:r.target,show:"🎁 마니또: <b>"+esc(r.target)+"</b>"});
+  if(missions.length)steps.push({lab:"🎯 미션 뽑는 중…",pool:missions,ans:r.mission,show:"🎯 미션: <b>"+esc(r.mission||"")+"</b>"});
+  if(roleNames.length){const pool=roleNames.concat(["마니또만 해요"]);steps.push({lab:"✨ 추가 역할 뽑는 중…",pool,ans:r.role?r.role.name:"마니또만 해요",show:"✨ 추가 역할: <b>"+esc(r.role?r.role.name:"없음 (마니또만 해요)")+"</b>"})}
+  const got=[];let si=0;
+  const run=()=>{if(si>=steps.length){setTimeout(done,500);return}const st=steps[si];
+    box.innerHTML=(got.length?'<div class="ann" style="font-size:18px;text-align:left">'+got.join("<br>")+'</div>':'')+'<div class="hint">'+st.lab+'</div><div class="spin" id="sp"></div>';
+    const sp=$("#sp"),pool=shuffle(st.pool);let k=0,t0=performance.now();
+    const tick=()=>{const el=performance.now()-t0;if(el<1500){sp.textContent=pool[k++%pool.length];setTimeout(tick,60+el/22)}else{sp.textContent=st.ans;got.push(st.show);si++;setTimeout(run,650)}};tick()};run()}
+function bindLocal(){$$('[data-a]').forEach(b=>b.onclick=()=>{const a=b.dataset.a,L=LOCAL;
+  if(a==='draw'){const cur=L.res[L.i];drawSeq($('#draw'),cur,L.res.map(r=>r.name),L.missions||[],L.roleNames||[],()=>{
+      $('#draw').innerHTML=cardHTML(cur)+'<p class="hint">꼭 기억해 두세요! (사진 찍어 두면 다른 사람이 볼 수 있어요)</p><button class="ok big-btn" data-a="next">✅ 다 봤어요 · 가리기</button>';bindLocal()});return}
+  if(a==='next'){L.i++;saveLocal();vLocal();window.scrollTo(0,0);return}
+  if(a==='home'){vHome();return}
+  if(a==='restart'){if(!confirm('지금까지 뽑은 결과를 지우고 처음부터 다시 뽑을까요?'))return;LOCAL={res:makeDraw(L.res.map(r=>r.name)),i:0,missions:SET.missions.filter(x=>x.trim()),roleNames:SET.roles.filter(r=>+r.n>0).map(r=>r.name||'추가 역할')};saveLocal();vLocal();return}
+  if(a==='reveal'){if(!confirm('모든 사람의 마니또를 공개할까요?'))return;$('#extra').innerHTML=`<div class="card"><h2>🎉 마니또 공개</h2>${pairsHTML(L.res)}<div class="row" style="justify-content:center;margin-top:8px"><button class="sm" data-a="endAll">끝내고 기록 지우기</button></div></div>`;bindLocal();$('#extra').scrollIntoView({behavior:'smooth'});return}
+  if(a==='endAll'){if(!confirm('뽑기 기록을 지울까요?'))return;LOCAL=null;saveLocal();vHome();return}
+  if(a==='peek'){$('#extra').innerHTML=`<div class="card center"><h3>누구의 결과를 볼까요?</h3><p class="hint">그 사람만 화면을 보게 해 주세요</p><div class="row" style="justify-content:center">${L.res.map((r,i)=>`<button data-pk="${i}">${esc(r.name)}</button>`).join('')}</div><div id="pkBox" style="margin-top:12px"></div></div>`;
+    $$('[data-pk]').forEach(x=>x.onclick=()=>{const r=L.res[+x.dataset.pk];if(!confirm(r.name+'님 본인이 맞나요?'))return;$('#pkBox').innerHTML=cardHTML(r)+'<button class="sm" style="margin-top:8px" id="pkHide">가리기</button>';$('#pkHide').onclick=()=>{$('#pkBox').innerHTML=''}});return}})}
+
+/* =================== 📡 초대해서 뽑기 (방장 기기가 진행) =================== */
+let G=null,isHost=false,MY=null;
+const HK=()=>'manito-host-'+ROOM;
+const saveG=()=>{try{localStorage.setItem(HK(),JSON.stringify(G))}catch(e){}};
+const P=id=>G.players.find(p=>p.id===id);
+function vHostSetup(){app.innerHTML=`<div class="card"><h2>📡 초대해서 뽑기</h2>
+  <label class="row" style="font-size:18px;margin:6px 0"><input type="checkbox" id="join" checked style="width:22px;height:22px"> 나(방장)도 마니또에 참여해요</label>
+  <div class="row"><input id="hName" placeholder="내 이름" maxlength="12" style="flex:1;min-width:160px"><button class="pri" id="mk">방 만들기</button></div>
+  <p class="hint">참여하지 않으면 진행만 해요 (이름은 '진행자'로 보여요). 참가자는 QR이나 링크로 들어와 자기 이름을 적어요.<br>설정해 둔 추가 역할(${SET.roles.length}개)과 미션(${SET.missions.length}개)이 그대로 쓰여요.</p>
+  <button class="sm" id="back">← 처음으로</button></div>`;
+  const nm=$('#hName');$('#join').onchange=()=>{nm.placeholder=$('#join').checked?'내 이름':'진행자 이름 (선택)'};
+  $('#back').onclick=vHome;
+  $('#mk').onclick=()=>{const join=$('#join').checked,n=clip(nm.value,12);if(join&&!n){toast('이름을 적어 주세요');nm.focus();return}newRoom(n||'진행자',join)}}
+function newRoom(name,join){ROOM=Array.from({length:4},()=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[rnd(32)]).join('');MY='host-'+Math.random().toString(36).slice(2,8);
+  G={room:ROOM,phase:'lobby',hostName:name,players:join?[{id:MY,name,host:true}]:[],roles:SET.roles,missions:SET.missions,res:null,order:null,ti:0,revealed:false};
+  history.replaceState(null,'','?host='+ROOM);isHost=true;saveG();hostNet();render()}
+function viewFor(pid){const v={ph:G.phase,room:G.room,hostName:G.hostName,players:G.players.map(p=>({id:p.id,name:p.name})),meId:pid,ti:G.ti,revealed:G.revealed};
+  if(G.order){v.order=G.order.map(id=>(P(id)||{}).name||'?');v.cur=G.order[G.ti]||null;v.curName=v.cur?(P(v.cur)||{}).name:null;v.done=G.ti}
+  if(G.res){const mine=G.res.find(r=>r.id===pid);if(mine&&G.order.indexOf(pid)<G.ti)v.mine=mine;if(mine&&G.order[G.ti]===pid&&G.phase==='draw'){v.myTurn=true;v.pending=mine;v.missions=G.missions.filter(x=>x.trim());v.roleNames=G.roles.filter(r=>+r.n>0).map(r=>r.name||'추가 역할')}if(G.revealed)v.all=G.res}
+  return v}
+const CONNS={};
+function send(id,m){const c=CONNS[id];if(c)try{c.cl.publish(base()+'/c/'+id,JSON.stringify(m),{qos:1})}catch(e){}}
+function broadcast(){G.players.forEach(p=>{if(!p.host)send(p.id,{t:'state',v:viewFor(p.id)})});saveG();render()}
+function hostNet(){BROKERS.forEach(async url=>{const cl=await mqttOpen(url,8000);if(!cl)return;const b=base();
+  cl.subscribe(b+'/h',{qos:1});cl.on('connect',()=>cl.subscribe(b+'/h',{qos:1}));
+  cl.on('message',(tp,buf)=>{let d;try{d=JSON.parse(buf.toString())}catch(_){return}if(!d||!d.from||!d.m)return;const from=String(d.from).replace(/[^a-z0-9-]/gi,'').slice(0,24);CONNS[from]={cl};hostHandle(from,d.m)});
+  const s=$('#netSt');if(s)s.textContent='📡 초대 받는 중'})}
+function hostHandle(from,m){
+  if(m.t==='join'){const name=clip(m.name,12);let p=P(from);
+    if(!p){if(G.phase!=='lobby')return send(from,{t:'err',msg:'이미 뽑기가 시작됐어요'});if(!name)return send(from,{t:'err',msg:'이름을 적어 주세요'});
+      if(G.players.some(x=>x.name===name))return send(from,{t:'err',msg:'같은 이름이 있어요. 다르게 적어 주세요'});if(G.players.length>=60)return send(from,{t:'err',msg:'방이 꽉 찼어요'});
+      p={id:from,name};G.players.push(p)}
+    send(from,{t:'state',v:viewFor(from)});broadcast();return}
+  const p=P(from);if(!p)return send(from,{t:'err',msg:'방에 다시 들어와 주세요'});
+  if(m.t==='ping')return send(from,{t:'state',v:viewFor(from)});act(p,m)}
+function act(p,m){if(m.t==='drawn'&&G.phase==='draw'&&G.order[G.ti]===p.id){G.ti++;if(G.ti>=G.order.length)G.phase='done';broadcast()}}
+function startOnline(){if(G.players.length<3){toast('3명 이상 들어와야 해요');return}const rq=G.roles.reduce((a,r)=>a+(+r.n||0),0);if(rq>G.players.length){toast('추가 역할 인원이 참가자보다 많아요');return}
+  const saved=SET;SET={...SET,roles:G.roles,missions:G.missions};const names=G.players.map(p=>p.name),res=makeDraw(names);SET=saved;
+  res.forEach((r,i)=>r.id=G.players[i].id);G.res=res;G.order=G.players.map(p=>p.id);G.ti=0;G.phase='draw';G.revealed=false;broadcast()}
+
+/* =================== 화면 (방장·참가자 공통) =================== */
+let LV=null;
+function render(){if(isHost&&G){LV=viewFor(MY);vRoom(true);return}if(CL.joined&&LV){vRoom(false);return}if(ROOM&&!HOSTING)return vJoin();vHome()}
+function vJoin(){app.innerHTML=`<div class="card center"><div class="big-ico">🎁</div><h2>마니또 방 ${esc(ROOM)}</h2><p>내 이름을 적고 들어와요</p><input id="jName" placeholder="내 이름" maxlength="12" style="font-size:22px;text-align:center;width:100%;max-width:300px" value="${esc(CL.name||'')}"><div class="row" style="justify-content:center;margin-top:10px"><button class="pri big" id="jGo">들어가기</button></div><p class="hint" id="jSt"></p></div>`;
+  $('#jGo').onclick=()=>{const n=clip($('#jName').value,12);if(!n){toast('이름을 적어 주세요');return}joinRoom(n)};$('#jName').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing)$('#jGo').click()}}
+function vRoom(host){const v=LV;let h='';
+  if(v.ph==='lobby'){const url=location.origin+location.pathname+'?room='+v.room;let qr='';try{const q=qrcode(0,'M');q.addData(url);q.make();qr=q.createSvgTag(5,2)}catch(_){}
+    h+=`<div class="card"><div class="row"><h2 style="margin:0">🙋 대기실 · 방 ${esc(v.room)}</h2><span class="sp"></span>${host?'<span class="badge" id="netSt">연결 준비 중…</span>':''}</div>
+     ${host?`<div class="row" style="align-items:flex-start;margin-top:8px"><div class="qr">${qr}</div><div style="flex:1;min-width:200px"><p style="margin:0">QR을 찍거나 링크로 들어와 자기 이름을 적어요.</p><input readonly value="${esc(url)}" style="width:100%;font-size:13px;margin-top:6px" onclick="this.select()"><div class="row" style="margin-top:6px"><button class="sm" data-a="copy">🔗 링크 복사</button></div></div></div>`:`<p>진행자 ${esc(v.hostName)}님이 시작하기를 기다리고 있어요…</p>`}
+     <h3 style="margin:12px 0 6px">참여하는 사람 ${v.players.length}명 ${host?'<span class="hint">(▲▼로 뽑는 순서)</span>':''}</h3>
+     <div class="lst">${v.players.map((p,i)=>`<div class="lr ${p.id===v.meId?'cur':''}"><span class="k">${i+1}</span><span class="n">${esc(p.name)}${p.id===v.meId?' (나)':''}</span>${host?`<button data-up="${i}" ${i?'':'disabled'}>▲</button><button data-dn="${i}" ${i<v.players.length-1?'':'disabled'}>▼</button>${G.players[i].host?'':`<button data-kick="${p.id}">✕</button>`}`:''}</div>`).join('')||'<p class="hint">아직 아무도 없어요</p>'}</div>
+     ${host?`<div class="row" style="margin-top:10px"><button class="sm" data-a="shuf">🔀 순서 섞기</button></div>
+       <p class="hint">추가 역할: ${G.roles.length?G.roles.map(r=>esc(r.name)+' '+(+r.n||0)+'명').join(', '):'없음'} · 미션: ${G.missions.length?G.missions.length+'개':'없음 (자유롭게)'}</p>
+       <div class="row" style="justify-content:center;margin-top:10px"><button class="pri big" data-a="start" ${v.players.length<3?'disabled':''}>🎁 뽑기 시작</button></div>${v.players.length<3?'<p class="hint center">3명 이상 들어와야 해요</p>':''}`:''}</div>`}
+  else{const me=v.players.find(p=>p.id===v.meId);
+    if(v.ph==='draw'){
+      if(v.myTurn)h+=`<div class="card center"><div class="big-ico wob">🙋</div><h2 style="font-size:28px">${esc(me.name)}님 차례예요!</h2><div id="draw"><button class="pri big-btn" data-a="draw">🎁 마니또 뽑기</button></div></div>`;
+      else if(v.mine)h+=`<div class="card">${cardHTML(v.mine,me.name)}</div>`;
+      else h+=`<div class="card center"><div class="big-ico">⏳</div><h2>${esc(v.curName||'')}님이 뽑는 중이에요</h2><p class="hint">${me?'내 차례가 되면 뽑기 버튼이 나와요':'진행 중이에요'}</p></div>`}
+    if(v.ph==='done'){h+=`<div class="card center"><div class="big-ico">🎉</div><h2>모두 뽑았어요!</h2><p>들키지 않게 마니또를 시작해요 🤫</p></div>`;if(v.mine&&!v.revealed)h+=`<details class="card"><summary class="j" style="cursor:pointer;font-size:18px">🔐 내 마니또 다시 보기</summary><div style="margin-top:10px">${cardHTML(v.mine,me.name)}</div></details>`}
+    if(v.revealed&&v.all)h+=`<div class="card"><h2>🎉 마니또 공개</h2>${pairsHTML(v.all)}</div>`;
+    h+=`<div class="card"><h3 style="margin:0 0 8px">📋 뽑는 순서 (${v.done}/${v.order.length})</h3><div class="lst">${v.order.map((n,i)=>`<div class="lr ${i<v.done?'done':''} ${i===v.done&&v.ph==='draw'?'cur':''}"><span class="k">${i+1}</span><span class="n">${esc(n)}</span><span class="hint">${i<v.done?'✅ 뽑음':i===v.done&&v.ph==='draw'?'👉 지금':''}</span></div>`).join('')}</div>
+      ${host?`<div class="row" style="margin-top:10px">${v.ph==='draw'?'<button class="sm" data-a="skip">⏭ 이 사람 차례 넘기기</button>':''}${v.ph==='done'&&!v.revealed?'<button class="pri" data-a="reveal">🎉 모두에게 마니또 공개</button>':''}<button class="sm" data-a="lobby">대기실로 (다시 뽑기)</button></div>`:''}</div>`}
+  app.innerHTML=h;bindRoom(host)}
+function bindRoom(host){
+  $$('[data-up]').forEach(b=>b.onclick=()=>{const i=+b.dataset.up;[G.players[i-1],G.players[i]]=[G.players[i],G.players[i-1]];broadcast()});
+  $$('[data-dn]').forEach(b=>b.onclick=()=>{const i=+b.dataset.dn;[G.players[i+1],G.players[i]]=[G.players[i],G.players[i+1]];broadcast()});
+  $$('[data-kick]').forEach(b=>b.onclick=()=>{const id=b.dataset.kick;if(!confirm((P(id)||{}).name+'님을 뺄까요?'))return;G.players=G.players.filter(p=>p.id!==id);send(id,{t:'err',msg:'방에서 빠졌어요'});broadcast()});
+  $$('[data-a]').forEach(b=>b.onclick=()=>{const a=b.dataset.a;
+    if(a==='copy'){navigator.clipboard.writeText(location.origin+location.pathname+'?room='+G.room).then(()=>toast('링크를 복사했어요'));return}
+    if(a==='shuf'){G.players=shuffle(G.players);broadcast();toast('순서를 섞었어요');return}
+    if(a==='start')return startOnline();
+    if(a==='skip'){if(!confirm('이 사람 차례를 넘길까요? (나중에 대기실로 돌아가 다시 뽑아야 해요)'))return;G.ti++;if(G.ti>=G.order.length)G.phase='done';broadcast();return}
+    if(a==='reveal'){if(!confirm('모든 사람에게 마니또를 공개할까요?'))return;G.revealed=true;broadcast();return}
+    if(a==='lobby'){if(!confirm('대기실로 돌아가면 지금 뽑은 결과가 사라져요. 괜찮을까요?'))return;G.phase='lobby';G.res=null;G.order=null;G.ti=0;G.revealed=false;broadcast();return}
+    if(a==='draw'){const r=LV.pending;if(!r)return;drawSeq($('#draw'),r,LV.players.map(p=>p.name),LV.missions||[],LV.roleNames||[],()=>{if(isHost){act(P(MY),{t:'drawn'})}else{CL.send({t:'drawn'})}})}})}
+
+/* =================== 참가자 기기 =================== */
+const CL={joined:false,name:'',id:null,cl:null,send(m){if(this.cl)this.cl.publish(base()+'/h',JSON.stringify({from:this.id,m}),{qos:1})}};
+async function joinRoom(name){CL.name=name;try{CL.id=localStorage.getItem('mn-id-'+ROOM)}catch(_){}if(!CL.id){CL.id='p'+Math.random().toString(36).slice(2,10);try{localStorage.setItem('mn-id-'+ROOM,CL.id)}catch(_){}}try{localStorage.setItem('mn-name-'+ROOM,name)}catch(_){}
+  const st=$('#jSt');if(st)st.textContent='방에 연결하는 중…';
+  for(const url of BROKERS){const cl=await mqttOpen(url,7000);if(!cl)continue;let heard=false;
+    cl.subscribe(base()+'/c/'+CL.id,{qos:1});cl.on('connect',()=>{cl.subscribe(base()+'/c/'+CL.id,{qos:1});if(CL.joined)CL.send({t:'join',name:CL.name})});
+    cl.on('message',(tp,buf)=>{let m;try{m=JSON.parse(buf.toString())}catch(_){return}heard=true;
+      if(m.t==='state'){const turnNow=m.v.myTurn&&!(LV&&LV.myTurn);const keep=LV&&LV.myTurn&&m.v.myTurn&&$('#draw')&&!$('[data-a=draw]');LV=m.v;CL.joined=true;if(!keep)render();if(turnNow&&navigator.vibrate)try{navigator.vibrate([120,80,120])}catch(_){}}
+      else if(m.t==='err'){toast(m.msg,3500);const s=$('#jSt');if(s)s.textContent=m.msg}});
+    CL.cl=cl;CL.send({t:'join',name});for(let i=0;i<25&&!heard;i++){await new Promise(r=>setTimeout(r,300));if(i===10)CL.send({t:'join',name})}
+    if(heard){setInterval(()=>CL.send({t:'ping'}),15000);return}try{cl.end(true)}catch(_){}CL.cl=null}
+  const s=$('#jSt');if(s)s.textContent='방에 연결하지 못했어요. 방 코드와 진행자 화면이 켜져 있는지 확인해 주세요'}
+
+if(HOSTING&&ROOM){try{G=JSON.parse(localStorage.getItem(HK())||'null')}catch(_){}if(G){isHost=true;MY=(G.players.find(p=>p.host)||{}).id||('host-x');hostNet()}else{history.replaceState(null,'','./');ROOM=''}}
+else if(ROOM){let n='';try{n=localStorage.getItem('mn-name-'+ROOM)||''}catch(_){}if(n)joinRoom(n)}
+render();
+window.__manito={G:()=>G,act:(id,m)=>{const p=P(id);if(p)act(p,m)},addBot:n=>{const id='bot'+G.players.length;G.players.push({id,name:n});broadcast();return id},makeDraw,SET:()=>SET};
+})();
+</script>
+<script src="../assets/scene.js?v=20261116d"></script>
+<script src="../assets/home.js?v=20261118"></script>
+</body></html>
