@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://js.tosspayments.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' data: blob: https://api.github.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://api.open-meteo.com https://api.met.no https://wttr.in https://api.mymemory.translated.net https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.doubleclick.net https://www.google.com https://*.tosspayments.com https://0.peerjs.com wss://0.peerjs.com wss://broker.emqx.io:8084 wss://broker.hivemq.com:8884 https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self' blob:; frame-src 'self' https://www.bskorea.or.kr https://*.tosspayments.com; object-src 'none'; base-uri 'self'; form-action 'self' https://*.tosspayments.com">
+<meta name="referrer" content="strict-origin-when-cross-origin"><script async src="https://www.googletagmanager.com/gtag/js?id=G-0WTWY3TPES"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-0WTWY3TPES");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>선교티 만들기 | 치영의 교회 생활 즐기기 · 단체티 시안·사이즈 주문표</title>
+<meta name="description" content="단기선교 단체티(선교티) 시안을 앞·뒤로 만들고, 팀원 사이즈를 모아 주문표를 만들어요. 이미지로 저장하고 카톡으로 보내요.">
+<link rel="canonical" href="https://zidane7-creator.github.io/nanum-boardgame/mtee/">
+<meta property="og:title" content="선교티 만들기 — 치영의 교회 생활 즐기기">
+<meta property="og:description" content="선교티 시안과 사이즈 주문표를 한 번에">
+<meta property="og:image" content="https://zidane7-creator.github.io/nanum-boardgame/assets/og.jpg">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👕</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Black+Han+Sans&family=Do+Hyeon&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+<script src="../assets/jua.js"></script>
+<style>
+:root{--ink:#3b2a20;--cream:#fffaf0;--line:#e3d6c2;--accent:#e8503a;--muted:#7a6a5c}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;color:var(--ink);background:#f7f1e6;font:15px/1.5 "Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif}
+h1,h2,h3,.j{font-family:Jua,sans-serif;font-weight:normal}
+.top{display:flex;align-items:center;gap:10px;padding:10px 16px;background:#fffaf0;border-bottom:2px solid var(--ink);font-family:Jua,sans-serif;font-size:19px}
+.top a{color:inherit;text-decoration:none;font-size:15px;border:1.5px solid var(--ink);border-radius:10px;padding:2px 9px;background:#fff}
+.wrap{max-width:1100px;margin:0 auto;padding:14px 16px 90px}
+.card{background:#fff;border:2.5px solid var(--ink);border-radius:18px;padding:14px;margin-bottom:12px}
+.card h2{margin:0 0 8px;font-size:21px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,420px);gap:12px;align-items:start}
+@media (max-width:820px){.grid{grid-template-columns:1fr}}
+button,.btn{font:inherit;color:inherit;border:1.5px solid var(--ink);background:var(--cream);border-radius:10px;padding:5px 11px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+button.pri{background:var(--accent);color:#fff;border-color:#b5361f}
+button.on{background:#ffe08a}
+button.sm{padding:2px 8px;font-size:13px}
+input,select,textarea{font:inherit;color:inherit;border:1.5px solid #cdbda6;border-radius:8px;padding:4px 7px;background:#fff;max-width:100%}
+textarea{width:100%;resize:vertical}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.fld{display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--muted)}
+.fld input,.fld select,.fld textarea{color:var(--ink);font-size:15px}
+.hint{color:var(--muted);font-size:13px}
+.sw{width:30px;height:30px;border-radius:50%;border:2px solid #0003;cursor:pointer;padding:0}
+.sw.on{outline:3px solid var(--ink);outline-offset:2px}
+#cv{width:100%;height:auto;background:#f3ede2;border-radius:14px;display:block}
+.lay{border:1.5px dashed var(--line);border-radius:12px;padding:8px;margin-top:8px}
+table.t{border-collapse:collapse;width:100%}
+table.t th,table.t td{border-bottom:1px solid var(--line);padding:4px 6px;text-align:left}
+.tot{display:flex;flex-wrap:wrap;gap:6px}
+.tot span{background:#fff2d6;border:1.5px solid var(--ink);border-radius:10px;padding:3px 9px;font-family:Jua,sans-serif}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:9px 16px;border-radius:14px;opacity:0;transition:.25s;z-index:200;pointer-events:none}
+.toast.show{opacity:1}
+</style>
+</head><body>
+<div class="top"><a href="../">← 목장</a><span>👕 선교티 만들기</span><span style="flex:1"></span><a id="backM" href="../mission/" hidden>🌏 선교 준비 패키지로</a></div>
+<div class="wrap">
+ <div class="grid">
+  <div class="card"><div class="row"><h2 style="margin:0">👕 시안</h2><span style="flex:1"></span><button id="sideF" class="on">앞면</button><button id="sideB">뒷면</button><button class="pri" id="savePng">📥 이미지 저장 (앞·뒤)</button></div>
+   <canvas id="cv" width="900" height="900" style="margin-top:8px"></canvas>
+   <p class="hint">실제 인쇄용 파일이 아니라 팀원과 나눌 시안이에요. 업체에는 이미지와 함께 로고 원본 파일을 보내 주세요.</p></div>
+  <div>
+   <div class="card"><h2>🎨 티셔츠</h2><div class="row" id="colors"></div>
+    <div class="row" style="margin-top:8px"><label class="fld">글자 기본 색<input type="color" id="ink"></label><label class="fld">글씨체<select id="font"><option value="Black Han Sans">굵은 고딕 (검은고딕)</option><option value="Jua">둥근 글씨 (주아)</option><option value="Do Hyeon">깔끔한 글씨 (도현)</option><option value="Nanum Pen Script">손글씨 (나눔펜)</option></select></label></div></div>
+   <div class="card"><h2 id="sideTitle">✏️ 앞면 글자</h2><div id="layers"></div><div class="row" style="margin-top:8px"><button id="addLayer">+ 글줄 추가</button><button id="addImg">🖼️ 로고·그림 넣기</button><button id="rmImg" hidden>그림 빼기</button><input type="file" id="imgUp" accept="image/*" hidden></div>
+    <div id="imgCtl" class="lay" hidden><div class="row"><label class="fld">그림 크기<input type="range" id="imgS" min="10" max="90"></label><label class="fld">위아래<input type="range" id="imgY" min="5" max="95"></label></div><p class="hint" style="margin:0">그림은 이 기기에만 저장돼요.</p></div>
+    <div id="backTools" class="lay" hidden><div class="row"><button id="namesIn">🙋 팀원 이름 뒷면에 넣기</button><span class="hint" id="namesHint"></span></div></div></div>
+  </div>
+ </div>
+ <div class="card"><div class="row"><h2 style="margin:0">📏 사이즈 주문표</h2><span style="flex:1"></span><button id="loadM" hidden>🌏 팀원 명부 불러오기</button><button id="addP">+ 사람</button><button id="copyO">📋 카톡용 복사</button><button id="csvO">⬇️ CSV</button></div>
+  <div class="row" style="margin-top:8px"><label class="fld">한 장 가격 (원)<input type="number" id="price" style="width:120px" inputmode="numeric"></label><span class="tot" id="tot"></span></div>
+  <div style="overflow-x:auto;margin-top:8px"><table class="t" id="ptbl"></table></div>
+  <p class="hint">사이즈를 고르면 아래 합계가 저절로 맞춰져요. 적은 내용은 이 기기에 저장돼요.</p></div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+(function(){"use strict";
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let tt;const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2400)};
+const MID=new URLSearchParams(location.search).get('m')||'',KEY='mtee-v1'+(MID?':'+MID:'');
+const SIZES=['아동 S','아동 M','아동 L','XS','S','M','L','XL','2XL','3XL'];
+const COLORS=[['#ffffff','흰색'],['#1f2a44','네이비'],['#2b2b2b','검정'],['#d9d4c7','크림'],['#e8503a','빨강'],['#f5b82e','노랑'],['#3f9a55','초록'],['#6cb4e4','하늘'],['#c8507a','분홍'],['#7a4fb0','보라']];
+let S={shirt:'#ffffff',ink:'#1f2a44',font:'Black Han Sans',side:'f',f:[{t:'2027',s:7,y:25,c:''},{t:'MISSION',s:14,y:36,c:''},{t:'가서 모든 족속으로 제자를 삼아',s:4,y:47,c:''}],b:[{t:'우리 교회 청년부',s:5,y:22,c:''},{t:'마태복음 28:19',s:4,y:30,c:''}],names:false,people:[],price:''};
+try{const o=JSON.parse(localStorage.getItem(KEY)||'null');if(o)S=Object.assign(S,o)}catch(_){}
+let IMG={f:null,b:null};const save=()=>{try{const c=Object.assign({},S);localStorage.setItem(KEY,JSON.stringify(c))}catch(_){}};
+/* 그림은 용량이 커서 IndexedDB에 */
+const idb=n=>new Promise((res,rej)=>{const r=indexedDB.open('mtee',1);r.onupgradeneeded=()=>r.result.createObjectStore('img');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+async function imgPut(side,blob){const d=await idb();await new Promise(r=>{const t=d.transaction('img','readwrite');if(blob)t.objectStore('img').put(blob,KEY+':'+side);else t.objectStore('img').delete(KEY+':'+side);t.oncomplete=r});d.close()}
+async function imgLoad(){try{const d=await idb();for(const side of ['f','b']){const b=await new Promise(r=>{const q=d.transaction('img').objectStore('img').get(KEY+':'+side);q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)});if(b){const im=new Image();im.src=URL.createObjectURL(b);await im.decode().catch(()=>{});IMG[side]=im}}d.close()}catch(_){}}
+/* ---------- 티셔츠 그리기 ---------- */
+const cv=$('#cv'),cx=cv.getContext('2d'),W=900,H=900;
+function shirtPath(){const p=new Path2D();p.moveTo(330,90);p.quadraticCurveTo(450,150,570,90);p.lineTo(700,140);p.lineTo(850,300);p.lineTo(745,385);p.lineTo(680,320);p.lineTo(680,830);p.quadraticCurveTo(450,850,220,830);p.lineTo(220,320);p.lineTo(155,385);p.lineTo(50,300);p.lineTo(200,140);p.closePath();return p}
+const SP=shirtPath();
+function shade(hex,k){const n=parseInt(hex.slice(1),16),r=n>>16,g=n>>8&255,b=n&255,f=x=>Math.max(0,Math.min(255,Math.round(x*k)));return `rgb(${f(r)},${f(g)},${f(b)})`}
+function draw(side,ctx){ctx=ctx||cx;side=side||S.side;ctx.clearRect(0,0,W,H);ctx.fillStyle='#f3ede2';ctx.fillRect(0,0,W,H);
+  ctx.save();ctx.shadowColor='rgba(0,0,0,.18)';ctx.shadowBlur=24;ctx.shadowOffsetY=8;ctx.fillStyle=S.shirt;ctx.fill(SP);ctx.restore();
+  ctx.save();ctx.clip(SP);const g=ctx.createLinearGradient(0,0,W,0);g.addColorStop(0,'rgba(0,0,0,.07)');g.addColorStop(.25,'rgba(0,0,0,0)');g.addColorStop(.75,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.08)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);ctx.restore();
+  ctx.lineWidth=4;ctx.strokeStyle=shade(S.shirt,.78);ctx.stroke(SP);
+  /* 목 */ctx.beginPath();if(side==='f'){ctx.moveTo(330,90);ctx.quadraticCurveTo(450,190,570,90)}else{ctx.moveTo(330,90);ctx.quadraticCurveTo(450,125,570,90)}ctx.lineWidth=14;ctx.strokeStyle=shade(S.shirt,.85);ctx.stroke();
+  ctx.lineWidth=3;ctx.strokeStyle=shade(S.shirt,.72);ctx.beginPath();ctx.moveTo(200,140);ctx.lineTo(220,320);ctx.moveTo(700,140);ctx.lineTo(680,320);ctx.stroke();
+  /* 인쇄 영역 */const ax=270,aw=360;
+  const im=IMG[side],sc=side==='f'?S.fImg:S.bImg;if(im&&sc){const w=aw*sc.s/100*1.6,h=w*im.height/im.width;ctx.drawImage(im,W/2-w/2,H*sc.y/100-h/2,w,h)}
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  (S[side]||[]).forEach(l=>{if(!String(l.t||'').trim())return;let fs=l.s*9;ctx.font=`${fs}px "${S.font}", Jua, sans-serif`;const mw=ctx.measureText(l.t).width;if(mw>aw*1.15){fs=fs*aw*1.15/mw;ctx.font=`${fs}px "${S.font}", Jua, sans-serif`}ctx.fillStyle=l.c||S.ink;ctx.fillText(l.t,W/2,H*l.y/100)});
+  if(side==='b'&&S.names){const N=S.people.map(p=>p.name).filter(Boolean);if(N.length){const top=Math.max(...(S.b||[]).map(l=>l.y),20)/100*H+50,cols=N.length>24?4:N.length>12?3:2,rows=Math.ceil(N.length/cols),lh=Math.min(36,(760-top)/rows);ctx.font=`${Math.min(30,lh*.8)}px "${S.font}", Jua, sans-serif`;ctx.fillStyle=S.ink;
+    N.forEach((n,i)=>{const c=i%cols,r=Math.floor(i/cols);ctx.fillText(n,ax+aw*(c+.5)/cols,top+r*lh)})}}
+  ctx.font='20px Jua, sans-serif';ctx.fillStyle='rgba(59,42,32,.45)';ctx.fillText(side==='f'?'앞면':'뒷면',W/2,875)}
+/* ---------- 편집 칸 ---------- */
+function ui(){$('#colors').innerHTML=COLORS.map(([c,n])=>`<button class="sw ${S.shirt===c?'on':''}" data-c="${c}" title="${n}" style="background:${c}"></button>`).join('')+`<label class="fld" style="margin-left:6px">다른 색<input type="color" id="shirtC" value="${S.shirt}"></label>`;
+  $('#ink').value=S.ink;$('#font').value=S.font;$('#sideF').classList.toggle('on',S.side==='f');$('#sideB').classList.toggle('on',S.side==='b');$('#sideTitle').textContent=S.side==='f'?'✏️ 앞면 글자':'✏️ 뒷면 글자';
+  $('#layers').innerHTML=(S[S.side]||[]).map((l,i)=>`<div class="lay"><div class="row"><input data-i="${i}" data-k="t" value="${esc(l.t)}" placeholder="글자" style="flex:1;min-width:150px"><input type="color" data-i="${i}" data-k="c" value="${l.c||S.ink}" title="이 줄 색"><button class="sm" data-rm="${i}" title="이 줄 빼기">🗑</button></div><div class="row"><label class="fld">크기<input type="range" min="2" max="20" data-i="${i}" data-k="s" value="${l.s}"></label><label class="fld">위아래<input type="range" min="10" max="90" data-i="${i}" data-k="y" value="${l.y}"></label></div></div>`).join('');
+  const sc=S.side==='f'?S.fImg:S.bImg;$('#imgCtl').hidden=!(IMG[S.side]&&sc);$('#rmImg').hidden=!IMG[S.side];if(sc){$('#imgS').value=sc.s;$('#imgY').value=sc.y}
+  $('#backTools').hidden=S.side!=='b';$('#namesIn').textContent=S.names?'🙋 뒷면 이름 빼기':'🙋 팀원 이름 뒷면에 넣기';$('#namesHint').textContent=`사이즈 주문표의 ${S.people.filter(p=>p.name).length}명`;
+  table();draw()}
+function table(){const P=S.people;$('#ptbl').innerHTML=`<tr><th>#</th><th>이름</th><th>사이즈</th><th>수량</th><th>메모</th><th></th></tr>`+(P.length?P.map((p,i)=>`<tr><td class="hint">${i+1}</td><td><input data-p="${i}" data-pk="name" value="${esc(p.name||'')}" style="width:110px"></td><td><select data-p="${i}" data-pk="size"><option value="">—</option>${SIZES.map(z=>`<option${p.size===z?' selected':''}>${z}</option>`).join('')}</select></td><td><input type="number" min="1" data-p="${i}" data-pk="n" value="${p.n||1}" style="width:60px"></td><td><input data-p="${i}" data-pk="memo" value="${esc(p.memo||'')}" placeholder="예) 여유분"></td><td><button class="sm" data-prm="${i}">🗑</button></td></tr>`).join(''):'<tr><td colspan="6" class="hint">‘+ 사람’으로 적거나 선교 준비 패키지의 팀원 명부를 불러와요</td></tr>');tot()}
+function tot(){const c={};let n=0;S.people.forEach(p=>{if(!p.size)return;const k=+p.n||1;c[p.size]=(c[p.size]||0)+k;n+=k});const none=S.people.filter(p=>!p.size).length;
+  $('#tot').innerHTML=SIZES.filter(z=>c[z]).map(z=>`<span>${z} ${c[z]}</span>`).join('')+`<span style="background:#e6f6df">합계 ${n}장</span>${S.price?`<span>${(n*+S.price).toLocaleString('ko-KR')}원</span>`:''}${none?`<span style="background:#fde3dd">사이즈 미정 ${none}명</span>`:''}`;$('#price').value=S.price||''}
+function orderText(){const c={};let n=0;S.people.forEach(p=>{if(p.size){c[p.size]=(c[p.size]||0)+(+p.n||1);n+=+p.n||1}});return `👕 선교티 주문표\n`+SIZES.filter(z=>c[z]).map(z=>`${z}: ${c[z]}장`).join('\n')+`\n합계 ${n}장${S.price?` · ${(n*+S.price).toLocaleString('ko-KR')}원`:''}\n\n`+S.people.map(p=>`${p.name||'(이름)'} ${p.size||'미정'}${(+p.n||1)>1?' ×'+p.n:''}${p.memo?' ('+p.memo+')':''}`).join('\n')}
+/* ---------- 이벤트 ---------- */
+document.addEventListener('click',e=>{const t=e.target;
+  if(t.dataset.c&&t.classList.contains('sw')){S.shirt=t.dataset.c;save();ui();return}
+  if(t.dataset.rm!=null){S[S.side].splice(+t.dataset.rm,1);save();ui();return}
+  if(t.dataset.prm!=null){S.people.splice(+t.dataset.prm,1);save();ui();return}});
+document.addEventListener('input',e=>{const t=e.target;
+  if(t.dataset.i!=null){const l=S[S.side][+t.dataset.i];l[t.dataset.k]=t.type==='range'?+t.value:t.value;save();draw();return}
+  if(t.dataset.p!=null){S.people[+t.dataset.p][t.dataset.pk]=t.value;save();tot();if(S.names)draw();return}
+  if(t.id==='shirtC'){S.shirt=t.value;save();draw();return}
+  if(t.id==='ink'){S.ink=t.value;save();draw();return}
+  if(t.id==='price'){S.price=t.value;save();tot();return}
+  if(t.id==='imgS'||t.id==='imgY'){const sc=S.side==='f'?S.fImg:S.bImg;sc[t.id==='imgS'?'s':'y']=+t.value;save();draw()}});
+document.addEventListener('change',e=>{const t=e.target;if(t.id==='font'){S.font=t.value;save();(document.fonts?document.fonts.load(`40px "${S.font}"`):Promise.resolve()).then(()=>draw(),()=>draw())}if(t.dataset.p!=null&&t.dataset.pk==='size')tot()});
+$('#sideF').onclick=()=>{S.side='f';save();ui()};$('#sideB').onclick=()=>{S.side='b';save();ui()};
+$('#addLayer').onclick=()=>{S[S.side].push({t:'',s:5,y:Math.min(85,(S[S.side].slice(-1)[0]||{y:20}).y+10),c:''});save();ui();const L=document.querySelectorAll('#layers [data-k=t]');L[L.length-1].focus()};
+$('#addImg').onclick=()=>{$('#imgUp').value='';$('#imgUp').click()};
+$('#imgUp').onchange=async e=>{const f=e.target.files[0];if(!f)return;const im=new Image();im.src=URL.createObjectURL(f);try{await im.decode()}catch(_){toast('그림을 읽지 못했어요');return}IMG[S.side]=im;S[S.side==='f'?'fImg':'bImg']={s:40,y:S.side==='f'?62:16};await imgPut(S.side,f);save();ui()};
+$('#rmImg').onclick=async()=>{IMG[S.side]=null;delete S[S.side==='f'?'fImg':'bImg'];await imgPut(S.side,null);save();ui()};
+$('#namesIn').onclick=()=>{if(!S.names&&!S.people.some(p=>p.name)){toast('사이즈 주문표에 이름을 먼저 적거나 불러와 주세요');return}S.names=!S.names;save();ui()};
+$('#addP').onclick=()=>{S.people.push({name:'',size:'',n:1});save();ui();const L=document.querySelectorAll('[data-pk=name]');L[L.length-1].focus()};
+$('#copyO').onclick=async()=>{try{await navigator.clipboard.writeText(orderText());toast('📋 복사했어요. 카톡에 붙여넣으세요')}catch(_){prompt('복사해 주세요',orderText())}};
+$('#csvO').onclick=()=>{const q=v=>{v=String(v??'');return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};const rows=[['이름','사이즈','수량','메모'],...S.people.map(p=>[p.name,p.size,p.n||1,p.memo||''])];dl(new Blob(['﻿'+rows.map(r=>r.map(q).join(',')).join('\r\n')],{type:'text/csv'}),'선교티_주문표.csv')};
+function dl(b,n){const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=n;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)}
+$('#savePng').onclick=()=>{const c=document.createElement('canvas');c.width=W*2+40;c.height=H;const x=c.getContext('2d');const o=document.createElement('canvas');o.width=W;o.height=H;const ox=o.getContext('2d');
+  draw('f',ox);x.drawImage(o,0,0);draw('b',ox);x.fillStyle='#f3ede2';x.fillRect(W,0,40,H);x.drawImage(o,W+40,0);draw();c.toBlob(b=>{dl(b,'선교티_시안.png');toast('📥 앞·뒤 시안을 저장했어요')},'image/png')};
+/* 🌏 선교 준비 패키지에서 왔으면 그 선교의 팀원 명부를 불러올 수 있어요 */
+async function mission(){if(!MID)return null;try{const d=await new Promise((res,rej)=>{const r=indexedDB.open('mission-pack');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});if(!d.objectStoreNames.contains('camps')){d.close();return null}
+  const m=await new Promise(r=>{const q=d.transaction('camps').objectStore('camps').get(MID);q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)});d.close();return m}catch(_){return null}}
+$('#loadM').onclick=async()=>{const m=await mission();if(!m){toast('선교를 찾지 못했어요');return}let add=0;(m.people||[]).forEach(p=>{if(p.name&&!S.people.some(x=>x.name===p.name)){S.people.push({name:p.name,size:'',n:1});add++}});save();ui();toast(add?`🙋 ${add}명을 불러왔어요`:'새로 불러올 사람이 없어요')};
+(async()=>{const m=await mission();if(m){$('#loadM').hidden=false;$('#backM').hidden=false;$('#backM').href='../mission/?c='+encodeURIComponent(MID);document.title=m.name+' 선교티 | 치영의 교회 생활 즐기기';if(!S.people.length&&(m.people||[]).length){S.people=(m.people||[]).filter(p=>p.name).map(p=>({name:p.name,size:'',n:1}));if(m.name&&S.b[0]&&S.b[0].t==='우리 교회 청년부')S.b[0].t=m.name;save()}}
+  await imgLoad();ui();if(document.fonts)Promise.all(['Black Han Sans','Jua','Do Hyeon','Nanum Pen Script'].map(f=>document.fonts.load(`40px "${f}"`).catch(()=>{}))).then(()=>draw())})();
+window.__mtee={S:()=>S};
+})();
+</script>
+<script src="../assets/scene.js?v=20261116d"></script><script src="../assets/home.js?v=20261118"></script>
+</body></html>

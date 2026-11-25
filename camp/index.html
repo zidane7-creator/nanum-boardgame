@@ -10,7 +10,7 @@
 <meta property="og:image" content="https://zidane7-creator.github.io/nanum-boardgame/assets/og.jpg">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⛺</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
-<script src="../assets/share.js?v=20261125"></script>
+<script src="../assets/share.js?v=20261125b"></script>
 <script src="../assets/jua.js"></script>
 <style>
 :root{--ink:#3b2a20;--cream:#fffaf0;--paper:#fff;--line:#e3d6c2;--accent:#e8503a;--gold:#f5b82e;--green:#3f9a55;--blue:#2f6fb0;--pink:#c8507a;--muted:#7a6a5c;--soft:#f6efe2}
@@ -1314,9 +1314,11 @@ $('#rcpUp').onchange=e=>{const f=e.target.files[0];if(f){SUB.rcpFile=f;const n=$
   if(SHID){app.innerHTML='<div class="card" style="text-align:center;font-size:20px;padding:30px">🔗 함께 쓰는 수련회에 들어가는 중…</div>';
     try{const all=(await idb.all('camps'))||[],ex=all.find(c=>c.shareId===SHID);if(ex){location.replace('?c='+ex.id);return}
       if(!window.SHARE||!SHARE.enabled())throw new Error('함께 쓰기가 아직 준비되지 않았어요');
-      const sp=await SHARE.space(SHID),snap=await sp.doc('camp/main').get();
-      if(!snap.exists){app.innerHTML='<div class="card" style="text-align:center;font-size:20px;padding:30px">😢 링크가 잘못됐거나 공유가 끝났어요<br><a href="./">수련회 목록으로</a></div>';return}
-      const d=snap.data(),c={};for(const k in d){if(k[0]!=='_')try{c[k]=JSON.parse(d[k])}catch(_){}}c.shareId=SHID;c.id=uid();c.created=c.created||Date.now();
+      const J=await SHARE.join(SHID,'camp/main');
+      if(J&&J.cancel){app.innerHTML='<div class="card" style="text-align:center;font-size:20px;padding:30px">🔒 비밀번호를 적어야 들어갈 수 있어요<br><a href="">다시 시도</a> · <a href="./">목록으로</a></div>';return}
+      const snap=J&&J.snap;
+      if(!snap){app.innerHTML='<div class="card" style="text-align:center;font-size:20px;padding:30px">😢 링크가 잘못됐거나 공유가 끝났어요<br><a href="./">수련회 목록으로</a></div>';return}
+      const d=snap.data(),c={};for(const k in d){if(k[0]!=='_')try{c[k]=JSON.parse(d[k])}catch(_){}}c.shareId=SHID;c.shareKey=J.key;c.shareLock=J.locked;c.sharePw=J.pw;c.id=uid();c.created=c.created||Date.now();
       await idb.put('camps',c.id,c);location.replace('?c='+c.id);return}
     catch(e){app.innerHTML='<div class="card" style="text-align:center;font-size:18px;padding:30px">😢 연결하지 못했어요<br><small>'+esc(String(e&&e.message||e))+'</small><br><a href="./">수련회 목록으로</a></div>';return}}
   const cid=new URLSearchParams(location.search).get('c');
@@ -1324,9 +1326,9 @@ $('#rcpUp').onchange=e=>{const f=e.target.files[0];if(f){SUB.rcpFile=f;const n=$
   else CAMPS=(await idb.all('camps'))||[];
   render();if(R&&R.shareId)campSync()})();
 /* 🔗 함께 쓰기: 수련회 기록을 항목(명단·일정·차량·회의록…)별로 나눠 온라인에 저장해서, 서로 다른 탭을 고쳐도 덮어쓰지 않아요 */
-const CS_SKIP=new Set(['id','updated','shareId','created']);let CS=null,csHold=false;
-async function campSync(){try{const sp=await SHARE.space(R.shareId),d=sp.doc('camp/main');CS={d,base:{},pend:new Set(),first:true};
-    d.onSnapshot(s=>{if(!s.exists)return;const data=s.data()||{};let ch=false;
+const CS_SKIP=new Set(['id','updated','shareId','created','shareKey','sharePw','shareLock']);let CS=null,csHold=false;
+async function campSync(){try{const sp=await SHARE.space(R.shareKey||R.shareId),d=sp.doc('camp/main');CS={d,base:{},pend:new Set(),first:true};
+    d.onSnapshot(s=>{if(!s.exists){if(!s.metadata.fromCache){toast('이 함께 쓰기는 끝났거나 새 링크로 옮겨졌어요. 새 링크를 받아 주세요');const el=$('#sync');if(el)el.textContent='⚠️ 함께 쓰기가 끝났어요 · 새 링크를 받아 주세요'}return}const data=s.data()||{};let ch=false;
       for(const k in data){if(k[0]==='_'||CS_SKIP.has(k)||CS.pend.has(k)||CS.base[k]===data[k])continue;CS.base[k]=data[k];
         const cur=JSON.stringify(R[k]===undefined?null:R[k]);if(cur!==data[k]){try{R[k]=JSON.parse(data[k]);ch=true}catch(_){}}}
       const first=CS.first;CS.first=false;if(ch)campApply();if(first)campPush();
@@ -1341,13 +1343,17 @@ function campPush(){if(!CS||CS.first)return;const upd={};let size=0;
   ks.forEach(k=>CS.pend.add(k));upd._t=Date.now();const el=$('#sync');if(el)el.textContent='🔗 함께 저장 중…';
   CS.d.update(upd).then(()=>{ks.forEach(k=>{CS.base[k]=upd[k];CS.pend.delete(k)});const e2=$('#sync');if(e2&&!CS.pend.size)e2.textContent='🔗 함께 저장됨 '+new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})})
     .catch(e=>{ks.forEach(k=>CS.pend.delete(k));toast('온라인에 저장하지 못했어요: '+(e&&e.message||e))})}
-function campShareDialog(){const E=esc;
+function campShareDialog(){const E=esc,H3='<h3 style="margin:0 0 8px;font-size:22px">',PP='<p style="margin:0 0 10px;font-size:15px;line-height:1.5">';
+  const upload=async m=>{const d={_t:Date.now(),_name:R.name};for(const k in R){if(!CS_SKIP.has(k))d[k]=JSON.stringify(R[k]===undefined?null:R[k])}await m.sp.doc('camp/main').set(d);await SHARE.finish(m)};
+  const switchTo=async m=>{R.shareId=m.id;R.shareKey=m.key;R.shareLock=m.locked;R.sharePw=m.pw;await idb.put('camps',R.id,R);location.reload()};
   if(R.shareId){const url=SHARE.link(R.shareId);
-    SHARE.dialog({html:'<h3 style="margin:0 0 8px;font-size:22px">🔗 함께 쓰는 중이에요</h3><p style="margin:0 0 10px;font-size:15px;line-height:1.5">이 링크를 받은 사람은 <b>'+E(R.name)+'</b>의 명단·일정·차량·회의록 등을 함께 보고 고칠 수 있어요. 서로 다른 탭을 고치면 각자 반영되고, 같은 탭을 동시에 고치면 나중에 저장한 쪽이 남아요.</p><input readonly value="'+E(url)+'" style="width:100%;font-size:13px;padding:8px;border:2px solid #cdbda6;border-radius:10px" onclick="this.select()"><p style="font-size:13px;color:#7a6a5c;margin:8px 0 0;line-height:1.5">⚠️ 링크를 아는 사람은 누구나 볼 수 있으니 준비팀 안에서만 나눠 주세요. 첨부한 사진·영수증 파일은 올린 기기에만 저장돼요.</p>',
-      buttons:[['🔗 링크 복사',async()=>{try{await navigator.clipboard.writeText(url);toast('링크를 복사했어요')}catch(e){prompt('복사해 주세요',url)}return true},true],['이 기기에서 함께 쓰기 끄기',async()=>{if(!confirm('이 기기에서는 함께 쓰기를 끄고 지금 내용을 이 기기에만 저장할까요? (다른 사람은 계속 함께 써요)'))return true;delete R.shareId;await idb.put('camps',R.id,R);location.reload()}]]});return}
-  SHARE.dialog({html:'<h3 style="margin:0 0 8px;font-size:22px">🔗 여러 사람과 함께 쓰기</h3><p style="margin:0 0 8px;font-size:15px;line-height:1.6">지금 이 기기에 있는 <b>'+E(R.name)+'</b> 기록을 온라인 저장소에 올리고, 준비팀이 함께 쓸 수 있는 링크를 만들어요.</p><ul style="font-size:14px;line-height:1.6;margin:0;padding-left:18px"><li>링크를 받은 사람은 같은 기록을 실시간으로 보고 고쳐요</li><li>링크를 아는 사람만 들어올 수 있어요</li><li>첨부한 사진·영수증 파일은 올린 기기에만 남아요</li></ul>',
-    buttons:[['함께 쓰기 시작',async w=>{w.querySelector('h3').textContent='⏳ 올리는 중…';const id=SHARE.newId(),sp=await SHARE.space(id),d={_t:Date.now(),_name:R.name};
-      for(const k in R){if(!CS_SKIP.has(k))d[k]=JSON.stringify(R[k]===undefined?null:R[k])}await sp.doc('camp/main').set(d);R.shareId=id;await idb.put('camps',R.id,R);location.reload()},true]]})}
+    SHARE.dialog({html:H3+'🔗 함께 쓰는 중이에요</h3>'+PP+'이 링크'+(R.shareLock?'와 비밀번호':'')+'를 받은 사람은 <b>'+E(R.name)+'</b>의 기록을 함께 보고 고칠 수 있어요. 서로 다른 메뉴를 고치면 각자 반영되고, 같은 메뉴를 동시에 고치면 나중에 저장한 쪽이 남아요.</p><input readonly value="'+E(url)+'" style="width:100%;font-size:13px;padding:8px;border:2px solid #cdbda6;border-radius:10px" onclick="this.select()">'+SHARE.pwInfo(R.sharePw,R.shareLock)+'<p style="font-size:13px;color:#7a6a5c;margin:8px 0 0;line-height:1.5">⚠️ '+(R.shareLock?'링크와 비밀번호를 아는 사람만 들어와요.':'링크를 아는 사람은 누구나 볼 수 있으니 함께 준비하는 사람에게만 나눠 주세요.')+' 첨부한 사진·영수증 파일은 올린 기기에만 저장돼요.</p>',
+      buttons:[['🔗 링크 복사',async()=>{try{await navigator.clipboard.writeText(url);toast('링크를 복사했어요')}catch(e){prompt('복사해 주세요',url)}return true},true],
+        [R.shareLock?'🔒 비밀번호 바꾸기':'🔒 비밀번호 걸기',async()=>{const pw=await SHARE.askPw('새 비밀번호를 정해 주세요. <b>새 링크</b>가 만들어지고 지금 링크는 더 이상 쓸 수 없어요. 함께 쓰는 사람들에게 새 링크와 비밀번호를 다시 보내 주세요.','🔒 '+(R.shareLock?'비밀번호 바꾸기':'비밀번호 걸기'),true);if(pw==null||!pw.trim())return true;
+          const old=R.shareKey||R.shareId,m=await SHARE.make(pw);await upload(m);try{await SHARE.wipe(old,['camp/main'])}catch(_){}toast('새 링크로 옮겼어요');await switchTo(m)}],
+        ['이 기기에서 함께 쓰기 끄기',async()=>{if(!confirm('이 기기에서는 함께 쓰기를 끄고 지금 내용을 이 기기에만 저장할까요? (다른 사람은 계속 함께 써요)'))return true;['shareId','shareKey','shareLock','sharePw'].forEach(k=>delete R[k]);await idb.put('camps',R.id,R);location.reload()}]]});return}
+  SHARE.dialog({html:H3+'🔗 여러 사람과 함께 쓰기</h3><p style="margin:0 0 8px;font-size:15px;line-height:1.6">지금 이 기기에 있는 <b>'+E(R.name)+'</b> 기록을 온라인 저장소에 올리고, 함께 쓸 수 있는 링크를 만들어요.</p><ul style="font-size:14px;line-height:1.6;margin:0;padding-left:18px"><li>링크를 받은 사람은 같은 기록을 실시간으로 보고 고쳐요</li><li>링크를 아는 사람만 들어올 수 있어요</li><li>첨부한 사진·영수증 파일은 올린 기기에만 남아요</li></ul>'+SHARE.pwField(),
+    buttons:[['함께 쓰기 시작',async w=>{const pw=w.querySelector('#__newPw').value;w.querySelector('h3').textContent='⏳ 올리는 중…';const m=await SHARE.make(pw);await upload(m);await switchTo(m)},true]]})}
 })();
 </script>
 <script src="../assets/scene.js?v=20261116d"></script>
