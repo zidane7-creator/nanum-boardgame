@@ -261,14 +261,16 @@ const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(ST))}catch(_){}};
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const dotDate=s=>s.replace(/-/g,'.');
 const canDraw=()=>ST.last!==today();
-function pick(){const tot=Object.values(TW).reduce((a,b)=>a+b,0);let x=rnd()*tot,tier='F';for(const k in TW){if(x<TW[k]){tier=k;break}x-=TW[k]}const L=PEOPLE.filter(p=>p.t===tier);return L[Math.floor(rnd()*L.length)]}
+function pick(){const own=new Set(ST.album.map(a=>a.n));let left=PEOPLE.filter(p=>!own.has(p.n));if(!left.length)left=PEOPLE;
+  for(let k=0;k<500;k++){const tot=Object.values(TW).reduce((a,b)=>a+b,0);let x=rnd()*tot,tier='F';for(const q in TW){if(x<TW[q]){tier=q;break}x-=TW[q]}const L=left.filter(p=>p.t===tier);if(L.length)return L[Math.floor(rnd()*L.length)]}
+  return left[Math.floor(rnd()*left.length)]}
 function updCnt(){const u=new Set(ST.album.map(a=>a.n)).size;$('#cnt').textContent=`모은 인물 ${u} / ${PEOPLE.length}`}
 
 /* ============ 뽑기 화면 ============ */
 const dome=$('#dome');for(let i=0;i<9;i++){const m=document.createElement('div');m.className='mini';m.style.cssText=`left:${8+(i%5)*18}%;top:${30+Math.floor(i/5)*34+(i%2)*8}%;--r:${-25+i*7}deg;background:linear-gradient(160deg,${BG[i]},${shade(BG[i],-.15)});animation-delay:${-i*.4}s`;dome.appendChild(m)}
 let cdT=null;
 function status(){const s=$('#status');clearInterval(cdT);
-  if(canDraw()){s.innerHTML=`<div class="big">오늘의 기회가 1번 있어요! ✨</div><p class="hint">뽑기 버튼을 누르면 성경 인물 포토카드가 나와요.<br>기회는 매일 밤 0시에 새로 생기고, 쌓이지 않아요.</p>`;$('#knob').disabled=false;return}
+  if(canDraw()){s.innerHTML=`<div class="big">오늘의 기회가 1번 있어요! ✨</div><p class="hint">뽑기 버튼을 누르면 성경 인물 포토카드가 나와요. 이미 가진 인물은 나오지 않아요.<br>기회는 매일 밤 0시에 새로 생기고, 쌓이지 않아요.</p>`;$('#knob').disabled=false;return}
   $('#knob').disabled=true;const tick=()=>{const n=new Date(),m=new Date(n);m.setHours(24,0,0,0);const d=Math.max(0,m-n),hh=Math.floor(d/3600000),mm=Math.floor(d/60000)%60,ss=Math.floor(d/1000)%60;
     if(d<=0||canDraw()){status();showToday();return}s.innerHTML=`<div class="big">오늘은 이미 뽑았어요 🎴</div><div class="cd">${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}</div><p class="hint">다음 기회까지 남은 시간 (0시에 새 기회)</p>`};tick();cdT=setInterval(tick,1000)}
 function cardHTML(p,flip){return`<div class="pc${flip?' flip':''} t${p.t}" id="pc"><div class="face back"><b>✦<br>BIBLE<br>PHOTOCARD<br>✦</b></div><div class="face front"><img alt="${esc(p.n)} 포토카드" src="${cardURL(p)}"><div class="shine"></div></div></div>`}
