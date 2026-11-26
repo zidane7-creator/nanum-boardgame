@@ -33,6 +33,22 @@ button:active{transform:translateY(2px);box-shadow:0 1px 0 #b79ce3}button:disabl
 #cap .x{position:absolute;right:12px;top:calc(12px + env(safe-area-inset-top));width:38px;height:38px;border-radius:50%;padding:0;font-size:18px;background:rgba(255,255,255,.75);box-shadow:none;transition:opacity .6s}
 #cap .x.hide{opacity:0}
 body.capon #homeFab,body.capon #siteNav,body.capon #siteGuideBtn{display:none!important}
+
+/* 일람표 */
+.tier{background:#fffaff;border-radius:18px;padding:14px 16px;margin-bottom:12px;box-shadow:0 4px 14px rgba(90,50,150,.12);border:2px solid #ece2f8}
+.tier .th{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.tier .badge{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-family:Jua;font-size:24px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.45);box-shadow:inset 0 0 0 3px rgba(255,255,255,.35),0 2px 6px rgba(0,0,0,.2)}
+.tier h3{margin:0;font-size:20px}
+.tier .pr{margin-left:auto;text-align:right;font-family:Jua;color:var(--accent);line-height:1.25}
+.tier .pr small{display:block;color:#8a7a9a;font-size:13px}
+.names{display:flex;flex-wrap:wrap;gap:6px}
+.names span{background:#f3ecfb;border-radius:10px;padding:3px 10px;font-size:14.5px}
+.names span.got{background:#e3f6dc;color:#2f6a2a;font-weight:bold}
+.names span.got::before{content:"✔ "}
+.lsum{background:#fff;border-radius:16px;padding:12px 16px;margin-bottom:12px;border:2px solid #ece2f8}
+.lsum table{width:100%;border-collapse:collapse;font-size:15px}
+.lsum th,.lsum td{padding:6px 4px;text-align:center;border-bottom:1px solid #f0e8fa}
+.lsum th{font-family:Jua;font-weight:normal;color:#6d5a80}
 #toast{position:fixed;left:50%;bottom:30px;transform:translate(-50%,20px);background:#3d2f4a;color:#fff;padding:10px 18px;border-radius:14px;opacity:0;transition:.25s;z-index:999;pointer-events:none;font-family:Jua}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 /* 뽑기 기계 */
@@ -108,7 +124,7 @@ body.capon #homeFab,body.capon #siteNav,body.capon #siteGuideBtn{display:none!im
 <body>
 <div class="wrap">
   <div class="top"><h1>📸 성경 인물 포토카드</h1><span class="sp"></span><span class="hint" id="cnt"></span></div>
-  <div class="tabs"><button data-tab="draw" class="on">🎰 뽑기</button><button data-tab="album">📒 앨범</button></div>
+  <div class="tabs"><button data-tab="draw" class="on">🎰 뽑기</button><button data-tab="album">📒 앨범</button><button data-tab="list">📋 일람표</button></div>
   <section id="tDraw">
     <div class="stage">
       <div>
@@ -122,6 +138,7 @@ body.capon #homeFab,body.capon #siteNav,body.capon #siteGuideBtn{display:none!im
     </div>
   </section>
   <section id="tAlbum" hidden></section>
+  <section id="tList" hidden></section>
 </div>
 <div id="toast"></div>
 <script src="people.js"></script>
@@ -317,7 +334,17 @@ function renderAlbum(anim){const A=ST.album,el2=$('#tAlbum');const u=new Set(A.m
     <p class="hint" style="text-align:center">카드를 누르면 크게 볼 수 있어요 · 뽑은 순서대로 꽂혀요</p>`;
   $('#pp').onclick=()=>{PG--;renderAlbum(true)};$('#pn').onclick=()=>{PG++;renderAlbum(true)};
   el2.querySelectorAll('.pocket.has').forEach(b=>b.onclick=()=>{const a=ST.album[+b.dataset.k],p=BYN[a.n];const o=document.createElement('div');o.className='ov';o.innerHTML=`<img alt="${esc(p.n)}" src="${cardURL(p)}"><div class="dt">${dotDate(a.d)}에 뽑았어요</div><div class="acts"><button class="c">🔍 전체 보기 (캡처)</button><button class="s">💾 이미지 저장</button><button class="x">닫기</button></div>`;document.body.appendChild(o);o.onclick=e=>{if(e.target===o||e.target.classList.contains('x'))o.remove()};o.querySelector('.s').onclick=()=>saveImg(p);o.querySelector('.c').onclick=()=>{o.remove();capView(p)}})}
-function tab(k){document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===k));$('#tDraw').hidden=k!=='draw';$('#tAlbum').hidden=k!=='album';if(k==='album'){PG=Math.max(0,Math.ceil(ST.album.length/perPage())-1);renderAlbum()}}
+
+/* ============ 일람표 ============ */
+const TINFO={S:['황금','linear-gradient(135deg,#fff6c2,#f3c443,#c58a12,#ffe88a)'],A:['은','linear-gradient(135deg,#ffffff,#cfd4db,#8e96a2,#eef1f5)'],B:['동','linear-gradient(135deg,#ffd9b0,#d08a45,#8a4f1d,#f0b47a)'],C:['쇠','linear-gradient(135deg,#a3a9b0,#7d838b,#959ba2)'],D:['나무','linear-gradient(135deg,#c08a55,#a8713f,#7a4a22)'],E:['흙','linear-gradient(135deg,#8a6a4a,#6b4a2e,#4f3520)'],F:['똥','linear-gradient(135deg,#6a4428,#4a2e1a,#2e1a0c)']};
+const pct=v=>v>=1?v.toFixed(1).replace(/\.0$/,'')+'%':v>=.1?v.toFixed(2)+'%':v.toFixed(3)+'%';
+function renderList(){const own=new Set(ST.album.map(a=>a.n));const tot=Object.values(TW).reduce((a,b)=>a+b,0);
+  const rows=Object.keys(TW).map(k=>{const L=PEOPLE.filter(p=>p.t===k),g=L.filter(p=>own.has(p.n)).length,tp=TW[k]/tot*100;return{k,L,g,tp,each:tp/L.length}});
+  $('#tList').innerHTML=`<div class="lsum"><table><tr><th>등급</th><th>테두리</th><th>등급 확률</th><th>인원</th><th>한 명당</th><th>모은 인물</th></tr>${rows.map(r=>`<tr><td><b class="j">${r.k}</b></td><td>${TINFO[r.k][0]}</td><td>${pct(r.tp)}</td><td>${r.L.length}명</td><td>${pct(r.each)}</td><td>${r.g} / ${r.L.length}</td></tr>`).join('')}</table>
+    <p class="hint" style="margin:8px 0 0">한 번 뽑을 때 먼저 등급이 정해지고, 그 등급 안에서 한 명이 골고루 뽑혀요. 이미 모은 인물은 나오지 않아서, 모을수록 남은 인물이 나올 확률이 올라가요. <span style="color:#2f6a2a">✔ 초록색</span>은 내가 모은 인물이에요.</p></div>
+    ${rows.map(r=>`<div class="tier"><div class="th"><div class="badge" style="background:${TINFO[r.k][1]}">${r.k}</div><h3>${r.k}등급 · ${TINFO[r.k][0]} 테두리</h3><div class="pr">${pct(r.tp)}<small>${r.L.length}명 · 한 명당 ${pct(r.each)}</small></div></div>
+      <div class="names">${r.L.map(p=>`<span class="${own.has(p.n)?'got':''}">${esc(p.n)}</span>`).join('')}</div></div>`).join('')}`}
+function tab(k){document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===k));$('#tDraw').hidden=k!=='draw';$('#tAlbum').hidden=k!=='album';$('#tList').hidden=k!=='list';if(k==='list')renderList();if(k==='album'){PG=Math.max(0,Math.ceil(ST.album.length/perPage())-1);renderAlbum()}}
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
 addEventListener('resize',()=>{if(!$('#tAlbum').hidden)renderAlbum()});
 
