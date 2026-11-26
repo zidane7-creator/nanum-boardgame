@@ -197,7 +197,7 @@ $("go").onclick=()=>{const bad=S.items.filter(x=>num(x.p)&&!x.l.trim()).length;i
   try{gtag("event","brain_make",{items:S.items.length})}catch(e){}};
 $("shuffle").onclick=()=>build(true);
 const fname=()=>((S.who.trim()||"나")+"의_뇌구조.png").replace(/[\\/:*?"<>|]/g,"");
-$("save").onclick=()=>{cancelAnimationFrame(ANIM);if(LAST)render(LAST.items,LAST.lab,LAST.items.length);cv.toBlob(b=>{const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=fname();document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);toast("이미지를 저장했어요")},"image/png")};
+$("save").onclick=()=>{cancelAnimationFrame(ANIM);if(LAST)render(LAST.items,LAST.lab,LAST.items.length);cv.toBlob(b=>{if(window.SAVEFILE){SAVEFILE(b,fname());return}const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=fname();document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);toast("이미지를 저장했어요")},"image/png")};
 $("share").onclick=()=>{cancelAnimationFrame(ANIM);if(LAST)render(LAST.items,LAST.lab,LAST.items.length);cv.toBlob(async b=>{const f=new File([b],fname(),{type:"image/png"});
   if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:"나의 뇌구조"})}catch(e){}}else{toast("이 기기에서는 공유가 안 돼요. 이미지 저장을 눌러 주세요")}},"image/png")};
 drawItems();

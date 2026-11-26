@@ -1070,7 +1070,7 @@ const ACT={
   roomCopy:()=>copy(`🛏️ ${R.name} 방 배정\n`+R.rooms.map(r=>`\n[${r.building||''} ${r.floor||''} ${r.name}] ${(r.members||[]).length}/${r.cap||'?'}명${r.captain?' · 방장 '+pn(r.captain):''}\n`+(r.members||[]).map(pn).join(', ')).join('\n')),
 };
 function fpath(id){const L=[];let c=id;while(c){const f=R.folders.find(x=>x.id===c);if(!f)break;L.unshift(f.name);c=f.parent}return L.join(' › ')}
-function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)}
+function dl(blob,name){if(window.SAVEFILE)return SAVEFILE(blob,name);const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)}
 async function copy(t){try{await navigator.clipboard.writeText(t);toast('📋 복사했어요. 카톡에 붙여넣으세요')}catch(e){const x=document.createElement('textarea');x.value=t;document.body.appendChild(x);x.select();try{document.execCommand('copy');toast('📋 복사했어요')}catch(_){toast('복사하지 못했어요')}x.remove()}}
 function indent(dir){const b=$('#mbody');if(!b)return;const v=b.value,s=b.selectionStart,e=b.selectionEnd;const ls=v.lastIndexOf('\n',s-1)+1;let le=v.indexOf('\n',Math.max(s,e-1));if(le<0)le=v.length;
   const lines=v.slice(ls,le).split('\n');let d0=0,dT=0;const out=lines.map((l,i)=>{if(dir>0){if(i===0)d0=2;dT+=2;return '  '+l}const m=l.match(/^( {1,2}|\t)/);if(!m)return l;if(i===0)d0=-m[0].length;dT-=m[0].length;return l.slice(m[0].length)});

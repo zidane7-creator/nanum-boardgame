@@ -393,7 +393,7 @@
   /* jsPDF 불러오기 */
   let pdfP = null;
   function loadPdf() { if (window.jspdf) return Promise.resolve(window.jspdf); if (pdfP) return pdfP; pdfP = new Promise((res, rej) => { const s = document.createElement("script"); s.src = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"; s.onload = () => res(window.jspdf); s.onerror = () => { pdfP = null; rej(new Error("PDF 도구를 불러오지 못했어요")) }; document.head.appendChild(s) }); return pdfP }
-  function download(blob, name) { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove() }, 2000) }
+  function download(blob, name) { if (window.SAVEFILE) return window.SAVEFILE(blob, name); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove() }, 2000) }
   /* 사진 보관 (IndexedDB) */
   function assetStore(dbName) {
     const mem = new Map(); let dbp = null;

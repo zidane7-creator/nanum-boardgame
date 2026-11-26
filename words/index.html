@@ -36,6 +36,7 @@ button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}button.pri
 .pc.pick{animation:pick .7s ease forwards;z-index:5}
 @keyframes pick{50%{transform:translateY(-30px) scale(1.15) rotateY(90deg)}100%{transform:translateY(-30px) scale(1.15) rotateY(90deg);opacity:0}}
 .pc.gone{visibility:hidden}
+.done{grid-column:1/-1;text-align:center;color:#fff;font-family:Jua,sans-serif;padding:30px 10px}.done .big{font-size:56px}.done h2{margin:6px 0;font-size:26px}.done p{opacity:.85;margin:4px 0 14px}
 .modal{position:fixed;inset:0;z-index:400;background:rgba(20,14,10,.7);display:flex;align-items:center;justify-content:center;padding:14px;overflow:auto}
 .modal>div{max-width:520px;width:100%;text-align:center}
 .modal canvas{width:auto;max-width:100%;max-height:calc(100vh - 150px);height:auto;border-radius:18px;box-shadow:0 12px 40px rgba(0,0,0,.5);animation:flipin .6s cubic-bezier(.2,.8,.3,1.15)}
@@ -49,7 +50,7 @@ button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}button.pri
 </head><body>
 <div class="top"><a href="../">← 목장</a><span class="ttl">📜 말씀뽑기</span></div>
 <main>
- <div class="card hero"><h1>🎁 말씀뽑기</h1><p>마음이 가는 카드를 하나 골라 보세요. 오늘 하나님이 주시는 말씀이에요.</p>
+ <div class="card hero"><h1>🎁 말씀뽑기</h1><p>마음이 가는 카드를 하나 골라 보세요. 오늘 하나님이 주시는 말씀이에요. <b>하루에 한 번</b> 뽑을 수 있어요.</p>
   <div class="chips" id="themes"></div>
   <div class="chips" style="margin-top:10px"><button id="shuffle">🔀 다시 섞기</button><button id="more">카드 더 깔기</button></div></div>
  <div class="table" id="table"></div>
@@ -107,22 +108,27 @@ function deal(){DECK=shuffle(V.filter(v=>THEME==='all'||v.k===THEME));SHOWN=Math
 function lay(){$('#table').innerHTML=DECK.slice(0,SHOWN).map((v,n)=>`<button class="pc" data-n="${n}" style="transform:rotate(${(rnd(9)-4)*1.2}deg)" aria-label="카드 뽑기"><span class="bk"><i>✝</i><small>말씀</small></span></button>`).join('');$('#more').hidden=SHOWN>=DECK.length}
 $('#shuffle').onclick=()=>{deal();toast('🔀 카드를 다시 섞었어요')};
 $('#more').onclick=()=>{SHOWN=Math.min(DECK.length,SHOWN+PER());lay()};
-$('#table').addEventListener('click',e=>{const b=e.target.closest('.pc');if(!b||b.classList.contains('gone'))return;const v=DECK[+b.dataset.n];b.classList.add('pick');setTimeout(()=>{b.classList.remove('pick');b.classList.add('gone');show(v,true)},520)});
+/* 🎁 하루에 한 번만 */
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()};
+const picked=()=>{try{const o=JSON.parse(localStorage.getItem('words-today')||'null');return o&&o.d===today()&&V[o.i]?V[o.i]:null}catch(_){return null}};
+function doneUI(){const v=picked();if(!v)return false;$('#shuffle').hidden=$('#more').hidden=true;$('#themes').hidden=true;
+  $('#table').innerHTML=`<div class="done"><div class="big">🎁</div><h2>오늘의 말씀을 이미 뽑았어요</h2><p>말씀뽑기는 하루에 한 번이에요. 내일 다시 뽑을 수 있어요 🌅</p><button class="pri" id="seeToday">📜 오늘 뽑은 말씀 보기 · ${esc(v.r)}</button></div>`;$('#seeToday').onclick=()=>show(v,false);return true}
+$('#table').addEventListener('click',e=>{const b=e.target.closest('.pc');if(!b||b.classList.contains('gone'))return;if(picked()){doneUI();return}const v=DECK[+b.dataset.n];try{localStorage.setItem('words-today',JSON.stringify({d:today(),i:v.i}))}catch(_){}b.classList.add('pick');setTimeout(()=>{b.classList.remove('pick');b.classList.add('gone');show(v,true);doneUI()},520)});
 /* ---------- 뽑은 카드 보기 ---------- */
 const BOOKOF=r=>{const i=r.lastIndexOf(' ');return[r.slice(0,i),r.slice(i+1).split(':')[0]]};
 function show(v,save){const m=document.createElement('div');m.className='modal';const[b,ch]=BOOKOF(v.r);
-  m.innerHTML=`<div><canvas></canvas><div class="acts"><button class="pri" data-a="save">📥 이미지 저장</button><button data-a="copy">📋 말씀 복사</button><a href="../bible/?b=${encodeURIComponent(b)}&c=${ch}" target="_blank">📖 성경에서 보기</a><button data-a="again">🎁 다시 뽑기</button><button data-a="x">닫기</button></div></div>`;
+  m.innerHTML=`<div><canvas></canvas><div class="acts"><button class="pri" data-a="save">📥 이미지 저장</button><button data-a="copy">📋 말씀 복사</button><a href="../bible/?b=${encodeURIComponent(b)}&c=${ch}" target="_blank">📖 성경에서 보기</a><button data-a="x">닫기</button></div></div>`;
   document.body.appendChild(m);const c=m.querySelector('canvas');const st=styleOf(v);
   const go=()=>drawCard(c,v);go();(document.fonts?Promise.all([document.fonts.load(`700 60px "${st.font}"`,'가나다'),document.fonts.load('40px Jua','가'),document.fonts.load('600 40px "Gowun Dodum"','가')]):Promise.resolve()).then(go,go);
   const close=()=>m.remove();m.addEventListener('click',e=>{if(e.target===m)close()});
   m.querySelectorAll('[data-a]').forEach(btn=>btn.onclick=()=>{const a=btn.dataset.a;
-    if(a==='x')close();if(a==='again'){close();if($('#table').querySelectorAll('.pc:not(.gone)').length===0)deal();$('#table').scrollIntoView({behavior:'smooth',block:'center'})}
+    if(a==='x')close();
     if(a==='copy'){const t=v.t+'\n('+v.r+')';navigator.clipboard.writeText(t).then(()=>toast('📋 말씀을 복사했어요'),()=>prompt('복사해 주세요',t))}
-    if(a==='save')c.toBlob(bl=>{const u=URL.createObjectURL(bl),l=document.createElement('a');l.href=u;l.download='말씀_'+v.r.replace(/[:\s]/g,'_')+'.png';document.body.appendChild(l);l.click();setTimeout(()=>{URL.revokeObjectURL(u);l.remove()},1500);toast('📥 말씀 카드를 저장했어요')},'image/png')});
+    if(a==='save')c.toBlob(bl=>{const n='말씀_'+v.r.replace(/[:\s]/g,'_')+'.png';if(window.SAVEFILE)SAVEFILE(bl,n);else{const u=URL.createObjectURL(bl),l=document.createElement('a');l.href=u;l.download=n;document.body.appendChild(l);l.click();setTimeout(()=>{URL.revokeObjectURL(u);l.remove()},1500)}toast('📥 말씀 카드를 저장했어요')},'image/png')});
   if(save){try{const H=JSON.parse(localStorage.getItem('words-hist')||'[]').filter(x=>x!==v.i);H.unshift(v.i);localStorage.setItem('words-hist',JSON.stringify(H.slice(0,24)))}catch(_){}hist()}}
 function hist(){let H=[];try{H=JSON.parse(localStorage.getItem('words-hist')||'[]')}catch(_){}$('#histCard').hidden=!H.length;
   $('#hist').innerHTML=H.map(i=>V[i]).filter(Boolean).map(v=>`<button data-h="${v.i}" title="${esc(v.t)}">${TH[v.k][1]} ${esc(v.r)} · ${esc(v.t)}</button>`).join('');$('#hist').querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>show(V[+b.dataset.h],false))}
-themesUI();deal();hist();
+themesUI();deal();hist();doneUI();
 const q=new URLSearchParams(location.search).get('v');if(q!=null&&V[+q])show(V[+q],false);
 window.__words={V,drawCard,show};
 })();

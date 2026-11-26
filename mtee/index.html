@@ -205,7 +205,7 @@ $('#expBtn').onclick=async()=>{const m=document.createElement('div');m.className
     const msg=m.querySelector('#expMsg');msg.textContent='⏳ 만드는 중…';b.disabled=true;
     try{await ED.ready(L.flatMap(p=>[{data:p.f,w:W,h:H},{data:p.b,w:W,h:H}]));const base=MODE==='mission'?'선교티':'단체티';
       if(b.dataset.go==='jpg'){for(const p of L){const c=setCanvas(p,1.6);await new Promise(r=>c.toBlob(bl=>{D.download(bl,`${base}_${p.name}.jpg`);r()},'image/jpeg',.93));await new Promise(r=>setTimeout(r,350))}msg.textContent=`✅ JPG ${L.length}장을 받았어요`}
-      else{const {jsPDF}=await D.loadPdf();const pdf=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});L.forEach((p,i)=>{const c=setCanvas(p,1.4);if(i)pdf.addPage('a4','landscape');const r=Math.min(277/c.width,190/c.height),w=c.width*r,h=c.height*r;pdf.addImage(c.toDataURL('image/jpeg',.92),'JPEG',(297-w)/2,(210-h)/2,w,h)});pdf.save(`${base}_시안.pdf`);msg.textContent=`✅ PDF(${L.length}쪽)를 받았어요`}}
+      else{const {jsPDF}=await D.loadPdf();const pdf=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});L.forEach((p,i)=>{const c=setCanvas(p,1.4);if(i)pdf.addPage('a4','landscape');const r=Math.min(277/c.width,190/c.height),w=c.width*r,h=c.height*r;pdf.addImage(c.toDataURL('image/jpeg',.92),'JPEG',(297-w)/2,(210-h)/2,w,h)});D.download(pdf.output('blob'),`${base}_시안.pdf`);msg.textContent=`✅ PDF(${L.length}쪽)를 받았어요`}}
     catch(e){msg.textContent='😢 '+(e&&e.message||e)}b.disabled=false})};
 /* ---------- 선교티: 사이즈 주문표 ---------- */
 const SIZES=['아동 S','아동 M','아동 L','XS','S','M','L','XL','2XL','3XL'];

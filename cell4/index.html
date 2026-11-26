@@ -220,7 +220,7 @@ cv.addEventListener("wheel",e=>{if(e.ctrlKey)return;const q=toC(e),l=L(),si=l.sl
 /* ---------- 저장 ---------- */
 async function exportCanvas(){try{await document.fonts.load(`60px "${S.font}"`)}catch(e){}const l=L(),c=document.createElement("canvas");c.width=l.W;c.height=l.H;render(c.getContext("2d"),true);return c}
 const fname=()=>`인셀네컷_${today().replace(/\./g,"")}.png`;
-async function download(){const c=await exportCanvas();c.toBlob(b=>{if(!b){toast("저장하지 못했어요");return}const u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download=fname();document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);toast("이미지를 저장했어요 📸")},"image/png")}
+async function download(){const c=await exportCanvas();c.toBlob(b=>{if(!b){toast("저장하지 못했어요");return}if(window.SAVEFILE){SAVEFILE(b,fname());return}const u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download=fname();document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);toast("이미지를 저장했어요 📸")},"image/png")}
 async function share(){const c=await exportCanvas();c.toBlob(async b=>{try{const f=new File([b],fname(),{type:"image/png"});if(navigator.canShare&&navigator.canShare({files:[f]}))await navigator.share({files:[f],title:"인셀네컷"});else download()}catch(e){}},"image/png")}
 /* ---------- 미리보기 확대 ---------- */
 let ZOOM=1;const ZS=[1,1.5,2,3,4];

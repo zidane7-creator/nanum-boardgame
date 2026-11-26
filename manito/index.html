@@ -135,7 +135,7 @@ function dlCard(r,me){const W=720,H=1000,cv=document.createElement("canvas");cv.
   wrapText(c,r.mission||"자유롭게 마니또를 해요 — 몰래 응원하고 챙겨 주기",W/2,y+110,W-160,48);
   y=670;if(r.role){box(y,230,"#fff6d8","#3b2a20");c.font="30px "+F;c.fillText("✨ 추가 역할: "+r.role.name,W/2,y+45);c.font="28px "+F;wrapText(c,r.role.desc,W/2,y+105,W-160,42)}
   c.fillStyle="rgba(255,255,255,.85)";c.font="22px "+F;c.fillText("치영의 교회 생활 즐기기 · 마니또",W/2,H-40);
-  cv.toBlob(b=>{const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=(me+"_마니또카드.png").replace(/[\\/:*?"<>|]/g,"");document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);toast("카드 이미지를 저장했어요")},"image/png")}
+  cv.toBlob(b=>{if(window.SAVEFILE){SAVEFILE(b,(me+"_마니또카드.png").replace(/[\/:*?"<>|]/g,""));toast("카드 이미지를 저장했어요");return}const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=(me+"_마니또카드.png").replace(/[\\/:*?"<>|]/g,"");document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);toast("카드 이미지를 저장했어요")},"image/png")}
 document.addEventListener("click",e=>{const b=e.target.closest("[data-dl]");if(!b)return;try{const o=JSON.parse(b.getAttribute("data-dl"));dlCard(o.r,o.me)}catch(_){toast("저장하지 못했어요")}});
 function pairsHTML(res){return res.map(r=>`<div class="pair"><div><b>${esc(r.name)}</b>${r.role?`<small>✨ ${esc(r.role.name)} → ${esc(r.role.target)}</small>`:''}</div><div class="ar">🎁➡</div><div><b>${esc(r.target)}</b>${r.mission?`<small>🎯 ${esc(r.mission)}</small>`:''}</div></div>`).join('')}
 

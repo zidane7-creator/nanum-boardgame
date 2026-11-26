@@ -243,7 +243,7 @@ function pdfDlg(){const s=SIZES[B.size],m=document.createElement('div');m.classN
       else{pdf=new jsPDF({orientation:'landscape',unit:'mm',format:[s.sw,s.sh]});let first=true;for(const sh of sheets(B.n))for(const side of ['front','back']){if(!first)pdf.addPage([s.sw,s.sh],'landscape');first=false;
         sh[side].forEach((q,j)=>pdf.addImage(img(q-1).toDataURL('image/jpeg',.92),'JPEG',j*s.w,0,s.w,s.h));if(fold){pdf.setDrawColor(200);pdf.setLineWidth(.2);pdf.setLineDashPattern([1.5,1.5],0);pdf.line(s.w,0,s.w,4);pdf.line(s.w,s.h-4,s.w,s.h)}
         msg.textContent=`⏳ 종이 ${sh.k+1} ${side==='front'?'앞면':'뒷면'}`;await new Promise(r=>setTimeout(r,0))}}
-      pdf.save(`${B.name}_${mode==='seq'?'쪽순서':'인쇄용'}.pdf`);msg.textContent='✅ PDF를 받았어요'}catch(e){msg.textContent='😢 '+(e&&e.message||e)}btn.disabled=false}}
+      D.download(pdf.output('blob'),`${B.name}_${mode==='seq'?'쪽순서':'인쇄용'}.pdf`);msg.textContent='✅ PDF를 받았어요'}catch(e){msg.textContent='😢 '+(e&&e.message||e)}btn.disabled=false}}
 window.__mbook={tpl,sheets,where,B:()=>B,ED:()=>ED,go};
 (async()=>{if(MID){MD=await mission(MID);if(MD){$('#backM').hidden=false;$('#backM').href='../mission/?c='+encodeURIComponent(MID)}}if(BID)editor();else home()})();
 })();
