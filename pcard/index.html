@@ -49,6 +49,11 @@ body.capon #homeFab,body.capon #siteNav,body.capon #siteGuideBtn{display:none!im
 .lsum table{width:100%;border-collapse:collapse;font-size:15px}
 .lsum th,.lsum td{padding:6px 4px;text-align:center;border-bottom:1px solid #f0e8fa}
 .lsum th{font-family:Jua;font-weight:normal;color:#6d5a80}
+.alf{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}
+.alf button{padding:5px 10px;font-size:14px;border-radius:12px;display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.9);border-color:#fff;box-shadow:none}
+.alf button.on{background:#ffe27a;border-color:#fff;color:#3d2f4a}
+.alf button i{font-style:normal;width:20px;height:20px;border-radius:6px;display:inline-grid;place-items:center;font-size:12px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+.alf button small{opacity:.7}
 #toast{position:fixed;left:50%;bottom:30px;transform:translate(-50%,20px);background:#3d2f4a;color:#fff;padding:10px 18px;border-radius:14px;opacity:0;transition:.25s;z-index:999;pointer-events:none;font-family:Jua}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 /* 뽑기 기계 */
@@ -321,17 +326,21 @@ $('#knob').onclick=async()=>{if(!canDraw()){status();return}const p=pick();ST.la
   status()};
 
 /* ============ 앨범 ============ */
-let PG=0;
+let PG=0,ALF='all';
 function perPage(){return innerWidth<=760?9:18}
 function renderAlbum(anim){const A=ST.album,el2=$('#tAlbum');const u=new Set(A.map(a=>a.n)).size;
   if(!A.length){el2.innerHTML=`<div class="binder"><div class="bhead"><h2>📒 나의 포토카드 앨범</h2></div><div class="empty-al"><div style="font-size:50px">📸</div><p class="j" style="font-size:20px;margin:8px 0">아직 모은 카드가 없어요</p><p class="hint">뽑기에서 오늘의 카드를 뽑으면 이 앨범에 차곡차곡 들어가요.</p><button id="goDraw">🎰 뽑으러 가기</button></div></div>`;$('#goDraw').onclick=()=>tab('draw');return}
-  const per=perPage(),pages=Math.max(1,Math.ceil(A.length/per));PG=Math.min(PG,pages-1);const slice=A.slice(PG*per,PG*per+per);
-  const pocket=(a,k)=>{if(!a)return`<div class="pocket empty">✦</div>`;const p=BYN[a.n];if(!p)return`<div class="pocket empty">?</div>`;return`<div class="pocket has t${p.t}" data-k="${PG*per+k}"><img loading="lazy" alt="${esc(p.n)}" src="${cardURL(p)}"><div class="dt">${dotDate(a.d)}</div></div>`};
+  const tierOf=a=>(BYN[a.n]||{}).t;const IT=A.map((a,i)=>({a,i})).filter(o=>ALF==='all'||tierOf(o.a)===ALF);
+  const per=perPage(),pages=Math.max(1,Math.ceil(IT.length/per));PG=Math.max(0,Math.min(PG,pages-1));const slice=IT.slice(PG*per,PG*per+per);
+  const cnt={};A.forEach(a=>{const k=tierOf(a);cnt[k]=(cnt[k]||0)+1});
+  const chips=`<div class="alf"><button data-alf="all" class="${ALF==='all'?'on':''}">전체 <small>${A.length}</small></button>${Object.keys(TW).map(k=>`<button data-alf="${k}" class="${ALF===k?'on':''}" ${cnt[k]?'':'disabled'}><i style="background:${TINFO[k][1]}">${k}</i>${TINFO[k][0]} <small>${cnt[k]||0}</small></button>`).join('')}</div>`;
+  const pocket=(o,k)=>{if(!o)return`<div class="pocket empty">✦</div>`;const a=o.a,p=BYN[a.n];if(!p)return`<div class="pocket empty">?</div>`;return`<div class="pocket has t${p.t}" data-k="${o.i}"><img loading="lazy" alt="${esc(p.n)}" src="${cardURL(p)}"><div class="dt">${dotDate(a.d)}</div></div>`};
   const half=per===18?[slice.slice(0,9),slice.slice(9,18)]:[slice];
-  el2.innerHTML=`<div class="binder"><div class="bhead"><h2>📒 나의 포토카드 앨범</h2><span class="prog">카드 ${A.length}장 · 인물 ${u}/${PEOPLE.length}</span></div>
+  el2.innerHTML=`<div class="binder"><div class="bhead"><h2>📒 나의 포토카드 앨범</h2><span class="prog">카드 ${A.length}장 · 인물 ${u}/${PEOPLE.length}</span></div>${chips}
     <div class="spread">${half.map(s=>`<div class="pg${anim?' turn':''}">${Array.from({length:9},(_,k)=>pocket(s[k],(s===half[1]?9:0)+k)).join('')}</div>`).join('')}</div>
     <div class="pnav"><button id="pp" ${PG<=0?'disabled':''}>◀</button><span>${PG+1} / ${pages} 쪽</span><button id="pn" ${PG>=pages-1?'disabled':''}>▶</button></div></div>
-    <p class="hint" style="text-align:center">카드를 누르면 크게 볼 수 있어요 · 뽑은 순서대로 꽂혀요</p>`;
+    <p class="hint" style="text-align:center">카드를 누르면 크게 볼 수 있어요 · 뽑은 순서대로 꽂혀요${ALF==='all'?'':' · '+ALF+'등급('+TINFO[ALF][0]+')만 보는 중'}</p>`;
+  el2.querySelectorAll('[data-alf]').forEach(b=>b.onclick=()=>{ALF=b.dataset.alf;PG=0;renderAlbum(true)});
   $('#pp').onclick=()=>{PG--;renderAlbum(true)};$('#pn').onclick=()=>{PG++;renderAlbum(true)};
   el2.querySelectorAll('.pocket.has').forEach(b=>b.onclick=()=>{const a=ST.album[+b.dataset.k],p=BYN[a.n];const o=document.createElement('div');o.className='ov';o.innerHTML=`<img alt="${esc(p.n)}" src="${cardURL(p)}"><div class="dt">${dotDate(a.d)}에 뽑았어요</div><div class="acts"><button class="c">🔍 전체 보기 (캡처)</button><button class="s">💾 이미지 저장</button><button class="x">닫기</button></div>`;document.body.appendChild(o);o.onclick=e=>{if(e.target===o||e.target.classList.contains('x'))o.remove()};o.querySelector('.s').onclick=()=>saveImg(p);o.querySelector('.c').onclick=()=>{o.remove();capView(p)}})}
 
@@ -344,7 +353,7 @@ function renderList(){const own=new Set(ST.album.map(a=>a.n));const tot=Object.v
     <p class="hint" style="margin:8px 0 0">한 번 뽑을 때 먼저 등급이 정해지고, 그 등급 안에서 한 명이 골고루 뽑혀요. 이미 모은 인물은 나오지 않아서, 모을수록 남은 인물이 나올 확률이 올라가요. <span style="color:#2f6a2a">✔ 초록색</span>은 내가 모은 인물이에요.</p></div>
     ${rows.map(r=>`<div class="tier"><div class="th"><div class="badge" style="background:${TINFO[r.k][1]}">${r.k}</div><h3>${r.k}등급 · ${TINFO[r.k][0]} 테두리</h3><div class="pr">${pct(r.tp)}<small>${r.L.length}명 · 한 명당 ${pct(r.each)}</small></div></div>
       <div class="names">${r.L.map(p=>`<span class="${own.has(p.n)?'got':''}">${esc(p.n)}</span>`).join('')}</div></div>`).join('')}`}
-function tab(k){document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===k));$('#tDraw').hidden=k!=='draw';$('#tAlbum').hidden=k!=='album';$('#tList').hidden=k!=='list';if(k==='list')renderList();if(k==='album'){PG=Math.max(0,Math.ceil(ST.album.length/perPage())-1);renderAlbum()}}
+function tab(k){document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===k));$('#tDraw').hidden=k!=='draw';$('#tAlbum').hidden=k!=='album';$('#tList').hidden=k!=='list';if(k==='list')renderList();if(k==='album'){ALF='all';PG=Math.max(0,Math.ceil(ST.album.length/perPage())-1);renderAlbum()}}
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
 addEventListener('resize',()=>{if(!$('#tAlbum').hidden)renderAlbum()});
 
