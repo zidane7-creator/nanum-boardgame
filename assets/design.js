@@ -208,7 +208,7 @@
       boards.forEach(b => guides.filter(g => g.b === b.id).forEach(g => { const n = document.createElement("div"); n.className = "dz-guide"; if (g.v) n.style.cssText = `left:${g.at * Z}px;top:0;width:1px;height:${b.h * Z}px`; else n.style.cssText = `top:${g.at * Z}px;left:0;height:1px;width:${b.w * Z}px`; b.dom.appendChild(n) }));
       const e = curEl(); if (!e || editing) return; const b = B(sel.b), n = document.createElement("div"); n.className = "dz-sel";
       n.style.cssText = `left:${e.x * Z}px;top:${e.y * Z}px;width:${e.w * Z}px;height:${e.h * Z}px;transform:rotate(${+e.rot || 0}deg)`;
-      const H = e.type === "text" ? [["w", 0, .5], ["e", 1, .5]] : [["nw", 0, 0], ["n", .5, 0], ["ne", 1, 0], ["e", 1, .5], ["se", 1, 1], ["s", .5, 1], ["sw", 0, 1], ["w", 0, .5]];
+      const H = e.type === "text" ? [["nw", 0, 0], ["ne", 1, 0], ["e", 1, .5], ["se", 1, 1], ["sw", 0, 1], ["w", 0, .5]] : [["nw", 0, 0], ["n", .5, 0], ["ne", 1, 0], ["e", 1, .5], ["se", 1, 1], ["s", .5, 1], ["sw", 0, 1], ["w", 0, .5]];
       n.innerHTML = H.map(([k, x, y]) => `<i data-h="${k}" style="left:${x * 100}%;top:${y * 100}%;cursor:${k}-resize"></i>`).join("") + `<i class="rot" data-h="rot" style="left:50%;top:-26px"></i>`;
       n.querySelectorAll("i").forEach(h => h.addEventListener("pointerdown", ev => hdown(ev, b, e, h.dataset.h))); b.dom.appendChild(n)
     }
@@ -243,8 +243,9 @@
         const a = s.rot * Math.PI / 180, dx = q.x - p0.x, dy = q.y - p0.y, lx = dx * Math.cos(-a) - dy * Math.sin(-a), ly = dx * Math.sin(-a) + dy * Math.cos(-a);
         let w = Math.max(8, s.w + sx * lx), hh = e.type === "text" ? s.h : Math.max(4, s.h + sy * ly);
         if ((keep || ev2.shiftKey) && sx && sy) { if (w / hh > ratio) hh = w / ratio; else w = hh * ratio }
+        const tc = e.type === "text" && sx && sy; if (tc) { hh = s.h * w / s.w; e.size = Math.max(4, Math.round(s.size * w / s.w * 10) / 10) }
         const dw = (w - s.w) * (sx || 0) / 2, dh = (hh - s.h) * (sy || 0) / 2, gx = dw * Math.cos(a) - dh * Math.sin(a), gy = dw * Math.sin(a) + dh * Math.cos(a);
-        e.w = Math.round(w); if (e.type !== "text") e.h = Math.round(hh); e.x = Math.round(cx + gx - w / 2); e.y = Math.round(cy + gy - (e.type === "text" ? s.h : hh) / 2); draw()
+        e.w = Math.round(w); if (e.type !== "text") e.h = Math.round(hh); e.x = Math.round(cx + gx - w / 2); e.y = Math.round(cy + gy - (e.type === "text" && !tc ? s.h : hh) / 2); draw()
       };
       const up = () => { el.removeEventListener("pointermove", mv); el.removeEventListener("pointerup", up); el.removeEventListener("pointercancel", up); commit(); syncPanel() };
       el.addEventListener("pointermove", mv); el.addEventListener("pointerup", up); el.addEventListener("pointercancel", up)
@@ -361,10 +362,10 @@
       h(`<h4>위치·모양</h4><div class="row"><label>가로<input type="number" data-p="x" value="${Math.round(e.x)}"></label><label>세로<input type="number" data-p="y" value="${Math.round(e.y)}"></label></div><div class="row"><label>너비<input type="number" min="4" data-p="w" value="${Math.round(e.w)}"></label>${e.type === "text" ? "" : `<label>높이<input type="number" min="4" data-p="h" value="${Math.round(e.h)}"></label>`}</div>`);
       h(`<div class="row"><label>회전<input type="range" min="-180" max="180" data-p="rot" value="${+e.rot || 0}"><span data-pv="rot">${+e.rot || 0}</span>°</label></div><div class="row"><label>투명도<input type="range" min="5" max="100" data-p="op" value="${Math.round((e.op == null ? 1 : e.op) * 100)}"><span data-pv="op">${Math.round((e.op == null ? 1 : e.op) * 100)}</span>%</label></div>`);
       h(`<div class="row"><span style="font-size:13px;color:#7a6a5c">순서</span><button data-do="top">맨 앞</button><button data-do="up">앞으로</button><button data-do="down">뒤로</button><button data-do="bottom">맨 뒤</button></div>`);
-      h(`<p style="font-size:12px;color:#7a6a5c;margin:8px 0 0">끌어서 옮기고, 모서리로 크기, 위 동그라미로 회전(Shift: 15°씩). 글자는 두 번 눌러 고쳐요. Delete 지우기 · Ctrl+D 복제 · Ctrl+Z 되돌리기 · 방향키로 조금씩</p>`);
+      h(`<p style="font-size:12px;color:#7a6a5c;margin:8px 0 0">끌어서 옮기고, 모서리로 크기(글자는 모서리를 끌면 글자 크기가, 옆 가운데를 끌면 줄 폭이 바뀌어요), 위 동그라미로 회전(Shift: 15°씩). 글자는 두 번 눌러 고쳐요. Delete 지우기 · Ctrl+D 복제 · Ctrl+Z 되돌리기 · 방향키로 조금씩</p>`);
       bind(); if (o.onPanel) o.onPanel(panel, e, b)
     }
-    function syncPanel() { const e = curEl(); if (!e) return; ["x", "y", "w", "h", "rot"].forEach(k => { const i = panel.querySelector(`[data-p="${k}"]`); if (i && document.activeElement !== i) i.value = Math.round(+e[k] || 0) }) }
+    function syncPanel() { const e = curEl(); if (!e) return; ["x", "y", "w", "h", "rot", "size"].forEach(k => { const i = panel.querySelector(`[data-p="${k}"]`); if (i && document.activeElement !== i) i.value = Math.round(+e[k] || 0) }) }
     /* 아무것도 고르지 않았을 때: 판 설정 + 쓰인 색 한꺼번에 바꾸기 */
     function usedColors(b) {
       const m = new Map(), addc = (c, w) => { c = normHex(c); if (c) m.set(c, (m.get(c) || 0) + w) };
