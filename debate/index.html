@@ -89,7 +89,7 @@ const base=()=>'chiyoung-debate/v1/'+ROOM;
 function mqttOpen(url,ms){return new Promise(res=>{if(typeof mqtt=='undefined')return res(null);let done=false;
   const cl=mqtt.connect(url,{connectTimeout:ms,reconnectPeriod:3000,clientId:'db'+Math.random().toString(36).slice(2,12)});
   cl.on('connect',()=>{if(!done){done=true;res(cl)}});setTimeout(()=>{if(!done){done=true;try{cl.end(true)}catch(e){}res(null)}},ms)})}
-const WIN={vote:['🗳️ 비밀투표','토론이 끝나면 각자 더 설득력 있던 쪽에 몰래 투표해요. 표가 많은 쪽이 이겨요'],switch:['🔄 입장 바꾸기','토론 중에 상대편에 설득되면 입장을 바꿔요. 끝났을 때 사람이 많은 쪽이 이겨요'],judge:['🎤 사회자 판정','토론이 다 끝나면 사회자가 이긴 쪽을 선언해요 (사회자가 있을 때만)']};
+const WIN={vote:['🗳️ 비밀투표','토론이 끝나면 각자 더 설득력 있던 쪽에 몰래 투표해요. 표가 많은 쪽이 이겨요'],switch:['🔄 입장 바꾸기','토론 중에 상대편에 설득되면 입장을 바꿔요. 끝났을 때 사람이 많은 쪽이 이겨요. 모두 한쪽으로 넘어가면 바로 끝나요'],judge:['🎤 사회자 판정','토론이 다 끝나면 사회자가 이긴 쪽을 선언해요 (사회자가 있을 때만)']};
 /* =================== 게임 상태 (방장 기기 또는 한 기기) =================== */
 let G=null,isHost=false,MY=null,LOCAL=false;
 const HK=()=>'debate-host-'+ROOM,LK='debate-local-v1';
@@ -134,15 +134,15 @@ function startGame(){if(!G.topic){toast('주제를 먼저 골라 주세요');ret
   G.phase='side';broadcast()}
 function toDebate(){debaters().forEach(p=>{if(!G.side[p.id])G.side[p.id]=countSide('A')<=countSide('B')?'A':'B'});G.endAt=G.set.timer?Date.now()+G.set.timer*60000:0;G.phase='debate';broadcast()}
 function endDebate(){const w=winMode();if(w==='vote'){G.phase='vote';G.votes={};G.vq=0;G.vshow=false;broadcast();return}if(w==='judge'){G.phase='judge';broadcast();return}finish()}
-function finish(){const w=winMode(),fa=countSide('A'),fb=countSide('B');let a=0,b=0,win=null;
+function finish(sweep){const w=winMode(),fa=countSide('A'),fb=countSide('B');let a=0,b=0,win=null;
   if(w==='vote'){Object.values(G.votes).forEach(s=>s==='A'?a++:b++);win=a>b?'A':b>a?'B':'draw'}
   else if(w==='switch'){a=fa;b=fb;win=a>b?'A':b>a?'B':'draw'}
   else if(w==='judge'){win=G.judge||'draw'}
-  G.result={w,a,b,fa,fb,win,moves:G.log.filter(x=>!x.join).length};G.record.unshift({t:G.topic.t,win,w});G.record=G.record.slice(0,20);G.phase='result';broadcast()}
+  G.result={w,a,b,fa,fb,win,sweep:!!sweep,moves:G.log.filter(x=>!x.join).length};G.record.unshift({t:G.topic.t,win,w});G.record=G.record.slice(0,20);G.phase='result';broadcast()}
 function act(pid,m){const ph=G.phase,ctl=G.mode==='one'||(P(pid)||{}).host||isMod(pid);
   const who=G.mode==='one'?m.id:pid;
   if(m.t==='side'&&(ph==='side'||ph==='debate')&&(m.s==='A'||m.s==='B')){if(!P(who)||isMod(who))return;if(G.mode==='net'&&who!==pid&&!ctl)return;
-    const was=G.side[who];if(was===m.s)return;G.side[who]=m.s;if(ph==='debate')G.log.push({id:who,from:was,to:m.s,at:Date.now()});broadcast();return}
+    const was=G.side[who];if(was===m.s)return;G.side[who]=m.s;if(ph==='debate'){G.log.push({id:who,from:was,to:m.s,at:Date.now()});if(winMode()==='switch'&&debaters().length>=2&&(countSide('A')===0||countSide('B')===0)){finish(true);return}}broadcast();return}
   if(m.t==='vote'&&ph==='vote'&&(m.s==='A'||m.s==='B')){if(!P(who)||isMod(who))return;if(G.mode==='net'&&who!==pid)return;G.votes[who]=m.s;
     if(G.mode==='one'){G.vq++;G.vshow=false}if(Object.keys(G.votes).length>=debaters().length){finish();return}broadcast();return}
   if(!ctl)return;
@@ -227,7 +227,7 @@ function vGame(){const v=LV,ph=v.ph,net=v.mode==='net',ctl=v.ctl;let h='';clearI
     h+=`<div class="card center" style="margin-top:14px">${R.w==='none'?`<div class="big-ico">🤝</div><div class="res">토론 끝!</div><p>승패 없이 생각을 나눴어요. 마지막 입장은 이랬어요</p>`
       :win==='draw'?`<div class="big-ico">🤝</div><div class="res">무승부!</div>`:`<div class="big-ico">🏆</div><div class="res" style="color:var(--${win})">${win}팀 승리!</div><p>${esc(win==='A'?v.topic.a:v.topic.b)}</p>`}
      ${R.w==='vote'?`<h3>🗳️ 비밀투표 결과</h3><div class="bar"><div style="flex:${R.a||0.001};background:var(--A)">A ${R.a}</div><div style="flex:${R.b||0.001};background:var(--B)">B ${R.b}</div></div>`:''}
-     ${R.w==='switch'?`<h3>🔄 마지막 인원</h3><div class="bar"><div style="flex:${R.a||0.001};background:var(--A)">A ${R.a}명</div><div style="flex:${R.b||0.001};background:var(--B)">B ${R.b}명</div></div><p class="hint">토론 중 ${R.moves}번 입장이 바뀌었어요</p>`:''}
+     ${R.sweep?`<div class="ann">🎯 모두 ${win}팀으로 넘어왔어요! 완벽한 영업 성공 — 토론이 저절로 끝났어요</div>`:''}${R.w==='switch'?`<h3>🔄 마지막 인원</h3><div class="bar"><div style="flex:${R.a||0.001};background:var(--A)">A ${R.a}명</div><div style="flex:${R.b||0.001};background:var(--B)">B ${R.b}명</div></div><p class="hint">토론 중 ${R.moves}번 입장이 바뀌었어요</p>`:''}
      ${R.w==='judge'?'<p class="hint">🎤 사회자가 판정했어요</p>':''}
      ${teamsHTML(v,false)}${logHTML(v)}
      ${ctl?'<div class="row" style="justify-content:center;margin-top:14px"><button class="pri big" data-a="lobby">➡️ 다음 주제로</button></div>':'<p class="hint">방장이 다음 주제를 고르고 있어요</p>'}</div>`}
