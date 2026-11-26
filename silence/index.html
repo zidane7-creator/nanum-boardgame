@@ -841,7 +841,7 @@ function doKill(){const v=nearVictim();if(!v||NOW()-OFF<ME.kAt)return;toHost({t:
 function doFog(){if(!isWolf()||amDead()||NOW()-OFF<ME.fogR)return;toHost({t:'fog'});toast('🌫️ 안개를 퍼뜨렸어요')}
 
 /* =================== 시야 =================== */
-function visR(){if(!S||S.ph==='lobby'||amDead())return 1e9;if(isWolf())return 430;if(S.fogU&&NOW()-OFF<S.fogU)return 150;return 330}
+function visR(){if(!S||S.ph==='lobby'||amDead())return 1e9;if(isWolf())return 310;if(S.fogU&&NOW()-OFF<S.fogU)return 120;return 240}
 function visible(x,y){if(!S||S.ph==='lobby'||amDead())return true;const M=MAPS[S.map];if(dist(me.x,me.y,x,y)>visR()+20)return false;const f=fieldOf(M,x,y);if(f>=0&&dist(me.x,me.y,x,y)>120&&fieldOf(M,me.x,me.y)!==f)return false;return true}
 
 /* =================== 주 반복 =================== */
@@ -888,7 +888,7 @@ function draw(T){const M=curMap();if(!M||!M.bake)return;g.setTransform(1,0,0,1,0
   // 로비 간판
   if(S&&S.ph==='lobby'){g.font='22px Jua';g.fillStyle='#fffaf0';rr(g,M.W/2-120,96,240,46,14);g.fill();g.strokeStyle='#c98f5a';g.lineWidth=4;g.stroke();g.fillStyle='#b8452e';g.fillText('🐑 양들의 침묵 🐺',M.W/2,120)}
   // 시야
-  g.setTransform(DPR,0,0,DPR,0,0);const R=visR();if(R<1e8){const sx=(me.x-cam.x)*Z+CW/2,sy=(me.y-20-cam.y)*Z+CH/2,rz=R*Z;const gr=g.createRadialGradient(sx,sy,rz*.55,sx,sy,rz);const fog=S.fogU&&NOW()-OFF<S.fogU&&!isWolf();gr.addColorStop(0,'rgba(20,24,40,0)');gr.addColorStop(1,fog?'rgba(190,196,205,.96)':'rgba(18,22,38,.82)');g.fillStyle=gr;g.fillRect(0,0,CW,CH)}
+  g.setTransform(DPR,0,0,DPR,0,0);const R=visR();if(R<1e8){const sx=(me.x-cam.x)*Z+CW/2,sy=(me.y-20-cam.y)*Z+CH/2,rz=R*Z;const gr=g.createRadialGradient(sx,sy,rz*.72,sx,sy,rz);const fog=S.fogU&&NOW()-OFF<S.fogU&&!isWolf();gr.addColorStop(0,'rgba(0,0,0,0)');gr.addColorStop(1,'#000');g.fillStyle=gr;g.fillRect(0,0,CW,CH)}
   if(amDead()&&S.ph==='play'){g.fillStyle='rgba(120,160,220,.12)';g.fillRect(0,0,CW,CH)}
   drawMini(M,T)}
 function wheatCover(M,x,y,T){if(fieldOf(M,x,y)<0)return;g.strokeStyle='#b88a22';g.lineWidth=2.2;for(let k=-26;k<=26;k+=6){const sw=Math.sin(T*2+k)*2;g.beginPath();g.moveTo(x+k,y+4);g.lineTo(x+k+sw,y-20);g.stroke();g.fillStyle=(k/6)%2?'#f5d468':'#e9b93c';el(g,x+k+sw,y-23,3,6);g.fill()}}
