@@ -62,9 +62,9 @@ a.chip{text-decoration:none}.chip small{font-size:11px;opacity:.8}
 .khead div{padding:6px 2px;border-right:1px dashed #d8c9b5}
 .kgrid{position:relative;display:grid;grid-template-columns:var(--kc)}
 .kcol{position:relative;border-right:1px dashed #e3d6c4}
-.kb{position:absolute;word-break:keep-all;border:2px solid var(--ink);border-radius:9px;padding:1px 4px;font-size:clamp(10px,1.7vw,13px);line-height:1.15;overflow:hidden;cursor:pointer;text-align:left;box-shadow:none}
+.kb{position:absolute;word-break:keep-all;border:2px solid var(--ink);border-radius:9px;padding:1px 6px;font-size:13px;line-height:1.2;overflow:hidden;cursor:pointer;text-align:left;box-shadow:none;display:flex;flex-direction:column;justify-content:center}.kb .kn{font-family:Jua,sans-serif}.kb small{font-size:.72em;opacity:.8}
 .kb.g{background:#d9f2cf}.kb.b{background:#ffd9d2}.kb.m{background:linear-gradient(135deg,#d9f2cf 50%,#ffd9d2 50%)}.kb.q{background:#ffe9a8}
-.kb .mk{font-size:11px}
+.kb .mk{font-size:.75em;margin-right:2px}
 .pb{position:absolute;border:2px dashed var(--proph);background:#e6f1fb;color:#1d5f91;border-radius:9px;padding:1px 3px;font-size:clamp(10px,1.6vw,12px);line-height:1.1;cursor:pointer;text-align:center;box-shadow:none;overflow:hidden}
 .yl{position:absolute;left:0;right:0;font-size:11px;text-align:center;color:var(--muted);transform:translateY(-50%)}
 .ev{position:absolute;left:0;right:0;border-top:2px solid var(--accent);z-index:2;pointer-events:none}
@@ -443,9 +443,10 @@ function drawKings(){const Y0=935,Y1=580,PX=window.innerWidth<640?5:4.2,H=(Y0-Y1
     /* 겹치는 묶음끼리만 폭을 나눠요 */
     const sorted=[...os].sort((a,b)=>a.top-b.top);let grp=[],end=-1;const flush=()=>{const n=Math.max(...grp.map(x=>x.ci))+1;grp.forEach(x=>x.n=n);grp=[]};
     sorted.forEach(o=>{if(grp.length&&o.top>=end-1){flush();end=-1}grp.push(o);end=Math.max(end,o.top+o.h)});if(grp.length)flush();return os};
-  const col=(list,isP,side)=>{const ps=place(list,isP);return'<div class="kcol">'+ps.map(o=>{const w=100/o.n,l=o.ci*w;const k=o.k;
-    if(isP)return'<button type="button" class="pb" style="top:'+o.top+'px;height:'+o.h+'px;left:calc('+l+'% + 2px);width:calc('+w+'% - 4px)" data-p="'+side+'|'+esc(k[0])+'">'+esc(k[0])+'</button>';
-    return'<button type="button" class="kb '+k[4]+'" style="top:'+o.top+'px;height:'+o.h+'px;left:calc('+l+'% + 2px);width:calc('+w+'% - 4px)" data-k="'+side+'|'+esc(k[0])+'" title="'+esc(k[0]+' '+k[3])+'">'+(o.h<30?'<span style="white-space:nowrap;font-size:10px">'+esc(k[0].replace(/\(.*\)/,''))+'</span>':'<span class="mk">'+MK[k[4]][0]+'</span>'+esc(k[0])+' <small>'+k[3]+'</small>')+'</button>'}).join("")+'</div>'};
+  const mob=innerWidth<640,fsOf=(h,n,isP)=>{let f=h>=90?22:h>=60?19:h>=40?16:14;if(isP)f=h>=90?18:h>=50?16:14;if(n>=3)f*=.78;else if(n===2)f*=.88;if(mob)f*=.82;return Math.round(f)};
+  const col=(list,isP,side)=>{const ps=place(list,isP);return'<div class="kcol">'+ps.map(o=>{const w=100/o.n,l=o.ci*w;const k=o.k,fs=fsOf(o.h,o.n,isP);
+    if(isP)return'<button type="button" class="pb" style="top:'+o.top+'px;height:'+o.h+'px;left:calc('+l+'% + 2px);width:calc('+w+'% - 4px);font-size:'+fs+'px;font-family:Jua,sans-serif" data-p="'+side+'|'+esc(k[0])+'">'+esc(k[0])+'</button>';
+    return'<button type="button" class="kb '+k[4]+'" style="top:'+o.top+'px;height:'+o.h+'px;left:calc('+l+'% + 2px);width:calc('+w+'% - 4px);font-size:'+(o.h<30?Math.max(12,Math.min(15,o.h-6)):fs)+'px" data-k="'+side+'|'+esc(k[0])+'" title="'+esc(k[0]+' '+k[3])+'">'+(o.h<30?'<span style="white-space:nowrap;font-family:Jua,sans-serif">'+esc(k[0].replace(/\(.*\)/,''))+'</span>':'<span class="kn"><span class="mk">'+MK[k[4]][0]+'</span>'+esc(k[0])+'</span><small>'+k[3]+'</small>')+'</button>'}).join("")+'</div>'};
   let ax='<div class="kcol">';for(let y=930;y>=586;y-=(y>600?(y%10?y%10:10):1)){if(y%20&&y!==586&&y!==930)continue;ax+='<div class="yl" style="top:'+yOf(y)+'px">'+y+'</div>'}ax+='</div>';
   const ev=KEV.map(([y,t])=>'<div class="ev" style="top:'+yOf(y)+'px"><span title="BC '+y+'">'+y+' '+esc(t)+'</span></div>').join("");
   $("h-kings").innerHTML='<div class="legend"><span>△ 선한 왕 <b style="background:#d9f2cf;border:1px solid #333"></b></span><span>▼ 악한 왕 <b style="background:#ffd9d2;border:1px solid #333"></b></span><span>◑ 선했다가 악해짐</span><span><b style="background:#e6f1fb;border:1px dashed #2f86c4"></b>선지자</span></div>'+
