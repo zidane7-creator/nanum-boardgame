@@ -49,7 +49,7 @@ h1{font-weight:normal;text-align:center;font-size:clamp(30px,7vw,44px);margin:6p
 @media (max-width:820px){.game{grid-template-columns:1fr}}
 .boardwrap{padding:10px}
 #board{display:block;width:100%;height:auto;touch-action:manipulation;user-select:none;-webkit-user-select:none}
-#board.zoomed{cursor:grab}#board.dragging{cursor:grabbing}
+#board{cursor:grab}#board.zoomed{cursor:grab}#board.dragging{cursor:grabbing}
 .bview{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 4px 6px}
 .bview label{display:flex;align-items:center;gap:8px;font-size:15px}
 .bview input[type=range]{width:150px;accent-color:#e8503a}
@@ -132,8 +132,9 @@ h1{font-weight:normal;text-align:center;font-size:clamp(30px,7vw,44px);margin:6p
   <section id="play" hidden>
     <div class="game">
       <div class="card boardwrap"><div class="bview"><label>앵글 <span class="hint">위에서</span><input type="range" id="tilt" min="0" max="68" step="1" aria-label="윷판 앵글 (위에서 보기 ↔ 눕혀서 보기)"><span class="hint">옆에서</span></label>
+        <label>회전 <button class="sm" id="rotL" title="왼쪽으로 돌리기" aria-label="왼쪽으로 돌리기">⟲</button><input type="range" id="yaw" min="-180" max="180" step="1" aria-label="윷판 좌우 회전"><button class="sm" id="rotR" title="오른쪽으로 돌리기" aria-label="오른쪽으로 돌리기">⟳</button></label>
         <span class="zm"><button class="sm" id="zout" title="축소" aria-label="축소">－</button><span id="zval">100%</span><button class="sm" id="zin" title="확대" aria-label="확대">＋</button><button class="sm" id="zreset" title="원래 크기·앵글로" aria-label="원래대로">↺</button></span></div>
-        <svg id="board" viewBox="0 0 700 520" aria-label="윷판"></svg><p class="bhint">Ctrl + 마우스 휠로 확대·축소 · 확대했을 때는 판을 끌어서 옮길 수 있어요</p></div>
+        <svg id="board" viewBox="0 0 700 520" aria-label="윷판"></svg><p class="bhint">판을 좌우로 끌면 돌아가고, 위아래로 끌면 앵글이 바뀌어요 · Ctrl + 마우스 휠로 확대·축소 · 확대했을 때는 끌어서 옮겨요</p></div>
       <div class="card" id="panel">
         <div class="turn" id="turn"></div>
         <div class="sticks" id="sticks"></div>
@@ -281,10 +282,11 @@ function win(t){const tm=G.teams[t];addLog(`🎉 ${tm.name} 승리!`);
 
 /* ---------- 그리기 ---------- */
 /* 입체 윷판: 판(600×600 좌표)을 비스듬히 눕혀 원근감 있게 그려요. 가까운(아래) 쪽이 크게 보여요 */
-let TH,CO,SI;const DD=900,SC=.84,CX=0,CY=0,DEF_TILT=46;function setTilt(d){TH=d*Math.PI/180;CO=Math.cos(TH);SI=Math.sin(TH)}
-const VIEW={tilt:DEF_TILT,zoom:1,c:null};try{const o=JSON.parse(localStorage.getItem("yut:view")||"null");if(o&&o.tilt>=0&&o.tilt<=68)VIEW.tilt=+o.tilt}catch(e){}
-setTilt(VIEW.tilt);let BASE={x:-350,y:-260,w:700,h:520};
-function pj(x,y){const u=x-300,v=y-300,f=DD/(DD-v*SI);return{x:CX+u*f*SC,y:CY+v*CO*f*SC,f:f*SC}}
+let TH,CO,SI,YC=1,YS=0;const DD=900,SC=.84,CX=0,CY=0,DEF_TILT=46;function setTilt(d){TH=d*Math.PI/180;CO=Math.cos(TH);SI=Math.sin(TH)}
+function setYaw(d){const a=d*Math.PI/180;YC=Math.cos(a);YS=Math.sin(a)}
+const VIEW={tilt:DEF_TILT,yaw:0,zoom:1,c:null};try{const o=JSON.parse(localStorage.getItem("yut:view")||"null");if(o&&o.tilt>=0&&o.tilt<=68)VIEW.tilt=+o.tilt;if(o&&Math.abs(o.yaw)<=180)VIEW.yaw=+o.yaw}catch(e){}
+setTilt(VIEW.tilt);setYaw(VIEW.yaw);let BASE={x:-350,y:-260,w:700,h:520};
+function pj(x,y){const u0=x-300,v0=y-300,u=u0*YC-v0*YS,v=u0*YS+v0*YC,f=DD/(DD-v*SI);return{x:CX+u*f*SC,y:CY+v*CO*f*SC,f:f*SC}}
 const r1=n=>Math.round(n*10)/10;
 function mixHex(a,b,t){const p=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)),A=p(a),B=p(b);return"#"+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,"0")).join("")}
 /* 양 한 마리 (발끝 가운데가 0,0 · 오른쪽을 봐요). 털은 팀 색을 옅게, 목에 팀 색 스카프, 몸에 말 번호 */
@@ -302,15 +304,15 @@ function drawBoard(){const b=$("board");let h="";
   const pts=[],R0=26,A0=30,A1=570,cs=[[A1-R0,A1-R0,0],[A0+R0,A1-R0,90],[A0+R0,A0+R0,180],[A1-R0,A0+R0,270]];
   cs.forEach(([cx,cy,st])=>{for(let k=0;k<=6;k++){const t=(st+k*15)*Math.PI/180;pts.push(pj(cx+R0*Math.cos(t),cy+R0*Math.sin(t)))}});
   const T=38,dn=p=>({x:p.x,y:p.y+T*p.f*SI});
-  {const xs=pts.map(p=>p.x),ys=pts.map(p=>p.y),yb=pts.map(p=>dn(p).y);BASE={x:Math.min(...xs)-24,y:Math.min(...ys)-100};BASE.w=Math.max(...xs)+24-BASE.x;BASE.h=Math.max(...yb)+56-BASE.y}
+  {const ring=[];for(let k=0;k<36;k++){const a=k*Math.PI/18;ring.push(pj(300+382*Math.cos(a),300+382*Math.sin(a)))}const xs=ring.map(p=>p.x),ys=ring.map(p=>p.y),yb=ring.map(p=>dn(p).y);BASE={x:Math.min(...xs)-24,y:Math.min(...ys)-100};BASE.w=Math.max(...xs)+24-BASE.x;BASE.h=Math.max(...yb)+56-BASE.y}
   const poly=(ps,attr)=>`<polygon points="${ps.map(p=>r1(p.x)+","+r1(p.y)).join(" ")}" ${attr}/>`;
-  const c0=pj(300,560),cl=pj(30,570),cr=pj(570,570);h+=`<ellipse cx="${r1(c0.x)}" cy="${r1(c0.y+T*c0.f*SI+10)}" rx="${r1((cr.x-cl.x)/2+30)}" ry="${r1(12+26*SI)}" fill="rgba(60,40,20,.18)"/>`;
-  for(let i=0;i<pts.length;i++){const p=pts[i],q=pts[(i+1)%pts.length];h+=poly([p,q,dn(q),dn(p)],'fill="#b98a55"')}
+  {const bx=pts.map(p=>p.x),by=pts.map(p=>dn(p).y),cxs=(Math.min(...bx)+Math.max(...bx))/2,cys=Math.max(...by);h+=`<ellipse cx="${r1(cxs)}" cy="${r1(cys-6)}" rx="${r1((Math.max(...bx)-Math.min(...bx))/2+20)}" ry="${r1(12+26*SI)}" fill="rgba(60,40,20,.18)"/>`}
+  {const sides=[];for(let i=0;i<pts.length;i++){const p=pts[i],q=pts[(i+1)%pts.length];sides.push([p.y+q.y,poly([p,q,dn(q),dn(p)],'fill="#b98a55" stroke="#a47744" stroke-width="1"')])}sides.sort((a,b)=>a[0]-b[0]).forEach(s=>h+=s[1])}
   h+=poly(pts.map(dn),'fill="none" stroke="#6b4f33" stroke-width="3"');
   h+=poly(pts,'fill="#f7e6c4" stroke="#8a6a48" stroke-width="4"');
   const seg=(a,c)=>{const p=pj(P[a].x,P[a].y),q=pj(P[c].x,P[c].y);return `<line class="ln" x1="${r1(p.x)}" y1="${r1(p.y)}" x2="${r1(q.x)}" y2="${r1(q.y)}" stroke-width="${r1(6*(p.f+q.f)/2)}"/>`};
   h+=seg("o0","o5")+seg("o5","o10")+seg("o10","o15")+seg("o15","o0")+seg("o5","o15")+seg("o10","o0");
-  const nodes=Object.keys(P).sort((a,c)=>P[a].y-P[c].y);
+  const nodes=Object.keys(P).sort((a,c)=>pj(P[a].x,P[a].y).y-pj(P[c].x,P[c].y).y);
   for(const n of nodes){const p=pj(P[n].x,P[n].y),r=(BIG.has(n)?26:15)*p.f;
     h+=`<ellipse class="ndb" cx="${r1(p.x)}" cy="${r1(p.y+5*p.f*SI)}" rx="${r1(r)}" ry="${r1(r*CO)}"/><ellipse class="nd${BIG.has(n)?" big":""}${n==="o0"?" start":""}" cx="${r1(p.x)}" cy="${r1(p.y)}" rx="${r1(r)}" ry="${r1(r*CO)}"/>`}
   const st=pj(P.o0.x,P.o0.y),cc=pj(P.C.x,P.C.y+38);
@@ -334,21 +336,24 @@ const ZMIN=1,ZMAX=4;
 function vb(){const w=BASE.w/VIEW.zoom,h=BASE.h/VIEW.zoom;let c=VIEW.c||{x:BASE.x+BASE.w/2,y:BASE.y+BASE.h/2};
   c={x:Math.min(Math.max(c.x,BASE.x+w/2),BASE.x+BASE.w-w/2),y:Math.min(Math.max(c.y,BASE.y+h/2),BASE.y+BASE.h-h/2)};VIEW.c=VIEW.zoom>1?c:null;return{x:c.x-w/2,y:c.y-h/2,w,h}}
 function applyView(){const v=vb(),b=$("board");b.setAttribute("viewBox",[v.x,v.y,v.w,v.h].map(r1).join(" "));b.classList.toggle("zoomed",VIEW.zoom>1);
-  $("zval").textContent=Math.round(VIEW.zoom*100)+"%";$("zout").disabled=VIEW.zoom<=ZMIN;$("zin").disabled=VIEW.zoom>=ZMAX;$("tilt").value=VIEW.tilt}
+  $("zval").textContent=Math.round(VIEW.zoom*100)+"%";$("zout").disabled=VIEW.zoom<=ZMIN;$("zin").disabled=VIEW.zoom>=ZMAX;$("tilt").value=VIEW.tilt;$("yaw").value=VIEW.yaw}
 /* 화면의 (mx,my) 지점을 기준으로 확대 · 그 지점이 제자리에 있게 */
 function zoomAt(z,mx,my){const b=$("board"),r=b.getBoundingClientRect(),v=vb();z=Math.min(ZMAX,Math.max(ZMIN,z));
   const fx=mx==null?.5:(mx-r.left)/r.width,fy=my==null?.5:(my-r.top)/r.height,px=v.x+fx*v.w,py=v.y+fy*v.h;
   VIEW.zoom=z;const w=BASE.w/z,h=BASE.h/z;VIEW.c={x:px-fx*w+w/2,y:py-fy*h+h/2};applyView()}
 $("board").addEventListener("wheel",e=>{if(!e.ctrlKey)return;e.preventDefault();zoomAt(VIEW.zoom*Math.exp(-e.deltaY*.0018),e.clientX,e.clientY)},{passive:false});
 $("zin").onclick=()=>zoomAt(VIEW.zoom*1.25);$("zout").onclick=()=>zoomAt(VIEW.zoom/1.25);
-$("zreset").onclick=()=>{VIEW.zoom=1;VIEW.c=null;VIEW.tilt=DEF_TILT;setTilt(DEF_TILT);saveView();drawBoard()};
+$("zreset").onclick=()=>{VIEW.zoom=1;VIEW.c=null;VIEW.tilt=DEF_TILT;setTilt(DEF_TILT);VIEW.yaw=0;setYaw(0);saveView();drawBoard()};
+function turnTo(d,anim){d=((d+540)%360)-180;if(!anim){VIEW.yaw=d;setYaw(d);drawBoard();return}const a0=VIEW.yaw,diff=((d-a0+540)%360)-180,t0=performance.now();const st=n=>{const k=Math.min(1,(n-t0)/350),e=1-Math.pow(1-k,3);VIEW.yaw=((a0+diff*e+540)%360)-180;setYaw(VIEW.yaw);drawBoard();if(k<1)requestAnimationFrame(st);else saveView()};requestAnimationFrame(st)}
+$("rotL").onclick=()=>turnTo(VIEW.yaw-45,1);$("rotR").onclick=()=>turnTo(VIEW.yaw+45,1);
+$("yaw").addEventListener("input",e=>turnTo(+e.target.value));$("yaw").addEventListener("change",()=>saveView());
 let DRAG=null;
-$("board").addEventListener("pointerdown",e=>{if(VIEW.zoom<=1||e.button!==0||e.target.closest(".tok.can"))return;const v=vb(),r=$("board").getBoundingClientRect();
+$("board").addEventListener("pointerdown",e=>{if(e.button!==0||e.target.closest(".tok.can"))return;if(VIEW.zoom<=1){DRAG={rot:1,x:e.clientX,y:e.clientY,yaw:VIEW.yaw,tilt:VIEW.tilt};$("board").setPointerCapture(e.pointerId);$("board").classList.add("dragging");return}const v=vb(),r=$("board").getBoundingClientRect();
   DRAG={x:e.clientX,y:e.clientY,c:{x:v.x+v.w/2,y:v.y+v.h/2},k:v.w/r.width,moved:false};$("board").setPointerCapture(e.pointerId);$("board").classList.add("dragging")});
-$("board").addEventListener("pointermove",e=>{if(!DRAG)return;const dx=e.clientX-DRAG.x,dy=e.clientY-DRAG.y;if(Math.abs(dx)+Math.abs(dy)>3)DRAG.moved=true;
+$("board").addEventListener("pointermove",e=>{if(!DRAG)return;if(DRAG.rot){const dx=e.clientX-DRAG.x,dy=e.clientY-DRAG.y;VIEW.yaw=((DRAG.yaw-dx*.5+540)%360)-180;setYaw(VIEW.yaw);VIEW.tilt=Math.max(0,Math.min(68,Math.round(DRAG.tilt+dy*.25)));setTilt(VIEW.tilt);drawBoard();return}const dx=e.clientX-DRAG.x,dy=e.clientY-DRAG.y;if(Math.abs(dx)+Math.abs(dy)>3)DRAG.moved=true;
   VIEW.c={x:DRAG.c.x-dx*DRAG.k,y:DRAG.c.y-dy*DRAG.k};applyView()});
-const endDrag=()=>{DRAG=null;$("board").classList.remove("dragging")};$("board").addEventListener("pointerup",endDrag);$("board").addEventListener("pointercancel",endDrag);
-function saveView(){try{localStorage.setItem("yut:view",JSON.stringify({tilt:VIEW.tilt}))}catch(e){}}
+const endDrag=()=>{if(DRAG&&DRAG.rot)saveView();DRAG=null;$("board").classList.remove("dragging")};$("board").addEventListener("pointerup",endDrag);$("board").addEventListener("pointercancel",endDrag);
+function saveView(){try{localStorage.setItem("yut:view",JSON.stringify({tilt:VIEW.tilt,yaw:Math.round(VIEW.yaw)}))}catch(e){}}
 $("tilt").addEventListener("input",e=>{VIEW.tilt=+e.target.value;setTilt(VIEW.tilt);drawBoard()});$("tilt").addEventListener("change",saveView);
 function drawPanel(){if(!G)return;const t=G.teams[G.cur];$("panel").style.setProperty("--tc",t.color);
   $("turn").style.setProperty("--tc",t.color);
