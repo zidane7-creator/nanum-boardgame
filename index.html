@@ -80,6 +80,8 @@ html.sc-night .parade{filter:brightness(1.35)}
 .sign i{display:block;width:8px;height:16px;background:var(--wood2)}
 .pen:nth-child(2) .sign{transform:translateX(-50%) rotate(2deg)}
 .flock{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-end;gap:10px 16px}
+/* 우리 안에서 양 떼를 세로 가운데로 */
+#ranch .pen{display:flex;flex-direction:column;justify-content:center;padding-top:36px;padding-bottom:36px}@media (max-width:560px){#ranch .pen{padding-top:32px;padding-bottom:32px}}#ranch .pen>.flock{width:100%}
 .flock .brk{flex-basis:100%;height:0}
 .flock[style*="--cols"] .sheep{min-width:0;flex:none;width:min(clamp(74px,19vw,128px),calc((100% - (var(--cols) - 1) * var(--fg,16px)) / var(--cols)))}
 @media (max-width:560px){.flock{--fg:8px}}
