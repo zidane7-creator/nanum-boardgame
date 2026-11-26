@@ -24,6 +24,15 @@ button:active{transform:translateY(2px);box-shadow:0 1px 0 #b79ce3}button:disabl
 .tabs{display:flex;gap:8px;margin:14px 0}
 .tabs button{flex:1;font-size:19px;padding:11px}.tabs button.on{background:var(--accent);color:#fff;border-color:#6d3fc0;box-shadow:0 3px 0 #552c9c}
 .hint{color:#7d6a8e;font-size:14px}
+
+/* 캡처용 전체 보기 */
+#cap{position:fixed;inset:0;z-index:2147483600;background:radial-gradient(circle at 50% 40%,#f3e9ff,#d9c5f3 70%);display:flex;align-items:center;justify-content:center;padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom))}
+#cap img{max-width:100%;max-height:100%;width:auto;height:auto;border-radius:18px;box-shadow:0 18px 50px rgba(60,30,110,.35)}
+#cap .tip{position:absolute;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);background:rgba(40,25,60,.82);color:#fff;font-family:Jua;padding:8px 16px;border-radius:14px;white-space:nowrap;transition:opacity .6s;font-size:15px}
+#cap .tip.hide{opacity:0}
+#cap .x{position:absolute;right:12px;top:calc(12px + env(safe-area-inset-top));width:38px;height:38px;border-radius:50%;padding:0;font-size:18px;background:rgba(255,255,255,.75);box-shadow:none;transition:opacity .6s}
+#cap .x.hide{opacity:0}
+body.capon #homeFab,body.capon #siteNav,body.capon #siteGuideBtn{display:none!important}
 #toast{position:fixed;left:50%;bottom:30px;transform:translate(-50%,20px);background:#3d2f4a;color:#fff;padding:10px 18px;border-radius:14px;opacity:0;transition:.25s;z-index:999;pointer-events:none;font-family:Jua}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 /* 뽑기 기계 */
@@ -275,16 +284,23 @@ function status(){const s=$('#status');clearInterval(cdT);
     if(d<=0||canDraw()){status();showToday();return}s.innerHTML=`<div class="big">오늘은 이미 뽑았어요 ✨</div><div class="cd">${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}</div><p class="hint">다음 기회까지 남은 시간 (0시에 새 기회)</p>`};tick();cdT=setInterval(tick,1000)}
 function cardHTML(p,flip){return`<div class="pc${flip?' flip':''} t${p.t}" id="pc"><div class="face back"><b>✦<br>BIBLE<br>PHOTOCARD<br>✦</b></div><div class="face front"><img alt="${esc(p.n)} 포토카드" src="${cardURL(p)}"><div class="shine"></div></div></div>`}
 function showToday(){const o=$('#out');const t=ST.album.filter(a=>a.d===today()).pop();if(!t){o.innerHTML=canDraw()?`<p class="hint" style="margin-top:120px;text-align:center">🎰 기계의 버튼을 눌러 보세요!</p>`:'';return}const p=BYN[t.n];if(!p){o.innerHTML='';return}
-  o.innerHTML=`<div class="hint" style="margin-bottom:8px">오늘 뽑은 카드 · ${dotDate(t.d)}</div>${cardHTML(p,true)}<div class="acts"><button id="sv">💾 이미지 저장</button><button id="toAl">📒 앨범 보기</button></div>`;bindActs(p)}
-function bindActs(p){$('#sv').onclick=()=>saveImg(p);$('#toAl').onclick=()=>tab('album')}
+  o.innerHTML=`<div class="hint" style="margin-bottom:8px">오늘 뽑은 카드 · ${dotDate(t.d)}</div>${cardHTML(p,true)}<div class="acts"><button id="cv">🔍 전체 보기 (캡처)</button><button id="sv">💾 이미지 저장</button><button id="toAl">📒 앨범 보기</button></div>`;bindActs(p)}
+
+/* 휴대폰에서 캡처하기 좋게 카드만 화면 가득 보여 줘요 */
+function capView(p){const o=document.createElement('div');o.id='cap';o.innerHTML=`<img alt="${esc(p.n)} 포토카드" src="${cardURL(p)}"><button class="x" aria-label="닫기">✕</button><div class="tip">📱 지금 화면을 캡처하세요 · 화면을 누르면 닫혀요</div>`;document.body.appendChild(o);document.body.classList.add('capon');
+  const el2=document.documentElement;try{const r=(el2.requestFullscreen||el2.webkitRequestFullscreen);if(r){const q=r.call(el2);if(q&&q.catch)q.catch(()=>{})}}catch(_){}
+  const hideT=setTimeout(()=>{o.querySelectorAll('.tip,.x').forEach(e=>e.classList.add('hide'))},2600);
+  const close=()=>{clearTimeout(hideT);o.remove();document.body.classList.remove('capon');try{if(document.fullscreenElement||document.webkitFullscreenElement)(document.exitFullscreen||document.webkitExitFullscreen).call(document)}catch(_){}};
+  o.onclick=close;document.addEventListener('keydown',function k(e){if(e.key==='Escape'){close();document.removeEventListener('keydown',k)}})}
+function bindActs(p){$('#sv').onclick=()=>saveImg(p);$('#cv').onclick=()=>capView(p);$('#toAl').onclick=()=>tab('album')}
 function saveImg(p){drawCard(p).toBlob(b=>{const name='포토카드_'+p.n.replace(/\s+/g,'')+'.png';if(window.SAVEFILE)window.SAVEFILE(b,name);else{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click()}},'image/png')}
 $('#knob').onclick=async()=>{if(!canDraw()){status();return}const p=pick();ST.last=today();ST.album.push({n:p.n,d:today()});save();updCnt();
   $('#knob').disabled=true;const m=$('#mach');m.classList.add('spin');$('#status').innerHTML='<div class="big">두근두근… 🎲</div>';cardURL(p);
   await new Promise(r=>setTimeout(r,1700));m.classList.remove('spin');
   const o=$('#out');o.innerHTML=`<div class="hint" style="margin-bottom:8px">카드가 나왔어요!</div>${cardHTML(p,false)}<div class="tapme">👆 카드를 눌러 뒤집어 보세요</div>`;const pc=$('#pc');pc.classList.add('rise');
   if(innerWidth<=760)o.scrollIntoView({behavior:'smooth',block:'center'});
-  pc.onclick=()=>{if(pc.classList.contains('flip'))return;pc.classList.remove('rise');void pc.offsetWidth;pc.classList.add('flip');const b=document.createElement('div');b.className='burst';const em=['✨','⭐','💜','🌟','✦','💖'];for(let i=0;i<18;i++){const a=i/18*Math.PI*2,d=120+Math.random()*80;const s=document.createElement('i');s.textContent=em[i%em.length];s.style.setProperty('--x',Math.cos(a)*d+'px');s.style.setProperty('--y',Math.sin(a)*d+'px');b.appendChild(s)}o.appendChild(b);setTimeout(()=>b.remove(),1300);
-    setTimeout(()=>{const tm=o.querySelector('.tapme');if(tm)tm.outerHTML=`<div class="tapme" style="animation:none">🎉 ${esc(p.n)} 카드를 얻었어요! 앨범에 쏙 넣었어요</div><div class="acts"><button id="sv">💾 이미지 저장</button><button id="toAl">📒 앨범 보기</button></div>`;bindActs(p)},900)};
+  pc.onclick=()=>{if(pc.classList.contains('flip')){capView(p);return}pc.classList.remove('rise');void pc.offsetWidth;pc.classList.add('flip');const b=document.createElement('div');b.className='burst';const em=['✨','⭐','💜','🌟','✦','💖'];for(let i=0;i<18;i++){const a=i/18*Math.PI*2,d=120+Math.random()*80;const s=document.createElement('i');s.textContent=em[i%em.length];s.style.setProperty('--x',Math.cos(a)*d+'px');s.style.setProperty('--y',Math.sin(a)*d+'px');b.appendChild(s)}o.appendChild(b);setTimeout(()=>b.remove(),1300);
+    setTimeout(()=>{const tm=o.querySelector('.tapme');if(tm)tm.outerHTML=`<div class="tapme" style="animation:none">🎉 ${esc(p.n)} 카드를 얻었어요! 앨범에 쏙 넣었어요</div><div class="acts"><button id="cv">🔍 전체 보기 (캡처)</button><button id="sv">💾 이미지 저장</button><button id="toAl">📒 앨범 보기</button></div>`;bindActs(p)},900)};
   status()};
 
 /* ============ 앨범 ============ */
@@ -300,7 +316,7 @@ function renderAlbum(anim){const A=ST.album,el2=$('#tAlbum');const u=new Set(A.m
     <div class="pnav"><button id="pp" ${PG<=0?'disabled':''}>◀</button><span>${PG+1} / ${pages} 쪽</span><button id="pn" ${PG>=pages-1?'disabled':''}>▶</button></div></div>
     <p class="hint" style="text-align:center">카드를 누르면 크게 볼 수 있어요 · 뽑은 순서대로 꽂혀요</p>`;
   $('#pp').onclick=()=>{PG--;renderAlbum(true)};$('#pn').onclick=()=>{PG++;renderAlbum(true)};
-  el2.querySelectorAll('.pocket.has').forEach(b=>b.onclick=()=>{const a=ST.album[+b.dataset.k],p=BYN[a.n];const o=document.createElement('div');o.className='ov';o.innerHTML=`<img alt="${esc(p.n)}" src="${cardURL(p)}"><div class="dt">${dotDate(a.d)}에 뽑았어요</div><div class="acts"><button class="s">💾 이미지 저장</button><button class="x">닫기</button></div>`;document.body.appendChild(o);o.onclick=e=>{if(e.target===o||e.target.classList.contains('x'))o.remove()};o.querySelector('.s').onclick=()=>saveImg(p)})}
+  el2.querySelectorAll('.pocket.has').forEach(b=>b.onclick=()=>{const a=ST.album[+b.dataset.k],p=BYN[a.n];const o=document.createElement('div');o.className='ov';o.innerHTML=`<img alt="${esc(p.n)}" src="${cardURL(p)}"><div class="dt">${dotDate(a.d)}에 뽑았어요</div><div class="acts"><button class="c">🔍 전체 보기 (캡처)</button><button class="s">💾 이미지 저장</button><button class="x">닫기</button></div>`;document.body.appendChild(o);o.onclick=e=>{if(e.target===o||e.target.classList.contains('x'))o.remove()};o.querySelector('.s').onclick=()=>saveImg(p);o.querySelector('.c').onclick=()=>{o.remove();capView(p)}})}
 function tab(k){document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===k));$('#tDraw').hidden=k!=='draw';$('#tAlbum').hidden=k!=='album';if(k==='album'){PG=Math.max(0,Math.ceil(ST.album.length/perPage())-1);renderAlbum()}}
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
 addEventListener('resize',()=>{if(!$('#tAlbum').hidden)renderAlbum()});
