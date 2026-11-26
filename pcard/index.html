@@ -8,7 +8,7 @@
 <meta property="og:title" content="성경 인물 포토카드 — 치영의 교회 생활 즐기기">
 <meta property="og:description" content="하루 한 번! 성경 인물 포토카드 뽑기와 나만의 앨범">
 <meta property="og:image" content="https://zidane7-creator.github.io/nanum-boardgame/assets/og.jpg">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎴</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📸</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
 <script src="../assets/jua.js"></script>
 <style>
@@ -98,7 +98,7 @@ button:active{transform:translateY(2px);box-shadow:0 1px 0 #b79ce3}button:disabl
 </head>
 <body>
 <div class="wrap">
-  <div class="top"><h1>🎴 성경 인물 포토카드</h1><span class="sp"></span><span class="hint" id="cnt"></span></div>
+  <div class="top"><h1>📸 성경 인물 포토카드</h1><span class="sp"></span><span class="hint" id="cnt"></span></div>
   <div class="tabs"><button data-tab="draw" class="on">🎰 뽑기</button><button data-tab="album">📒 앨범</button></div>
   <section id="tDraw">
     <div class="stage">
@@ -272,7 +272,7 @@ let cdT=null;
 function status(){const s=$('#status');clearInterval(cdT);
   if(canDraw()){s.innerHTML=`<div class="big">오늘의 기회가 1번 있어요! ✨</div><p class="hint">뽑기 버튼을 누르면 성경 인물 포토카드가 나와요. 이미 가진 인물은 나오지 않아요.<br>기회는 매일 밤 0시에 새로 생기고, 쌓이지 않아요.</p>`;$('#knob').disabled=false;return}
   $('#knob').disabled=true;const tick=()=>{const n=new Date(),m=new Date(n);m.setHours(24,0,0,0);const d=Math.max(0,m-n),hh=Math.floor(d/3600000),mm=Math.floor(d/60000)%60,ss=Math.floor(d/1000)%60;
-    if(d<=0||canDraw()){status();showToday();return}s.innerHTML=`<div class="big">오늘은 이미 뽑았어요 🎴</div><div class="cd">${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}</div><p class="hint">다음 기회까지 남은 시간 (0시에 새 기회)</p>`};tick();cdT=setInterval(tick,1000)}
+    if(d<=0||canDraw()){status();showToday();return}s.innerHTML=`<div class="big">오늘은 이미 뽑았어요 ✨</div><div class="cd">${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}</div><p class="hint">다음 기회까지 남은 시간 (0시에 새 기회)</p>`};tick();cdT=setInterval(tick,1000)}
 function cardHTML(p,flip){return`<div class="pc${flip?' flip':''} t${p.t}" id="pc"><div class="face back"><b>✦<br>BIBLE<br>PHOTOCARD<br>✦</b></div><div class="face front"><img alt="${esc(p.n)} 포토카드" src="${cardURL(p)}"><div class="shine"></div></div></div>`}
 function showToday(){const o=$('#out');const t=ST.album.filter(a=>a.d===today()).pop();if(!t){o.innerHTML=canDraw()?`<p class="hint" style="margin-top:120px;text-align:center">🎰 기계의 버튼을 눌러 보세요!</p>`:'';return}const p=BYN[t.n];if(!p){o.innerHTML='';return}
   o.innerHTML=`<div class="hint" style="margin-bottom:8px">오늘 뽑은 카드 · ${dotDate(t.d)}</div>${cardHTML(p,true)}<div class="acts"><button id="sv">💾 이미지 저장</button><button id="toAl">📒 앨범 보기</button></div>`;bindActs(p)}
@@ -291,7 +291,7 @@ $('#knob').onclick=async()=>{if(!canDraw()){status();return}const p=pick();ST.la
 let PG=0;
 function perPage(){return innerWidth<=760?9:18}
 function renderAlbum(anim){const A=ST.album,el2=$('#tAlbum');const u=new Set(A.map(a=>a.n)).size;
-  if(!A.length){el2.innerHTML=`<div class="binder"><div class="bhead"><h2>📒 나의 포토카드 앨범</h2></div><div class="empty-al"><div style="font-size:50px">🎴</div><p class="j" style="font-size:20px;margin:8px 0">아직 모은 카드가 없어요</p><p class="hint">뽑기에서 오늘의 카드를 뽑으면 이 앨범에 차곡차곡 들어가요.</p><button id="goDraw">🎰 뽑으러 가기</button></div></div>`;$('#goDraw').onclick=()=>tab('draw');return}
+  if(!A.length){el2.innerHTML=`<div class="binder"><div class="bhead"><h2>📒 나의 포토카드 앨범</h2></div><div class="empty-al"><div style="font-size:50px">📸</div><p class="j" style="font-size:20px;margin:8px 0">아직 모은 카드가 없어요</p><p class="hint">뽑기에서 오늘의 카드를 뽑으면 이 앨범에 차곡차곡 들어가요.</p><button id="goDraw">🎰 뽑으러 가기</button></div></div>`;$('#goDraw').onclick=()=>tab('draw');return}
   const per=perPage(),pages=Math.max(1,Math.ceil(A.length/per));PG=Math.min(PG,pages-1);const slice=A.slice(PG*per,PG*per+per);
   const pocket=(a,k)=>{if(!a)return`<div class="pocket empty">✦</div>`;const p=BYN[a.n];if(!p)return`<div class="pocket empty">?</div>`;return`<div class="pocket has t${p.t}" data-k="${PG*per+k}"><img loading="lazy" alt="${esc(p.n)}" src="${cardURL(p)}"><div class="dt">${dotDate(a.d)}</div></div>`};
   const half=per===18?[slice.slice(0,9),slice.slice(9,18)]:[slice];
