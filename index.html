@@ -63,13 +63,13 @@ html.sc-night .barn,html.sc-night .barnF{filter:brightness(1.45) saturate(1.05)}
 html.sc-night .parade{filter:brightness(1.35)}
 .barn .warm{opacity:0;transition:opacity 2.5s}html.sc-night .barn .warm{opacity:1}
 /* ranch */
-.ranch{position:relative;z-index:2;max-width:1320px;margin:0 auto;padding:30px 16px 20px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(30px,5vw,48px) clamp(14px,3vw,36px)}
+.ranch{position:relative;z-index:2;max-width:1640px;margin:0 auto;padding:30px 16px 20px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(30px,5vw,48px) clamp(12px,1.8vw,26px)}
 .ranch.has-side{max-width:1220px;grid-template-columns:1fr 1fr minmax(0,.62fr)}
 /* 교회학교·선교·섬김: 오른쪽에 세로로 */
 .side{grid-column:3;grid-row:1 / span 2;display:flex;flex-direction:column;gap:clamp(30px,5vw,48px)}
 .side .pen.small{flex:1;min-height:120px}
 @media (max-width:900px){.ranch{grid-template-columns:1fr 1fr}.side{grid-column:1 / -1;grid-row:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(14px,3vw,36px)}.side .pen.small{min-height:90px}}
-.pen{position:relative;min-height:220px;padding:46px 10px 24px;background:var(--pen);background-image:radial-gradient(#b2dc78 18%,transparent 20%),radial-gradient(#b2dc78 18%,transparent 20%);background-size:26px 26px;background-position:0 0,13px 13px;border-radius:4px;box-shadow:inset 0 0 0 6px var(--fence),inset 0 0 0 8px var(--fence2),0 6px 0 rgba(0,0,0,.08)}
+.pen{position:relative;min-height:220px;padding:46px 10px 24px;background:var(--pen);background-image:url(data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%2726%27%20height=%2726%27%3E%3Cg%20fill=%27none%27%20stroke=%27%23b2dc78%27%20stroke-width=%271.7%27%20stroke-linecap=%27round%27%3E%3Cpath%20d=%27M9%2017q1-4-1.5-7%27/%3E%3Cpath%20d=%27M11%2017q0-5%201.5-8%27/%3E%3Cpath%20d=%27M13%2017q1-3%203.5-5%27/%3E%3C/g%3E%3C/svg%3E),url(data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%2726%27%20height=%2726%27%3E%3Cg%20fill=%27none%27%20stroke=%27%23a7d26c%27%20stroke-width=%271.7%27%20stroke-linecap=%27round%27%3E%3Cpath%20d=%27M9%2018q1-4-1.5-7%27/%3E%3Cpath%20d=%27M11%2018q0-5%201.5-8%27/%3E%3Cpath%20d=%27M13%2018q1-3%203.5-5%27/%3E%3C/g%3E%3C/svg%3E);background-size:26px 26px;background-position:0 0,13px 13px;border-radius:4px;box-shadow:inset 0 0 0 6px var(--fence),inset 0 0 0 8px var(--fence2),0 6px 0 rgba(0,0,0,.08)}
 .pen::before,.pen::after{content:"";position:absolute;left:-6px;right:-6px;height:22px;background:repeating-linear-gradient(90deg,var(--fence2) 0 2px,var(--fence) 2px 11px,var(--fence2) 11px 13px,transparent 13px 19px);border-radius:3px}
 .pen.blank .sign b{visibility:hidden}.pen.blank .sign{min-width:90px}
 .pen::before{top:-12px}.pen::after{bottom:-12px}
@@ -378,7 +378,7 @@ $("list").innerHTML=ZONES.filter(z=>z.name).map(z=>'<li><b>'+z.name+'</b> — '+
  let t;const go=()=>{clearTimeout(t);t=setTimeout(fit,60)};
  window.__fitLabels=go;go();addEventListener("resize",go);if(document.fonts)document.fonts.ready.then(go);setTimeout(go,1200)})();
 </script>
-<script src="assets/daynight.js?v=20261116d"></script>
+<script src="assets/daynight.js?v=20261127"></script>
 <script>
 /* 예수님이 언덕 위에서 양 떼를 몰고 다님 (앞 양이 길을 내고, 나머지 양과 예수님이 그 길을 따라감) */
 (function(){

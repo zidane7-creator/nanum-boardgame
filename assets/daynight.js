@@ -198,11 +198,11 @@ var P2 = function (ss, a, b) { return "html.ss-" + ss + " .tree.t1 path:not([fil
     "html.ss-autumn:not(.sc-night){--sky1:#86c6e8;--sky2:#e6f1f2;--grass:#cfcf6c;--grass2:#b9b553;--pen:#e2dfa0;--scene-grass:#cfcf6c}" +
     "html.ss-autumn.sc-night{--grass:#6d6a3a;--grass2:#5c5830;--pen:#a8a46c;--scene-grass:#6d6a3a}" +
     R3("html.ss-autumn .tree.t3", "#f0a03a", "#e8703a", "#f4c24a") + R3("html.ss-autumn #scene .tr", "#f0a03a", "#e8703a", "#f4c24a") +
-    "html.ss-autumn .ranch .pen{background-image:radial-gradient(#cfc77a 18%,transparent 20%),radial-gradient(#cfc77a 18%,transparent 20%)!important}" +
+    "html.ss-autumn .ranch .pen{background-image:url(data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%2726%27%20height=%2726%27%3E%3Cg%20fill=%27none%27%20stroke=%27%23cfc77a%27%20stroke-width=%271.7%27%20stroke-linecap=%27round%27%3E%3Cpath%20d=%27M9%2017q1-4-1.5-7%27/%3E%3Cpath%20d=%27M11%2017q0-5%201.5-8%27/%3E%3Cpath%20d=%27M13%2017q1-3%203.5-5%27/%3E%3C/g%3E%3C/svg%3E),url(data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%2726%27%20height=%2726%27%3E%3Cg%20fill=%27none%27%20stroke=%27%23cfc77a%27%20stroke-width=%271.7%27%20stroke-linecap=%27round%27%3E%3Cpath%20d=%27M9%2018q1-4-1.5-7%27/%3E%3Cpath%20d=%27M11%2018q0-5%201.5-8%27/%3E%3Cpath%20d=%27M13%2018q1-3%203.5-5%27/%3E%3C/g%3E%3C/svg%3E)!important}" +
     /* 겨울: 눈 덮인 들판, 하얀 나무 */
     "html.ss-winter:not(.sc-night){--sky1:#a3cfe8;--sky2:#eaf3f8;--grass:#cdc69a;--grass2:#b8b081;--pen:#e0dbb7;--scene-grass:#cdc69a}" +
     "html.ss-winter.sc-night{--grass:#66644c;--grass2:#57553f;--pen:#a09c80;--scene-grass:#66644c}" +
-    "html.ss-winter .ranch .pen{background-image:radial-gradient(#cbc493 18%,transparent 20%),radial-gradient(#cbc493 18%,transparent 20%)!important}" +
+    "html.ss-winter .ranch .pen{background-image:url(data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%2726%27%20height=%2726%27%3E%3Cg%20fill=%27none%27%20stroke=%27%23cbc493%27%20stroke-width=%271.7%27%20stroke-linecap=%27round%27%3E%3Cpath%20d=%27M9%2017q1-4-1.5-7%27/%3E%3Cpath%20d=%27M11%2017q0-5%201.5-8%27/%3E%3Cpath%20d=%27M13%2017q1-3%203.5-5%27/%3E%3C/g%3E%3C/svg%3E),url(data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%2726%27%20height=%2726%27%3E%3Cg%20fill=%27none%27%20stroke=%27%23cbc493%27%20stroke-width=%271.7%27%20stroke-linecap=%27round%27%3E%3Cpath%20d=%27M9%2018q1-4-1.5-7%27/%3E%3Cpath%20d=%27M11%2018q0-5%201.5-8%27/%3E%3Cpath%20d=%27M13%2018q1-3%203.5-5%27/%3E%3C/g%3E%3C/svg%3E)!important}" +
     /* 잎이 다 떨어진 나무: 잎(동그라미·뾰족한 잎)을 숨기고 가지를 보여 줌 */
     ".tree .bare,#scene .tr .bare{display:none}" +
     "html.ss-winter:not(.wx-snow) .tree .bare,html.ss-winter:not(.wx-snow) #scene .tr .bare{display:inline}" +
@@ -210,7 +210,7 @@ var P2 = function (ss, a, b) { return "html.ss-" + ss + " .tree.t1 path:not([fil
     /* 눈 오는 날에만: 하얀 들판 + 눈 덮인 나무 (계절과 상관없이) */
     "html.wx-snow:not(.sc-night){--grass:#eef3f6;--grass2:#dbe5eb;--pen:#f4f7f9;--scene-grass:#eef3f6}" +
     "html.wx-snow.sc-night{--grass:#8593a0;--grass2:#73818e;--pen:#a7b4bf;--scene-grass:#8593a0}" +
-    "html.wx-snow .ranch .pen{background-image:radial-gradient(#dde6ec 18%,transparent 20%),radial-gradient(#dde6ec 18%,transparent 20%)!important}" +
+    "html.wx-snow .ranch .pen{background-image:url(data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%2726%27%20height=%2726%27%3E%3Cg%20fill=%27none%27%20stroke=%27%23dde6ec%27%20stroke-width=%271.7%27%20stroke-linecap=%27round%27%3E%3Cpath%20d=%27M9%2017q1-4-1.5-7%27/%3E%3Cpath%20d=%27M11%2017q0-5%201.5-8%27/%3E%3Cpath%20d=%27M13%2017q1-3%203.5-5%27/%3E%3C/g%3E%3C/svg%3E),url(data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%2726%27%20height=%2726%27%3E%3Cg%20fill=%27none%27%20stroke=%27%23dde6ec%27%20stroke-width=%271.7%27%20stroke-linecap=%27round%27%3E%3Cpath%20d=%27M9%2018q1-4-1.5-7%27/%3E%3Cpath%20d=%27M11%2018q0-5%201.5-8%27/%3E%3Cpath%20d=%27M13%2018q1-3%203.5-5%27/%3E%3C/g%3E%3C/svg%3E)!important}" +
     "html.wx-snow .tree circle,html.wx-snow #scene .tr circle,html.wx-snow .tree path:not([fill=none]),html.wx-snow #scene .tr path:not([fill=none]){fill:#f3f7fa!important;stroke:#9cb0bf;stroke-width:1.6}" +
     /* 떨어지는 꽃잎·낙엽·눈송이, 여름밤 반딧불 */
     ".ssfx{position:absolute;inset:0;pointer-events:none;overflow:hidden}" +
