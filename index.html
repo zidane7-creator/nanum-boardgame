@@ -330,7 +330,7 @@ function makeSheep(label,href,kids,btns){
     if(open){b.classList.remove("jump");void b.offsetWidth;b.classList.add("jump")}
     const s=document.createElement("span");s.className="bubble";s.textContent=open?SAY[Math.floor(Math.random()*SAY.length)]:"쿨쿨…";b.appendChild(s);setTimeout(()=>s.remove(),900);
     if(kids)setTimeout(()=>openGroup(label,kids,btns),250);
-    else if(href&&(/^https?:/.test(href)||NEWWIN.has(href))){window.open(href,"_blank","noopener")}else if(href)setTimeout(()=>location.href=href,450);else toast("💤 '"+label+"' 양은 아직 자고 있어요. 곧 깨어날 거예요!");
+    else if(href&&NEWWIN.has(href)){const w=Math.min(screen.availWidth||1280,1600),h=Math.min(screen.availHeight||800,1000);const x=window.open(href,"_blank","popup=yes,width="+w+",height="+h+",left=0,top=0");if(!x)location.href=href}else if(href&&/^https?:/.test(href)){window.open(href,"_blank","noopener")}else if(href)setTimeout(()=>location.href=href,450);else toast("💤 '"+label+"' 양은 아직 자고 있어요. 곧 깨어날 거예요!");
   };
   return b}
 /* 메뉴(양) 개수에 맞춰 줄을 나눠요: 4→2·2, 5→3·2, 6→3·3, 7→4·3, 8→4·4, 9→5·4, 10→5·5, 11→6·5, 12→4·4·4, 13→5·4·4, 14→5·5·4 */
