@@ -78,7 +78,8 @@ const GT={
  mtm:{n:'맨투맨',e:'🧥',sl:'long',nk:'round',rib:1,mat:['면 쭈리 (프렌치테리)','면/폴리 쭈리','특양면'],su:['20수','30수'],gm:['무기모','기모','양기모']},
  hood:{n:'후드',e:'🧥',sl:'long',nk:'hood',rib:1,mat:['면 쭈리 (프렌치테리)','면/폴리 쭈리','특양면'],su:['20수','30수'],gm:['무기모','기모','양기모']},
  varsity:{n:'과잠',e:'🎓',sl:'long',nk:'varsity',rib:1,mat:['울 몸판 + 인조가죽 팔','멜톤 울','폴리 (쭈리) 실속형','나일론'],su:null,gm:['안감 없음','일반 안감','누빔(솜) 안감'],gml:'안감'},
- wind:{n:'바람막이',e:'🌬️',sl:'long',nk:'wind',mat:['나일론 타슬란','폴리 마이크로','생활방수 코팅'],su:null,gm:['안감 없음','메쉬 안감','기모 안감'],gml:'안감'}};
+ wind:{n:'바람막이',e:'🌬️',sl:'long',nk:'wind',mat:['나일론 타슬란','폴리 마이크로','생활방수 코팅'],su:null,gm:['안감 없음','메쉬 안감','기모 안감'],gml:'안감'},
+ anorak:{n:'아노락',e:'🧥',sl:'long',nk:'anorak',mat:['나일론 타슬란','폴리 마이크로','생활방수 코팅','면/나일론 혼방'],su:null,gm:['안감 없음','메쉬 안감','기모 안감'],gml:'안감'}};
 const gOf=p=>GT[p.type]||GT.tee;
 function fixSpec(p){const t=gOf(p);if(!t.mat.includes(p.mat))p.mat=t.mat[0];if(t.su){if(!t.su.includes(p.su))p.su=t.su.includes('30수')?'30수':t.su[0]}else p.su='';if(!t.gm.includes(p.gm))p.gm=t.gm[0];
   if(t.rugby&&!p.colorCollar)p.colorCollar='#ffffff';if(p.type==='varsity'){if(!p.colorBack)p.colorBack=p.color||'#1f2a44';if(!p.colorSleeve)p.colorSleeve='#ffffff'}}
@@ -95,10 +96,10 @@ function bodyPath(side,t){const p=new Path2D();p.moveTo(372,88);
 const SLV={short:[[790,150],[965,335],[848,440],[768,362]],long:[[790,150],[868,262],[905,520],[945,905],[842,918],[808,590],[768,362]]};
 function sleevePaths(t){const R=SLV[t.sl];return[poly(R),poly(MX(R))]}
 function garment(ctx,side,p){const t=gOf(p);fixSpec(p);const W=1000,H=1100;
-  const cBody=t.nk==='varsity'?(side==='f'?p.color:p.colorBack):p.color,cSl=t.nk==='varsity'?p.colorSleeve:p.color,cCol=t.rugby?p.colorCollar:cBody,cRib=t.nk==='varsity'?cBody:shade(cBody,lum(cBody)<.3?1.15:.93);
+  const cBody=t.nk==='varsity'?(side==='f'?p.color:p.colorBack):p.color,cSl=p.colorSleeve||p.color,cCol=t.rugby?p.colorCollar:cBody,cRib=t.nk==='varsity'?cBody:shade(cBody,lum(cBody)<.3?1.15:.93);
   ctx.fillStyle='#efe8dc';ctx.fillRect(0,0,W,H);const body=bodyPath(side,t),[sr,sl]=sleevePaths(t);
   /* 후드 모자 (몸판 뒤) */
-  if(t.nk==='hood'&&side==='f'){const hd=new Path2D();hd.moveTo(345,120);hd.bezierCurveTo(330,-10,670,-10,655,120);hd.closePath();ctx.fillStyle=shade(cBody,.92);ctx.fill(hd);ctx.lineWidth=3;ctx.strokeStyle=edge(cBody);ctx.stroke(hd);
+  if((t.nk==='hood'||t.nk==='anorak')&&side==='f'){const hd=new Path2D();hd.moveTo(345,120);hd.bezierCurveTo(330,-10,670,-10,655,120);hd.closePath();ctx.fillStyle=shade(cBody,.92);ctx.fill(hd);ctx.lineWidth=3;ctx.strokeStyle=edge(cBody);ctx.stroke(hd);
     const inn=new Path2D();inn.moveTo(392,104);inn.bezierCurveTo(395,22,605,22,608,104);inn.quadraticCurveTo(500,180,392,104);ctx.fillStyle='rgba(0,0,0,.28)';ctx.fill(inn)}
   if(t.nk==='wind'){const st=new Path2D();st.moveTo(368,92);st.lineTo(372,34);st.quadraticCurveTo(500,58,628,34);st.lineTo(632,92);st.quadraticCurveTo(500,side==='f'?150:120,368,92);st.closePath();ctx.fillStyle=shade(cBody,.9);ctx.fill(st);ctx.lineWidth=3;ctx.strokeStyle=edge(cBody);ctx.stroke(st)}
   /* 그림자 */
@@ -107,25 +108,27 @@ function garment(ctx,side,p){const t=gOf(p);fixSpec(p);const W=1000,H=1100;
   ctx.lineWidth=4;ctx.strokeStyle=edge(cSl);ctx.stroke(sr);ctx.stroke(sl);ctx.strokeStyle=edge(cBody);ctx.stroke(body);
   /* 입체감 */
   const all=new Path2D();all.addPath(body);all.addPath(sr);all.addPath(sl);ctx.save();ctx.clip(all);const g=ctx.createLinearGradient(0,0,W,0);g.addColorStop(0,'rgba(0,0,0,.09)');g.addColorStop(.27,'rgba(0,0,0,0)');g.addColorStop(.73,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.1)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
-  if(t.nk==='wind'){const s=ctx.createLinearGradient(0,0,W,H);s.addColorStop(.25,'rgba(255,255,255,0)');s.addColorStop(.42,'rgba(255,255,255,.22)');s.addColorStop(.55,'rgba(255,255,255,0)');ctx.fillStyle=s;ctx.fillRect(0,0,W,H)}ctx.restore();
+  if(t.nk==='wind'||t.nk==='anorak'){const s=ctx.createLinearGradient(0,0,W,H);s.addColorStop(.25,'rgba(255,255,255,0)');s.addColorStop(.42,'rgba(255,255,255,.22)');s.addColorStop(.55,'rgba(255,255,255,0)');ctx.fillStyle=s;ctx.fillRect(0,0,W,H)}ctx.restore();
   /* 시보리(밴드): 소매 끝·밑단 */
   if(t.sl==='long'){const cuffR=[[945,905],[842,918],[836,866],[939,853]],lp=(a,b,f)=>[a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f];
     [cuffR,MX(cuffR)].forEach(c=>{const pp=poly(c);ctx.fillStyle=t.nk==='varsity'?cRib:shade(cSl,lum(cSl)<.3?1.15:.92);ctx.fill(pp);ctx.lineWidth=2;ctx.strokeStyle=edge(cSl);ctx.stroke(pp);
       if(t.nk==='varsity'){ctx.strokeStyle=cSl;ctx.lineWidth=6;[.35,.65].forEach(f=>{const a=lp(c[3],c[0],f),b=lp(c[2],c[1],f);ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke()})}})}
-  if(t.rib||t.nk==='wind'){const hem=new Path2D();hem.moveTo(232,(t.nk==='wind'?1005:985));hem.lineTo(768,(t.nk==='wind'?1005:985));hem.lineTo(768,1035);hem.quadraticCurveTo(500,1058,232,1035);hem.closePath();ctx.fillStyle=cRib;ctx.fill(hem);ctx.lineWidth=2;ctx.strokeStyle=edge(cBody);ctx.stroke(hem);
+  if(t.rib||t.nk==='wind'||t.nk==='anorak'){const hem=new Path2D();hem.moveTo(232,(t.rib?985:1005));hem.lineTo(768,(t.rib?985:1005));hem.lineTo(768,1035);hem.quadraticCurveTo(500,1058,232,1035);hem.closePath();ctx.fillStyle=cRib;ctx.fill(hem);ctx.lineWidth=2;ctx.strokeStyle=edge(cBody);ctx.stroke(hem);
     if(t.nk==='varsity'){ctx.save();ctx.clip(hem);ctx.strokeStyle=cSl;ctx.lineWidth=6;[1003,1018].forEach(y=>{ctx.beginPath();ctx.moveTo(232,y);ctx.lineTo(768,y);ctx.stroke()});ctx.restore()}
     if(t.rib){ctx.save();ctx.clip(hem);ctx.strokeStyle='rgba(0,0,0,.08)';ctx.lineWidth=2;for(let x=240;x<768;x+=12){ctx.beginPath();ctx.moveTo(x,980);ctx.lineTo(x,1060);ctx.stroke()}ctx.restore()}}
   /* 목 */
   const neckRib=(w,col)=>{ctx.beginPath();ctx.moveTo(372,88);if(side==='f'&&t.nk==='v'){ctx.lineTo(500,292);ctx.lineTo(628,88)}else ctx.quadraticCurveTo(500,side==='f'?(t.nk==='varsity'?150:215):132,628,88);ctx.lineWidth=w;ctx.strokeStyle=col;ctx.lineJoin='round';ctx.stroke()};
-  if(t.nk==='round'||t.nk==='v'||t.nk==='hood')neckRib(16,shade(cBody,lum(cBody)<.3?1.3:.85));
+  if(t.nk==='round'||t.nk==='v'||t.nk==='hood'||t.nk==='anorak')neckRib(16,shade(cBody,lum(cBody)<.3?1.3:.85));
   if(t.nk==='varsity'){neckRib(26,cRib);ctx.save();neckRib(5,cSl);ctx.restore()}
   if(t.nk==='collar'){if(side==='f'){const pl=poly([[478,190],[522,190],[522,395],[478,395]]);ctx.fillStyle=t.rugby?cCol:shade(cBody,.95);ctx.fill(pl);ctx.lineWidth=2;ctx.strokeStyle=edge(cBody);ctx.stroke(pl);
       [[500,265],[500,335]].forEach(([x,y])=>{ctx.beginPath();ctx.arc(x,y,9,0,7);ctx.fillStyle=lum(t.rugby?cCol:cBody)>.5?'#cfc6b8':'#f3ede2';ctx.fill();ctx.stroke()});
       const L=[[372,84],[492,212],[452,266],[334,114]];[L,MX(L)].forEach(c=>{const pp=poly(c);ctx.fillStyle=cCol;ctx.fill(pp);ctx.lineWidth=3;ctx.strokeStyle=edge(cCol);ctx.stroke(pp)})}
     else{neckRib(36,cCol);ctx.beginPath();ctx.moveTo(366,80);ctx.quadraticCurveTo(500,116,634,80);ctx.lineWidth=3;ctx.strokeStyle=edge(cCol);ctx.stroke()}}
-  if(t.nk==='hood'){if(side==='f'){ctx.strokeStyle=shade(cBody,lum(cBody)<.3?1.6:.6);ctx.lineWidth=5;ctx.lineCap='round';[[470,205,455,345],[530,205,545,345]].forEach(([a,b,c2,d])=>{ctx.beginPath();ctx.moveTo(a,b);ctx.quadraticCurveTo(a-6,280,c2,d);ctx.stroke()});
+  if(t.nk==='hood'||t.nk==='anorak'){if(side==='f'){ctx.strokeStyle=shade(cBody,lum(cBody)<.3?1.6:.6);ctx.lineWidth=5;ctx.lineCap='round';[[470,205,455,345],[530,205,545,345]].forEach(([a,b,c2,d])=>{ctx.beginPath();ctx.moveTo(a,b);ctx.quadraticCurveTo(a-6,280,c2,d);ctx.stroke()});
       const pk=new Path2D();pk.moveTo(330,690);pk.lineTo(670,690);pk.lineTo(705,930);pk.lineTo(295,930);pk.closePath();ctx.lineWidth=3;ctx.strokeStyle=edge(cBody);ctx.stroke(pk);ctx.beginPath();ctx.moveTo(330,690);ctx.quadraticCurveTo(300,800,300,930);ctx.moveTo(670,690);ctx.quadraticCurveTo(700,800,700,930);ctx.stroke()}
     else{const hd=new Path2D();hd.moveTo(372,92);hd.bezierCurveTo(330,250,385,430,500,438);hd.bezierCurveTo(615,430,670,250,628,92);hd.quadraticCurveTo(500,40,372,92);ctx.fillStyle=shade(cBody,.96);ctx.fill(hd);ctx.lineWidth=3;ctx.strokeStyle=edge(cBody);ctx.stroke(hd);ctx.beginPath();ctx.moveTo(500,62);ctx.lineTo(500,436);ctx.stroke()}}
+  if(t.nk==='anorak'&&side==='f'){ctx.strokeStyle=edge(cBody);ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(500,205);ctx.lineTo(500,450);ctx.stroke();ctx.lineWidth=2;for(let y=212;y<448;y+=10){ctx.beginPath();ctx.moveTo(494,y);ctx.lineTo(506,y);ctx.stroke()}ctx.fillStyle='#c9c2b6';ctx.fillRect(491,222,18,42);ctx.strokeRect(491,222,18,42);
+    ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(360,720);ctx.lineTo(640,720);ctx.stroke()}
   if(t.nk==='varsity'&&side==='f'){ctx.strokeStyle=edge(cBody);ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(500,150);ctx.lineTo(500,985);ctx.stroke();
     [260,400,540,680,820,950].forEach(y=>{ctx.beginPath();ctx.arc(500,y,11,0,7);ctx.fillStyle=lum(cBody)<.4?'#e8e2d6':'#3b2a20';ctx.fill()});
     [[300,610,340,800],[700,610,660,800]].forEach(([a,b,c2,d])=>{ctx.beginPath();ctx.moveTo(a,b);ctx.lineTo(c2,d);ctx.lineWidth=14;ctx.strokeStyle=cSl;ctx.stroke()})}
@@ -152,11 +155,12 @@ function shirtUI(){const h=$('#shirtBox'),p=P();fixSpec(p);const t=gOf(p);
    <select id="gType" style="width:100%;margin:6px 0;font-size:16px">${Object.entries(GT).map(([k,g])=>`<option value="${k}"${(p.type||'tee')===k?' selected':''}>${g.e} ${g.n}</option>`).join('')}</select>
    <div class="row" style="gap:6px"><label class="hint">재질<br><select id="gMat">${t.mat.map(m=>`<option${p.mat===m?' selected':''}>${esc(m)}</option>`).join('')}</select></label>${t.su?`<label class="hint">몇 수<br><select id="gSu">${t.su.map(m=>`<option${p.su===m?' selected':''}>${m}</option>`).join('')}</select></label>`:''}<label class="hint">${t.gml||'기모'}<br><select id="gGm">${t.gm.map(m=>`<option${p.gm===m?' selected':''}>${m}</option>`).join('')}</select></label></div>
    <div class="hint" style="margin:6px 0 8px;background:#fff6dc;border-radius:8px;padding:4px 8px">📋 ${esc(specTxt(p))}</div>
-   <b class="j" style="font-size:16px">🎨 색깔</b> <span class="hint">${t.nk==='varsity'?'팔·앞면·뒷면을 따로 골라요':t.rugby?'카라와 옷 색을 따로 골라요':'앞·뒤 모두 바뀌어요'}</span>`;
+   <b class="j" style="font-size:16px">🎨 색깔</b> <span class="hint">${t.nk==='varsity'?'팔·앞면·뒷면을 따로 골라요':t.rugby?'옷·카라·팔을 따로 골라요':'옷 색은 앞·뒤 모두, 팔은 따로 골라요'}</span>`;
   const quick=document.createElement('div');quick.className='row';quick.style.margin='6px 0';quick.innerHTML=[['#ffffff','흰색'],['#f3ede2','크림'],['#d9d4c7','그레이'],['#2b2b2b','검정'],['#1f2a44','네이비'],['#e8503a','빨강'],['#f5b82e','노랑'],['#3f9a55','초록'],['#6cb4e4','하늘'],['#c8507a','분홍'],['#7a4fb0','보라'],['#8b5a2b','브라운']].map(([c,n])=>`<button title="${n} ${c}" data-sc="${c}" style="width:28px;height:28px;padding:0;border-radius:50%;background:${c};${(p.color||'').toLowerCase()===c?'outline:3px solid #3b2a20;outline-offset:2px':''}"></button>`).join('');h.appendChild(quick);
   quick.querySelectorAll('[data-sc]').forEach(b=>b.onclick=()=>{p.color=b.dataset.sc;save();ED.draw();shirtUI();plansUI()});
-  const parts=t.nk==='varsity'?[['color','앞면'],['colorBack','뒷면'],['colorSleeve','팔']]:t.rugby?[['color','옷 색'],['colorCollar','카라']]:[['color','옷 색']];
-  parts.forEach(([k,l])=>D.colorCtl(h,l,p[k]||'#ffffff',c=>{if(c==='none')return;p[k]=c;save();ED.draw();plansUI()}));
+  const parts=t.nk==='varsity'?[['color','앞면'],['colorBack','뒷면'],['colorSleeve','팔']]:t.rugby?[['color','옷 색'],['colorCollar','카라'],['colorSleeve','팔']]:[['color','옷 색'],['colorSleeve','팔']];
+  parts.forEach(([k,l])=>D.colorCtl(h,l,p[k]||(k==='colorSleeve'?p.color:'#ffffff')||'#ffffff',c=>{if(c==='none')return;p[k]=c;save();ED.draw();plansUI()}));
+  if(t.nk!=='varsity'&&p.colorSleeve){const r=document.createElement('button');r.textContent='팔도 옷 색과 같게';r.className='sm';r.style.cssText='font-size:13px;padding:2px 8px;margin-top:4px';r.onclick=()=>{delete p.colorSleeve;save();ED.draw();shirtUI()};h.appendChild(r)}
   const upd=(k,v)=>{p[k]=v;if(k==='type')fixSpec(p);save();ED.draw();shirtUI();plansUI()};
   $('#gType').onchange=e=>upd('type',e.target.value);$('#gMat').onchange=e=>upd('mat',e.target.value);if($('#gSu'))$('#gSu').onchange=e=>upd('su',e.target.value);$('#gGm').onchange=e=>upd('gm',e.target.value)}
 function plansUI(){const h=$('#plans');h.innerHTML=S.plans.map(p=>`<button class="pl ${p.id===S.cur?'on':''}" data-pl="${p.id}"><i style="background:${esc(p.color)}"></i>${esc(p.name)} <small style="font-family:inherit;font-size:12px;opacity:.75">${gOf(p).n}</small></button>`).join('')+`<button data-new="blank">＋ 새 안</button><button data-new="copy" title="지금 안을 복사해서 새 안으로">📄 지금 안 복사</button><button data-ren>✏️ 이름</button>${S.plans.length>1?'<button data-delp>🗑 이 안 지우기</button>':''}`;
@@ -170,7 +174,7 @@ function plansUI(){const h=$('#plans');h.innerHTML=S.plans.map(p=>`<button class
 function setCanvas(p,scale){const bf={id:'f',w:W,h:H,data:p.f,under:(c,w,h)=>{const keep=S.cur;S.cur=p.id;under('f')(c,w,h);S.cur=keep}},bb={id:'b',w:W,h:H,data:p.b,under:(c,w,h)=>{const keep=S.cur;S.cur=p.id;under('b')(c,w,h);S.cur=keep}};
   const a=ED.exportCanvas(bf,scale),b=ED.exportCanvas(bb,scale),gap=Math.round(30*scale),top=Math.round(90*scale),c=document.createElement('canvas');c.width=a.width*2+gap*3;c.height=a.height+top+gap;const x=c.getContext('2d');
   x.fillStyle='#ffffff';x.fillRect(0,0,c.width,c.height);x.drawImage(a,gap,top);x.drawImage(b,gap*2+a.width,top);x.fillStyle='#3b2a20';x.textBaseline='middle';x.font=`${Math.round(44*scale)}px Jua, sans-serif`;x.textAlign='left';x.fillText(p.name+(MODE==='mission'?' · 선교티 시안':' · 단체티 시안'),gap,top/2);
-  x.font=`${Math.round(26*scale)}px Jua, sans-serif`;x.textAlign='center';x.fillStyle='#7a6a5c';x.fillText('앞면',gap+a.width/2,top-14*scale);x.fillText('뒷면',gap*2+a.width*1.5,top-14*scale);x.textAlign='right';x.fillText(specTxt(p),c.width-gap,top/2-14*scale);x.font=`${Math.round(20*scale)}px Jua, sans-serif`;x.fillText(gOf(p).nk==='varsity'?`앞 ${p.color} · 뒤 ${p.colorBack} · 팔 ${p.colorSleeve}`:gOf(p).rugby?`옷 ${p.color} · 카라 ${p.colorCollar}`:`옷 색 ${p.color}`,c.width-gap,top/2+16*scale);return c}
+  x.font=`${Math.round(26*scale)}px Jua, sans-serif`;x.textAlign='center';x.fillStyle='#7a6a5c';x.fillText('앞면',gap+a.width/2,top-14*scale);x.fillText('뒷면',gap*2+a.width*1.5,top-14*scale);x.textAlign='right';x.fillText(specTxt(p),c.width-gap,top/2-14*scale);x.font=`${Math.round(20*scale)}px Jua, sans-serif`;x.fillText(gOf(p).nk==='varsity'?`앞 ${p.color} · 뒤 ${p.colorBack} · 팔 ${p.colorSleeve}`:gOf(p).rugby?`옷 ${p.color} · 카라 ${p.colorCollar}${p.colorSleeve?' · 팔 '+p.colorSleeve:''}`:`옷 색 ${p.color}${p.colorSleeve?' · 팔 '+p.colorSleeve:''}`,c.width-gap,top/2+16*scale);return c}
 $('#expBtn').onclick=async()=>{const m=document.createElement('div');m.className='modal';m.innerHTML=`<div><h2 style="margin:0 0 6px">📤 내보내기</h2><p class="hint" style="margin:0 0 8px">내보낼 안을 골라요. 안마다 앞·뒤가 한 장에 나란히 들어가요.</p><div class="row" style="margin-bottom:6px"><button class="sm" data-all="1">모두 고르기</button><button class="sm" data-all="0">모두 풀기</button></div>${S.plans.map(p=>`<label class="ck"><input type="checkbox" value="${p.id}" ${p.id===S.cur?'checked':''} style="width:20px;height:20px"><canvas width="240" height="132" data-th="${p.id}"></canvas><b class="j">${esc(p.name)}</b></label>`).join('')}
    <div class="row" style="margin-top:12px"><button class="pri" data-go="pdf">📄 PDF로 받기</button><button class="pri" data-go="jpg">🖼️ JPG로 받기</button><button data-x>닫기</button></div><p class="hint" id="expMsg"></p></div>`;document.body.appendChild(m);
   m.addEventListener('click',e=>{if(e.target===m||e.target.dataset.x!=null)m.remove();if(e.target.dataset.all!=null)m.querySelectorAll('input[type=checkbox]').forEach(i=>i.checked=e.target.dataset.all==='1')});
