@@ -80,30 +80,34 @@ const GT={
  zhood:{n:'집업 후드',e:'🧥',sl:'long',nk:'hood',hood:1,zip:'full',pk:1,rib:1,mat:['면 쭈리 (프렌치테리)','면/폴리 쭈리','특양면'],su:['20수','30수'],gm:['무기모','기모','양기모']},
  varsity:{n:'과잠',e:'🎓',sl:'long',nk:'varsity',rib:1,mat:['울 몸판 + 인조가죽 팔','멜톤 울','폴리 (쭈리) 실속형','나일론'],su:null,gm:['안감 없음','일반 안감','누빔(솜) 안감'],gml:'안감'},
  wind:{n:'바람막이',e:'🌬️',sl:'long',nk:'wind',mat:['나일론 타슬란','폴리 마이크로','생활방수 코팅'],su:null,gm:['안감 없음','메쉬 안감','기모 안감'],gml:'안감'},
+ vest:{n:'조끼',e:'🦺',sl:'none',nk:'vest',zip:'full',mat:['패딩 (솜 충전)','덕다운 패딩','플리스','나일론','니트'],su:null,gm:['안감 없음','일반 안감','누빔(솜) 안감'],gml:'안감'},
  anorak:{n:'아노락',e:'🧥',sl:'long',nk:'anorak',zip:'half',pk:1,mat:['나일론 타슬란','폴리 마이크로','생활방수 코팅','면/나일론 혼방'],su:null,gm:['안감 없음','메쉬 안감','기모 안감'],gml:'안감'},
  hanorak:{n:'아노락 후드',e:'🧥',sl:'long',nk:'anorak',hood:1,zip:'half',pk:1,mat:['나일론 타슬란','폴리 마이크로','생활방수 코팅','면/나일론 혼방'],su:null,gm:['안감 없음','메쉬 안감','기모 안감'],gml:'안감'}};
 const gOf=p=>GT[p.type]||GT.tee;
 function fixSpec(p){const t=gOf(p);if(!t.mat.includes(p.mat))p.mat=t.mat[0];if(t.su){if(!t.su.includes(p.su))p.su=t.su.includes('30수')?'30수':t.su[0]}else p.su='';if(!t.gm.includes(p.gm))p.gm=t.gm[0];
   if(t.rugby&&!p.colorCollar)p.colorCollar='#ffffff';if(p.type==='varsity'){if(!p.colorBack)p.colorBack=p.color||'#1f2a44';if(!p.colorSleeve)p.colorSleeve='#ffffff'}}
-const specTxt=p=>{const t=gOf(p);return [t.n,p.mat,p.su,p.gm,t.pk?(p.pocket===false?'앞주머니 없음':'앞주머니 있음'):''].filter(Boolean).join(' · ')};
+const PKT={none:'없음',L:'1개 왼쪽',R:'1개 오른쪽',both:'2개'};
+const specTxt=p=>{const t=gOf(p),low=p.pocket===undefined?!!t.pk:p.pocket,top=p.pkTop||'none';return [t.n,p.mat,p.su,p.gm,top!=='none'?'상단 주머니 '+PKT[top]:'',low?'하단 주머니 있음':''].filter(Boolean).join(' · ')};
 function shade(hex,k){const n=parseInt((D.normHex(hex)||'#ffffff').slice(1),16),f=x=>Math.max(0,Math.min(255,Math.round(k>1?x+(255-x)*(k-1):x*k)));return `rgb(${f(n>>16)},${f(n>>8&255)},${f(n&255)})`}
 const lum=hex=>{const n=parseInt((D.normHex(hex)||'#ffffff').slice(1),16);return((n>>16)*.299+(n>>8&255)*.587+(n&255)*.114)/255};
 const edge=c=>shade(c,lum(c)<.3?1.45:.72);
 /* 옷 모양 (1000×1100) */
 const MX=pts=>pts.map(([x,y])=>[1000-x,y]);
 function poly(pts){const p=new Path2D();pts.forEach(([x,y],i)=>i?p.lineTo(x,y):p.moveTo(x,y));p.closePath();return p}
-function bodyPath(side,t){const p=new Path2D();p.moveTo(372,88);
+function bodyPath(side,t){const p=new Path2D();
+  if(t.sl==='none'){p.moveTo(372,88);p.quadraticCurveTo(500,side==='f'?150:120,628,88);p.lineTo(700,112);p.quadraticCurveTo(700,260,768,345);p.lineTo(768,1035);p.quadraticCurveTo(500,1058,232,1035);p.lineTo(232,345);p.quadraticCurveTo(300,260,300,112);p.closePath();return p}
+  p.moveTo(372,88);
   if(side==='f'&&t.nk==='v'){p.lineTo(500,292);p.lineTo(628,88)}else p.quadraticCurveTo(500,side==='f'?(t.nk==='varsity'||t.nk==='wind'?150:t.nk==='collar'?170:215):132,628,88);
   p.lineTo(790,150);p.lineTo(768,362);p.lineTo(768,1035);p.quadraticCurveTo(500,1058,232,1035);p.lineTo(232,362);p.lineTo(210,150);p.closePath();return p}
 const SLV={short:[[790,150],[965,335],[848,440],[768,362]],long:[[790,150],[868,262],[905,520],[945,905],[842,918],[808,590],[768,362]]};
-function sleevePaths(t){const R=SLV[t.sl];return[poly(R),poly(MX(R))]}
+function sleevePaths(t){if(t.sl==='none')return[new Path2D(),new Path2D()];const R=SLV[t.sl];return[poly(R),poly(MX(R))]}
 function garment(ctx,side,p){const t=gOf(p);fixSpec(p);const W=1000,H=1100;
   const cBody=t.nk==='varsity'?(side==='f'?p.color:p.colorBack):p.color,cSl=p.colorSleeve||p.color,cCol=t.rugby?p.colorCollar:cBody,cRib=t.nk==='varsity'?cBody:shade(cBody,lum(cBody)<.3?1.15:.93);
   ctx.fillStyle='#efe8dc';ctx.fillRect(0,0,W,H);const body=bodyPath(side,t),[sr,sl]=sleevePaths(t);
   /* 후드 모자 (몸판 뒤) */
   if(t.hood&&side==='f'){const hd=new Path2D();hd.moveTo(345,120);hd.bezierCurveTo(330,-10,670,-10,655,120);hd.closePath();ctx.fillStyle=shade(cBody,.92);ctx.fill(hd);ctx.lineWidth=3;ctx.strokeStyle=edge(cBody);ctx.stroke(hd);
     const inn=new Path2D();inn.moveTo(392,104);inn.bezierCurveTo(395,22,605,22,608,104);inn.quadraticCurveTo(500,180,392,104);ctx.fillStyle='rgba(0,0,0,.28)';ctx.fill(inn)}
-  if(t.nk==='wind'){const st=new Path2D();st.moveTo(368,92);st.lineTo(372,34);st.quadraticCurveTo(500,58,628,34);st.lineTo(632,92);st.quadraticCurveTo(500,side==='f'?150:120,368,92);st.closePath();ctx.fillStyle=shade(cBody,.9);ctx.fill(st);ctx.lineWidth=3;ctx.strokeStyle=edge(cBody);ctx.stroke(st)}
+  if(t.nk==='wind'||t.nk==='vest'){const st=new Path2D();st.moveTo(368,92);st.lineTo(372,34);st.quadraticCurveTo(500,58,628,34);st.lineTo(632,92);st.quadraticCurveTo(500,side==='f'?150:120,368,92);st.closePath();ctx.fillStyle=shade(cBody,.9);ctx.fill(st);ctx.lineWidth=3;ctx.strokeStyle=edge(cBody);ctx.stroke(st)}
   /* 그림자 */
   ctx.save();ctx.shadowColor='rgba(0,0,0,.22)';ctx.shadowBlur=26;ctx.shadowOffsetY=8;ctx.fillStyle=cBody;ctx.fill(body);ctx.fillStyle=cSl;ctx.fill(sr);ctx.fill(sl);ctx.restore();
   ctx.fillStyle=cSl;ctx.fill(sr);ctx.fill(sl);ctx.fillStyle=cBody;ctx.fill(body);
@@ -115,7 +119,7 @@ function garment(ctx,side,p){const t=gOf(p);fixSpec(p);const W=1000,H=1100;
   if(t.sl==='long'){const cuffR=[[945,905],[842,918],[836,866],[939,853]],lp=(a,b,f)=>[a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f];
     [cuffR,MX(cuffR)].forEach(c=>{const pp=poly(c);ctx.fillStyle=t.nk==='varsity'?cRib:shade(cSl,lum(cSl)<.3?1.15:.92);ctx.fill(pp);ctx.lineWidth=2;ctx.strokeStyle=edge(cSl);ctx.stroke(pp);
       if(t.nk==='varsity'){ctx.strokeStyle=cSl;ctx.lineWidth=6;[.35,.65].forEach(f=>{const a=lp(c[3],c[0],f),b=lp(c[2],c[1],f);ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke()})}})}
-  if(t.rib||t.nk==='wind'||t.nk==='anorak'){const hem=new Path2D();hem.moveTo(232,(t.rib?985:1005));hem.lineTo(768,(t.rib?985:1005));hem.lineTo(768,1035);hem.quadraticCurveTo(500,1058,232,1035);hem.closePath();ctx.fillStyle=cRib;ctx.fill(hem);ctx.lineWidth=2;ctx.strokeStyle=edge(cBody);ctx.stroke(hem);
+  if(t.rib||t.nk==='wind'||t.nk==='anorak'||t.nk==='vest'){const hem=new Path2D();hem.moveTo(232,(t.rib?985:1005));hem.lineTo(768,(t.rib?985:1005));hem.lineTo(768,1035);hem.quadraticCurveTo(500,1058,232,1035);hem.closePath();ctx.fillStyle=cRib;ctx.fill(hem);ctx.lineWidth=2;ctx.strokeStyle=edge(cBody);ctx.stroke(hem);
     if(t.nk==='varsity'){ctx.save();ctx.clip(hem);ctx.strokeStyle=cSl;ctx.lineWidth=6;[1003,1018].forEach(y=>{ctx.beginPath();ctx.moveTo(232,y);ctx.lineTo(768,y);ctx.stroke()});ctx.restore()}
     if(t.rib){ctx.save();ctx.clip(hem);ctx.strokeStyle='rgba(0,0,0,.08)';ctx.lineWidth=2;for(let x=240;x<768;x+=12){ctx.beginPath();ctx.moveTo(x,980);ctx.lineTo(x,1060);ctx.stroke()}ctx.restore()}}
   /* 목 */
@@ -129,12 +133,21 @@ function garment(ctx,side,p){const t=gOf(p);fixSpec(p);const W=1000,H=1100;
   if(t.hood){if(side==='f'){ctx.strokeStyle=shade(cBody,lum(cBody)<.3?1.6:.6);ctx.lineWidth=5;ctx.lineCap='round';[[470,205,455,345],[530,205,545,345]].forEach(([a,b,c2,d])=>{ctx.beginPath();ctx.moveTo(a,b);ctx.quadraticCurveTo(a-6,280,c2,d);ctx.stroke()})}
     else{const hd=new Path2D();hd.moveTo(372,92);hd.bezierCurveTo(330,250,385,430,500,438);hd.bezierCurveTo(615,430,670,250,628,92);hd.quadraticCurveTo(500,40,372,92);ctx.fillStyle=shade(cBody,.96);ctx.fill(hd);ctx.lineWidth=3;ctx.strokeStyle=edge(cBody);ctx.stroke(hd);ctx.beginPath();ctx.moveTo(500,62);ctx.lineTo(500,436);ctx.stroke()}}
   /* 지퍼: 집업 후드는 끝까지, 아노락은 반만 */
-  if(t.zip&&side==='f'){const y0=t.hood?205:150,y1=t.zip==='full'?1040:450;ctx.strokeStyle=edge(cBody);ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(500,y0);ctx.lineTo(500,y1);ctx.stroke();ctx.lineWidth=2;for(let y=y0+8;y<y1-2;y+=10){ctx.beginPath();ctx.moveTo(494,y);ctx.lineTo(506,y);ctx.stroke()}ctx.fillStyle='#c9c2b6';ctx.fillRect(491,y0+16,18,42);ctx.strokeRect(491,y0+16,18,42)}
-  /* 앞주머니 */
-  if(t.pk&&side==='f'&&p.pocket!==false){ctx.lineWidth=3;ctx.strokeStyle=edge(cBody);
-    if(t.zip==='full'){[[[330,690],[488,690],[488,930],[300,930]],[[670,690],[512,690],[512,930],[700,930]]].forEach(q=>{ctx.beginPath();ctx.moveTo(q[0][0],q[0][1]);ctx.quadraticCurveTo(q[0][0]-(q[0][0]<500?30:-30),800,q[3][0],q[3][1]);ctx.stroke()})}
+  if(t.zip&&side==='f'){const y0=t.hood?205:t.nk==='vest'?40:150,y1=t.zip==='full'?1040:450;ctx.strokeStyle=edge(cBody);ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(500,y0);ctx.lineTo(500,y1);ctx.stroke();ctx.lineWidth=2;for(let y=y0+8;y<y1-2;y+=10){ctx.beginPath();ctx.moveTo(494,y);ctx.lineTo(506,y);ctx.stroke()}ctx.fillStyle='#c9c2b6';ctx.fillRect(491,y0+16,18,42);ctx.strokeRect(491,y0+16,18,42)}
+  /* 패딩 조끼 누빔선 */
+  if(t.nk==='vest'&&/패딩/.test(p.mat||'')){ctx.save();ctx.clip(body);ctx.strokeStyle=edge(cBody);ctx.lineWidth=2;ctx.globalAlpha=.6;for(let y=230;y<1000;y+=95){ctx.beginPath();ctx.moveTo(200,y);ctx.quadraticCurveTo(500,y+14,800,y);ctx.stroke()}ctx.restore()}
+  /* 하단 주머니 */
+  const low=p.pocket===undefined?!!t.pk:p.pocket;
+  if(low&&side==='f'){ctx.lineWidth=3;ctx.strokeStyle=edge(cBody);
+    if(t.pk&&t.zip==='full'){[[[330,690],[488,690],[488,930],[300,930]],[[670,690],[512,690],[512,930],[700,930]]].forEach(q=>{ctx.beginPath();ctx.moveTo(q[0][0],q[0][1]);ctx.quadraticCurveTo(q[0][0]-(q[0][0]<500?30:-30),800,q[3][0],q[3][1]);ctx.stroke()})}
     else if(t.nk==='anorak'){const pk=new Path2D();pk.moveTo(320,680);pk.lineTo(680,680);pk.lineTo(700,920);pk.lineTo(300,920);pk.closePath();ctx.stroke(pk);ctx.beginPath();ctx.moveTo(360,712);ctx.lineTo(640,712);ctx.lineWidth=4;ctx.stroke();ctx.fillStyle='#c9c2b6';ctx.fillRect(612,704,14,30)}
-    else{const pk=new Path2D();pk.moveTo(330,690);pk.lineTo(670,690);pk.lineTo(705,930);pk.lineTo(295,930);pk.closePath();ctx.stroke(pk);ctx.beginPath();ctx.moveTo(330,690);ctx.quadraticCurveTo(300,800,300,930);ctx.moveTo(670,690);ctx.quadraticCurveTo(700,800,700,930);ctx.stroke()}}
+    else if(t.pk){const pk=new Path2D();pk.moveTo(330,690);pk.lineTo(670,690);pk.lineTo(705,930);pk.lineTo(295,930);pk.closePath();ctx.stroke(pk);ctx.beginPath();ctx.moveTo(330,690);ctx.quadraticCurveTo(300,800,300,930);ctx.moveTo(670,690);ctx.quadraticCurveTo(700,800,700,930);ctx.stroke()}
+    else if(t.zip==='full'||t.nk==='varsity'){[[300,650,350,830],[700,650,650,830]].forEach(([a,b,c2,d])=>{ctx.beginPath();ctx.moveTo(a,b);ctx.lineTo(c2,d);ctx.lineWidth=7;ctx.strokeStyle=shade(cBody,lum(cBody)<.3?1.5:.7);ctx.stroke()})}
+    else{[[290,700],[575,700]].forEach(([x,y])=>{const pp=new Path2D();pp.moveTo(x,y);pp.lineTo(x+135,y);pp.lineTo(x+135,y+140);pp.quadraticCurveTo(x+67,y+160,x,y+140);pp.closePath();ctx.fillStyle=shade(cBody,lum(cBody)<.3?1.08:.97);ctx.fill(pp);ctx.stroke(pp)})}}
+  /* 상단(가슴) 주머니: 입은 사람 기준 왼쪽 = 그림의 오른쪽 */
+  const top=p.pkTop||'none';
+  if(top!=='none'&&side==='f'){const xs=top==='both'?[340,560]:top==='L'?[560]:[340];xs.forEach(x=>{const y=t.nk==='collar'?300:t.sl==='none'?250:270,pp=new Path2D();pp.moveTo(x,y);pp.lineTo(x+100,y);pp.lineTo(x+100,y+110);pp.quadraticCurveTo(x+50,y+124,x,y+110);pp.closePath();
+    ctx.fillStyle=shade(cBody,lum(cBody)<.3?1.08:.97);ctx.fill(pp);ctx.lineWidth=3;ctx.strokeStyle=edge(cBody);ctx.stroke(pp);ctx.beginPath();ctx.moveTo(x+4,y+16);ctx.lineTo(x+96,y+16);ctx.lineWidth=1.5;ctx.stroke()})}
   if(t.nk==='varsity'&&side==='f'){ctx.strokeStyle=edge(cBody);ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(500,150);ctx.lineTo(500,985);ctx.stroke();
     [260,400,540,680,820,950].forEach(y=>{ctx.beginPath();ctx.arc(500,y,11,0,7);ctx.fillStyle=lum(cBody)<.4?'#e8e2d6':'#3b2a20';ctx.fill()});
     [[300,610,340,800],[700,610,660,800]].forEach(([a,b,c2,d])=>{ctx.beginPath();ctx.moveTo(a,b);ctx.lineTo(c2,d);ctx.lineWidth=14;ctx.strokeStyle=cSl;ctx.stroke()})}
@@ -146,7 +159,8 @@ function under(side){return (ctx,w,h)=>garment(ctx,side,P())}
 const over=(ctx)=>{ctx.save();ctx.setLineDash([10,8]);ctx.lineWidth=2;ctx.strokeStyle='rgba(47,111,176,.45)';ctx.strokeRect(310,260,380,560);ctx.restore()};
 /* 저장 */
 const NAMES='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-const plan0=n=>({id:D.uid(),name:n+'안',type:'tee',mat:'면 100%',su:'30수',gm:'기모 없음',color:'#ffffff',f:{els:[{id:D.uid(),type:'text',t:'2027',font:'Black Han Sans',size:70,lh:1.2,ls:6,align:'center',color:'#1f2a44',x:310,y:300,w:380,h:84},{id:D.uid(),type:'text',t:'MISSION',font:'Black Han Sans',size:96,lh:1.1,ls:4,align:'center',color:'#e8503a',x:200,y:385,w:600,h:106},{id:D.uid(),type:'text',t:'가서 모든 족속으로 제자를 삼아',font:'Gowun Dodum',size:30,lh:1.3,ls:0,align:'center',color:'#1f2a44',x:280,y:520,w:440,h:39}]},b:{els:[{id:D.uid(),type:'text',t:'우리 교회 청년부',font:'Do Hyeon',size:54,lh:1.2,ls:2,align:'center',color:'#1f2a44',x:280,y:240,w:440,h:65},{id:D.uid(),type:'text',t:'마태복음 28:19',font:'Gowun Dodum',size:30,lh:1.3,ls:0,align:'center',color:'#1f2a44',x:330,y:320,w:340,h:39}]}});
+const backEx=()=>[{id:D.uid(),type:'text',t:'STEWARD',font:'Black Han Sans',size:96,lh:1.1,ls:8,align:'center',color:'#1f2a44',x:200,y:300,w:600,h:106}];
+const plan0=n=>({id:D.uid(),name:n+'안',type:'tee',mat:'면 100%',su:'30수',gm:'기모 없음',color:'#ffffff',f:{els:[{id:D.uid(),type:'text',t:'2027',font:'Black Han Sans',size:70,lh:1.2,ls:6,align:'center',color:'#1f2a44',x:310,y:300,w:380,h:84},{id:D.uid(),type:'text',t:'MISSION',font:'Black Han Sans',size:96,lh:1.1,ls:4,align:'center',color:'#e8503a',x:200,y:385,w:600,h:106},{id:D.uid(),type:'text',t:'가서 모든 족속으로 제자를 삼아',font:'Gowun Dodum',size:30,lh:1.3,ls:0,align:'center',color:'#1f2a44',x:280,y:520,w:440,h:39}]},b:{els:backEx()}});
 let S={plans:[plan0('A')],cur:null,people:[],price:''};
 try{const o=JSON.parse(localStorage.getItem(KEY)||'null');if(o&&o.plans&&o.plans.length)S=Object.assign(S,o)}catch(_){}
 if(!S.cur||!S.plans.some(p=>p.id===S.cur))S.cur=S.plans[0].id;
@@ -159,20 +173,21 @@ async function open(keepZoom){const p=P();const ids=new Set([...D.usedAssets(p.f
 function shirtUI(){const h=$('#shirtBox'),p=P();fixSpec(p);const t=gOf(p);
   h.innerHTML=`<b class="j" style="font-size:17px">👕 옷 종류</b> <span class="hint">이 안(${esc(p.name)})의 시안</span>
    <select id="gType" style="width:100%;margin:6px 0;font-size:16px">${Object.entries(GT).map(([k,g])=>`<option value="${k}"${(p.type||'tee')===k?' selected':''}>${g.e} ${g.n}</option>`).join('')}</select>
-   <div class="row" style="gap:6px"><label class="hint">재질<br><select id="gMat">${t.mat.map(m=>`<option${p.mat===m?' selected':''}>${esc(m)}</option>`).join('')}</select></label>${t.su?`<label class="hint">몇 수<br><select id="gSu">${t.su.map(m=>`<option${p.su===m?' selected':''}>${m}</option>`).join('')}</select></label>`:''}${t.pk?`<label class="hint" style="align-self:flex-end;padding-bottom:6px"><input type="checkbox" id="gPk" ${p.pocket!==false?'checked':''}> 앞주머니</label>`:''}<label class="hint">${t.gml||'기모'}<br><select id="gGm">${t.gm.map(m=>`<option${p.gm===m?' selected':''}>${m}</option>`).join('')}</select></label></div>
+   <div class="row" style="gap:6px"><label class="hint">재질<br><select id="gMat">${t.mat.map(m=>`<option${p.mat===m?' selected':''}>${esc(m)}</option>`).join('')}</select></label>${t.su?`<label class="hint">몇 수<br><select id="gSu">${t.su.map(m=>`<option${p.su===m?' selected':''}>${m}</option>`).join('')}</select></label>`:''}<label class="hint">${t.gml||'기모'}<br><select id="gGm">${t.gm.map(m=>`<option${p.gm===m?' selected':''}>${m}</option>`).join('')}</select></label></div>
+   <div class="row" style="gap:6px;margin-top:6px"><label class="hint">상단 주머니<br><select id="gPt">${Object.entries(PKT).map(([k,l])=>`<option value="${k}"${(p.pkTop||'none')===k?' selected':''}>${l}</option>`).join('')}</select></label><label class="hint" style="align-self:flex-end;padding-bottom:6px"><input type="checkbox" id="gPk" ${(p.pocket===undefined?!!t.pk:p.pocket)?'checked':''}> 하단 주머니</label><span class="hint" style="align-self:flex-end;padding-bottom:6px;font-size:12px">(왼쪽·오른쪽은 입은 사람 기준)</span></div>
    <div class="hint" style="margin:6px 0 8px;background:#fff6dc;border-radius:8px;padding:4px 8px">📋 ${esc(specTxt(p))}</div>
    <b class="j" style="font-size:16px">🎨 색깔</b> <span class="hint">${t.nk==='varsity'?'팔·앞면·뒷면을 따로 골라요':t.rugby?'옷·카라·팔을 따로 골라요':'옷 색은 앞·뒤 모두, 팔은 따로 골라요'}</span>`;
   const quick=document.createElement('div');quick.className='row';quick.style.margin='6px 0';quick.innerHTML=[['#ffffff','흰색'],['#f3ede2','크림'],['#d9d4c7','그레이'],['#2b2b2b','검정'],['#1f2a44','네이비'],['#e8503a','빨강'],['#f5b82e','노랑'],['#3f9a55','초록'],['#6cb4e4','하늘'],['#c8507a','분홍'],['#7a4fb0','보라'],['#8b5a2b','브라운']].map(([c,n])=>`<button title="${n} ${c}" data-sc="${c}" style="width:28px;height:28px;padding:0;border-radius:50%;background:${c};${(p.color||'').toLowerCase()===c?'outline:3px solid #3b2a20;outline-offset:2px':''}"></button>`).join('');h.appendChild(quick);
   quick.querySelectorAll('[data-sc]').forEach(b=>b.onclick=()=>{p.color=b.dataset.sc;save();ED.draw();shirtUI();plansUI()});
-  const parts=t.nk==='varsity'?[['color','앞면'],['colorBack','뒷면'],['colorSleeve','팔']]:t.rugby?[['color','옷 색'],['colorCollar','카라'],['colorSleeve','팔']]:[['color','옷 색'],['colorSleeve','팔']];
+  const parts=t.nk==='varsity'?[['color','앞면'],['colorBack','뒷면'],['colorSleeve','팔']]:t.rugby?[['color','옷 색'],['colorCollar','카라'],['colorSleeve','팔']]:t.sl==='none'?[['color','옷 색']]:[['color','옷 색'],['colorSleeve','팔']];
   parts.forEach(([k,l])=>D.colorCtl(h,l,p[k]||(k==='colorSleeve'?p.color:'#ffffff')||'#ffffff',c=>{if(c==='none')return;p[k]=c;save();ED.draw();plansUI()}));
-  if(t.nk!=='varsity'&&p.colorSleeve){const r=document.createElement('button');r.textContent='팔도 옷 색과 같게';r.className='sm';r.style.cssText='font-size:13px;padding:2px 8px;margin-top:4px';r.onclick=()=>{delete p.colorSleeve;save();ED.draw();shirtUI()};h.appendChild(r)}
+  if(t.nk!=='varsity'&&t.sl!=='none'&&p.colorSleeve){const r=document.createElement('button');r.textContent='팔도 옷 색과 같게';r.className='sm';r.style.cssText='font-size:13px;padding:2px 8px;margin-top:4px';r.onclick=()=>{delete p.colorSleeve;save();ED.draw();shirtUI()};h.appendChild(r)}
   const upd=(k,v)=>{p[k]=v;if(k==='type')fixSpec(p);save();ED.draw();shirtUI();plansUI()};
-  $('#gType').onchange=e=>upd('type',e.target.value);$('#gMat').onchange=e=>upd('mat',e.target.value);if($('#gSu'))$('#gSu').onchange=e=>upd('su',e.target.value);$('#gGm').onchange=e=>upd('gm',e.target.value);if($('#gPk'))$('#gPk').onchange=e=>upd('pocket',e.target.checked)}
+  $('#gType').onchange=e=>upd('type',e.target.value);$('#gMat').onchange=e=>upd('mat',e.target.value);if($('#gSu'))$('#gSu').onchange=e=>upd('su',e.target.value);$('#gGm').onchange=e=>upd('gm',e.target.value);$('#gPk').onchange=e=>upd('pocket',e.target.checked);$('#gPt').onchange=e=>upd('pkTop',e.target.value)}
 function plansUI(){const h=$('#plans');h.innerHTML=S.plans.map(p=>`<button class="pl ${p.id===S.cur?'on':''}" data-pl="${p.id}"><i style="background:${esc(p.color)}"></i>${esc(p.name)} <small style="font-family:inherit;font-size:12px;opacity:.75">${gOf(p).n}</small></button>`).join('')+`<button data-new="blank">＋ 새 안</button><button data-new="copy" title="지금 안을 복사해서 새 안으로">📄 지금 안 복사</button><button data-ren>✏️ 이름</button>${S.plans.length>1?'<button data-delp>🗑 이 안 지우기</button>':''}`;
   h.querySelectorAll('[data-pl]').forEach(b=>b.onclick=()=>{if(S.cur===b.dataset.pl)return;S.cur=b.dataset.pl;save();open(true)});
   h.querySelectorAll('[data-new]').forEach(b=>b.onclick=()=>{const used=new Set(S.plans.map(p=>p.name));let i=0;while(used.has(NAMES[i%26]+(i>=26?Math.floor(i/26):'')+'안'))i++;const nm=NAMES[i%26]+(i>=26?Math.floor(i/26):'');
-    let p;if(b.dataset.new==='copy'){p=D.clone(P());p.id=D.uid();p.name=nm+'안';[p.f,p.b].forEach(s=>s.els.forEach(e=>e.id=D.uid()))}else{const c=P();p={id:D.uid(),name:nm+'안',type:c.type,mat:c.mat,su:c.su,gm:c.gm,color:c.color||'#ffffff',colorBack:c.colorBack,colorSleeve:c.colorSleeve,colorCollar:c.colorCollar,f:{els:[]},b:{els:[]}}}
+    let p;if(b.dataset.new==='copy'){p=D.clone(P());p.id=D.uid();p.name=nm+'안';[p.f,p.b].forEach(s=>s.els.forEach(e=>e.id=D.uid()))}else{const c=P();p={id:D.uid(),name:nm+'안',type:c.type,mat:c.mat,su:c.su,gm:c.gm,color:c.color||'#ffffff',colorBack:c.colorBack,colorSleeve:c.colorSleeve,colorCollar:c.colorCollar,f:{els:[]},b:{els:backEx()}}}
     S.plans.push(p);S.cur=p.id;save();open(true);toast(`${p.name}을 만들었어요`)});
   const rn=h.querySelector('[data-ren]');if(rn)rn.onclick=()=>{const p=P(),n=(prompt('안 이름',p.name)||'').trim();if(n){p.name=n;save();plansUI();ED.setBoards(boards(),true)}};
   const dp=h.querySelector('[data-delp]');if(dp)dp.onclick=()=>{const p=P();if(!confirm(`‘${p.name}’을 지울까요? 되돌릴 수 없어요.`))return;S.plans=S.plans.filter(x=>x!==p);S.cur=S.plans[0].id;save();open(true)}}
@@ -212,7 +227,7 @@ if(MODE==='mission'){$('#orderCard').hidden=false;
   $('#loadM').onclick=async()=>{const m=await mission();if(!m){toast('선교를 찾지 못했어요');return}let add=0;(m.people||[]).forEach(p=>{if(p.name&&!S.people.some(x=>x.name===p.name)){S.people.push({name:p.name,size:'',n:1});add++}});save();table();toast(add?`🙋 ${add}명을 불러왔어요`:'새로 불러올 사람이 없어요')};
   table()}
 (async()=>{if(MODE==='mission'){const m=await mission();if(m){$('#loadM').hidden=false;$('#backM').hidden=false;$('#backM').href='../mission/?c='+encodeURIComponent(MID);document.title=m.name+' 선교티 | 치영의 교회 생활 즐기기';
-   if(!localStorage.getItem(KEY)){S.people=(m.people||[]).filter(p=>p.name).map(p=>({name:p.name,size:'',n:1}));const t=S.plans[0].b.els[0];if(t&&m.name)t.t=m.name;save();table()}}}
+   if(!localStorage.getItem(KEY)){S.people=(m.people||[]).filter(p=>p.name).map(p=>({name:p.name,size:'',n:1}));save();table()}}}
   open()})();
 window.__tee={S:()=>S,ED};
 })();
