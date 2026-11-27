@@ -45,16 +45,45 @@ button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}button.pri
 .acts button,.acts a{font-size:15px}.acts a{color:var(--ink);text-decoration:none;border:2px solid var(--ink);background:var(--cream);border-radius:14px;padding:6px 12px;box-shadow:0 3px 0 var(--ink)}
 .hist{display:flex;flex-wrap:wrap;gap:8px}.hist button{font-size:13px;text-align:left;max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 2px 0 var(--ink)}
 .hint{color:var(--muted);font-size:14px}
+.tabs{display:flex;gap:8px;margin:0 0 12px}.tabs button{flex:1;font-size:18px;padding:9px}.tabs button.on{background:var(--accent);color:#fff}
+/* 마술사처럼 원으로 쭉 펼친 카드 */
+.ringwrap{position:relative;background:radial-gradient(circle at 50% 45%,#3f7a52,#24513a);border:3px solid var(--ink);border-radius:22px;box-shadow:inset 0 0 40px rgba(0,0,0,.35);overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
+.ring{position:relative;width:100%;max-width:min(660px,calc(100vh - 120px));min-width:280px;aspect-ratio:1;margin:0 auto}
+.spin{position:absolute;inset:0}
+.rc{position:absolute;left:50%;top:50%;width:var(--cw);height:var(--ch);margin:calc(var(--ch) / -2) 0 0 calc(var(--cw) / -2);border-radius:calc(var(--cw) * .14);border:1.5px solid #f5e6c4;background:linear-gradient(145deg,#8a2432,#3d0f16);box-shadow:-1px 1px 3px rgba(0,0,0,.4);transition:transform .9s cubic-bezier(.2,.8,.3,1),filter .15s;will-change:transform}
+.rc:before{content:"";position:absolute;inset:12%;border:1px solid rgba(245,230,196,.55);border-radius:inherit}
+.rc:after{content:"✝";position:absolute;inset:0;display:grid;place-items:center;color:#f5d27a;font-size:calc(var(--cw) * .42);font-family:Jua,sans-serif}
+.rc.hot{filter:brightness(1.45) saturate(1.2);box-shadow:0 0 0 2px #ffd84a,0 6px 14px rgba(0,0,0,.55);transition:transform .15s,filter .15s}
+.rc.out{transition:transform .5s ease,opacity .5s .15s;opacity:0}
+.mid{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:48%;text-align:center;color:#fff;font-family:Jua,sans-serif;pointer-events:none;line-height:1.35}
+.mid .big{font-size:clamp(20px,4.6vw,30px)}.mid small{display:block;opacity:.8;font-size:clamp(12px,2.6vw,15px);margin-top:6px}
+.ringwrap.off .spin{opacity:.35;filter:grayscale(.6)}
+.ringwrap.off .mid{pointer-events:auto}
+/* 말씀 앨범 */
+.binder{background:linear-gradient(180deg,#fff,#fbf6ec);border:3px solid var(--ink);border-radius:20px;padding:14px;box-shadow:0 5px 0 rgba(0,0,0,.12)}
+.bhead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.bhead h2{margin:0;font-size:24px}.bhead .prog{color:var(--muted)}
+.bar{height:10px;border-radius:99px;background:#efe6d6;margin:8px 0 10px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--accent))}
+.al{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-top:10px}
+.mc{position:relative;aspect-ratio:4/5;border-radius:12px;border:2px solid rgba(0,0,0,.25);padding:10px 9px 8px;display:flex;flex-direction:column;gap:4px;cursor:pointer;text-align:center;overflow:hidden;box-shadow:0 4px 0 rgba(0,0,0,.14);transition:transform .15s}
+.mc:hover{transform:translateY(-3px) rotate(-1deg)}
+.mc .k{font-family:Jua,sans-serif;font-size:12px;opacity:.75}
+.mc .t{flex:1;font-family:"Gowun Batang",serif;font-size:13px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
+.mc .r{font-family:Jua,sans-serif;font-size:14px}
+.mc .d{font-size:11px;opacity:.6}
+.empty-al{text-align:center;padding:40px 10px}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#222;color:#fff;padding:10px 18px;border-radius:14px;opacity:0;transition:.25s;z-index:500;pointer-events:none}.toast.show{opacity:1}
 </style>
 </head><body>
 <div class="top"><a href="../">← 목장</a><span class="ttl">📜 말씀뽑기</span></div>
 <main>
- <div class="card hero"><h1>🎁 말씀뽑기</h1><p>마음이 가는 카드를 하나 골라 보세요. 오늘 하나님이 주시는 말씀이에요. <b>하루에 한 번</b> 뽑을 수 있어요.</p>
+ <div class="tabs"><button data-tab="draw" class="on">🎁 뽑기</button><button data-tab="album">📒 말씀 앨범 <small id="acnt"></small></button></div>
+ <section id="tDraw">
+ <div class="card hero"><h1>🎁 말씀뽑기</h1><p>원으로 펼친 카드 중에서 마음이 가는 카드를 하나 뽑아 보세요. 오늘 하나님이 주시는 말씀이에요. <b>하루에 한 번</b> 뽑을 수 있어요.</p>
   <div class="chips" id="themes"></div>
-  <div class="chips" style="margin-top:10px"><button id="shuffle">🔀 다시 섞기</button><button id="more">카드 더 깔기</button></div></div>
- <div class="table" id="table"></div>
- <div class="card" id="histCard" hidden style="margin-top:14px"><b class="j" style="font-size:18px">🗂️ 내가 뽑은 말씀</b> <span class="hint">이 기기에 남아요</span><div class="hist" id="hist" style="margin-top:8px"></div></div>
+  <div class="chips" style="margin-top:10px"><button id="shuffle">🔀 다시 섞어 펼치기</button></div></div>
+ <div class="ringwrap" id="table"></div>
+ </section>
+ <section id="tAlbum" hidden></section>
  <p class="hint" style="text-align:center">말씀 ${N}구절 · 성경 개역한글판 · 📖 성경에서 보기로 앞뒤 말씀을 함께 읽어요</p>
 </main>
 <div class="toast" id="toast"></div>
@@ -100,20 +129,69 @@ function drawCard(c,v){const W=1080,H=1350,x=c.getContext('2d');c.width=W;c.heig
   x.fillStyle=ink;const y0=H/2+20-(lines.length*lh)/2+lh/2;lines.forEach((l,k)=>x.fillText(l,W/2,y0+k*lh));
   x.font='600 46px "Gowun Dodum", sans-serif';x.fillStyle=acc;x.fillText('— '+v.r+' —',W/2,H-200);
   x.font='28px Jua, sans-serif';x.globalAlpha=.5;x.fillStyle=ink;x.fillText('치영의 교회 생활 즐기기 · 말씀뽑기',W/2,H-90);x.globalAlpha=1}
-/* ---------- 카드 깔기 ---------- */
-let THEME='all',DECK=[],SHOWN=0;const PER=()=>innerWidth<600?16:24;
-function themesUI(){$('#themes').innerHTML=`<button data-t="all" class="${THEME==='all'?'on':''}">✨ 전체</button>`+TK.map(k=>`<button data-t="${k}" class="${THEME===k?'on':''}">${TH[k][1]} ${TH[k][0]}</button>`).join('');
-  $('#themes').querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{THEME=b.dataset.t;themesUI();deal()})}
-function deal(){DECK=shuffle(V.filter(v=>THEME==='all'||v.k===THEME));SHOWN=Math.min(PER(),DECK.length);lay()}
-function lay(){$('#table').innerHTML=DECK.slice(0,SHOWN).map((v,n)=>`<button class="pc" data-n="${n}" style="transform:rotate(${(rnd(9)-4)*1.2}deg)" aria-label="카드 뽑기"><span class="bk"><i>✝</i><small>말씀</small></span></button>`).join('');$('#more').hidden=SHOWN>=DECK.length}
-$('#shuffle').onclick=()=>{deal();toast('🔀 카드를 다시 섞었어요')};
-$('#more').onclick=()=>{SHOWN=Math.min(DECK.length,SHOWN+PER());lay()};
-/* 🎁 하루에 한 번만 */
+/* ---------- 말씀 앨범 (이 기기에 저장) ---------- */
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()};
+const dotDate=s=>s?s.split('-').map((x,k)=>k?x.padStart(2,'0'):x).join('.'):'';
+let ALB=null;try{ALB=JSON.parse(localStorage.getItem('words-album')||'null')}catch(_){}
+if(!Array.isArray(ALB)){ALB=[];try{const H=JSON.parse(localStorage.getItem('words-hist')||'[]');H.slice().reverse().forEach(i=>{if(V[i])ALB.push({i,d:''})});const o=JSON.parse(localStorage.getItem('words-today')||'null');if(o&&V[o.i]){const f=ALB.find(a=>a.i===o.i);if(f)f.d=o.d;else ALB.push({i:o.i,d:o.d})}}catch(_){}}
+const saveAlb=()=>{try{localStorage.setItem('words-album',JSON.stringify(ALB))}catch(_){}};saveAlb();
+const owns=i=>ALB.some(a=>a.i===i);
+const updCnt=()=>{$('#acnt').textContent=`${ALB.length}/${V.length}`};
+/* ---------- 카드를 원으로 쭉 펼치기 ---------- */
+let THEME='all',DECK=[],ROT=0,HOT=-1,GEO=null,BUSY=false;
+function themesUI(){$('#themes').innerHTML=`<button data-t="all" class="${THEME==='all'?'on':''}">✨ 전체</button>`+TK.map(k=>`<button data-t="${k}" class="${THEME===k?'on':''}">${TH[k][1]} ${TH[k][0]}</button>`).join('');
+  $('#themes').querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{if(BUSY)return;THEME=b.dataset.t;themesUI();deal()})}
+const pool=()=>V.filter(v=>THEME==='all'||v.k===THEME);
+function geo(){const box=$('#table').querySelector('.ring');const S=box.clientWidth,n=DECK.length;const R=S*.355,cw=Math.max(22,Math.min(S*.09,n>200?S*.075:S*.1)),ch=cw*1.42;return{S,R,cw,ch,n}}
+const tf=(i,lift)=>`rotate(${i/DECK.length*360}deg) translateY(${-(GEO.R+(lift||0))}px)`;
+function deal(){if(picked()){doneUI();return}DECK=shuffle(pool().map(v=>v.i));ROT=rnd(360);HOT=-1;
+  const el=$('#table');el.className='ringwrap';el.innerHTML=`<div class="ring"><div class="spin" style="transform:rotate(${ROT}deg)">${DECK.map((_,n)=>`<div class="rc" data-n="${n}"></div>`).join('')}</div><div class="mid"><div class="big">🎴 카드 ${DECK.length}장</div><small>마음 가는 카드를 눌러 뽑아요<br>끌면 카드가 돌아가요</small></div></div>`;
+  GEO=geo();const ring=el.querySelector('.ring');ring.style.setProperty('--cw',GEO.cw+'px');ring.style.setProperty('--ch',GEO.ch+'px');
+  const cs=[...el.querySelectorAll('.rc')];cs.forEach((c,n)=>{c.style.transform=`rotate(0deg) translateY(${-GEO.R}px)`;c.style.zIndex=n});
+  BUSY=true;requestAnimationFrame(()=>requestAnimationFrame(()=>{cs.forEach((c,n)=>{c.style.transitionDelay=(n/cs.length*.85).toFixed(3)+'s';c.style.transform=tf(n)});
+    setTimeout(()=>{cs.forEach(c=>c.style.transitionDelay='');BUSY=false},1800)}));bindRing()}
+function setHot(n){if(n===HOT)return;const el=$('#table');if(HOT>=0){const o=el.querySelector(`.rc[data-n="${HOT}"]`);if(o){o.classList.remove('hot');o.style.transform=tf(HOT);o.style.zIndex=HOT}}
+  HOT=n;if(n>=0){const c=el.querySelector(`.rc[data-n="${n}"]`);if(c){c.classList.add('hot');c.style.transform=tf(n,GEO.ch*.35);c.style.zIndex=DECK.length+5}}}
+function hit(e){const r=$('#table').querySelector('.ring').getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dy=e.clientY-r.top-r.height/2,d=Math.hypot(dx,dy);
+  if(d<GEO.R-GEO.ch*.75||d>GEO.R+GEO.ch*1.1)return -1;let a=Math.atan2(dx,-dy)*180/Math.PI-ROT;a=((a%360)+360)%360;return Math.round(a/360*DECK.length)%DECK.length}
+function bindRing(){const el=$('#table'),ring=el.querySelector('.ring'),spin=el.querySelector('.spin');let D=null;
+  const ang=e=>{const r=ring.getBoundingClientRect();return Math.atan2(e.clientX-r.left-r.width/2,-(e.clientY-r.top-r.height/2))*180/Math.PI};
+  ring.onpointerdown=e=>{if(BUSY||el.classList.contains('off'))return;try{ring.setPointerCapture(e.pointerId)}catch(_){}D={x:e.clientX,y:e.clientY,a:ang(e),rot:ROT,moved:false};if(e.pointerType!=='mouse')setHot(hit(e))};
+  ring.onpointermove=e=>{if(BUSY||el.classList.contains('off'))return;if(D){if(!D.moved&&Math.hypot(e.clientX-D.x,e.clientY-D.y)>8){D.moved=true;setHot(-1)}
+      if(D.moved){let da=ang(e)-D.a;ROT=D.rot+da;spin.style.transform=`rotate(${ROT}deg)`;return}}
+    setHot(hit(e))};
+  ring.onpointerup=e=>{const d=D;D=null;if(!d||d.moved||BUSY)return;const n=hit(e);if(n<0)return;setHot(n);pickCard(n)};
+  ring.onpointerleave=()=>{if(!D)setHot(-1)};ring.onpointercancel=()=>{D=null;setHot(-1)}}
+/* 🎁 하루에 한 번 · 복원추출: 이미 앨범에 있는 말씀이 나오면 한 번 더 뽑아요 */
 const picked=()=>{try{const o=JSON.parse(localStorage.getItem('words-today')||'null');return o&&o.d===today()&&V[o.i]?V[o.i]:null}catch(_){return null}};
-function doneUI(){const v=picked();if(!v)return false;$('#shuffle').hidden=$('#more').hidden=true;$('#themes').hidden=true;
-  $('#table').innerHTML=`<div class="done"><div class="big">🎁</div><h2>오늘의 말씀을 이미 뽑았어요</h2><p>말씀뽑기는 하루에 한 번이에요. 내일 다시 뽑을 수 있어요 🌅</p><button class="pri" id="seeToday">📜 오늘 뽑은 말씀 보기 · ${esc(v.r)}</button></div>`;$('#seeToday').onclick=()=>show(v,false);return true}
-$('#table').addEventListener('click',e=>{const b=e.target.closest('.pc');if(!b||b.classList.contains('gone'))return;if(picked()){doneUI();return}const v=DECK[+b.dataset.n];try{localStorage.setItem('words-today',JSON.stringify({d:today(),i:v.i}))}catch(_){}b.classList.add('pick');setTimeout(()=>{b.classList.remove('pick');b.classList.add('gone');show(v,true);doneUI()},520)});
+function doneUI(){const v=picked();if(!v)return false;$('#shuffle').hidden=true;$('#themes').hidden=true;
+  $('#table').className='ringwrap';$('#table').innerHTML=`<div class="done" style="color:#fff;text-align:center;font-family:Jua,sans-serif;padding:40px 12px"><div style="font-size:56px">🎁</div><h2 style="margin:6px 0;font-size:26px">오늘의 말씀을 이미 뽑았어요</h2><p style="opacity:.85;margin:4px 0 14px">말씀뽑기는 하루에 한 번이에요. 내일 다시 뽑을 수 있어요 🌅</p><button class="pri" id="seeToday">📜 오늘 뽑은 말씀 보기 · ${esc(v.r)}</button> <button id="seeAlb">📒 말씀 앨범</button></div>`;$('#seeToday').onclick=()=>show(v,false);$('#seeAlb').onclick=()=>tab('album');return true}
+function pickCard(n){if(picked()){doneUI();return}BUSY=true;const el=$('#table'),c=el.querySelector(`.rc[data-n="${n}"]`);
+  const P=pool(),v=V[P[rnd(P.length)].i];const allOwned=P.every(x=>owns(x.i));
+  c.classList.remove('hot');c.classList.add('out');c.style.transform=tf(n,GEO.ch*2.2);
+  setTimeout(()=>{c.remove();BUSY=false;
+    if(owns(v.i)&&!allOwned){showDup(v);if(!el.querySelector('.rc'))deal();return}
+    try{localStorage.setItem('words-today',JSON.stringify({d:today(),i:v.i}))}catch(_){}
+    if(!owns(v.i)){ALB.push({i:v.i,d:today()});saveAlb()}updCnt();show(v,true);doneUI()},520)}
+function showDup(v){const m=document.createElement('div');m.className='modal';
+  m.innerHTML=`<div><div style="color:#fff;font-family:Jua,sans-serif;font-size:22px;margin-bottom:8px">🔁 이미 앨범에 있는 말씀이에요!</div><canvas style="max-height:calc(100vh - 230px)"></canvas><p style="color:#fff;margin:10px 0 0">${esc(v.r)} · 같은 말씀이 나왔으니 한 번 더 뽑아요</p><div class="acts"><button class="pri" data-a="again">🎴 한 번 더 뽑기</button></div></div>`;
+  document.body.appendChild(m);const c=m.querySelector('canvas');drawCard(c,v);const close=()=>m.remove();m.querySelector('[data-a="again"]').onclick=close;m.addEventListener('click',e=>{if(e.target===m)close()})}
+$('#shuffle').onclick=()=>{if(BUSY)return;deal();toast('🔀 카드를 다시 섞어 펼쳤어요')};
+addEventListener('resize',()=>{clearTimeout(window.__rz);window.__rz=setTimeout(()=>{if($('#tDraw').hidden||!$('#table').querySelector('.ring'))return;const ring=$('#table').querySelector('.ring');GEO=geo();ring.style.setProperty('--cw',GEO.cw+'px');ring.style.setProperty('--ch',GEO.ch+'px');ring.querySelectorAll('.rc').forEach(c=>{const n=+c.dataset.n;c.style.transform=tf(n,n===HOT?GEO.ch*.35:0)})},150)});
+/* ---------- 말씀 앨범 화면 ---------- */
+let AF='all';
+function renderAlbum(){const el=$('#tAlbum');updCnt();
+  if(!ALB.length){el.innerHTML=`<div class="binder"><div class="bhead"><h2 class="j">📒 나의 말씀 앨범</h2></div><div class="empty-al"><div style="font-size:50px">📜</div><p class="j" style="font-size:20px;margin:8px 0">아직 모은 말씀이 없어요</p><p class="hint">뽑기에서 오늘의 말씀을 뽑으면 이 앨범에 차곡차곡 모여요.</p><button id="goDraw">🎁 뽑으러 가기</button></div></div>`;$('#goDraw').onclick=()=>tab('draw');return}
+  const cnt={};ALB.forEach(a=>{const k=V[a.i].k;cnt[k]=(cnt[k]||0)+1});const tot={};V.forEach(v=>tot[v.k]=(tot[v.k]||0)+1);
+  const L=ALB.slice().reverse().filter(a=>AF==='all'||V[a.i].k===AF);
+  el.innerHTML=`<div class="binder"><div class="bhead"><h2 class="j">📒 나의 말씀 앨범</h2><span class="prog">모은 말씀 ${ALB.length} / ${V.length}</span></div><div class="bar"><i style="width:${(ALB.length/V.length*100).toFixed(1)}%"></i></div>
+    <div class="chips"><button data-af="all" class="${AF==='all'?'on':''}">✨ 전체 ${ALB.length}</button>${TK.map(k=>`<button data-af="${k}" class="${AF===k?'on':''}" ${cnt[k]?'':'disabled'}>${TH[k][1]} ${TH[k][0]} ${cnt[k]||0}/${tot[k]}</button>`).join('')}</div>
+    <div class="al">${L.map(a=>{const v=V[a.i],[c1,c2,ink,acc]=styleOf(v).pal;return`<div class="mc" data-i="${v.i}" style="background:linear-gradient(160deg,${c1},${c2});color:${ink}"><div class="k">${TH[v.k][1]} ${TH[v.k][0]}</div><div class="t">${esc(v.t)}</div><div class="r" style="color:${acc}">${esc(v.r)}</div><div class="d">${a.d?dotDate(a.d)+' 뽑음':''}</div></div>`}).join('')}</div>
+    <p class="hint" style="text-align:center;margin:12px 0 0">카드를 누르면 크게 보고 저장할 수 있어요 · 새로 뽑은 말씀이 앞에 와요</p></div>`;
+  el.querySelectorAll('[data-af]').forEach(b=>b.onclick=()=>{AF=b.dataset.af;renderAlbum()});
+  el.querySelectorAll('.mc').forEach(b=>b.onclick=()=>show(V[+b.dataset.i],false))}
+function tab(k){document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===k));$('#tDraw').hidden=k!=='draw';$('#tAlbum').hidden=k!=='album';if(k==='album'){AF='all';renderAlbum()}else if(!picked()&&!$('#table').querySelector('.ring'))deal();scrollTo(0,0)}
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
 /* ---------- 뽑은 카드 보기 ---------- */
 const BOOKOF=r=>{const i=r.lastIndexOf(' ');return[r.slice(0,i),r.slice(i+1).split(':')[0]]};
 function show(v,save){const m=document.createElement('div');m.className='modal';const[b,ch]=BOOKOF(v.r);
@@ -125,10 +203,8 @@ function show(v,save){const m=document.createElement('div');m.className='modal';
     if(a==='x')close();
     if(a==='copy'){const t=v.t+'\n('+v.r+')';navigator.clipboard.writeText(t).then(()=>toast('📋 말씀을 복사했어요'),()=>prompt('복사해 주세요',t))}
     if(a==='save')c.toBlob(bl=>{const n='말씀_'+v.r.replace(/[:\s]/g,'_')+'.png';if(window.SAVEFILE)SAVEFILE(bl,n);else{const u=URL.createObjectURL(bl),l=document.createElement('a');l.href=u;l.download=n;document.body.appendChild(l);l.click();setTimeout(()=>{URL.revokeObjectURL(u);l.remove()},1500)}toast('📥 말씀 카드를 저장했어요')},'image/png')});
-  if(save){try{const H=JSON.parse(localStorage.getItem('words-hist')||'[]').filter(x=>x!==v.i);H.unshift(v.i);localStorage.setItem('words-hist',JSON.stringify(H.slice(0,24)))}catch(_){}hist()}}
-function hist(){let H=[];try{H=JSON.parse(localStorage.getItem('words-hist')||'[]')}catch(_){}$('#histCard').hidden=!H.length;
-  $('#hist').innerHTML=H.map(i=>V[i]).filter(Boolean).map(v=>`<button data-h="${v.i}" title="${esc(v.t)}">${TH[v.k][1]} ${esc(v.r)} · ${esc(v.t)}</button>`).join('');$('#hist').querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>show(V[+b.dataset.h],false))}
-themesUI();deal();hist();doneUI();
+}
+themesUI();updCnt();if(!doneUI())deal();if(location.hash==='#album')tab('album');
 const q=new URLSearchParams(location.search).get('v');if(q!=null&&V[+q])show(V[+q],false);
 window.__words={V,drawCard,show};
 })();

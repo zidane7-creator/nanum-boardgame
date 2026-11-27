@@ -118,6 +118,8 @@ body.capon #homeFab,body.capon #siteNav,body.capon #siteGuideBtn{display:none!im
 .pocket.has{cursor:pointer}
 .pocket::after{content:"";position:absolute;inset:0;border-radius:8px;background:linear-gradient(160deg,rgba(255,255,255,.55),rgba(255,255,255,0) 35%,rgba(255,255,255,0) 70%,rgba(255,255,255,.25));pointer-events:none}
 .pocket .dt{font-family:"Nanum Pen Script",cursive;font-size:17px;text-align:center;color:#6d5a80;line-height:1.2;margin-top:2px}
+.pocket.stack img{box-shadow:calc(var(--st,1)*3px) calc(var(--st,1)*3px) 0 -1px #fff,calc(var(--st,1)*3px) calc(var(--st,1)*3px) 0 0 rgba(120,90,170,.55),calc(var(--st,1)*6px) calc(var(--st,1)*6px) 0 -1px #fff,calc(var(--st,1)*6px) calc(var(--st,1)*6px) 0 0 rgba(120,90,170,.4),0 2px 5px rgba(60,30,110,.25)}
+.pocket .dupn{position:absolute;top:-6px;right:-6px;z-index:3;background:#e8503a;color:#fff;font-family:Jua,sans-serif;font-size:14px;line-height:1;padding:5px 7px;border-radius:99px;border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,.25)}
 .pocket.empty{display:grid;place-items:center;color:#c9b7e6;font-size:26px}
 .pnav{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:14px;color:#fff;font-family:Jua}
 .empty-al{background:#fbf7ff;border-radius:14px;padding:40px 20px;text-align:center}
@@ -292,7 +294,7 @@ const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(ST))}catch(_){}};
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const dotDate=s=>s.replace(/-/g,'.');
 const canDraw=()=>ST.last!==today();
-function pick(){const own=new Set(ST.album.map(a=>a.n));let left=PEOPLE.filter(p=>!own.has(p.n));if(!left.length)left=PEOPLE;
+function pick(){const left=PEOPLE;
   for(let k=0;k<500;k++){const tot=Object.values(TW).reduce((a,b)=>a+b,0);let x=rnd()*tot,tier='F';for(const q in TW){if(x<TW[q]){tier=q;break}x-=TW[q]}const L=left.filter(p=>p.t===tier);if(L.length)return L[Math.floor(rnd()*L.length)]}
   return left[Math.floor(rnd()*left.length)]}
 function updCnt(){const u=new Set(ST.album.map(a=>a.n)).size;$('#cnt').textContent=`모은 인물 ${u} / ${PEOPLE.length}`}
@@ -301,7 +303,7 @@ function updCnt(){const u=new Set(ST.album.map(a=>a.n)).size;$('#cnt').textConte
 const dome=$('#dome');for(let i=0;i<9;i++){const m=document.createElement('div');m.className='mini';m.style.cssText=`left:${8+(i%5)*18}%;top:${30+Math.floor(i/5)*34+(i%2)*8}%;--r:${-25+i*7}deg;background:linear-gradient(160deg,${BG[i]},${shade(BG[i],-.15)});animation-delay:${-i*.4}s`;dome.appendChild(m)}
 let cdT=null;
 function status(){const s=$('#status');clearInterval(cdT);
-  if(canDraw()){s.innerHTML=`<div class="big">오늘의 기회가 1번 있어요! ✨</div><p class="hint">뽑기 버튼을 누르면 성경 인물 포토카드가 나와요. 이미 가진 인물은 나오지 않아요.<br>기회는 매일 밤 0시에 새로 생기고, 쌓이지 않아요.</p>`;$('#knob').disabled=false;return}
+  if(canDraw()){s.innerHTML=`<div class="big">오늘의 기회가 1번 있어요! ✨</div><p class="hint">뽑기 버튼을 누르면 성경 인물 포토카드가 나와요. 이미 가진 인물이 또 나오면 앨범의 같은 칸에 겹쳐 들어가요.<br>기회는 매일 밤 0시에 새로 생기고, 쌓이지 않아요.</p>`;$('#knob').disabled=false;return}
   $('#knob').disabled=true;const tick=()=>{const n=new Date(),m=new Date(n);m.setHours(24,0,0,0);const d=Math.max(0,m-n),hh=Math.floor(d/3600000),mm=Math.floor(d/60000)%60,ss=Math.floor(d/1000)%60;
     if(d<=0||canDraw()){status();showToday();return}s.innerHTML=`<div class="big">오늘은 이미 뽑았어요 ✨</div><div class="cd">${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}</div><p class="hint">다음 기회까지 남은 시간 (0시에 새 기회)</p>`};tick();cdT=setInterval(tick,1000)}
 function cardHTML(p,flip){return`<div class="pc${flip?' flip':''} t${p.t}" id="pc"><div class="face back"><b>✦<br>BIBLE<br>PHOTOCARD<br>✦</b></div><div class="face front"><img alt="${esc(p.n)} 포토카드" src="${cardURL(p)}"><div class="shine"></div></div></div>`}
@@ -316,33 +318,35 @@ function capView(p){const o=document.createElement('div');o.id='cap';o.innerHTML
   o.onclick=close;document.addEventListener('keydown',function k(e){if(e.key==='Escape'){close();document.removeEventListener('keydown',k)}})}
 function bindActs(p){$('#sv').onclick=()=>saveImg(p);$('#cv').onclick=()=>capView(p);$('#toAl').onclick=()=>tab('album')}
 function saveImg(p){drawCard(p).toBlob(b=>{const name='포토카드_'+p.n.replace(/\s+/g,'')+'.png';if(window.SAVEFILE)window.SAVEFILE(b,name);else{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click()}},'image/png')}
-$('#knob').onclick=async()=>{if(!canDraw()){status();return}const p=pick();ST.last=today();ST.album.push({n:p.n,d:today()});save();updCnt();
+$('#knob').onclick=async()=>{if(!canDraw()){status();return}const p=pick(),had=ST.album.filter(a=>a.n===p.n).length;ST.last=today();ST.album.push({n:p.n,d:today()});save();updCnt();
   $('#knob').disabled=true;const m=$('#mach');m.classList.add('spin');$('#status').innerHTML='<div class="big">두근두근… 🎲</div>';cardURL(p);
   await new Promise(r=>setTimeout(r,1700));m.classList.remove('spin');
   const o=$('#out');o.innerHTML=`<div class="hint" style="margin-bottom:8px">카드가 나왔어요!</div>${cardHTML(p,false)}<div class="tapme">👆 카드를 눌러 뒤집어 보세요</div>`;const pc=$('#pc');pc.classList.add('rise');
   if(innerWidth<=760)o.scrollIntoView({behavior:'smooth',block:'center'});
   pc.onclick=()=>{if(pc.classList.contains('flip')){capView(p);return}pc.classList.remove('rise');void pc.offsetWidth;pc.classList.add('flip');const b=document.createElement('div');b.className='burst';const em=['✨','⭐','💜','🌟','✦','💖'];for(let i=0;i<18;i++){const a=i/18*Math.PI*2,d=120+Math.random()*80;const s=document.createElement('i');s.textContent=em[i%em.length];s.style.setProperty('--x',Math.cos(a)*d+'px');s.style.setProperty('--y',Math.sin(a)*d+'px');b.appendChild(s)}o.appendChild(b);setTimeout(()=>b.remove(),1300);
-    setTimeout(()=>{const tm=o.querySelector('.tapme');if(tm)tm.outerHTML=`<div class="tapme" style="animation:none">🎉 ${esc(p.n)} 카드를 얻었어요! 앨범에 쏙 넣었어요</div><div class="acts"><button id="cv">🔍 전체 보기 (캡처)</button><button id="sv">💾 이미지 저장</button><button id="toAl">📒 앨범 보기</button></div>`;bindActs(p)},900)};
+    setTimeout(()=>{const tm=o.querySelector('.tapme');if(tm)tm.outerHTML=`<div class="tapme" style="animation:none">${had?`🔁 ${esc(p.n)} 카드가 또 나왔어요! 앨범의 같은 칸에 겹쳐 넣었어요 (×${had+1})`:`🎉 ${esc(p.n)} 카드를 얻었어요! 앨범에 쏙 넣었어요`}</div><div class="acts"><button id="cv">🔍 전체 보기 (캡처)</button><button id="sv">💾 이미지 저장</button><button id="toAl">📒 앨범 보기</button></div>`;bindActs(p)},900)};
   status()};
 
 /* ============ 앨범 ============ */
 let PG=0,ALF='all';
 function perPage(){return innerWidth<=760?9:18}
-function renderAlbum(anim){const A=ST.album,el2=$('#tAlbum');const u=new Set(A.map(a=>a.n)).size;
+/* 같은 인물은 처음 뽑은 자리에 겹쳐 넣어요: {n, ds:[날짜…], i:처음 뽑은 순번} */
+function groups(){const G=[],by={};ST.album.forEach((a,i)=>{if(!by[a.n]){by[a.n]={n:a.n,ds:[],i};G.push(by[a.n])}by[a.n].ds.push(a.d)});return G}
+function renderAlbum(anim){const A=ST.album,el2=$('#tAlbum'),GR=groups();const u=GR.length;
   if(!A.length){el2.innerHTML=`<div class="binder"><div class="bhead"><h2>📒 나의 포토카드 앨범</h2></div><div class="empty-al"><div style="font-size:50px">📸</div><p class="j" style="font-size:20px;margin:8px 0">아직 모은 카드가 없어요</p><p class="hint">뽑기에서 오늘의 카드를 뽑으면 이 앨범에 차곡차곡 들어가요.</p><button id="goDraw">🎰 뽑으러 가기</button></div></div>`;$('#goDraw').onclick=()=>tab('draw');return}
-  const tierOf=a=>(BYN[a.n]||{}).t;const IT=A.map((a,i)=>({a,i})).filter(o=>ALF==='all'||tierOf(o.a)===ALF);
+  const tierOf=a=>(BYN[a.n]||{}).t;const IT=GR.map(g=>({a:{n:g.n,d:g.ds[0]},g,i:g.i})).filter(o=>ALF==='all'||tierOf(o.a)===ALF);
   const per=perPage(),pages=Math.max(1,Math.ceil(IT.length/per));PG=Math.max(0,Math.min(PG,pages-1));const slice=IT.slice(PG*per,PG*per+per);
-  const cnt={};A.forEach(a=>{const k=tierOf(a);cnt[k]=(cnt[k]||0)+1});
-  const chips=`<div class="alf"><button data-alf="all" class="${ALF==='all'?'on':''}">전체 <small>${A.length}</small></button>${Object.keys(TW).map(k=>`<button data-alf="${k}" class="${ALF===k?'on':''}" ${cnt[k]?'':'disabled'}><i style="background:${TINFO[k][1]}">${k}</i>${TINFO[k][0]} <small>${cnt[k]||0}</small></button>`).join('')}</div>`;
-  const pocket=(o,k)=>{if(!o)return`<div class="pocket empty">✦</div>`;const a=o.a,p=BYN[a.n];if(!p)return`<div class="pocket empty">?</div>`;return`<div class="pocket has t${p.t}" data-k="${o.i}"><img loading="lazy" alt="${esc(p.n)}" src="${cardURL(p)}"><div class="dt">${dotDate(a.d)}</div></div>`};
+  const cnt={};GR.forEach(a=>{const k=tierOf(a);cnt[k]=(cnt[k]||0)+1});
+  const chips=`<div class="alf"><button data-alf="all" class="${ALF==='all'?'on':''}">전체 <small>${u}</small></button>${Object.keys(TW).map(k=>`<button data-alf="${k}" class="${ALF===k?'on':''}" ${cnt[k]?'':'disabled'}><i style="background:${TINFO[k][1]}">${k}</i>${TINFO[k][0]} <small>${cnt[k]||0}</small></button>`).join('')}</div>`;
+  const pocket=(o,k)=>{if(!o)return`<div class="pocket empty">✦</div>`;const a=o.a,p=BYN[a.n];if(!p)return`<div class="pocket empty">?</div>`;const c=o.g.ds.length;return`<div class="pocket has t${p.t}${c>1?' stack':''}" data-k="${o.i}" style="${c>1?'--st:'+Math.min(c-1,3):''}">${c>1?`<span class="dupn">×${c}</span>`:''}<img loading="lazy" alt="${esc(p.n)}" src="${cardURL(p)}"><div class="dt">${dotDate(a.d)}${c>1?' 외 '+(c-1):''}</div></div>`};
   const half=per===18?[slice.slice(0,9),slice.slice(9,18)]:[slice];
-  el2.innerHTML=`<div class="binder"><div class="bhead"><h2>📒 나의 포토카드 앨범</h2><span class="prog">카드 ${A.length}장 · 인물 ${u}/${PEOPLE.length}</span></div>${chips}
+  el2.innerHTML=`<div class="binder"><div class="bhead"><h2>📒 나의 포토카드 앨범</h2><span class="prog">모은 카드 ${A.length}장 · 인물 ${u}/${PEOPLE.length}</span></div>${chips}
     <div class="spread">${half.map(s=>`<div class="pg${anim?' turn':''}">${Array.from({length:9},(_,k)=>pocket(s[k],(s===half[1]?9:0)+k)).join('')}</div>`).join('')}</div>
     <div class="pnav"><button id="pp" ${PG<=0?'disabled':''}>◀</button><span>${PG+1} / ${pages} 쪽</span><button id="pn" ${PG>=pages-1?'disabled':''}>▶</button></div></div>
-    <p class="hint" style="text-align:center">카드를 누르면 크게 볼 수 있어요 · 뽑은 순서대로 꽂혀요${ALF==='all'?'':' · '+ALF+'등급('+TINFO[ALF][0]+')만 보는 중'}</p>`;
+    <p class="hint" style="text-align:center">카드를 누르면 크게 볼 수 있어요 · 뽑은 순서대로 꽂히고, 같은 인물은 처음 칸에 겹쳐 들어가요${ALF==='all'?'':' · '+ALF+'등급('+TINFO[ALF][0]+')만 보는 중'}</p>`;
   el2.querySelectorAll('[data-alf]').forEach(b=>b.onclick=()=>{ALF=b.dataset.alf;PG=0;renderAlbum(true)});
   $('#pp').onclick=()=>{PG--;renderAlbum(true)};$('#pn').onclick=()=>{PG++;renderAlbum(true)};
-  el2.querySelectorAll('.pocket.has').forEach(b=>b.onclick=()=>{const a=ST.album[+b.dataset.k],p=BYN[a.n];const o=document.createElement('div');o.className='ov';o.innerHTML=`<img alt="${esc(p.n)}" src="${cardURL(p)}"><div class="dt">${dotDate(a.d)}에 뽑았어요</div><div class="acts"><button class="c">🔍 전체 보기 (캡처)</button><button class="s">💾 이미지 저장</button><button class="x">닫기</button></div>`;document.body.appendChild(o);o.onclick=e=>{if(e.target===o||e.target.classList.contains('x'))o.remove()};o.querySelector('.s').onclick=()=>saveImg(p);o.querySelector('.c').onclick=()=>{o.remove();capView(p)}})}
+  el2.querySelectorAll('.pocket.has').forEach(b=>b.onclick=()=>{const a=ST.album[+b.dataset.k],p=BYN[a.n],ds=ST.album.filter(x=>x.n===a.n).map(x=>dotDate(x.d));const o=document.createElement('div');o.className='ov';o.innerHTML=`<img alt="${esc(p.n)}" src="${cardURL(p)}"><div class="dt">${ds.length>1?`${ds.length}장 겹쳐 있어요 · ${ds.join(', ')}에 뽑았어요`:`${ds[0]}에 뽑았어요`}</div><div class="acts"><button class="c">🔍 전체 보기 (캡처)</button><button class="s">💾 이미지 저장</button><button class="x">닫기</button></div>`;document.body.appendChild(o);o.onclick=e=>{if(e.target===o||e.target.classList.contains('x'))o.remove()};o.querySelector('.s').onclick=()=>saveImg(p);o.querySelector('.c').onclick=()=>{o.remove();capView(p)}})}
 
 /* ============ 일람표 ============ */
 const TINFO={S:['황금','linear-gradient(135deg,#fff6c2,#f3c443,#c58a12,#ffe88a)'],A:['은','linear-gradient(135deg,#ffffff,#cfd4db,#8e96a2,#eef1f5)'],B:['동','linear-gradient(135deg,#ffd9b0,#d08a45,#8a4f1d,#f0b47a)'],C:['쇠','linear-gradient(135deg,#a3a9b0,#7d838b,#959ba2)'],D:['돌','linear-gradient(135deg,#cfc9bd,#9a948a,#b5afa3)'],E:['나무','linear-gradient(135deg,#c08a55,#a8713f,#7a4a22)'],F:['흙','linear-gradient(135deg,#8a6a4a,#6b4a2e,#4f3520)']};
@@ -350,10 +354,10 @@ const pct=v=>v>=1?v.toFixed(1).replace(/\.0$/,'')+'%':v>=.1?v.toFixed(2)+'%':v.t
 function renderList(){const own=new Set(ST.album.map(a=>a.n));const tot=Object.values(TW).reduce((a,b)=>a+b,0);
   const rows=Object.keys(TW).map(k=>{const L=PEOPLE.filter(p=>p.t===k),g=L.filter(p=>own.has(p.n)).length,tp=TW[k]/tot*100;return{k,L,g,tp,each:tp/L.length}});
   $('#tList').innerHTML=`<div class="lsum"><table><tr><th>등급</th><th>테두리</th><th>등급 확률</th><th>인원</th><th>한 명당</th><th>모은 인물</th></tr>${rows.map(r=>`<tr><td><b class="j">${r.k}</b></td><td>${TINFO[r.k][0]}</td><td>${pct(r.tp)}</td><td>${r.L.length}명</td><td>${pct(r.each)}</td><td>${r.g} / ${r.L.length}</td></tr>`).join('')}</table>
-    <p class="hint" style="margin:8px 0 0">한 번 뽑을 때 먼저 등급이 정해지고, 그 등급 안에서 한 명이 골고루 뽑혀요. 이미 모은 인물은 나오지 않아서, 모을수록 남은 인물이 나올 확률이 올라가요. <span style="color:#2f6a2a">✔ 초록색</span>은 내가 모은 인물이에요.</p></div>
+    <p class="hint" style="margin:8px 0 0">한 번 뽑을 때 먼저 등급이 정해지고, 그 등급 안에서 한 명이 골고루 뽑혀요. 이미 모은 인물도 다시 나올 수 있어요 (같은 인물은 앨범에 겹쳐 들어가요). <span style="color:#2f6a2a">✔ 초록색</span>은 내가 모은 인물이에요.</p></div>
     ${rows.map(r=>`<div class="tier"><div class="th"><div class="badge" style="background:${TINFO[r.k][1]}">${r.k}</div><h3>${r.k}등급 · ${TINFO[r.k][0]} 테두리</h3><div class="pr">${pct(r.tp)}<small>${r.L.length}명 · 한 명당 ${pct(r.each)}</small></div></div>
       <div class="names">${r.L.map(p=>`<span class="${own.has(p.n)?'got':''}">${esc(p.n)}</span>`).join('')}</div></div>`).join('')}`}
-function tab(k){document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===k));$('#tDraw').hidden=k!=='draw';$('#tAlbum').hidden=k!=='album';$('#tList').hidden=k!=='list';if(k==='list')renderList();if(k==='album'){ALF='all';PG=Math.max(0,Math.ceil(ST.album.length/perPage())-1);renderAlbum()}}
+function tab(k){document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===k));$('#tDraw').hidden=k!=='draw';$('#tAlbum').hidden=k!=='album';$('#tList').hidden=k!=='list';if(k==='list')renderList();if(k==='album'){ALF='all';PG=Math.max(0,Math.ceil(groups().length/perPage())-1);renderAlbum()}}
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
 addEventListener('resize',()=>{if(!$('#tAlbum').hidden)renderAlbum()});
 
