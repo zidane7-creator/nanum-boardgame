@@ -21,7 +21,7 @@ html,body{margin:0;height:100%;background:#070504;color:#efe6d6;font:16px/1.6 "G
 #cv{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
 #cv.place{cursor:crosshair}
 .dock{position:fixed;left:14px;right:14px;top:calc(50px + env(safe-area-inset-top,0px));z-index:15;display:flex;align-items:center;gap:6px 12px;flex-wrap:wrap;pointer-events:none}
-.dock .msg{font-size:14px;color:#e9dcc4;text-shadow:0 1px 6px #000;flex:1;min-width:180px}
+.dock .msg{word-break:keep-all;font-size:14px;color:#e9dcc4;text-shadow:0 1px 6px #000;flex:1;min-width:180px}
 @media (max-width:560px){.dock .btn{font-size:15px;padding:8px 18px}.dock .msg{font-size:13px;flex-basis:100%}}
 .dock>*{pointer-events:auto}
 .btn{font:inherit;font-size:17px;color:#2a1d12;background:linear-gradient(#f6ecd8,#e2d2b4);border:0;border-radius:999px;padding:11px 26px;cursor:pointer;box-shadow:0 0 24px rgba(233,201,139,.28),0 3px 0 #8a7556}
@@ -29,7 +29,7 @@ html,body{margin:0;height:100%;background:#070504;color:#efe6d6;font:16px/1.6 "G
 .btn.ghost{background:rgba(255,255,255,.06);color:#e8dcc6;box-shadow:none;border:1px solid rgba(232,220,198,.35);font-size:15px;padding:8px 18px}
 .note{font-size:13px;color:var(--dim);text-align:center;text-shadow:0 1px 3px #000}
 #words{position:fixed;left:50%;top:calc(108px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:12;text-align:center;width:min(92vw,620px);pointer-events:none;transition:opacity 1.4s}
-#words h2{margin:0 0 6px;font-size:clamp(17px,3.8vw,21px);font-weight:700;color:#f0e3c8;text-shadow:0 2px 10px #000}#words p{margin:0;font-size:clamp(13px,3vw,15px);color:#cbbda6;line-height:1.75;text-shadow:0 2px 8px #000}#words small{display:inline;color:var(--gold);font-size:13px;margin-left:4px}
+#words h2{margin:0 0 6px;font-size:clamp(17px,3.8vw,21px);font-weight:700;color:#f0e3c8;text-shadow:0 2px 10px #000}#words p{margin:0;word-break:keep-all;overflow-wrap:break-word;text-wrap:balance;font-size:clamp(13px,3vw,15px);color:#cbbda6;line-height:1.75;text-shadow:0 2px 8px #000}#words small{display:inline-block;white-space:nowrap;color:var(--gold);font-size:13px;margin-left:4px}
 #words.fade{opacity:0}
 /* 흰 종이 */
 .modal{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px;perspective:1200px}
@@ -38,7 +38,7 @@ html,body{margin:0;height:100%;background:#070504;color:#efe6d6;font:16px/1.6 "G
 .paper .front{display:flex;flex-direction:column;padding:22px 22px 16px}
 .paper .back{transform:rotateY(180deg);background:#f3efe5}
 .paper h3{margin:0 0 4px;color:#5a4632;font-weight:700;font-size:18px}
-.paper .sub{color:#8a7a66;font-size:13px;margin:0 0 8px}
+.paper .sub{word-break:keep-all;color:#8a7a66;font-size:13px;margin:0 0 8px}
 .paper textarea{flex:1;width:100%;resize:none;border:0;outline:0;background:repeating-linear-gradient(transparent 0 33px,#d9cfbf 33px 34px);line-height:34px;font:26px/34px "Nanum Pen Script",cursive;color:#2b2118;padding:0 2px}
 .paper .pno{text-align:right;font-size:12px;color:#a39377;margin-top:6px}
 .paper .row{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
