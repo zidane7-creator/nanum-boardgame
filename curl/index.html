@@ -51,7 +51,7 @@ input,select{font:inherit;padding:8px 10px;border:2px solid var(--line);border-r
 #game{position:fixed;inset:0;z-index:50;background:radial-gradient(ellipse at 50% 30%,#d9c3a0,#b8976c 70%,#9c7a52);display:none;touch-action:none;user-select:none;-webkit-user-select:none}
 #game.on{display:block}
 body.playing #homeFab,body.playing #siteNav,body.playing #siteGuideBtn{display:none!important}
-#cv{position:absolute;inset:0;width:100%;height:100%;touch-action:none;transform-origin:50% 50%;transition:transform .15s ease-out}
+#cv{position:absolute;inset:0;width:100%;height:100%;touch-action:none;transform-origin:50% 50%}
 #vpanel{position:absolute;right:8px;bottom:calc(52px + env(safe-area-inset-bottom));z-index:4;background:rgba(255,250,240,.96);border:2.5px solid var(--ink);border-radius:14px;padding:8px 10px;box-shadow:0 4px 0 rgba(0,0,0,.18);font-family:Jua;width:min(300px,calc(100vw - 16px))}
 #vpanel .vr{display:flex;align-items:center;gap:6px;margin-bottom:6px}#vpanel .vr span{width:62px;flex:none}#vpanel input{flex:1;accent-color:#e8503a;min-width:0}#vpanel small{color:var(--muted);font-size:12px}
 #sb{position:absolute;left:8px;right:8px;top:8px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;pointer-events:none;z-index:2}
@@ -74,7 +74,7 @@ body.playing #homeFab,body.playing #siteNav,body.playing #siteGuideBtn{display:n
 </head>
 <body>
 <div class="wrap" id="app"></div>
-<div id="game"><canvas id="cv"></canvas><div id="sb"></div><div id="turn"></div><div id="vpanel" hidden><div class="vr"><span>🎥 앵글</span><small>위</small><input type="range" id="vTilt" min="0" max="62" step="1"><small>옆</small></div><div class="vr"><span>🔄 회전</span><button class="sm" id="vL">⟲</button><input type="range" id="vYaw" min="-180" max="180" step="1"><button class="sm" id="vR">⟳</button></div><div style="text-align:right"><button class="sm" id="vReset">↺ 처음 보기로</button></div></div><div id="gtop"><button id="gView">🎥 보기</button><button id="gHow">📖 방법</button><button id="gFs">⛶ 전체화면</button><button id="gExit">⏏ 나가기</button></div></div>
+<div id="game"><canvas id="cv"></canvas><div id="sb"></div><div id="turn"></div><div id="vpanel" hidden><div class="vr"><span>🎥 앵글</span><small>위</small><input type="range" id="vTilt" min="0" max="62" step="1"><small>옆</small></div><div class="vr"><span>🔄 회전</span><button class="sm" id="vL">⟲</button><input type="range" id="vYaw" min="-180" max="180" step="1"><button class="sm" id="vR">⟳</button></div><div class="vr"><span>🔍 확대</span><button class="sm" id="vZo">－</button><b id="vZoom" style="flex:1;text-align:center;font-weight:normal">100%</b><button class="sm" id="vZi">＋</button></div><div style="text-align:right"><span class="hint" style="font-size:12px;margin-right:6px">휠·두 손가락으로 확대, 빈 곳을 끌면 옮겨요</span><button class="sm" id="vReset">↺ 처음 보기로</button></div></div><div id="gtop"><button id="gView">🎥 보기</button><button id="gHow">📖 방법</button><button id="gFs">⛶ 전체화면</button><button id="gExit">⏏ 나가기</button></div></div>
 <div id="ov" class="ov" hidden><div class="box" id="ovb"></div></div>
 <div id="toast"></div>
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js" integrity="sha384-8FWZA6BGMXhsfO+BLtrJK0We6gg5o1JyO8xQm6peWDEUs17ACA5ziE/NIAkl9z2k" crossorigin="anonymous"></script>
@@ -227,15 +227,17 @@ function render(){const app=$('#app');
 
 /* =================== 화면: 게임 =================== */
 const cv=$('#cv'),g=cv.getContext('2d');let CW=0,CH=0,DPR=1,SC=1,OX=0,OY=0,VC=[];
-function resize(){DPR=Math.min(2,devicePixelRatio||1);CW=innerWidth;CH=innerHeight;cv.width=CW*DPR;cv.height=CH*DPR;const sb=$('#sb').getBoundingClientRect(),tn=$('#turn');$('#game').style.setProperty('--turnTop',Math.round(sb.bottom+6)+'px');const top=Math.round(sb.bottom+6+(tn.offsetHeight||44)+10),bot=58;SC=Math.min((CW-24)/(W+60),(CH-top-bot)/(L+40));OX=CW/2;OY=top+(CH-top-bot-L*SC)/2}
+function resize(){DPR=Math.min(3.2,Math.min(2,devicePixelRatio||1)*Math.max(1,typeof VIEW!=='undefined'?VIEW.zoom:1));CW=innerWidth;CH=innerHeight;cv.width=CW*DPR;cv.height=CH*DPR;const sb=$('#sb').getBoundingClientRect(),tn=$('#turn');$('#game').style.setProperty('--turnTop',Math.round(sb.bottom+6)+'px');const top=Math.round(sb.bottom+6+(tn.offsetHeight||44)+10),bot=58;SC=Math.min((CW-24)/(W+60),(CH-top-bot)/(L+40));OX=CW/2;OY=top+(CH-top-bot-L*SC)/2}
 addEventListener('resize',resize);
 $('#gView').onclick=()=>{$('#vpanel').hidden=!$('#vpanel').hidden};
 $('#vTilt').addEventListener('input',e=>{VIEW.tilt=+e.target.value;applyView()});$('#vYaw').addEventListener('input',e=>{VIEW.yaw=+e.target.value;applyView()});
-const turn=d=>{let y=VIEW.yaw+d;if(y>180)y-=360;if(y<-180)y+=360;VIEW.yaw=y;applyView()};$('#vL').onclick=()=>turn(-45);$('#vR').onclick=()=>turn(45);$('#vReset').onclick=()=>{VIEW.tilt=0;VIEW.yaw=0;applyView()};
+const turn=d=>{let y=VIEW.yaw+d;if(y>180)y-=360;if(y<-180)y+=360;VIEW.yaw=y;applyView()};$('#vL').onclick=()=>turn(-45);$('#vR').onclick=()=>turn(45);$('#vReset').onclick=()=>{VIEW.tilt=0;VIEW.yaw=0;VIEW.zoom=1;VIEW.px=0;VIEW.py=0;applyView()};
+const zoomBy=k=>{VIEW.zoom=Math.max(.6,Math.min(3.5,VIEW.zoom*k));if(VIEW.zoom<=1.02&&!VIEW.tilt){VIEW.px*=.5;VIEW.py*=.5}applyView()};$('#vZi').onclick=()=>zoomBy(1.2);$('#vZo').onclick=()=>zoomBy(1/1.2);
+cv.addEventListener('wheel',e=>{e.preventDefault();zoomBy(Math.exp(-e.deltaY*.0015))},{passive:false});
 setTimeout(applyView,0);
 /* 보기: 책상을 기울이고(앵글) 돌려요(회전). 누른 자리는 기울어진 판 위 좌표로 되돌려 계산해요 */
-const VIEW={tilt:0,yaw:0};try{const o=JSON.parse(localStorage.getItem('curl-view')||'null');if(o){VIEW.tilt=Math.max(0,Math.min(62,+o.tilt||0));VIEW.yaw=Math.max(-180,Math.min(180,+o.yaw||0))}}catch(_){}
-function applyView(){const s=VIEW.tilt?Math.max(.78,1-VIEW.tilt/260):1;cv.style.transform=(VIEW.tilt||VIEW.yaw)?`perspective(1300px) rotateX(${VIEW.tilt}deg) rotateZ(${VIEW.yaw}deg) scale(${s.toFixed(3)})`:'';
+const VIEW={tilt:0,yaw:0,zoom:1,px:0,py:0};try{const o=JSON.parse(localStorage.getItem('curl-view')||'null');if(o){VIEW.tilt=Math.max(0,Math.min(62,+o.tilt||0));VIEW.yaw=Math.max(-180,Math.min(180,+o.yaw||0))}}catch(_){}
+function applyView(){const s=(VIEW.tilt?Math.max(.78,1-VIEW.tilt/260):1)*VIEW.zoom;cv.style.transform=(VIEW.tilt||VIEW.yaw||VIEW.zoom!==1||VIEW.px||VIEW.py)?`translate(${VIEW.px.toFixed(1)}px,${VIEW.py.toFixed(1)}px) perspective(1300px) rotateX(${VIEW.tilt}deg) rotateZ(${VIEW.yaw}deg) scale(${s.toFixed(3)})`:'';const zl=$('#vZoom');if(zl)zl.textContent=Math.round(VIEW.zoom*100)+'%';clearTimeout(applyView.t);applyView.t=setTimeout(()=>{if(inGame)resize()},180);
   $('#vTilt').value=VIEW.tilt;$('#vYaw').value=VIEW.yaw;try{localStorage.setItem('curl-view',JSON.stringify(VIEW))}catch(_){}}
 function unproj(cx,cy){const tf=getComputedStyle(cv).transform;if(!tf||tf==='none')return[cx,cy];const ox=cv.clientWidth/2,oy=cv.clientHeight/2;
   const F=new DOMMatrix().translate(ox,oy).multiply(new DOMMatrix(tf)).translate(-ox,-oy);
@@ -258,8 +260,8 @@ function tablePath(sh,pad){g.beginPath();if(sh==='oval'){g.ellipse(0,L/2,220+pad
 let woodPat=null;function wood(){if(woodPat)return woodPat;const c=document.createElement('canvas');c.width=220;c.height=440;const x=c.getContext('2d');x.fillStyle='#d9a86a';x.fillRect(0,0,220,440);for(let i=0;i<46;i++){x.strokeStyle=`rgba(${120+Math.random()*40},${70+Math.random()*30},30,${.12+Math.random()*.15})`;x.lineWidth=1+Math.random()*2.5;const X=Math.random()*220;x.beginPath();x.moveTo(X,0);for(let y=0;y<=440;y+=40)x.lineTo(X+Math.sin(y/60+i)*6,y);x.stroke()}woodPat=g.createPattern(c,'repeat');return woodPat}
 function drawTable(v){const sh=v.set.shape,Gg=geo(v.set,v.layout);g.save();g.translate(OX,OY);g.scale(SC,SC);
   // 그림자·두께
-  g.save();g.translate(10,22);tablePath(sh,6);g.fillStyle='rgba(40,25,10,.35)';g.fill();g.restore();
-  g.save();g.translate(0,12);tablePath(sh,6);g.fillStyle='#8a5a34';g.fill();g.restore();
+  {const[ux,uy]=upVec(),T=Math.max(10,22*Math.hypot(ux,uy));g.save();g.translate(-ux/Math.hypot(ux,uy||1e-6)*(T+12)*.9+6,-uy/Math.hypot(ux,uy||1e-6)*(T+12)*.9+8);tablePath(sh,6);g.fillStyle='rgba(40,25,10,.32)';g.fill();g.restore();
+   const n=Math.ceil(T/2);for(let i=n;i>=1;i--){const f=i/n;g.save();g.translate(-ux/Math.hypot(ux,uy)*T*f,-uy/Math.hypot(ux,uy)*T*f);tablePath(sh,6);g.fillStyle=i===n?'#6e4526':'#8a5a34';g.fill();g.restore()}}
   tablePath(sh,6);g.fillStyle='#a8703f';g.fill();tablePath(sh,0);g.fillStyle=wood();g.fill();
   g.save();tablePath(sh,0);g.clip();
   // 출발선
@@ -279,11 +281,23 @@ function drawTable(v){const sh=v.set.shape,Gg=geo(v.set,v.layout);g.save();g.tra
   // 반사 벽
   for(const w of Gg.walls){g.strokeStyle='#ff8a2a';g.lineWidth=10;g.lineCap='round';g.beginPath();for(let y=w.y0;y<=w.y1;y+=8){let x=w.s*hw(y,sh);if(sh==='oval')x=w.s*hw(y,sh);const px=x+w.s*-2;y===w.y0?g.moveTo(px,y):g.lineTo(px,y)}g.stroke();g.strokeStyle='rgba(255,255,255,.6)';g.lineWidth=3;g.stroke()}
   g.restore();return Gg}
-function drawCap(x,y,col,s,alpha,glow){g.save();g.translate(x,y);g.scale(s,s);g.globalAlpha=alpha==null?1:alpha;
-  g.fillStyle='rgba(0,0,0,.28)';el(3,4,CR+1,CR+1);g.fill();
-  if(glow){g.strokeStyle='rgba(255,255,255,.9)';g.lineWidth=4;el(0,0,CR+6,CR+6);g.stroke()}
-  g.beginPath();for(let i=0;i<42;i++){const a=i/42*Math.PI*2,r=i%2?CR:CR-2.2;i?g.lineTo(Math.cos(a)*r,Math.sin(a)*r):g.moveTo(Math.cos(a)*r,Math.sin(a)*r)}g.closePath();g.fillStyle=col;g.fill();g.strokeStyle='rgba(0,0,0,.35)';g.lineWidth=1.2;g.stroke();
-  const rg=g.createRadialGradient(-4,-5,1,0,0,CR-3);rg.addColorStop(0,'rgba(255,255,255,.85)');rg.addColorStop(.35,'rgba(255,255,255,.25)');rg.addColorStop(1,'rgba(0,0,0,.15)');el(0,0,CR-3.5,CR-3.5);g.fillStyle=rg;g.fill();el(0,0,CR-3.5,CR-3.5);g.strokeStyle='rgba(255,255,255,.5)';g.lineWidth=1;g.stroke();g.restore()}
+/* 위쪽(화면에서 보는 사람 반대쪽) 방향: 앵글·회전에 따라 달라져요 */
+function upVec(){const a=VIEW.yaw*Math.PI/180,k=Math.min(1.7,.18+Math.tan(VIEW.tilt*Math.PI/180));return[-Math.sin(a)*k,-Math.cos(a)*k]}
+function shadeC(h,a){const n=parseInt(h.slice(1),16);const f=v=>Math.max(0,Math.min(255,Math.round(a<0?v*(1+a):v+(255-v)*a)));return`rgb(${f(n>>16)},${f(n>>8&255)},${f(n&255)})`}
+function crimp(r,teeth,depth){g.beginPath();for(let i=0;i<teeth*2;i++){const a=i/(teeth*2)*Math.PI*2,rr=i%2?r:r-depth;i?g.lineTo(Math.cos(a)*rr,Math.sin(a)*rr):g.moveTo(Math.cos(a)*rr,Math.sin(a)*rr)}g.closePath()}
+function drawCap(x,y,col,s,alpha,glow){const[ux0,uy0]=upVec(),HT=8,ux=ux0*HT,uy=uy0*HT;g.save();g.translate(x,y);g.scale(s,s);g.globalAlpha=alpha==null?1:alpha;
+  // 그림자
+  g.fillStyle='rgba(0,0,0,.30)';el(-ux*.35+2,-uy*.35+3,CR+2,CR+2);g.fill();
+  if(glow){g.strokeStyle='rgba(255,255,255,.95)';g.lineWidth=4;el(ux,uy,CR+6,CR+6);g.stroke()}
+  // 옆면 (톱니 모양 기둥)
+  const steps=Math.max(2,Math.ceil(Math.hypot(ux,uy)/1.2));const side=shadeC(col,-.38),side2=shadeC(col,-.2);
+  for(let i=0;i<=steps;i++){const f=i/steps;g.save();g.translate(ux*f,uy*f);crimp(CR,21,2);g.fillStyle=i===0?shadeC(col,-.5):side;g.fill();g.restore()}
+  const ul=Math.hypot(ux,uy);if(ul>1.5){const nx=-ux/ul,ny=-uy/ul;g.strokeStyle=side2;g.lineWidth=1.3;for(let i=0;i<42;i++){const a=i/42*Math.PI*2,cx=Math.cos(a),cy=Math.sin(a);if(cx*nx+cy*ny<-.15)continue;const r=i%2?CR:CR-2;g.beginPath();g.moveTo(cx*r,cy*r);g.lineTo(cx*r+ux,cy*r+uy);g.stroke()}}
+  // 윗면
+  g.translate(ux,uy);crimp(CR,21,2);const tg=g.createLinearGradient(-CR,-CR,CR,CR);tg.addColorStop(0,shadeC(col,.25));tg.addColorStop(1,shadeC(col,-.12));g.fillStyle=tg;g.fill();g.strokeStyle='rgba(0,0,0,.35)';g.lineWidth=1.1;g.stroke();
+  el(0,0,CR-3.6,CR-3.6);const rg=g.createRadialGradient(-4,-5,1,0,0,CR-3);rg.addColorStop(0,'rgba(255,255,255,.9)');rg.addColorStop(.4,'rgba(255,255,255,.22)');rg.addColorStop(1,'rgba(0,0,0,.18)');g.fillStyle=rg;g.fill();
+  el(0,0,CR-3.6,CR-3.6);g.strokeStyle='rgba(0,0,0,.25)';g.lineWidth=1.4;g.stroke();el(0,0,CR-5.2,CR-5.2);g.strokeStyle='rgba(255,255,255,.55)';g.lineWidth=1;g.stroke();
+  g.restore()}
 let AIM=null,lastT=performance.now(),lastFrame=0,GL=null;
 function loop(t){if(!inGame)return;const dt=Math.min(.05,(t-lastT)/1000);lastT=t;
   if(isHost&&G&&G.ph==='play'&&G.moving){let mv=false;const n=Math.ceil(dt/(1/240));for(let i=0;i<n;i++)mv=stepPhys(G.caps,G.set,GL||(GL=geo(G.set,G.layout)),dt/n)||mv;
@@ -305,9 +319,17 @@ function draw(){const v=LV;if(!v)return;g.setTransform(DPR,0,0,DPR,0,0);g.clearR
     const bob=myTurn()?Math.sin(performance.now()/250)*1.5:0;drawCap(x,SHOTY+bob,col,1.05,1,myTurn())}
   g.restore()}
 /* 치기 입력: 병뚜껑을 누른 채 뒤로 끌었다 놓기 */
-cv.addEventListener('pointerdown',e=>{if(!myTurn())return;const[wx,wy]=toW(e.clientX,e.clientY);const cx=LV.cur.x||0;
-  if(Math.sqrt((wx-cx)**2+(wy-SHOTY)**2)<CR*3.2){AIM={sx:wx,sy:wy,ex:wx,ey:wy,id:e.pointerId};try{cv.setPointerCapture(e.pointerId)}catch(_){}return}
-  if(wy>START-10){setCurX(wx)}});
+const PTR=new Map();let PAN=null,PINCH=null;
+cv.addEventListener('pointerdown',e=>{PTR.set(e.pointerId,{x:e.clientX,y:e.clientY});try{cv.setPointerCapture(e.pointerId)}catch(_){}
+  if(PTR.size===2){AIM=null;PAN=null;const[a,b]=[...PTR.values()];PINCH={d:Math.hypot(a.x-b.x,a.y-b.y),z:VIEW.zoom};return}
+  if(myTurn()){const[wx,wy]=toW(e.clientX,e.clientY);const cx=LV.cur.x||0;
+    if(Math.sqrt((wx-cx)**2+(wy-SHOTY)**2)<CR*3.2){AIM={sx:wx,sy:wy,ex:wx,ey:wy,id:e.pointerId};return}
+    if(wy>START-10&&wy<L+20&&Math.abs(wx)<hw(SHOTY,LV.set.shape)+20){setCurX(wx);return}}
+  PAN={id:e.pointerId,x:e.clientX,y:e.clientY,px:VIEW.px,py:VIEW.py}});
+cv.addEventListener('pointermove',e=>{if(PTR.has(e.pointerId))PTR.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(PINCH&&PTR.size===2){const[a,b]=[...PTR.values()];VIEW.zoom=Math.max(.6,Math.min(3.5,PINCH.z*Math.hypot(a.x-b.x,a.y-b.y)/PINCH.d));applyView();return}
+  if(PAN&&e.pointerId===PAN.id){VIEW.px=PAN.px+(e.clientX-PAN.x);VIEW.py=PAN.py+(e.clientY-PAN.y);applyView()}});
+const endPtr=e=>{PTR.delete(e.pointerId);if(PTR.size<2)PINCH=null;if(PAN&&e.pointerId===PAN.id)PAN=null};cv.addEventListener('pointerup',endPtr);cv.addEventListener('pointercancel',endPtr);
 cv.addEventListener('pointermove',e=>{if(!AIM||e.pointerId!==AIM.id)return;const[wx,wy]=toW(e.clientX,e.clientY);AIM.ex=wx;AIM.ey=wy});
 const endAim=e=>{if(!AIM||e.pointerId!==AIM.id)return;const dx=AIM.sx-AIM.ex,dy=AIM.sy-AIM.ey,len=Math.min(220,Math.sqrt(dx*dx+dy*dy));AIM=null;if(len<10)return;const k=len*5/Math.sqrt(dx*dx+dy*dy),vx=dx*k,vy=dy*k,x=LV.cur.x||0;
   if(isHost)doShot(x,vx,vy);else CL.send({t:'shot',x,vx,vy})};cv.addEventListener('pointerup',endAim);cv.addEventListener('pointercancel',e=>{if(AIM&&e.pointerId===AIM.id)AIM=null});
