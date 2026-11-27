@@ -51,7 +51,9 @@ input,select{font:inherit;padding:8px 10px;border:2px solid var(--line);border-r
 #game{position:fixed;inset:0;z-index:50;background:radial-gradient(ellipse at 50% 30%,#d9c3a0,#b8976c 70%,#9c7a52);display:none;touch-action:none;user-select:none;-webkit-user-select:none}
 #game.on{display:block}
 body.playing #homeFab,body.playing #siteNav,body.playing #siteGuideBtn{display:none!important}
-#cv{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+#cv{position:absolute;inset:0;width:100%;height:100%;touch-action:none;transform-origin:50% 50%;transition:transform .15s ease-out}
+#vpanel{position:absolute;right:8px;bottom:calc(52px + env(safe-area-inset-bottom));z-index:4;background:rgba(255,250,240,.96);border:2.5px solid var(--ink);border-radius:14px;padding:8px 10px;box-shadow:0 4px 0 rgba(0,0,0,.18);font-family:Jua;width:min(300px,calc(100vw - 16px))}
+#vpanel .vr{display:flex;align-items:center;gap:6px;margin-bottom:6px}#vpanel .vr span{width:62px;flex:none}#vpanel input{flex:1;accent-color:#e8503a;min-width:0}#vpanel small{color:var(--muted);font-size:12px}
 #sb{position:absolute;left:8px;right:8px;top:8px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;pointer-events:none;z-index:2}
 #sb .tm{display:flex;align-items:center;gap:6px;background:rgba(255,250,240,.94);border:2.5px solid var(--ink);border-radius:14px;padding:4px 10px;font-family:Jua;box-shadow:0 3px 0 rgba(0,0,0,.18);transition:transform .2s}
 #sb .tm.cur{transform:scale(1.08);background:#fff3bf}
@@ -72,7 +74,7 @@ body.playing #homeFab,body.playing #siteNav,body.playing #siteGuideBtn{display:n
 </head>
 <body>
 <div class="wrap" id="app"></div>
-<div id="game"><canvas id="cv"></canvas><div id="sb"></div><div id="turn"></div><div id="gtop"><button id="gHow">📖 방법</button><button id="gFs">⛶ 전체화면</button><button id="gExit">⏏ 나가기</button></div></div>
+<div id="game"><canvas id="cv"></canvas><div id="sb"></div><div id="turn"></div><div id="vpanel" hidden><div class="vr"><span>🎥 앵글</span><small>위</small><input type="range" id="vTilt" min="0" max="62" step="1"><small>옆</small></div><div class="vr"><span>🔄 회전</span><button class="sm" id="vL">⟲</button><input type="range" id="vYaw" min="-180" max="180" step="1"><button class="sm" id="vR">⟳</button></div><div style="text-align:right"><button class="sm" id="vReset">↺ 처음 보기로</button></div></div><div id="gtop"><button id="gView">🎥 보기</button><button id="gHow">📖 방법</button><button id="gFs">⛶ 전체화면</button><button id="gExit">⏏ 나가기</button></div></div>
 <div id="ov" class="ov" hidden><div class="box" id="ovb"></div></div>
 <div id="toast"></div>
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js" integrity="sha384-8FWZA6BGMXhsfO+BLtrJK0We6gg5o1JyO8xQm6peWDEUs17ACA5ziE/NIAkl9z2k" crossorigin="anonymous"></script>
@@ -219,7 +221,18 @@ function render(){const app=$('#app');
 const cv=$('#cv'),g=cv.getContext('2d');let CW=0,CH=0,DPR=1,SC=1,OX=0,OY=0,VC=[];
 function resize(){DPR=Math.min(2,devicePixelRatio||1);CW=innerWidth;CH=innerHeight;cv.width=CW*DPR;cv.height=CH*DPR;const top=62,bot=58;SC=Math.min((CW-24)/(W+60),(CH-top-bot)/(L+40));OX=CW/2;OY=top+(CH-top-bot-L*SC)/2}
 addEventListener('resize',resize);
-const toS=(x,y)=>[OX+x*SC,OY+y*SC],toW=(sx,sy)=>[(sx-OX)/SC,(sy-OY)/SC];
+$('#gView').onclick=()=>{$('#vpanel').hidden=!$('#vpanel').hidden};
+$('#vTilt').addEventListener('input',e=>{VIEW.tilt=+e.target.value;applyView()});$('#vYaw').addEventListener('input',e=>{VIEW.yaw=+e.target.value;applyView()});
+const turn=d=>{let y=VIEW.yaw+d;if(y>180)y-=360;if(y<-180)y+=360;VIEW.yaw=y;applyView()};$('#vL').onclick=()=>turn(-45);$('#vR').onclick=()=>turn(45);$('#vReset').onclick=()=>{VIEW.tilt=0;VIEW.yaw=0;applyView()};
+setTimeout(applyView,0);
+/* 보기: 책상을 기울이고(앵글) 돌려요(회전). 누른 자리는 기울어진 판 위 좌표로 되돌려 계산해요 */
+const VIEW={tilt:0,yaw:0};try{const o=JSON.parse(localStorage.getItem('curl-view')||'null');if(o){VIEW.tilt=Math.max(0,Math.min(62,+o.tilt||0));VIEW.yaw=Math.max(-180,Math.min(180,+o.yaw||0))}}catch(_){}
+function applyView(){const s=VIEW.tilt?Math.max(.78,1-VIEW.tilt/260):1;cv.style.transform=(VIEW.tilt||VIEW.yaw)?`perspective(1300px) rotateX(${VIEW.tilt}deg) rotateZ(${VIEW.yaw}deg) scale(${s.toFixed(3)})`:'';
+  $('#vTilt').value=VIEW.tilt;$('#vYaw').value=VIEW.yaw;try{localStorage.setItem('curl-view',JSON.stringify(VIEW))}catch(_){}}
+function unproj(cx,cy){const tf=getComputedStyle(cv).transform;if(!tf||tf==='none')return[cx,cy];const ox=cv.clientWidth/2,oy=cv.clientHeight/2;
+  const F=new DOMMatrix().translate(ox,oy).multiply(new DOMMatrix(tf)).translate(-ox,-oy);
+  const a1=F.m11-cx*F.m14,b1=F.m21-cx*F.m24,c1=cx*F.m44-F.m41,a2=F.m12-cy*F.m14,b2=F.m22-cy*F.m24,c2=cy*F.m44-F.m42,d=a1*b2-a2*b1;if(Math.abs(d)<1e-9)return[cx,cy];return[(c1*b2-c2*b1)/d,(a1*c2-a2*c1)/d]}
+const toS=(x,y)=>[OX+x*SC,OY+y*SC],toW=(sx,sy)=>{const[lx,ly]=unproj(sx,sy);return[(lx-OX)/SC,(ly-OY)/SC]};
 let inGame=false;function enterGame(){if(inGame)return;inGame=true;$('#game').classList.add('on');document.body.classList.add('playing');resize();requestAnimationFrame(loop)}
 function leaveGame(){if(!inGame)return;inGame=false;$('#game').classList.remove('on');document.body.classList.remove('playing')}
 function myTurn(){const v=LV;if(!v||v.ph!=='play'||v.moving||!v.cur)return false;if(v.mode==='one')return true;return v.cur.pid===MY}
