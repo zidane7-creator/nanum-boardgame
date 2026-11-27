@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://js.tosspayments.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' data: blob: https://api.github.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://api.open-meteo.com https://api.met.no https://wttr.in https://api.mymemory.translated.net https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.doubleclick.net https://www.google.com https://*.tosspayments.com https://0.peerjs.com wss://0.peerjs.com wss://broker.emqx.io:8084 wss://broker.hivemq.com:8884 https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self' blob:; frame-src 'self' https://www.bskorea.or.kr https://*.tosspayments.com; object-src 'none'; base-uri 'self'; form-action 'self' https://*.tosspayments.com">
+<meta name="referrer" content="strict-origin-when-cross-origin"><script async src="https://www.googletagmanager.com/gtag/js?id=G-0WTWY3TPES"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-0WTWY3TPES");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>성경골든벨 | 치영의 교회 생활 즐기기 · 성경 66권 골든벨 퀴즈</title>
+<meta name="description" content="성경 66권 330여 문제(단답형·객관식, 난이도 1~10)로 하는 성경골든벨. 출제자가 문제를 골라 칠판에 띄우고, 혼자 진행하거나 방을 만들어 초대하면 각자 답안지에 답을 써서 내요. 틀리면 탈락, 패자부활전도 있어요.">
+<link rel="canonical" href="https://zidane7-creator.github.io/nanum-boardgame/goldenbell/">
+<meta property="og:title" content="성경골든벨 — 치영의 교회 생활 즐기기">
+<meta property="og:description" content="성경 66권 문제로 끝까지 살아남아 골든벨을 울려라!">
+<meta property="og:image" content="https://zidane7-creator.github.io/nanum-boardgame/assets/og.jpg">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔔</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Pen+Script&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<script src="../assets/jua.js"></script>
+<style>
+:root{--ink:#3b2a20;--cream:#fffaf0;--line:#e8d7bd;--accent:#e8503a;--gold:#f5b82e;--muted:#7a6a5c;--chalk:#f4f1e8;--board:#2f5a3e}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html,body{margin:0;color:var(--ink);font:16px/1.5 "Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;background:linear-gradient(160deg,#f4e6cf,#e9d3b0);min-height:100%}
+.wrap{max-width:1100px;margin:0 auto;padding:14px 12px 110px}
+h1,h2,h3,.j{font-family:Jua,sans-serif;font-weight:normal}
+h1{margin:0;font-size:clamp(30px,6vw,44px)}h2{margin:0 0 8px;font-size:22px}
+button{font:inherit;font-size:16px;color:var(--ink);border:2px solid var(--ink);background:var(--cream);border-radius:14px;padding:7px 14px;cursor:pointer;box-shadow:0 3px 0 var(--ink);touch-action:manipulation}
+button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}button:disabled{opacity:.45;cursor:default}
+button.go{background:var(--accent);color:#fff}button.gold{background:var(--gold)}button.sm{font-size:14px;padding:3px 9px;box-shadow:0 2px 0 var(--ink)}button.on{background:var(--gold)}
+input,select,textarea{font:inherit;color:var(--ink);border:2px solid #cdbda6;border-radius:10px;padding:6px 8px;background:#fff}
+textarea{width:100%;resize:vertical}
+.card{background:var(--cream);border:2.5px solid var(--ink);border-radius:20px;padding:16px;margin-top:14px;box-shadow:0 5px 0 rgba(59,42,32,.15)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.sp{flex:1}
+.hint{color:var(--muted);font-size:14px}
+.hero{text-align:center}.hero p{margin:6px 0 0;color:var(--muted)}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:700px){.modes{grid-template-columns:1fr}}
+.mode{text-align:center}.mode .big{font-size:54px}.mode p{color:var(--muted);margin:6px 0 12px;font-size:15px}
+/* 출제 */
+.cols{display:grid;grid-template-columns:1.25fr 1fr;gap:14px;align-items:start}@media(max-width:860px){.cols{grid-template-columns:1fr}}
+.bank{max-height:58vh;overflow:auto;border:2px solid var(--line);border-radius:14px;background:#fff;margin-top:10px}
+.qi{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-bottom:1px solid #f0e6d6;cursor:pointer}.qi:hover{background:#fff6e2}.qi.in{background:#fff1c9}
+.qi .t{flex:1;font-size:14.5px;line-height:1.45}.qi .t small{display:block;color:var(--muted);font-size:12px}
+.lv{flex:none;display:inline-grid;place-items:center;min-width:30px;height:24px;border-radius:8px;font-family:Jua;font-size:13px;color:#fff}
+.ty{flex:none;font-size:12px;border:1.5px solid #cdbda6;border-radius:8px;padding:0 5px;color:var(--muted);background:#fff}
+.ck{flex:none;width:26px;height:26px;border-radius:8px;border:2px solid var(--ink);display:grid;place-items:center;font-family:Jua;background:#fff}.qi.in .ck{background:var(--accent);color:#fff}
+.set{list-style:none;margin:10px 0 0;padding:0;max-height:52vh;overflow:auto}
+.set li{display:flex;gap:6px;align-items:center;padding:6px 6px;border-bottom:1px dashed #e4d6bf;font-size:14px}.set li .n{font-family:Jua;width:26px;text-align:right;color:var(--accent)}.set li .t{flex:1;line-height:1.4}
+.set li button{padding:1px 7px;font-size:13px;box-shadow:0 1px 0 var(--ink);border-radius:8px}
+.addf .row{margin-top:8px}.addf label{font-size:14px}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:40;background:rgba(255,250,240,.96);border-top:3px solid var(--ink);padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
+/* 칠판 */
+.board{position:relative;background:radial-gradient(ellipse at 40% 30%,#3d6e4d,#264a33 75%);border:16px solid #8a5a34;border-radius:16px;box-shadow:inset 0 0 50px rgba(0,0,0,.45),0 8px 0 #5d3a1f,0 14px 30px rgba(0,0,0,.3);color:var(--chalk);padding:22px 26px 26px;min-height:340px;font-family:"Nanum Pen Script",cursive}
+.board:after{content:"";position:absolute;left:8%;right:8%;bottom:-16px;height:12px;background:#6e4526;border-radius:0 0 6px 6px}
+.board .hd{display:flex;align-items:center;gap:10px;font-family:Jua,sans-serif;font-size:clamp(16px,2.6vw,22px);opacity:.92}
+.board .hd .no{background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.5);border-radius:12px;padding:0 12px}
+.board .hd .rv{background:#e8503a;color:#fff;border-radius:12px;padding:0 10px}
+.board .stars{color:#ffe08a;letter-spacing:1px}
+.board .qt{font-size:clamp(30px,5.2vw,58px);line-height:1.25;margin:18px 0 10px;text-shadow:0 0 1px rgba(255,255,255,.4);word-break:keep-all}
+.board .chs{display:grid;grid-template-columns:1fr 1fr;gap:6px 24px;font-size:clamp(24px,3.8vw,42px);line-height:1.25}@media(max-width:640px){.board .chs{grid-template-columns:1fr}}
+.board .chs div.ok{color:#ffe08a;text-decoration:underline wavy rgba(255,224,138,.7)}
+.board .an{margin-top:16px;font-size:clamp(30px,5vw,54px);color:#ffe08a;border-top:2px dashed rgba(255,255,255,.35);padding-top:10px}
+.board .cd{position:absolute;right:20px;top:14px;font-family:Jua;font-size:30px;color:#ffe08a}
+.board .big{font-size:clamp(40px,7vw,80px);text-align:center;margin:30px 0 10px}
+.board.full{position:fixed;inset:0;z-index:100;border-radius:0;min-height:0;overflow:auto;padding:28px 40px}
+.board.full .qt{font-size:clamp(40px,6.5vw,90px)}.board.full .chs{font-size:clamp(30px,4.6vw,64px)}.board.full .an{font-size:clamp(40px,6vw,80px)}
+.ctl{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:24px}
+/* 참가자 */
+.pl{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.pl span{border:2px solid var(--ink);border-radius:999px;padding:1px 10px;font-size:14px;background:#e6f6df}
+.pl span.out{background:#e6e1da;color:#8a8078;text-decoration:line-through;border-color:#a89c90}
+.pl span.sub:after{content:" ✔";color:#2f8a3a}
+.pl span.ok{background:#d9f3d2}.pl span.ng{background:#ffd9d2}
+.jl{list-style:none;padding:0;margin:8px 0 0}.jl li{display:flex;gap:8px;align-items:center;padding:6px 4px;border-bottom:1px dashed #e4d6bf}.jl li b{min-width:80px}.jl li .a{flex:1;font-family:"Nanum Pen Script";font-size:24px;line-height:1.1}
+.jl li button{min-width:46px}
+.qr{background:#fff;padding:8px;border-radius:12px;display:inline-block;border:2px solid var(--line)}.qr svg{width:170px;height:170px;display:block}
+.code{font-family:Jua;font-size:38px;letter-spacing:6px;color:var(--accent)}
+.badge{display:inline-block;border-radius:999px;padding:2px 12px;font-family:Jua;border:2px solid var(--ink)}
+.b-alive{background:#d9f3d2}.b-out{background:#e6e1da}.b-rv{background:#ffd2c4}
+/* 답안지 */
+.sheet{position:relative;margin:16px auto 0;max-width:620px;background:#fffdf7;border:1.5px solid #c9b896;box-shadow:0 6px 18px rgba(0,0,0,.18);padding:18px 22px 20px 46px;background-image:linear-gradient(90deg,transparent 34px,#f3b1a8 34px,#f3b1a8 36px,transparent 36px),repeating-linear-gradient(#fffdf7 0 39px,#c9dcef 39px 40px)}
+.sheet .sh{display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid var(--ink);padding-bottom:4px;font-family:"Gowun Dodum",sans-serif}
+.sheet .sh b{font-family:Jua;font-weight:normal;font-size:22px}
+.sheet .who{display:flex;gap:14px;margin:8px 0;font-family:"Gowun Dodum";font-size:15px}.sheet .who span{border-bottom:1.5px solid #8a7a66;min-width:90px;padding:0 6px;font-family:"Nanum Pen Script";font-size:24px;line-height:1}
+.sheet label{font-family:"Gowun Dodum";font-size:15px}
+.sheet input.ans{width:100%;border:0;border-bottom:2px solid #8a7a66;border-radius:0;background:transparent;font-family:"Nanum Pen Script",cursive;font-size:40px;padding:2px 6px;color:#1f3a8a;outline:none}
+.sheet .stamp{position:absolute;right:18px;top:40px;width:110px;height:110px;border-radius:50%;display:grid;place-items:center;font-family:Jua;font-size:54px;transform:rotate(-14deg);border:6px solid;opacity:.85}
+.sheet .stamp.o{color:#d7263d;border-color:#d7263d}.sheet .stamp.x{color:#3d5a80;border-color:#3d5a80}
+.sheet .rvtag{position:absolute;left:46px;top:-14px;background:#e8503a;color:#fff;font-family:Jua;padding:2px 12px;border-radius:10px}
+.bell{font-size:90px;text-align:center;animation:ring 1s ease-in-out infinite;transform-origin:50% 10%}
+@keyframes ring{0%,100%{transform:rotate(0)}25%{transform:rotate(14deg)}75%{transform:rotate(-14deg)}}
+#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#222;color:#fff;padding:10px 18px;border-radius:14px;opacity:0;transition:.25s;z-index:500;pointer-events:none;max-width:90vw;text-align:center}#toast.show{opacity:1}
+</style>
+</head><body>
+<div class="wrap" id="app"></div>
+<div id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js" integrity="sha384-8FWZA6BGMXhsfO+BLtrJK0We6gg5o1JyO8xQm6peWDEUs17ACA5ziE/NIAkl9z2k" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js" integrity="sha384-u4uqeACkFcoKl57rBQJHVGDd1pqhW4w8X3WjTu1ZksPdxoLqdt34jpoNkJisE25W" crossorigin="anonymous"></script>
+<script src="q.js?v=20261128"></script>
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s),app=$('#app');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clip=(s,n)=>String(s??'').replace(/[\u0000-\u001f]/g,' ').trim().slice(0,n);
+let tt;function toast(m,ms){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),ms||2400)}
+const ls={get(k,d){try{const v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(_){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(_){}}};
+
+/* =================== 문제 은행 =================== */
+const BOOKS='창세기 50,출애굽기 40,레위기 27,민수기 36,신명기 34,여호수아 24,사사기 21,룻기 4,사무엘상 31,사무엘하 24,열왕기상 22,열왕기하 25,역대상 29,역대하 36,에스라 10,느헤미야 13,에스더 10,욥기 42,시편 150,잠언 31,전도서 12,아가 8,이사야 66,예레미야 52,예레미야애가 5,에스겔 48,다니엘 12,호세아 14,요엘 3,아모스 9,오바댜 1,요나 4,미가 7,나훔 3,하박국 3,스바냐 3,학개 2,스가랴 14,말라기 4,마태복음 28,마가복음 16,누가복음 24,요한복음 21,사도행전 28,로마서 16,고린도전서 16,고린도후서 13,갈라디아서 6,에베소서 6,빌립보서 4,골로새서 4,데살로니가전서 5,데살로니가후서 3,디모데전서 6,디모데후서 4,디도서 3,빌레몬서 1,히브리서 13,야고보서 5,베드로전서 5,베드로후서 3,요한일서 5,요한이서 1,요한삼서 1,유다서 1,요한계시록 22'.split(',').map(x=>x.split(' ')[0]);
+const BANK=String(window.GB_RAW||'').trim().split('\n').map((l,i)=>{const[book,type,lv,q,a,ch]=l.split('|');return{id:'b'+i,book,type,lv:+lv||5,q,a,ch:type==='m'?ch.split(';'):null}}).filter(x=>x.q);
+let CUSTOM=ls.get('gb-custom',[]).filter(x=>x&&x.id&&x.q);
+const allQ=()=>BANK.concat(CUSTOM);
+const byId=id=>allQ().find(x=>x.id===id);
+let SET=ls.get('gb-set',{ids:[],timer:0});if(!Array.isArray(SET.ids))SET={ids:[],timer:0};
+const saveSet=()=>{SET.ids=SET.ids.filter(byId);ls.set('gb-set',SET)};saveSet();
+const CIR='①②③④';
+const LVC=l=>`hsl(${140-l*14},62%,${l>6?42:40}%)`;
+const ansText=q=>q.type==='m'?`${CIR[q.a-1]} ${q.ch[q.a-1]}`:q.a.split('/')[0];
+const stars=l=>'★'.repeat(Math.ceil(l/2))+'☆'.repeat(5-Math.ceil(l/2));
+/* 채점: 띄어쓰기·문장부호는 무시, 여러 정답, 끝에 붙은 조사 조금은 봐줘요 */
+const norm=s=>String(s||'').toLowerCase().replace(/[\s.,!?·'"“”‘’()\[\]{}~\-_:;…]/g,'');
+function grade(q,txt){const t=norm(txt);if(!t)return false;
+  if(q.type==='m'){const n=+q.a,c=CIR[n-1];if(t===String(n)||t===c||t===n+'번'||t===c+'번')return true;
+    if(/^[1-4]/.test(t))return t[0]===String(n)&&!/^[1-4][0-9]/.test(t);if(/^[①-④]/.test(t))return t[0]===c;
+    const ok=norm(q.ch[n-1]);if(t===ok)return true;if(ok.length>=2&&t.includes(ok))return !q.ch.some((o,i)=>i!==n-1&&norm(o).length>=2&&t.includes(norm(o)));return false}
+  return q.a.split('/').map(norm).filter(Boolean).some(a=>t===a||(t.startsWith(a)&&t.length-a.length<=3)||(t.endsWith(a)&&t.length-a.length<=2))}
+
+/* =================== 화면 전환 =================== */
+let SCREEN='home',KIND='solo';
+const params=new URLSearchParams(location.search);
+let ROOM=(params.get('room')||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6);
+function go(s){SCREEN=s;render();scrollTo(0,0)}
+function render(){({home,setup,solo,host,join,player}[SCREEN]||home)()}
+
+function home(){app.innerHTML=`<div class="card hero"><div style="font-size:64px;line-height:1">🔔</div><h1>성경골든벨</h1><p>성경 66권에서 뽑은 문제 ${BANK.length}개 · 단답형과 사지선다 · 난이도 1~10<br>출제자가 문제를 골라 칠판에 띄우고, 끝까지 살아남으면 골든벨을 울려요!</p></div>
+  <div class="modes"><div class="card mode"><div class="big">🧑‍🏫</div><h2>혼자 진행하기</h2><p>화면(TV·빔)에 칠판을 띄우고, 사람들은 종이에 답을 써요.<br>문제 → 정답 → 다음 문제 순서로 보여 줘요.</p><button class="go" id="mSolo">문제 고르러 가기</button></div>
+  <div class="card mode"><div class="big">📡</div><h2>방 만들어 초대하기</h2><p>QR·링크로 초대하면 각자 휴대폰 답안지에 답을 써서 내요.<br>틀리면 탈락, 패자부활전으로 다시 살아나요.</p><button class="go" id="mNet">문제 고르러 가기</button></div></div>
+  <div class="card"><h2>🙋 초대받았어요</h2><div class="row"><input id="jCode" maxlength="6" placeholder="방 코드 (예: AB3K)" style="width:170px;text-transform:uppercase"><button id="jGo">들어가기</button><span class="hint">방장이 알려 준 코드나 QR로 들어와요</span></div></div>`;
+  $('#mSolo').onclick=()=>{KIND='solo';go('setup')};$('#mNet').onclick=()=>{KIND='net';go('setup')};
+  $('#jGo').onclick=()=>{const c=$('#jCode').value.toUpperCase().replace(/[^A-Z0-9]/g,'');if(c.length<4){toast('방 코드 4자리를 적어 주세요');return}ROOM=c;history.replaceState(null,'','?room='+c);go('join')}}
+
+/* =================== 출제 화면 =================== */
+const F={book:'all',type:'all',lo:1,hi:10,q:''};
+function filtered(){return allQ().filter(x=>{if(F.book==='ot'&&!(BOOKS.indexOf(x.book)>=0&&BOOKS.indexOf(x.book)<39))return false;if(F.book==='nt'&&!(BOOKS.indexOf(x.book)>=39))return false;if(F.book==='my'&&!x.id.startsWith('c'))return false;
+  if(!['all','ot','nt','my'].includes(F.book)&&x.book!==F.book)return false;if(F.type!=='all'&&x.type!==F.type)return false;if(x.lv<F.lo||x.lv>F.hi)return false;if(F.q&&!(x.q+' '+x.a).includes(F.q))return false;return true})}
+function setup(){const opt=(v,l,cur)=>`<option value="${v}" ${String(cur)===String(v)?'selected':''}>${l}</option>`;
+  app.innerHTML=`<div class="card"><div class="row"><h2 style="margin:0">📝 출제하기</h2><span class="hint">${KIND==='solo'?'🧑‍🏫 혼자 진행하기':'📡 방 만들어 초대하기'} · 왼쪽에서 문제를 눌러 담고, 오른쪽 순서대로 칠판에 나와요</span></div></div>
+  <div class="cols"><div class="card" style="margin-top:14px"><h2>📚 문제 은행</h2>
+    <div class="row"><select id="fBook">${opt('all','📖 성경 전체',F.book)}${opt('ot','구약 전체',F.book)}${opt('nt','신약 전체',F.book)}${opt('my','✏️ 내가 만든 문제',F.book)}${BOOKS.map(b=>opt(b,b,F.book)).join('')}</select>
+      <select id="fType">${opt('all','유형 전체',F.type)}${opt('s','✍️ 단답형',F.type)}${opt('m','🔢 객관식',F.type)}</select>
+      <span class="hint">난이도</span><select id="fLo">${[...Array(10)].map((_,i)=>opt(i+1,i+1,F.lo)).join('')}</select>~<select id="fHi">${[...Array(10)].map((_,i)=>opt(i+1,i+1,F.hi)).join('')}</select>
+      <input id="fQ" placeholder="🔍 낱말 찾기" value="${esc(F.q)}" style="width:130px"></div>
+    <div class="row" style="margin-top:8px"><span class="hint" id="fCnt"></span><span class="sp"></span><input id="rN" type="number" min="1" max="200" value="${ls.get('gb-rn',20)}" style="width:70px"><span>문제</span><label class="hint"><input type="checkbox" id="rSort" ${ls.get('gb-rsort',true)?'checked':''}> 쉬운 문제부터</label><button class="gold" id="rGo">🎲 랜덤으로 뽑기</button></div>
+    <div class="bank" id="bank"></div></div>
+  <div><div class="card"><div class="row"><h2 style="margin:0">📋 출제 목록</h2><span class="hint" id="sCnt"></span><span class="sp"></span><button class="sm" id="sClr">비우기</button></div>
+    <div class="row" style="margin-top:6px"><span class="hint">⏱ 문제마다 시간</span><select id="timer">${[0,20,30,60].map(v=>opt(v,v?v+'초':'없음 (직접 마감)',SET.timer||0)).join('')}</select>${KIND==='solo'?'<span class="hint">(혼자 진행할 때는 칠판에 시간만 보여요)</span>':''}</div>
+    <ol class="set" id="set"></ol></div>
+    <div class="card addf"><h2>✏️ 문제 직접 추가</h2>
+      <div class="row"><label><input type="radio" name="aT" value="s" checked> ✍️ 단답형</label><label><input type="radio" name="aT" value="m"> 🔢 객관식</label><span class="sp"></span><span class="hint">난이도</span><select id="aLv">${[...Array(10)].map((_,i)=>opt(i+1,i+1,5)).join('')}</select></div>
+      <div class="row"><textarea id="aQ" rows="2" maxlength="200" placeholder="문제를 적어 주세요"></textarea></div>
+      <div id="aS" class="row"><input id="aA" maxlength="80" placeholder="정답 (여러 개 인정하려면 / 로 나눠요. 예: 사울/바울)" style="flex:1"></div>
+      <div id="aM" hidden>${[1,2,3,4].map(i=>`<div class="row"><label><input type="radio" name="aOk" value="${i}" ${i===1?'checked':''}> 정답</label><span class="j">${CIR[i-1]}</span><input class="aC" maxlength="60" placeholder="보기 ${i}" style="flex:1"></div>`).join('')}</div>
+      <div class="row"><select id="aB"><option value="">책 (선택)</option>${BOOKS.map(b=>`<option>${b}</option>`).join('')}</select><span class="sp"></span><button class="go" id="aAdd">＋ 추가하고 목록에 담기</button></div>
+      <p class="hint" style="margin:6px 0 0">직접 만든 문제는 이 기기에 저장되고, 문제 은행의 ‘✏️ 내가 만든 문제’에서 다시 찾을 수 있어요.</p></div></div></div>
+  <div class="bar"><button id="back">← 처음으로</button><button class="go" id="start" style="font-size:19px;padding:9px 26px">${KIND==='solo'?'▶ 칠판에 띄우기':'📡 방 열기'}</button></div>`;
+  const re=()=>{F.book=$('#fBook').value;F.type=$('#fType').value;F.lo=+$('#fLo').value;F.hi=+$('#fHi').value;if(F.lo>F.hi){F.hi=F.lo;$('#fHi').value=F.hi}F.q=$('#fQ').value.trim();drawBank()};
+  ['#fBook','#fType','#fLo','#fHi'].forEach(s=>$(s).onchange=re);$('#fQ').oninput=re;
+  $('#rGo').onclick=()=>{const n=Math.max(1,Math.min(200,+$('#rN').value||20)),srt=$('#rSort').checked;ls.set('gb-rn',n);ls.set('gb-rsort',srt);
+    const pool=filtered();if(!pool.length){toast('조건에 맞는 문제가 없어요');return}if(SET.ids.length&&!confirm(`지금 출제 목록 ${SET.ids.length}문제를 지우고 새로 ${Math.min(n,pool.length)}문제를 뽑을까요?`))return;
+    const a=pool.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}let pick=a.slice(0,n);if(srt)pick.sort((x,y)=>x.lv-y.lv);SET.ids=pick.map(x=>x.id);saveSet();drawBank();drawSet();toast(`🎲 ${pick.length}문제를 뽑았어요`)};
+  $('#sClr').onclick=()=>{if(!SET.ids.length||!confirm('출제 목록을 비울까요?'))return;SET.ids=[];saveSet();drawBank();drawSet()};
+  $('#timer').onchange=e=>{SET.timer=+e.target.value;saveSet()};
+  document.querySelectorAll('[name=aT]').forEach(r=>r.onchange=()=>{const m=document.querySelector('[name=aT]:checked').value==='m';$('#aM').hidden=!m;$('#aS').hidden=m});
+  $('#aAdd').onclick=()=>{const type=document.querySelector('[name=aT]:checked').value,q=clip($('#aQ').value,200),lv=+$('#aLv').value,book=$('#aB').value;if(!q){toast('문제를 적어 주세요');$('#aQ').focus();return}
+    let a,ch=null;if(type==='s'){a=clip($('#aA').value,80).replace(/\|/g,'/');if(!a){toast('정답을 적어 주세요');$('#aA').focus();return}}
+    else{ch=[...document.querySelectorAll('.aC')].map(i=>clip(i.value,60).replace(/[|;]/g,','));if(ch.some(x=>!x)){toast('보기 4개를 모두 적어 주세요');return}a=document.querySelector('[name=aOk]:checked').value}
+    const x={id:'c'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),book,type,lv,q:q.replace(/\|/g,'/'),a,ch};CUSTOM.push(x);ls.set('gb-custom',CUSTOM);SET.ids.push(x.id);saveSet();
+    $('#aQ').value='';$('#aA').value='';document.querySelectorAll('.aC').forEach(i=>i.value='');drawBank();drawSet();toast('✏️ 문제를 추가하고 출제 목록 끝에 담았어요')};
+  $('#back').onclick=()=>go('home');
+  $('#start').onclick=()=>{if(!SET.ids.length){toast('출제 목록에 문제를 담아 주세요');return}if(KIND==='solo'){S={i:0,show:false};go('solo')}else openRoom()};
+  drawBank();drawSet()}
+function drawBank(){const L=filtered(),inSet=new Set(SET.ids);$('#fCnt').textContent=`${L.length}문제`;
+  $('#bank').innerHTML=L.length?L.map(x=>`<div class="qi ${inSet.has(x.id)?'in':''}" data-id="${x.id}"><span class="ck">${inSet.has(x.id)?SET.ids.indexOf(x.id)+1:'＋'}</span><span class="lv" style="background:${LVC(x.lv)}">${x.lv}</span><span class="ty">${x.type==='m'?'객관식':'단답'}</span><span class="t">${esc(x.q)}<small>${esc(x.book||'직접 만든 문제')} · 정답: ${esc(ansText(x))}${x.id.startsWith('c')?' · <a href="#" data-del="'+x.id+'">🗑 지우기</a>':''}</small></span></div>`).join(''):'<p class="hint" style="padding:14px">조건에 맞는 문제가 없어요</p>';
+  $('#bank').querySelectorAll('.qi').forEach(el=>el.onclick=e=>{const d=e.target.closest('[data-del]');if(d){e.preventDefault();if(!confirm('직접 만든 이 문제를 지울까요?'))return;CUSTOM=CUSTOM.filter(c=>c.id!==d.dataset.del);ls.set('gb-custom',CUSTOM);saveSet();drawBank();drawSet();return}
+    const id=el.dataset.id,i=SET.ids.indexOf(id);if(i>=0)SET.ids.splice(i,1);else SET.ids.push(id);saveSet();drawBank();drawSet()})}
+function drawSet(){$('#sCnt').textContent=SET.ids.length?`${SET.ids.length}문제`:'';
+  $('#set').innerHTML=SET.ids.length?SET.ids.map((id,i)=>{const x=byId(id);return`<li><span class="n">${i+1}</span><span class="lv" style="background:${LVC(x.lv)}">${x.lv}</span><span class="t">${esc(x.q)}</span><button data-u="${i}" ${i?'':'disabled'}>↑</button><button data-d="${i}" ${i<SET.ids.length-1?'':'disabled'}>↓</button><button data-x="${i}">✕</button></li>`}).join(''):'<li class="hint">왼쪽 문제 은행에서 문제를 누르거나 🎲 랜덤으로 뽑아 주세요</li>';
+  $('#set').querySelectorAll('button').forEach(b=>b.onclick=()=>{const u=b.dataset.u,d=b.dataset.d,x=b.dataset.x,A=SET.ids;
+    if(u!=null){const i=+u;[A[i-1],A[i]]=[A[i],A[i-1]]}else if(d!=null){const i=+d;[A[i+1],A[i]]=[A[i],A[i+1]]}else{A.splice(+x,1)}saveSet();drawBank();drawSet()})}
+
+/* =================== 칠판 =================== */
+function boardHTML(o){/* o: {no,total,q,show,revival,timer,big} */const q=o.q;
+  if(!q)return`<div class="board" id="bd"><div class="hd"><span class="no">🔔 성경골든벨</span></div><div class="big">${o.big||'곧 시작해요'}</div></div>`;
+  return`<div class="board" id="bd"><div class="hd"><span class="no">${o.no} / ${o.total}번</span>${o.revival?'<span class="rv">🔥 패자부활전</span>':''}<span class="stars" title="난이도 ${q.lv}">${stars(q.lv)} <small>난이도 ${q.lv}</small></span><span class="sp"></span><span>${q.type==='m'?'🔢 객관식':'✍️ 단답형'}</span></div>
+    <div class="cd" id="cd"></div><div class="qt">${esc(q.q)}</div>
+    ${q.type==='m'?`<div class="chs">${q.ch.map((c,i)=>`<div class="${o.show&&(o.ok||+q.a)===i+1?'ok':''}">${CIR[i]} ${esc(c)}</div>`).join('')}</div>`:''}
+    ${o.show?`<div class="an">정답: ${esc(o.ansText!=null?o.ansText:ansText(q))}</div>`:''}</div>`}
+let FULL=false;
+function fullBtn(){const b=$('#bd');if(!b)return;b.classList.toggle('full',FULL);if(FULL){const x=document.createElement('button');x.textContent='✕ 작게';x.className='sm';x.style.cssText='position:fixed;right:14px;top:10px;z-index:101';x.onclick=()=>{FULL=false;try{document.fullscreenElement&&document.exitFullscreen()}catch(_){}render()};b.appendChild(x)}}
+function toggleFull(){FULL=!FULL;try{if(FULL)document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen().catch(()=>{});else if(document.fullscreenElement)document.exitFullscreen()}catch(_){}render()}
+document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&FULL){FULL=false;render()}});
+
+/* =================== 혼자 진행하기 =================== */
+let S={i:0,show:false},soloT=null;
+function solo(){const ids=SET.ids,q=byId(ids[S.i]);clearInterval(soloT);
+  app.innerHTML=`${boardHTML({no:S.i+1,total:ids.length,q,show:S.show})}
+   <div class="ctl"><button id="pv" ${S.i?'':'disabled'}>◀ 이전</button>${S.show?`<button class="go" id="nx">${S.i<ids.length-1?'다음 문제 ▶':'🏁 마치기'}</button>`:`<button class="gold" id="sh">👀 정답 보기</button>`}<button id="fs">⛶ 크게 보기</button><button id="ex">✕ 그만하기</button></div>
+   <p class="hint" style="text-align:center">스페이스바·→ 키로 정답 보기와 다음 문제를 넘길 수 있어요</p>`;
+  fullBtn();
+  if(SET.timer&&!S.show){let left=SET.timer;const cd=$('#cd');const tk=()=>{if(cd)cd.textContent='⏱ '+left;if(left<=0){clearInterval(soloT);if(cd)cd.textContent='⏰ 시간 끝!'}left--};tk();soloT=setInterval(tk,1000)}
+  $('#pv').onclick=()=>{S.i--;S.show=true;solo()};$('#fs').onclick=toggleFull;$('#ex').onclick=()=>{if(confirm('그만하고 출제 화면으로 갈까요?')){clearInterval(soloT);FULL=false;go('setup')}};
+  if(S.show)$('#nx').onclick=next;else $('#sh').onclick=()=>{S.show=true;solo()}}
+function next(){if(S.i<SET.ids.length-1){S.i++;S.show=false;solo()}else{clearInterval(soloT);app.innerHTML=`${boardHTML({big:'🔔 모든 문제를 마쳤어요!<br><span style="font-size:.6em">수고하셨어요</span>'})}<div class="ctl"><button class="go" id="again">↺ 처음부터 다시</button><button id="bk">📝 출제 화면으로</button></div>`;fullBtn();$('#again').onclick=()=>{S={i:0,show:false};solo()};$('#bk').onclick=()=>{FULL=false;go('setup')}}}
+addEventListener('keydown',e=>{if(SCREEN!=='solo'||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;if(e.key===' '||e.key==='ArrowRight'||e.key==='Enter'){e.preventDefault();const b=$('#sh')||$('#nx');if(b)b.click()}else if(e.key==='ArrowLeft'){const b=$('#pv');if(b&&!b.disabled)b.click()}});
+
+/* =================== 방 모드: 네트워크 =================== */
+const BROKERS=["wss://broker.emqx.io:8084/mqtt","wss://broker.hivemq.com:8884/mqtt"];
+const base=()=>'chiyoung-goldenbell/v1/'+ROOM;
+function mqttOpen(url,ms){return new Promise(res=>{if(typeof mqtt=='undefined')return res(null);let done=false;const cl=mqtt.connect(url,{connectTimeout:ms,reconnectPeriod:3000,clientId:'gb'+Math.random().toString(36).slice(2,12)});cl.on('connect',()=>{if(!done){done=true;res(cl)}});setTimeout(()=>{if(!done){done=true;try{cl.end(true)}catch(e){}res(null)}},ms)})}
+const HC=[];let G=null;
+function hostNet(){BROKERS.forEach(async url=>{const cl=await mqttOpen(url,8000);if(!cl)return;HC.push(cl);cl.subscribe(base()+'/h',{qos:1});cl.on('connect',()=>cl.subscribe(base()+'/h',{qos:1}));
+  cl.on('message',(tp,buf)=>{let d;try{d=JSON.parse(buf.toString())}catch(_){return}if(!d||!d.f||!d.m)return;hostHandle(String(d.f).replace(/[^a-z0-9]/gi,'').slice(0,16),d.m)});sync()})}
+function pubAll(m,q){const s=JSON.stringify(m);HC.forEach(cl=>{try{cl.publish(base()+'/s',s,{qos:q})}catch(_){}})}
+const curQ=()=>G&&G.qi>=0?G.set[G.qi]:null;
+const eligible=p=>G.revival?!p.alive:p.alive;
+function view(){const q=curQ(),rv=G.ph==='reveal'||G.ph==='end';
+  return{room:ROOM,ph:G.ph,qi:G.qi,total:G.set.length,revival:G.revival,timer:G.timer,left:G.ph==='q'&&G.deadline?Math.max(0,G.deadline-Date.now()):0,
+    q:q&&G.ph!=='lobby'?{q:q.q,type:q.type,ch:q.ch,lv:q.lv}:null,ans:q&&rv?ansText(q):null,ok:q&&rv&&q.type==='m'?+q.a:0,
+    players:G.players.map(p=>({id:p.id,name:p.name,alive:p.alive,sub:!!G.ans[p.id],el:G.ph!=='lobby'&&G.ph!=='end'?eligible(p)||!!G.part[p.id]:false,res:rv&&G.part[p.id]?!!G.judge[p.id]:null,txt:rv&&G.part[p.id]?(G.ans[p.id]||''):null})),seq:++G.seq}}
+function sync(){if(!G)return;pubAll({t:'st',v:view()},1);if(SCREEN==='host')hostDraw()}
+function hostHandle(f,m){if(!G)return;let p=G.players.find(x=>x.id===f);
+  if(m.t==='join'){const name=clip(m.name,10);if(!p){if(!name)return;if(G.players.some(x=>x.name===name))return pubAll({t:'err',to:f,msg:'같은 이름이 이미 있어요. 다른 이름으로 들어와 주세요'},1);if(G.players.length>=80)return pubAll({t:'err',to:f,msg:'방이 꽉 찼어요'},1);
+      /* 게임 중에 들어오면 탈락자(관전)로 시작해요 */p={id:f,name,alive:G.ph==='lobby'};G.players.push(p);if(G.ph!=='lobby')pubAll({t:'err',to:f,msg:'이미 시작해서 관전으로 들어왔어요. 패자부활전을 기다려 주세요'},1)}sync();return}
+  if(!p)return;
+  if(m.t==='ans'&&G.ph==='q'&&m.qi===G.qi&&G.part[p.id]){G.ans[p.id]=clip(m.txt,60);sync();if(G.players.filter(x=>G.part[x.id]).every(x=>G.ans[x.id]))toast('✔ 모두 답을 냈어요')}}
+function openRoom(){ROOM=Array.from({length:4},()=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random()*32)]).join('');
+  G={ph:'lobby',qi:-1,set:SET.ids.map(byId).filter(Boolean),timer:SET.timer||0,revival:false,players:[],ans:{},judge:{},part:{},deadline:0,seq:0};
+  history.replaceState(null,'','./');hostNet();go('host');
+  clearInterval(window.__gbT);window.__gbT=setInterval(()=>{if(!G)return;if(G.ph==='q'&&G.deadline&&Date.now()>=G.deadline)closeQ();else if(G.ph==='q'&&G.deadline){const c=$('#cd');if(c)c.textContent='⏱ '+Math.ceil((G.deadline-Date.now())/1000)}},250);
+  clearInterval(window.__gbS);window.__gbS=setInterval(()=>{if(G)pubAll({t:'st',v:view()},0)},4000);
+  addEventListener('beforeunload',e=>{if(G&&G.players.length){e.preventDefault();e.returnValue=''}})}
+function askQ(revival){if(G.qi>=G.set.length-1){toast('준비한 문제를 다 냈어요');return}
+  const elig=G.players.filter(p=>revival?!p.alive:p.alive);if(!elig.length){toast(revival?'탈락한 사람이 없어요':'도전 중인 사람이 없어요. 패자부활전을 해 보세요');return}
+  G.qi++;G.ph='q';G.revival=!!revival;G.ans={};G.judge={};G.part={};elig.forEach(p=>G.part[p.id]=1);G.deadline=G.timer?Date.now()+G.timer*1000:0;sync()}
+function closeQ(){if(G.ph!=='q')return;const q=curQ();G.ph='judge';G.deadline=0;G.players.forEach(p=>{if(G.part[p.id])G.judge[p.id]=grade(q,G.ans[p.id])});sync()}
+function reveal(){if(G.ph!=='judge')return;G.ph='reveal';G.players.forEach(p=>{if(!G.part[p.id])return;if(G.revival){if(G.judge[p.id])p.alive=true}else if(!G.judge[p.id])p.alive=false});sync()}
+function endGame(){G.ph='end';sync()}
+
+/* --- 방장(출제자) 화면 --- */
+function hostDraw(){const v=view();G.seq--;const q=curQ(),P=G.players,alive=P.filter(p=>p.alive),outs=P.filter(p=>!p.alive);
+  const url=location.origin+location.pathname+'?room='+ROOM;
+  const chips=`<div class="pl">${P.map(p=>`<span class="${p.alive?'':'out'} ${G.ph==='q'&&G.ans[p.id]?'sub':''}">${esc(p.name)}</span>`).join('')||'<span class="hint" style="border:0;background:none">아직 아무도 없어요</span>'}</div>`;
+  let ctl='',side='';
+  if(G.ph==='lobby'){let qr='';try{const g=qrcode(0,'M');g.addData(url);g.make();qr=g.createSvgTag(4,2)}catch(_){}
+    side=`<div class="card"><div class="row" style="align-items:flex-start"><div class="qr">${qr}</div><div style="flex:1;min-width:200px"><h2>📨 초대하기</h2><div class="code">${ROOM}</div><p class="hint">QR을 찍거나 링크·방 코드로 들어와서 자기 이름을 적어요.</p><button id="cp">🔗 링크 복사</button></div></div><h3 style="margin:12px 0 0">들어온 사람 ${P.length}명</h3>${chips}</div>`;
+    ctl=`<button class="go" id="ask" ${P.length?'':'disabled'} style="font-size:19px">▶ 첫 문제 내기</button>`}
+  else{const rv=G.revival,part=P.filter(p=>G.part[p.id]);
+    if(G.ph==='q'){ctl=`<button class="go" id="close" style="font-size:18px">✋ 답 마감하고 채점하기</button><span class="hint">답을 낸 사람 ${part.filter(p=>G.ans[p.id]).length} / ${part.length}명</span>`;
+      side=`<div class="card"><div class="row"><h2 style="margin:0">${rv?'🔥 패자부활전 도전 중':'✍️ 푸는 중'}</h2><span class="sp"></span><span class="hint">출제자만 보는 정답: <b>${esc(ansText(q))}</b></span></div>${chips}<p class="hint" style="margin:6px 0 0">✔ 표시는 답을 낸 사람이에요. ${G.timer?'시간이 끝나면 저절로 마감돼요.':''}</p></div>`}
+    else if(G.ph==='judge'){ctl=`<button class="go" id="rev" style="font-size:18px">📣 정답 공개</button>`;
+      side=`<div class="card"><h2>🧐 채점 확인 <small class="hint">정답: ${esc(ansText(q))}</small></h2><p class="hint" style="margin:0">자동으로 채점했어요. 맞게 썼는데 틀렸다고 나오면 눌러서 바꿔 주세요.</p><ul class="jl">${part.map(p=>`<li><b>${esc(p.name)}</b><span class="a">${esc(G.ans[p.id]||'(답을 안 냈어요)')}</span><button data-j="${p.id}" class="${G.judge[p.id]?'go':''}">${G.judge[p.id]?'⭕ 정답':'❌ 오답'}</button></li>`).join('')}</ul></div>`}
+    else if(G.ph==='reveal'){const okN=part.filter(p=>G.judge[p.id]).length,last=G.qi>=G.set.length-1;
+      ctl=`${last?`<button class="go" id="end" style="font-size:18px">🏁 결과 보기</button>`:`<button class="go" id="ask" ${alive.length?'':'disabled'}>다음 문제 ▶</button>`}${!last?`<button class="gold" id="askRv" ${outs.length?'':'disabled'}>🔥 패자부활전 문제로 내기</button>`:''}${last?'':'<button id="end">🏁 여기서 끝내기</button>'}`;
+      side=`<div class="card"><h2>${rv?`🔥 패자부활전 결과: ${okN}명 부활!`:`📣 ${okN}명 정답 · 남은 도전자 ${alive.length}명`}</h2>${alive.length===0&&!last?'<p style="color:#c0392b;margin:0 0 6px">모두 탈락했어요! 🔥 패자부활전 문제로 다시 살려 보세요.</p>':''}
+        <ul class="jl">${part.map(p=>`<li><b>${esc(p.name)}</b><span class="a">${esc(G.ans[p.id]||'—')}</span><span>${G.judge[p.id]?(rv?'🎉 부활':'⭕'):(rv?'—':'❌ 탈락')}</span></li>`).join('')}</ul>${chips}</div>`}
+    else if(G.ph==='end'){side=endHTML(v);ctl=`<button class="go" id="newG">↺ 같은 사람들과 처음부터</button><button id="toSet">📝 출제 화면으로</button>`}}
+  const keep=document.activeElement&&document.activeElement.id;
+  app.innerHTML=`<div class="row" style="margin-bottom:10px"><span class="badge b-alive">📡 방 ${ROOM}</span><span class="hint">출제자 화면 · 참가자 ${P.length}명 · 도전 중 ${alive.length}명 · 탈락 ${outs.length}명</span><span class="sp"></span><button class="sm" id="fs">⛶ 칠판 크게</button></div>
+    ${G.ph==='end'?'':boardHTML(G.ph==='lobby'?{big:'🔔 성경골든벨<br><span style="font-size:.55em">방 코드 '+ROOM+' 로 들어오세요</span>'}:{no:G.qi+1,total:G.set.length,q,show:G.ph==='reveal',revival:G.revival})}
+    <div class="ctl">${ctl}</div>${side}`;
+  fullBtn();
+  const on=(id,fn)=>{const b=$('#'+id);if(b)b.onclick=fn};
+  on('fs',toggleFull);on('cp',()=>navigator.clipboard.writeText(url).then(()=>toast('🔗 링크를 복사했어요'),()=>prompt('이 링크를 복사해 주세요',url)));
+  on('ask',()=>askQ(false));on('askRv',()=>askQ(true));on('close',closeQ);on('rev',reveal);on('end',()=>{if(confirm('게임을 끝내고 결과를 보여 줄까요?'))endGame()});
+  on('newG',()=>{G.players.forEach(p=>p.alive=true);Object.assign(G,{ph:'lobby',qi:-1,revival:false,ans:{},judge:{},part:{}});sync()});
+  on('toSet',()=>{if(confirm('방을 닫고 출제 화면으로 갈까요? 참가자들의 연결이 끊어져요.')){HC.forEach(c=>{try{c.end(true)}catch(_){}});HC.length=0;G=null;FULL=false;go('setup')}});
+  app.querySelectorAll('[data-j]').forEach(b=>b.onclick=()=>{const id=b.dataset.j;G.judge[id]=!G.judge[id];sync()});
+  if(G.ph==='q'&&G.deadline){const c=$('#cd');if(c)c.textContent='⏱ '+Math.ceil((G.deadline-Date.now())/1000)}
+  if(keep){const k=document.getElementById(keep);if(k)k.focus()}}
+function host(){if(G)hostDraw();else go('setup')}
+function endHTML(v){const W=v.players.filter(p=>p.alive);
+  return`<div class="card" style="text-align:center"><div class="bell">🔔</div><h1>${W.length?'골든벨!':'게임 끝!'}</h1>${W.length?`<p style="font-size:20px;margin:6px 0">끝까지 살아남은 ${W.length===1?'사람':W.length+'명'}</p><div class="pl" style="justify-content:center">${W.map(p=>`<span class="ok" style="font-size:22px;padding:4px 16px">🏆 ${esc(p.name)}</span>`).join('')}</div>`:'<p class="hint">아무도 끝까지 남지 못했어요. 다음엔 꼭!</p>'}
+    <p class="hint" style="margin-top:12px">문제 ${v.qi+1} / ${v.total}까지 풀었어요</p></div>`}
+
+/* =================== 참가자 =================== */
+let MY=null,LV=null,PKEY='',SUBBED='',CL={cl:null,send(m,q){if(this.cl)try{this.cl.publish(base()+'/h',JSON.stringify({f:MY,m}),{qos:q==null?1:q})}catch(_){}}},DEAD=0,myName='';
+function join(){app.innerHTML=`<div class="card hero"><div style="font-size:60px;line-height:1">🔔</div><h1>성경골든벨</h1><p>방 <b class="j" style="color:var(--accent);font-size:22px;letter-spacing:3px">${esc(ROOM)}</b> 에 들어가요</p>
+  <div class="row" style="justify-content:center;margin-top:14px"><input id="nm" maxlength="10" placeholder="내 이름" style="font-size:20px;width:220px"><button class="go" id="jn" style="font-size:19px">들어가기</button></div><p class="hint" id="jSt" style="margin-top:10px">이름은 답안지와 참가자 목록에 보여요</p><p><a href="./" class="hint">← 처음 화면</a></p></div>`;
+  try{$('#nm').value=sessionStorage.getItem('gb-name-'+ROOM)||localStorage.getItem('gb-name')||''}catch(_){}
+  const go2=()=>{const n=clip($('#nm').value,10);if(!n){toast('이름을 적어 주세요');$('#nm').focus();return}myName=n;try{localStorage.setItem('gb-name',n)}catch(_){}$('#jn').disabled=true;joinRoom(n)};
+  $('#jn').onclick=go2;$('#nm').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing)go2()}}
+async function joinRoom(name){try{MY=sessionStorage.getItem('gb-id-'+ROOM)}catch(_){}if(!MY){MY='p'+Math.random().toString(36).slice(2,10);try{sessionStorage.setItem('gb-id-'+ROOM,MY)}catch(_){}}try{sessionStorage.setItem('gb-name-'+ROOM,name)}catch(_){}
+  const st=$('#jSt');if(st)st.textContent='방에 연결하는 중…';
+  for(const url of BROKERS){const cl=await mqttOpen(url,7000);if(!cl)continue;let heard=false;cl.subscribe(base()+'/s',{qos:1});cl.on('connect',()=>{cl.subscribe(base()+'/s',{qos:1});CL.send({t:'join',name})});
+    cl.on('message',(tp,buf)=>{let m;try{m=JSON.parse(buf.toString())}catch(_){return}if(m.t==='st'){if(!m.v.players.some(p=>p.id===MY)){if(heard)return;return}heard=true;onView(m.v)}else if(m.t==='err'&&m.to===MY){toast(m.msg,3800);const b=$('#jn');if(b&&!LV){b.disabled=false;const s=$('#jSt');if(s)s.textContent=m.msg}}});
+    CL.cl=cl;CL.send({t:'join',name});for(let i=0;i<25&&!heard;i++){await new Promise(r=>setTimeout(r,300));if(i%6===5)CL.send({t:'join',name})}
+    if(heard)return;if(LV==null&&$('#jn')&&!$('#jn').disabled){try{cl.end(true)}catch(_){}CL.cl=null;return}try{cl.end(true)}catch(_){}CL.cl=null}
+  const s=$('#jSt');if(s)s.textContent='방에 연결하지 못했어요. 방 코드와 방장 화면을 확인해 주세요';const b=$('#jn');if(b)b.disabled=false}
+function onView(v){if(LV&&v.seq<LV.seq&&v.ph===LV.ph&&v.qi===LV.qi)return;const prev=LV;LV=v;DEAD=v.left?Date.now()+v.left:0;if(SCREEN!=='player')SCREEN='player';
+  if(prev&&prev.qi!==v.qi)SUBBED='';playerDraw()}
+function player(){if(LV)playerDraw();else join()}
+function playerDraw(){const v=LV,me=v.players.find(p=>p.id===MY);if(!me)return;
+  const canAns=v.ph==='q'&&me.el,key=[v.ph,v.qi,canAns,v.revival].join('|');
+  const status=me.alive?'<span class="badge b-alive">🟢 도전 중</span>':(v.revival&&me.el&&v.ph!=='lobby'?'<span class="badge b-rv">🔥 패자부활전 도전!</span>':'<span class="badge b-out">⚪ 탈락 · 지켜보는 중</span>');
+  const chips=`<div class="pl">${v.players.map(p=>`<span class="${p.alive?'':'out'} ${v.ph==='q'&&p.sub?'sub':''} ${p.res===true?'ok':p.res===false?'ng':''}">${esc(p.name)}${p.id===MY?' (나)':''}</span>`).join('')}</div>`;
+  if(key===PKEY&&$('#pBody')){$('#pStat').innerHTML=status;$('#pList').innerHTML=chips;tickCd();return}
+  PKEY=key;
+  let body='';
+  if(v.ph==='lobby')body=`${boardHTML({big:'🔔 곧 시작해요<br><span style="font-size:.5em">출제자가 첫 문제를 낼 때까지 기다려 주세요</span>'})}`;
+  else if(v.ph==='end')body=endHTML(v);
+  else{body=boardHTML({no:v.qi+1,total:v.total,q:v.q,show:v.ph==='reveal',revival:v.revival,ansText:v.ans,ok:v.ok});
+    if(canAns){body+=`<div class="sheet">${v.revival?'<span class="rvtag">🔥 패자부활전</span>':''}<div class="sh"><b>성경골든벨 답안지</b><span>제 ${v.qi+1} 문항</span></div><div class="who">이름 <span>${esc(me.name)}</span></div>
+        <label for="ans">답 ${v.q.type==='m'?'(번호나 보기 글자를 적어요)':''}</label><input class="ans" id="ans" maxlength="60" autocomplete="off" enterkeyhint="send" value="${esc(SUBBED)}">
+        <div class="row" style="margin-top:12px"><span class="hint" id="subSt">${SUBBED?'✔ 냈어요 · 마감 전까지 고쳐서 다시 낼 수 있어요':'답을 적고 제출을 눌러요'}</span><span class="sp"></span><button class="go" id="sub" style="font-size:18px">📝 제출</button></div></div>`}
+    else if(v.ph==='q')body+=`<div class="card" style="text-align:center"><div style="font-size:40px">👀</div><p class="j" style="font-size:20px;margin:4px 0">${v.revival?'도전 중인 사람은 이번 패자부활전 문제를 쉬어요':'지금은 다른 사람들이 푸는 중이에요'}</p><p class="hint" style="margin:0">${me.alive?'':'출제자가 🔥 패자부활전 문제를 내면 다시 도전할 수 있어요'}</p></div>`;
+    else if(v.ph==='judge')body+=`<div class="card" style="text-align:center"><div style="font-size:40px">🧐</div><p class="j" style="font-size:20px;margin:4px 0">채점하는 중이에요…</p></div>`;
+    else if(v.ph==='reveal'&&me.res!=null)body+=`<div class="sheet">${v.revival?'<span class="rvtag">🔥 패자부활전</span>':''}<div class="sh"><b>성경골든벨 답안지</b><span>제 ${v.qi+1} 문항</span></div><div class="who">이름 <span>${esc(me.name)}</span></div><div class="ans" style="font-family:'Nanum Pen Script';font-size:40px;color:#1f3a8a;min-height:52px">${esc(me.txt||'(답을 안 냈어요)')}</div><div class="stamp ${me.res?'o':'x'}">${me.res?'⭕':'❌'}</div>
+        <p class="j" style="font-size:20px;margin:8px 0 0">${me.res?(v.revival?'🎉 부활했어요! 다시 골든벨에 도전해요':'정답이에요! 다음 문제도 도전해요'):(v.revival?'아쉬워요. 다음 패자부활전을 기다려요':'아쉽게 탈락했어요. 패자부활전을 기다려 주세요')}</p></div>`;}
+  app.innerHTML=`<div class="row" style="margin-bottom:10px"><b class="j" style="font-size:20px">🔔 ${esc(me.name)}</b><span id="pStat">${status}</span><span class="sp"></span><span class="hint">방 ${esc(v.room)}</span></div><div id="pBody">${body}</div><div class="card"><h3 style="margin:0">참가자</h3><div id="pList">${chips}</div></div>`;
+  tickCd();
+  const sb=$('#sub');if(sb){const inp=$('#ans');const send=()=>{const t=clip(inp.value,60);if(!t){toast('답을 적어 주세요');inp.focus();return}CL.send({t:'ans',qi:v.qi,txt:t});SUBBED=t;$('#subSt').textContent='✔ 냈어요 · 마감 전까지 고쳐서 다시 낼 수 있어요';toast('📝 답을 냈어요')};
+    sb.onclick=send;inp.onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing){e.preventDefault();send()}};if(!SUBBED)setTimeout(()=>inp.focus(),60)}}
+function tickCd(){const c=$('#cd');if(!c||!LV||LV.ph!=='q'||!DEAD)return;c.textContent='⏱ '+Math.max(0,Math.ceil((DEAD-Date.now())/1000))}
+setInterval(()=>{if(SCREEN==='player')tickCd()},250);
+
+/* =================== 시작 =================== */
+if(ROOM){SCREEN='join'}
+render();
+window.__gb={BANK,grade,norm};
+})();
+</script>
+<script src="../assets/scene.js?v=20261116d"></script><script src="../assets/home.js?v=20261118"></script>
+</body></html>
