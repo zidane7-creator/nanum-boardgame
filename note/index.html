@@ -120,27 +120,30 @@ function openView(n){const m=modal(`<div class="view">${n.html||'<span style="op
   m.querySelector('#cls').onclick=()=>close(m);m.querySelector('#edit').onclick=()=>{close(m);openEdit(n)};
   m.querySelector('#del').onclick=()=>{if(!confirm('이 포스트잇을 떼어 낼까요? 되돌릴 수 없어요.'))return;N=N.filter(x=>x!==n);save();draw();close(m);toast('포스트잇을 떼어 냈어요')}}
 /* ---------- 쓰기·고치기 ---------- */
-const DKEY='note-draft-v1';
-const getDraft=()=>{try{return JSON.parse(localStorage.getItem(DKEY)||'null')}catch(e){return null}};
-const clearDraft=()=>{try{localStorage.removeItem(DKEY)}catch(e){}};
-function openEdit(n,dr){const isNew=!n;if(!dr){const d=getDraft();if(d&&d.id===(n?n.id:'new'))dr=d}
-  let color=dr&&dr.color?dr.color:n?n.color:COLORS[Math.floor(Math.random()*COLORS.length)][0];
+try{localStorage.removeItem('note-draft-v1')}catch(e){}
+function openEdit(n){const isNew=!n,orig=n?{html:n.html,color:n.color,updated:n.updated}:null;let cur=n;
+  let color=n?n.color:COLORS[Math.floor(Math.random()*COLORS.length)][0];
   const m=modal(`<div class="cols" style="margin-bottom:8px"><b class="j" style="margin-right:4px">메모지 색</b>${COLORS.map(([c,l])=>`<button class="sw ${c===color?'on':''}" data-c="${c}" title="${l}" style="background:${c}"></button>`).join('')}</div>
    <div class="tools"><button data-cmd="bold" title="굵게"><b>가</b></button><button data-cmd="italic" title="기울임"><i>가</i></button><button data-cmd="underline" title="밑줄"><u>가</u></button><button data-cmd="strikeThrough" title="취소선"><s>가</s></button>
     <select id="font" title="글꼴">${FONTS.map(([f,l])=>`<option value="${esc(f)}" style="font-family:'${esc(f)}'">${l}</option>`).join('')}</select>
     <select id="size" title="글자 크기"><option value="">크기</option>${SIZES.map(([v,l])=>`<option value="${v}">${l}</option>`).join('')}</select>
     <button data-cmd="removeFormat" title="꾸밈 지우기">⌫ 꾸밈 지우기</button></div>
    <div class="cols" style="margin-bottom:8px"><span class="hint">글자색</span>${TCOL.map(c=>`<button class="tc" data-tc="${c}" title="${c}" style="background:${c}"></button>`).join('')}</div>
-   <div class="ed" id="ed" contenteditable="true" data-ph="여기에 메모를 적어요…">${dr?clean(dr.html):n?n.html:''}</div>
-   <div class="foot"><span class="hint" id="svh">${dr?'✔ 쓰던 내용을 불러왔어요':'적는 동안 자동 저장돼요'}</span><span class="sp"></span><button class="sm" id="cancel">취소</button><button class="pri" id="ok">📌 ${isNew?'붙이기':'고친 내용 저장'}</button></div>`,color);
+   <div class="ed" id="ed" contenteditable="true" data-ph="여기에 메모를 적어요…">${n?n.html:''}</div>
+   <div class="foot"><span class="hint" id="svh">적는 동안 바로 저장돼요 · Enter 붙이기 · Shift+Enter 줄바꿈</span><span class="sp"></span><button class="sm" id="cancel">취소</button><button class="pri" id="ok">📌 ${isNew?'붙이기':'고친 내용 저장'}</button></div>`,color);
   const sheet=m.querySelector('.sheet'),ed=m.querySelector('#ed');let dT=0,done=false;
-  const saveDraft=()=>{clearTimeout(dT);if(done)return;const html=ed.innerHTML;
-    if(html===(n?n.html:'')&&(!n||color===n.color)&&!(isNew&&plain(html))){clearDraft();return}
-    try{localStorage.setItem(DKEY,JSON.stringify({id:n?n.id:'new',html,color,t:Date.now()}));const h=m.querySelector('#svh');if(h)h.textContent='✔ 자동 저장됨 '+new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}catch(e){}};
-  const soon=()=>{clearTimeout(dT);dT=setTimeout(saveDraft,400)};
+  /* 포스트잇에 바로 저장: 글자를 칠 때·꾸밀 때·색을 바꿀 때·바깥을 누를 때·창을 떠날 때 */
+  const commit=()=>{clearTimeout(dT);const html=clean(ed.innerHTML),now=Date.now();
+    if(!plain(html))return false;
+    if(!cur){const w=board.clientWidth,cw=board.clientWidth<620?150:186;cur={id:uid(),html,color,created:now,updated:now,x:Math.random()*Math.max(1,(w-cw-20))/w*100+1,y:14+Math.random()*Math.max(40,Math.min(board.clientHeight-240,360)),rot:Math.random()*8-4};N.push(cur)}
+    else if(cur.html===html&&cur.color===color)return true;
+    else{cur.html=html;cur.color=color;cur.updated=now}
+    save();draw();const h=m.querySelector('#svh');if(h)h.textContent='✔ 저장됨 '+new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});return true};
+  const soon=()=>{clearTimeout(dT);dT=setTimeout(()=>{if(!done)commit()},500)};
   new MutationObserver(soon).observe(ed,{childList:true,subtree:true,characterData:true,attributes:true});
-  const onLeave=()=>saveDraft();addEventListener('pagehide',onLeave);document.addEventListener('visibilitychange',onLeave);
-  new MutationObserver((_,o)=>{if(!document.body.contains(m)){saveDraft();removeEventListener('pagehide',onLeave);document.removeEventListener('visibilitychange',onLeave);o.disconnect()}}).observe(document.body,{childList:true});
+  const onLeave=()=>{if(!done)commit()};addEventListener('pagehide',onLeave);document.addEventListener('visibilitychange',onLeave);
+  new MutationObserver((_,o)=>{if(!document.body.contains(m)){removeEventListener('pagehide',onLeave);document.removeEventListener('visibilitychange',onLeave);o.disconnect();
+    if(!done){done=true;const had=!!cur;if(commit())toast(had&&!isNew?'고쳤어요':'📌 포스트잇을 붙였어요')}}}).observe(document.body,{childList:true});
   try{document.execCommand('styleWithCSS',false,false)}catch(_){}
   let saved=null;const keep=()=>{const s=getSelection();if(s.rangeCount&&ed.contains(s.anchorNode))saved=s.getRangeAt(0).cloneRange()};
   const back=()=>{ed.focus();if(saved){const s=getSelection();s.removeAllRanges();s.addRange(saved)}};
@@ -152,10 +155,11 @@ function openEdit(n,dr){const isNew=!n;if(!dr){const d=getDraft();if(d&&d.id===(
   m.querySelector('#size').onchange=e=>{back();if(e.target.value)document.execCommand('fontSize',false,e.target.value);keep();e.target.value=''};
   m.querySelectorAll('[data-c]').forEach(b=>{b.onmousedown=e=>e.preventDefault();b.onclick=()=>{color=b.dataset.c;sheet.style.background=color;soon();m.querySelectorAll('[data-c]').forEach(x=>x.classList.toggle('on',x===b))}});
   ed.addEventListener('paste',e=>{e.preventDefault();const t=(e.clipboardData||window.clipboardData).getData('text/plain');document.execCommand('insertText',false,t)});
-  m.querySelector('#cancel').onclick=()=>{if(ed.innerHTML!==(n?n.html:'')&&!confirm('적은 내용을 버릴까요?'))return;done=true;clearTimeout(dT);clearDraft();close(m)};
-  m.querySelector('#ok').onclick=()=>{const html=clean(ed.innerHTML);if(!plain(html)){toast('메모를 적어 주세요');ed.focus();return}const now=Date.now();
-    if(isNew){const w=board.clientWidth,cw=board.clientWidth<620?150:186;N.push({id:uid(),html,color,created:now,updated:now,x:Math.random()*Math.max(1,(w-cw-20))/w*100+1,y:14+Math.random()*Math.max(40,Math.min(board.clientHeight-240,360)),rot:Math.random()*8-4})}
-    else{n.html=html;n.color=color;n.updated=now}save();draw();done=true;clearTimeout(dT);clearDraft();close(m);toast(isNew?'📌 포스트잇을 붙였어요':'고쳤어요')};
+  const cancel=()=>{const changed=clean(ed.innerHTML)!==(orig?orig.html:'')||(orig&&color!==orig.color);if(changed&&plain(ed.innerHTML)&&!confirm(isNew?'적은 내용을 버릴까요?':'고친 내용을 버리고 원래대로 돌릴까요?'))return;
+    done=true;clearTimeout(dT);if(cur){if(isNew)N=N.filter(x=>x!==cur);else Object.assign(cur,orig);save();draw()}close(m)};
+  m.querySelector('#cancel').onclick=cancel;
+  ed.addEventListener('keydown',e=>{if(e.isComposing||e.keyCode===229)return;if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();m.querySelector('#ok').click()}else if(e.key==='Escape'){e.preventDefault();cancel()}});
+  m.querySelector('#ok').onclick=()=>{const had=!!cur;if(!commit()){toast('메모를 적어 주세요');ed.focus();return}done=true;close(m);toast(had&&!isNew?'고쳤어요':'📌 포스트잇을 붙였어요')};
   setTimeout(()=>{ed.focus();const r=document.createRange();r.selectNodeContents(ed);r.collapse(false);const s=getSelection();s.removeAllRanges();s.addRange(r)},50)}
 $('#add').onclick=()=>openEdit(null);
 $('#sort').onchange=e=>{if(e.target.value)layout(e.target.value)};
@@ -164,7 +168,6 @@ $('#grip').onpointerdown=e=>{e.preventDefault();const g=$('#grip');try{g.setPoin
   g.onpointermove=ev=>{const h=Math.max(300,oh+ev.clientY-sy);board.style.minHeight=h+'px'};
   g.onpointerup=ev=>{g.onpointermove=g.onpointerup=null;SZ.h=Math.max(300,oh+ev.clientY-sy)-32;saveSZ();applySize();draw()}};
 applySize();
-{const d=getDraft();if(d&&d.html){const on=d.id==='new'?null:N.find(x=>x.id===d.id);if(d.id==='new'||on){setTimeout(()=>{openEdit(on||null,d);toast('✏️ 쓰던 메모를 이어서 써요')},300)}else clearDraft()}}
 addEventListener('resize',()=>{clearTimeout(window.__rz);window.__rz=setTimeout(draw,150)});
 draw();
 })();
