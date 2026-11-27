@@ -76,24 +76,41 @@ const COLS=['#ff7a7a','#5aaaf5','#ffd23f','#5fd068','#b08cff','#ff9b3d','#ff8fc0
 /* =================== 사다리 =================== */
 const SP=100,TOP=118,BOT=548,MIN=26,H=600;
 const X=i=>SP/2+SP*i;
-let S={names:[],results:[],rungs:[],cover:true,mix:false,ph:'setup',tool:'h',perm:null,done:{},paths:{},nid:1};
-try{const o=JSON.parse(localStorage.getItem('ladder-v1')||'null');if(o&&Array.isArray(o.names)){S.names=o.names.slice(0,12);S.results=o.results||[];S.cover=o.cover!==false;S.mix=!!o.mix}}catch(_){}
-const save=()=>{try{localStorage.setItem('ladder-v1',JSON.stringify({names:S.names,results:S.results,cover:S.cover,mix:S.mix}))}catch(_){}};
+let S={names:[],results:[],rungs:[],ph:'setup',tool:'h',perm:null,order:null,done:{},paths:{},nid:1,sel:null};
+try{const o=JSON.parse(localStorage.getItem('ladder-v1')||'null');if(o&&Array.isArray(o.names)){S.names=o.names.slice(0,12);S.results=o.results||[]}}catch(_){}
+const save=()=>{try{localStorage.setItem('ladder-v1',JSON.stringify({names:S.names,results:S.results}))}catch(_){}};
 const N=()=>S.names.length;
-/* 끝점: 같은 기둥 위 끝점끼리는 MIN 이상 떨어져야 해요 (선끼리 바로 이어지지 않게). 같은 칸 사이의 선끼리는 엇갈리면 안 돼요 */
-function ends(rungs){const E={};for(const r of rungs){(E[r.c]=E[r.c]||[]).push({y:r.y1,r});(E[r.c+1]=E[r.c+1]||[]).push({y:r.y2,r})}return E}
-function okAdd(rungs,nr){if(nr.y1<TOP+16||nr.y1>BOT-16||nr.y2<TOP+16||nr.y2>BOT-16)return'사다리 끝에 너무 가까워요';
-  const E=ends(rungs);for(const[col,y]of[[nr.c,nr.y1],[nr.c+1,nr.y2]])for(const e of E[col]||[])if(Math.abs(e.y-y)<MIN)return'다른 선과 너무 가까워요 (선끼리 바로 이어질 수 없어요)';
-  for(const r of rungs)if(r.c===nr.c&&(r.y1-nr.y1)*(r.y2-nr.y2)<=0)return'같은 칸의 다른 선과 엇갈려요';return''}
-function randomLadder(n){const R=[];for(let c=0;c<n-1;c++){const k=3+rnd(3);let tries=0;while(R.filter(r=>r.c===c).length<k&&tries++<200){const kind=rnd(100)<58?'h':rnd(100)<62?'d':'a';const y1=TOP+20+rnd(BOT-TOP-40);let y2=y1;if(kind==='d'){y2=y1+(rnd(2)?1:-1)*(34+rnd(60))}const nr={id:S.nid++,c,y1,y2,k:kind};if(!okAdd(R,nr))R.push(nr)}}return R}
-/* 길 찾기: 기둥을 따라 내려가다가 선을 만나면 건너가요 */
-function rungPts(r,fromLeft){const x1=X(r.c),x2=X(r.c+1);let pts=[];if(r.k==='a'){const cx=(x1+x2)/2,rx=(x2-x1)/2,ry=Math.min(46,rx*.62);for(let t=0;t<=20;t++){const a=Math.PI*t/20;pts.push([cx-Math.cos(a)*rx,r.y1+Math.sin(a)*ry])}}else pts=[[x1,r.y1],[x2,r.y2]];return fromLeft?pts:pts.reverse()}
+const nm=i=>S.names[S.order?S.order[i]:i],colOf=i=>COLS[(S.order?S.order[i]:i)%COLS.length];
+/* 끝점: 같은 기둥 위 끝점끼리는 MIN 이상 떨어져야 해요 (선끼리 바로 이어지지 않게) */
+function ends(rungs){const E={};const put=(c,y,r)=>(E[c]=E[c]||[]).push({y,r});for(const r of rungs){if(r.k==='v'){put(r.c,r.y1,r);put(r.c,r.y2,r)}else{put(r.c,r.y1,r);put(r.c+1,r.y2,r)}}return E}
+function okAdd(rungs,nr){if(Math.min(nr.y1,nr.y2)<TOP+16||Math.max(nr.y1,nr.y2)>BOT-16)return'사다리 끝에 너무 가까워요';
+  const E=ends(rungs),pts=nr.k==='v'?[[nr.c,nr.y1],[nr.c,nr.y2]]:[[nr.c,nr.y1],[nr.c+1,nr.y2]];
+  for(const[col,y]of pts)for(const e of E[col]||[])if(Math.abs(e.y-y)<MIN)return'다른 선과 너무 가까워요 (선끼리 바로 이어질 수 없어요)';
+  if(nr.k==='v'){if(nr.y2-nr.y1<60)return'위로 돌아가는 고리는 조금 더 길게 그려 주세요';for(const r of rungs)if(r.k==='v'&&r.c===nr.c&&nr.y1<r.y2+MIN&&nr.y2>r.y1-MIN)return'같은 기둥의 다른 고리와 겹쳐요';return''}
+  for(const r of rungs)if(r.k!=='v'&&r.c===nr.c&&(r.y1-nr.y1)*(r.y2-nr.y2)<=0)return'같은 칸의 다른 선과 엇갈려요';return''}
+/* 모든 양이 서로 다른 결과로 가는지 */
+function bijective(rungs,n){const keep=S.rungs;S.rungs=rungs;const set=new Set();for(let i=0;i<n;i++)set.add(trace(i).end);S.rungs=keep;return set.size===n}
+function randomLadder(n){for(let tries=0;tries<40;tries++){const R=[];
+    for(let c=0;c<n-1;c++){const k=3+rnd(3);let t=0;while(R.filter(r=>r.c===c&&r.k!=='v').length<k&&t++<200){const kind=rnd(100)<58?'h':rnd(100)<62?'d':'a';const y1=TOP+20+rnd(BOT-TOP-40);let y2=y1;if(kind==='d'){y2=y1+(rnd(2)?1:-1)*(34+rnd(60))}const nr={id:S.nid++,c,y1,y2,k:kind};if(!okAdd(R,nr))R.push(nr)}}
+    const loops=rnd(3);for(let l=0;l<loops;l++){for(let t=0;t<60;t++){const c=rnd(n),y1=TOP+30+rnd(BOT-TOP-200),y2=y1+70+rnd(110),nr={id:S.nid++,c,y1,y2,k:'v'};if(!okAdd(R,nr)){R.push(nr);break}}}
+    if(bijective(R,n))return R}
+  return[]}
+/* 선 위 점들 */
+function rungPts(r,fromStart){let pts=[];
+  if(r.k==='v'){const x=X(r.c),side=r.c===N()-1?-1:1,cy=(r.y1+r.y2)/2,ry=(r.y2-r.y1)/2,rx=30;for(let t=0;t<=24;t++){const a=Math.PI/2-Math.PI*t/24;pts.push([x+side*Math.cos(a)*rx,cy+Math.sin(a)*ry])}return pts}
+  const x1=X(r.c),x2=X(r.c+1);if(r.k==='a'){const cx=(x1+x2)/2,rx=(x2-x1)/2,ry=Math.min(46,rx*.62);for(let t=0;t<=20;t++){const a=Math.PI*t/20;pts.push([cx-Math.cos(a)*rx,r.y1+Math.sin(a)*ry])}}else pts=[[x1,r.y1],[x2,r.y2]];return fromStart?pts:pts.reverse()}
 function rungD(r){const p=rungPts(r,true);return'M'+p.map(q=>q[0].toFixed(1)+' '+q[1].toFixed(1)).join(' L')}
-function trace(i){const pts=[[X(i),TOP-6]];let c=i,y=TOP;const used=new Set();for(let s=0;s<400;s++){let best=null;for(const r of S.rungs){if(used.has(r.id))continue;let ey=null,left=null;if(r.c===c){ey=r.y1;left=true}else if(r.c+1===c){ey=r.y2;left=false}if(ey==null||ey<=y+.01)continue;if(!best||ey<best.ey)best={r,ey,left}}
-    if(!best){pts.push([X(c),BOT]);break}pts.push([X(c),best.ey]);used.add(best.r.id);const rp=rungPts(best.r,best.left);for(let k=1;k<rp.length;k++)pts.push(rp[k]);c=best.left?best.r.c+1:best.r.c;y=best.left?best.r.y2:best.r.y1}
+/* 길 찾기: 기둥을 따라 내려가다가 선을 만나면 건너가요. 위로 돌아가는 고리는 아래쪽 끝에 닿으면 위쪽 끝으로 올라가요 */
+function trace(i){const pts=[[X(i),TOP-6]];let c=i,y=TOP;const used=new Set();
+  for(let s=0;s<400;s++){let best=null;for(const r of S.rungs){if(used.has(r.id))continue;let ey=null,mode=null;
+      if(r.k==='v'){if(r.c===c){ey=r.y2;mode='v'}}else if(r.c===c){ey=r.y1;mode='L'}else if(r.c+1===c){ey=r.y2;mode='R'}
+      if(ey==null||ey<=y+.01)continue;if(!best||ey<best.ey)best={r,ey,mode}}
+    if(!best){pts.push([X(c),BOT]);break}pts.push([X(c),best.ey]);used.add(best.r.id);
+    if(best.mode==='v'){const rp=rungPts(best.r,true);for(let k=1;k<rp.length;k++)pts.push(rp[k]);y=best.r.y1;continue}
+    const rp=rungPts(best.r,best.mode==='L');for(let k=1;k<rp.length;k++)pts.push(rp[k]);c=best.mode==='L'?best.r.c+1:best.r.c;y=best.mode==='L'?best.r.y2:best.r.y1}
   return{pts,end:c}}
 /* =================== 그리기 =================== */
-function sheepSVG(col,name,dim){const ink='#4a3a32';return`<g class="bob"><ellipse cx="0" cy="2" rx="22" ry="5" fill="rgba(0,0,0,.15)"/>
+function sheepSVG(col,name){const ink='#4a3a32';return`<g class="bob"><ellipse cx="0" cy="2" rx="22" ry="5" fill="rgba(0,0,0,.15)"/>
   ${[-13,-5,5,13].map(x=>`<rect x="${x-2.5}" y="-12" width="5" height="12" rx="2.5" fill="#f2c6ad"/>`).join('')}
   ${[[-12,-24,11],[0,-28,12],[12,-24,11],[-6,-17,11],[7,-17,11]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r+2}" fill="${ink}" opacity=".18"/><circle cx="${x}" cy="${y}" r="${r}" fill="${col}"/>`).join('')}
   <circle cx="-5" cy="-30" r="5" fill="#fff" opacity=".45"/>
@@ -107,21 +124,19 @@ function draw(){const n=N(),svg=$('#svg');if(n<2){svg.setAttribute('viewBox','0 
   h+=`<rect x="0" y="${TOP-10}" width="${Wd}" height="${BOT-TOP+20}" rx="16" fill="#f6ead2"/>`;
   for(let i=0;i<n;i++)h+=`<line class="pole" x1="${X(i)}" y1="${TOP-6}" x2="${X(i)}" y2="${BOT+6}"/>`;
   for(const r of S.rungs)h+=`<g class="rg" data-r="${r.id}"><path class="rung hit" d="${rungD(r)}"/><path class="rung" d="${rungD(r)}"/></g>`;
-  const play=S.ph==='play';
-  if(play&&S.cover){h+=`<g pointer-events="none"><rect x="${4}" y="${TOP-4}" width="${Wd-8}" height="${BOT-TOP+8}" rx="14" fill="url(#cv)"/><text x="${Wd/2}" y="${(TOP+BOT)/2}" text-anchor="middle" font-family="Jua" font-size="26" fill="#7a5a12" opacity=".75">🙈 사다리를 가렸어요</text></g>`}
-  // 지나간 길
-  for(const k in S.paths){const P=S.paths[k],sp=RUN[k]?RUN[k].len:P.len;h+=`<polyline points="${P.pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${COLS[+k%COLS.length]}" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="${sp} 99999" opacity=".95"/>`}
+  if(S.ph==='cover')h+=`<g pointer-events="none"><rect x="${4}" y="${TOP-4}" width="${Wd-8}" height="${BOT-TOP+8}" rx="14" fill="url(#cv)"/><text x="${Wd/2}" y="${(TOP+BOT)/2}" text-anchor="middle" font-family="Jua" font-size="26" fill="#7a5a12" opacity=".75">🙈 사다리를 덮었어요</text></g>`;
+  for(const k in S.paths){const P=S.paths[k],sp=RUN[k]?RUN[k].len:P.len;h+=`<polyline points="${P.pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${colOf(+k)}" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="${sp} 99999" opacity=".95"/>`}
   if(S.drag)h+=`<path d="M${S.drag.x1} ${S.drag.y1} L${S.drag.x2} ${S.drag.y2}" stroke="#e8503a" stroke-width="6" stroke-dasharray="10 8" stroke-linecap="round" fill="none" pointer-events="none"/>`;
-  // 양
-  for(let i=0;i<n;i++){const run=RUN[i];let x=X(i),y=TOP-14,cls='sheep';if(run){x=run.x;y=run.y}else if(S.done[i]){const P=S.paths[i];x=P.pts[P.pts.length-1][0];y=BOT+2;cls+=' done'}else if(play)cls+=' pick';
-    h+=`<g class="${cls}" data-s="${i}" transform="translate(${x.toFixed(1)} ${y.toFixed(1)})">${sheepSVG(COLS[i%COLS.length],S.names[i])}</g>`}
+  for(let i=0;i<n;i++){const run=RUN[i];let x=X(i),y=TOP-14,cls='sheep';if(run){x=run.x;y=run.y}else if(S.done[i]){const P=S.paths[i];x=P.pts[P.pts.length-1][0];y=BOT+2;cls+=' done'}else if(S.ph==='play'||S.ph==='cover')cls+=' pick';
+    if(S.ph==='cover'&&S.sel===i)h+=`<circle cx="${x}" cy="${y-26}" r="34" fill="none" stroke="#e8503a" stroke-width="4" stroke-dasharray="7 5"/>`;
+    h+=`<g class="${cls}" data-s="${i}" transform="translate(${x.toFixed(1)} ${y.toFixed(1)})">${sheepSVG(colOf(i),nm(i))}</g>`}
   h=`<defs><pattern id="cv" width="24" height="24" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="24" height="24" fill="#f5d77a"/><rect width="12" height="24" fill="#f0c95a"/></pattern></defs>`+h;
   svg.innerHTML=h;svg.classList.toggle('erase',S.ph==='setup'&&S.tool==='x')}
 function drawRes(){const n=N(),el=$('#res');if(n<2){el.innerHTML='';return}el.style.gridTemplateColumns=`repeat(${n},minmax(0,1fr))`;
   if(S.ph==='setup'){el.innerHTML=S.names.map((_,i)=>`<div class="c"><input data-r="${i}" maxlength="12" value="${esc(S.results[i]||'')}" placeholder="결과 ${i+1}"></div>`).join('');
     el.querySelectorAll('[data-r]').forEach(inp=>inp.oninput=()=>{S.results[+inp.dataset.r]=clip(inp.value,12);save()});return}
-  el.innerHTML=S.names.map((_,col)=>{const who=Object.keys(S.done).find(k=>S.done[k]===col+1);const txt=S.results[S.perm[col]]||('결과 '+(S.perm[col]+1));
-    return who!=null?`<div class="c"><div class="card2 show" style="border-color:${COLS[who%COLS.length]};box-shadow:0 0 0 3px ${COLS[who%COLS.length]}">${esc(txt)}<small>${esc(S.names[who])}</small></div></div>`:S.revealAll?`<div class="c"><div class="card2">${esc(txt)}</div></div>`:`<div class="c"><div class="card2 hid">❓</div></div>`}).join('')}
+  el.innerHTML=S.names.map((_,col)=>{const k=Object.keys(S.done).find(q=>S.done[q]===col+1);const txt=S.results[S.perm[col]]||('결과 '+(S.perm[col]+1));
+    return k!=null?`<div class="c"><div class="card2 show" style="border-color:${colOf(+k)};box-shadow:0 0 0 3px ${colOf(+k)}">${esc(txt)}<small>${esc(nm(+k))}</small></div></div>`:S.revealAll?`<div class="c"><div class="card2">${esc(txt)}</div></div>`:`<div class="c"><div class="card2 hid">❓</div></div>`}).join('')}
 /* =================== 설정 화면 =================== */
 function renderSetup(){const el=$('#setup');if(S.ph!=='setup'){el.innerHTML='';return}
   el.innerHTML=`<div class="card"><h2>🐑 사다리 탈 사람</h2><div class="row"><input id="nm" maxlength="60" placeholder="이름 (여러 명은 쉼표로)" style="flex:1;min-width:160px"><button class="go" id="nmAdd">추가</button>${S.names.length?'<button id="nmClr">모두 지우기</button>':''}</div>
@@ -135,48 +150,54 @@ function renderSetup(){const el=$('#setup');if(S.ph!=='setup'){el.innerHTML='';r
 function renderCtl(){const el=$('#ctl'),n=N();
   if(S.ph==='setup'){el.innerHTML=`<h2>🪜 사다리 만들기</h2><div class="row"><button id="rnd" class="go" ${n<2?'disabled':''}>🎲 랜덤 사다리</button><span class="hint">또는 직접 그리기:</span>
       <div class="tools">${[['h','➖ 가로선'],['d','↘️ 대각선'],['a','◠ 동그란 선'],['x','🧽 지우기']].map(([k,t])=>`<button class="sm ${S.tool===k?'on':''}" data-tool="${k}">${t}</button>`).join('')}</div><button class="sm" id="clrR" ${S.rungs.length?'':'disabled'}>선 모두 지우기</button></div>
-    <p class="hint" style="margin:6px 0 10px">${S.tool==='x'?'지울 선을 눌러요.':'기둥 위 한 점을 누른 채 옆 기둥까지 끌어서 놓으면 선이 생겨요.'+(S.tool==='h'?' 가로선은 같은 높이로 이어져요.':S.tool==='a'?' 동그란 선은 아래로 둥글게 이어져요.':' 대각선은 놓은 높이로 비스듬히 이어져요.')} 선끼리는 바로 이어질 수 없어요.</p>
-    <div class="row"><label class="row" style="gap:6px"><input type="checkbox" id="cov" ${S.cover?'checked':''}> 🙈 사다리 가리고 시작</label><label class="row" style="gap:6px"><input type="checkbox" id="mix" ${S.mix?'checked':''}> 🔀 결과 순서 섞기</label></div>
-    <div style="text-align:center;margin-top:12px"><button class="go" id="start" style="font-size:22px;padding:10px 40px" ${n<2?'disabled':''}>▶ 시작</button></div>`;
+    <p class="hint" style="margin:6px 0 10px">${S.tool==='x'?'지울 선을 눌러요.':S.tool==='a'?'옆 기둥까지 끌면 아래로 둥근 다리가 생기고, <b>같은 기둥을 따라 위아래로 끌면 위로 돌아가는 고리</b>가 생겨요 (고리 아래쪽 끝에 닿으면 위쪽 끝으로 올라가요).':'기둥 위 한 점을 누른 채 옆 기둥까지 끌어서 놓으면 선이 생겨요.'+(S.tool==='h'?' 가로선은 같은 높이로 이어져요.':' 대각선은 놓은 높이로 비스듬히 이어져요.')} 선끼리는 바로 이어질 수 없어요.</p>
+    <div style="text-align:center;margin-top:12px"><button class="go" id="toCover" style="font-size:22px;padding:10px 34px" ${n<2?'disabled':''}>🙈 사다리·결과 덮기</button><p class="hint" style="margin:6px 0 0">덮은 다음에 결과를 섞고, 누가 어디에 설지 정한 뒤 시작해요.</p></div>`;
     $('#rnd').onclick=()=>{S.rungs=randomLadder(n);all()};$('#clrR').onclick=()=>{S.rungs=[];all()};
     el.querySelectorAll('[data-tool]').forEach(b=>b.onclick=()=>{S.tool=b.dataset.tool;renderCtl();draw()});
-    $('#cov').onchange=e=>{S.cover=e.target.checked;save()};$('#mix').onchange=e=>{S.mix=e.target.checked;save()};
-    $('#start').onclick=start;return}
+    $('#toCover').onclick=toCover;return}
+  if(S.ph==='cover'){el.innerHTML=`<div class="row" style="justify-content:center"><button id="mixR">🔀 결과 섞기</button><button id="mixS">🔀 양 자리 섞기</button><button id="back">✏️ 다시 고치기</button><button class="go" id="start" style="font-size:20px;padding:8px 30px">▶ 시작</button></div>
+    <p class="hint" style="text-align:center;margin:8px 0 0">양 두 마리를 차례로 누르면 서로 자리가 바뀌어요. 누가 어디에 설지 정했으면 ▶ 시작! 덮었던 사다리가 공개돼요.</p>`;
+    $('#mixR').onclick=mixResults;$('#mixS').onclick=()=>{S.order=shuffle(S.order);S.sel=null;draw();toast('양들의 자리를 섞었어요')};$('#back').onclick=()=>{S.ph='setup';S.sel=null;all()};$('#start').onclick=start;return}
   const left=S.names.map((_,i)=>i).filter(i=>!S.done[i]&&!RUN[i]);
-  el.innerHTML=`<div class="row" style="justify-content:center"><span class="hint">${left.length?'👆 사다리를 탈 양을 눌러요':'모두 도착했어요!'}</span><button id="allGo" ${left.length?'':'disabled'}>🐑 남은 양 모두 출발</button><button id="cvT">${S.cover?'👀 사다리 보이기':'🙈 사다리 가리기'}</button><button id="revAll" ${S.revealAll?'disabled':''}>📜 결과 모두 보기</button><button id="again">🔁 다시 하기</button></div>`;
-  $('#allGo').onclick=()=>{let d=0;left.forEach(i=>{setTimeout(()=>go(i),d);d+=450})};$('#cvT').onclick=()=>{S.cover=!S.cover;draw();renderCtl()};
-  $('#revAll').onclick=()=>{S.revealAll=true;drawRes();renderCtl()};$('#again').onclick=()=>{S.ph='setup';S.done={};S.paths={};S.revealAll=false;for(const k in RUN)delete RUN[k];$('#banner').textContent='';$('#log').innerHTML='';all()}}
+  el.innerHTML=`<div class="row" style="justify-content:center"><span class="hint">${left.length?'👆 사다리를 탈 양을 눌러요':'모두 도착했어요!'}</span><button id="allGo" ${left.length?'':'disabled'}>🐑 남은 양 모두 출발</button><button id="revAll" ${S.revealAll?'disabled':''}>📜 결과 모두 보기</button><button id="again">🔁 다시 하기</button></div>`;
+  $('#allGo').onclick=()=>{let d=0;left.forEach(i=>{setTimeout(()=>go(i),d);d+=450})};
+  $('#revAll').onclick=()=>{S.revealAll=true;drawRes();renderCtl()};$('#again').onclick=()=>{S.ph='setup';S.done={};S.paths={};S.revealAll=false;S.sel=null;for(const k in RUN)delete RUN[k];$('#banner').textContent='';$('#log').innerHTML='';all()}}
 function all(){renderSetup();draw();drawRes();renderCtl()}
-/* =================== 직접 그리기 =================== */
+/* =================== 직접 그리기 · 양 고르기 =================== */
 const svg=$('#svg');
 function svgPt(e){const r=svg.getBoundingClientRect(),vb=svg.viewBox.baseVal;return[(e.clientX-r.left)/r.width*vb.width,(e.clientY-r.top)/r.height*vb.height]}
 svg.addEventListener('pointerdown',e=>{
   if(S.ph==='play'){const g=e.target.closest('.sheep');if(g&&!g.classList.contains('done'))go(+g.dataset.s);return}
+  if(S.ph==='cover'){const g=e.target.closest('.sheep');if(!g)return;const i=+g.dataset.s;if(S.sel==null){S.sel=i}else if(S.sel===i){S.sel=null}else{const a=S.sel;[S.order[a],S.order[i]]=[S.order[i],S.order[a]];S.sel=null}draw();return}
   if(S.ph!=='setup'||N()<2)return;
   if(S.tool==='x'){const g=e.target.closest('.rg');if(g){S.rungs=S.rungs.filter(r=>r.id!==+g.dataset.r);draw();renderCtl()}return}
   const[x,y]=svgPt(e),c=Math.round((x-SP/2)/SP);if(c<0||c>=N()||Math.abs(x-X(c))>32||y<TOP||y>BOT)return;
   S.drag={c0:c,x1:X(c),y1:y,x2:x,y2:y};try{svg.setPointerCapture(e.pointerId)}catch(_){}draw()});
-svg.addEventListener('pointermove',e=>{if(!S.drag)return;const[x,y]=svgPt(e);S.drag.x2=x;S.drag.y2=S.tool==='d'?y:S.drag.y1;draw()});
+svg.addEventListener('pointermove',e=>{if(!S.drag)return;const[x,y]=svgPt(e);S.drag.x2=x;S.drag.y2=S.tool==='h'?S.drag.y1:y;draw()});
 svg.addEventListener('pointerup',e=>{if(!S.drag)return;const d=S.drag;S.drag=null;const[x,y]=svgPt(e),c1=Math.round((x-SP/2)/SP);
-  if(Math.abs(c1-d.c0)!==1){draw();if(Math.abs(x-d.x1)>20)toast('바로 옆 기둥까지 끌어 주세요');return}
+  if(S.tool==='a'&&c1===d.c0&&Math.abs(x-d.x1)<40&&Math.abs(y-d.y1)>=30){const a=Math.round(Math.min(d.y1,clampY(y))),b=Math.round(Math.max(d.y1,clampY(y)));const nr={id:S.nid++,c:d.c0,y1:a,y2:b,k:'v'};const why=okAdd(S.rungs,nr)||(bijective(S.rungs.concat(nr),N())?'':'이 고리를 넣으면 두 양이 같은 결과로 가요');if(why){toast(why);draw();return}S.rungs.push(nr);draw();renderCtl();return}
+  if(Math.abs(c1-d.c0)!==1){draw();if(Math.abs(x-d.x1)>20)toast(S.tool==='a'?'옆 기둥까지, 또는 같은 기둥을 따라 위아래로 끌어 주세요':'바로 옆 기둥까지 끌어 주세요');return}
   const left=Math.min(d.c0,c1),yA=d.c0<c1?d.y1:(S.tool==='d'?clampY(y):d.y1),yB=d.c0<c1?(S.tool==='d'?clampY(y):d.y1):d.y1;
-  const nr={id:S.nid++,c:left,y1:Math.round(yA),y2:Math.round(yB),k:S.tool};const why=okAdd(S.rungs,nr);if(why){toast(why);draw();return}S.rungs.push(nr);draw();renderCtl()});
+  const nr={id:S.nid++,c:left,y1:Math.round(yA),y2:Math.round(yB),k:S.tool};const why=okAdd(S.rungs,nr)||(bijective(S.rungs.concat(nr),N())?'':'이 선을 넣으면 두 양이 같은 결과로 가요');if(why){toast(why);draw();return}S.rungs.push(nr);draw();renderCtl()});
 const clampY=y=>Math.max(TOP,Math.min(BOT,y));
-/* =================== 시작 · 이동 =================== */
-function start(){const n=N();if(n<2)return;if(!S.rungs.length){S.rungs=randomLadder(n);toast('사다리가 없어서 랜덤 사다리를 만들었어요')}
-  S.ph='play';S.done={};S.paths={};S.revealAll=false;S.perm=S.mix?shuffle([...Array(n).keys()]):[...Array(n).keys()];$('#banner').textContent='';$('#log').innerHTML='';all();
+/* =================== 덮기 → 섞기·자리 정하기 → 시작 =================== */
+function toCover(){const n=N();if(n<2)return;if(!S.rungs.length){S.rungs=randomLadder(n);toast('사다리가 없어서 랜덤 사다리를 만들었어요')}
+  S.ph='cover';S.done={};S.paths={};S.revealAll=false;S.sel=null;S.perm=[...Array(n).keys()];S.order=[...Array(n).keys()];$('#banner').textContent='';$('#log').innerHTML='';all();
   $('#board').scrollIntoView({behavior:'smooth',block:'start'})}
+function mixResults(){const cards=[...$('#res').querySelectorAll('.card2')],n=cards.length;if(!n)return;$('#mixR').disabled=true;
+  const w=cards[0].getBoundingClientRect().width+6;let k=0;const step=()=>{cards.forEach(c=>{c.style.transition='transform .22s ease';c.style.transform=`translateX(${(rnd(n)-cards.indexOf(c))*w}px)`});if(++k<4)setTimeout(step,240);else setTimeout(()=>{cards.forEach(c=>{c.style.transform=''});S.perm=shuffle(S.perm);drawRes();const b=$('#mixR');if(b)b.disabled=false;toast('결과를 섞었어요')},260)};step()}
+function start(){S.ph='play';S.sel=null;all();toast('사다리 공개! 양을 눌러 출발해요')}
 function go(i){if(S.ph!=='play'||S.done[i]||RUN[i])return;const t=trace(i),pts=t.pts;let len=0;const seg=[];for(let k=1;k<pts.length;k++){const l=Math.hypot(pts[k][0]-pts[k-1][0],pts[k][1]-pts[k-1][1]);seg.push(l);len+=l}
   S.paths[i]={pts,len};RUN[i]={t0:performance.now(),pts,seg,total:len,end:t.end,x:pts[0][0],y:pts[0][1],len:0};renderCtl();if(!raf)raf=requestAnimationFrame(tick)}
 function tick(now){let any=false;for(const k in RUN){const r=RUN[k],d=Math.min(r.total,(now-r.t0)/1000*300);r.len=d;let acc=0,x=r.pts[0][0],y=r.pts[0][1];for(let s=0;s<r.seg.length;s++){if(acc+r.seg[s]>=d){const f=(d-acc)/r.seg[s];x=r.pts[s][0]+(r.pts[s+1][0]-r.pts[s][0])*f;y=r.pts[s][1]+(r.pts[s+1][1]-r.pts[s][1])*f;break}acc+=r.seg[s];x=r.pts[s+1][0];y=r.pts[s+1][1]}r.x=x;r.y=y;
     if(d>=r.total){delete RUN[k];arrive(+k,r.end)}else any=true}
   draw();raf=any?requestAnimationFrame(tick):0}
-function arrive(i,col){S.done[i]=col+1;const txt=S.results[S.perm[col]]||('결과 '+(S.perm[col]+1));drawRes();renderCtl();
-  $('#banner').innerHTML=`<span style="color:${COLS[i%COLS.length]==='#f4f1ea'?'#7a6a5c':COLS[i%COLS.length]};filter:brightness(.8)">🐑 ${esc(S.names[i])}</span> → <b>${esc(txt)}</b>`;
-  const l=document.createElement('span');l.innerHTML=`${esc(S.names[i])} → ${esc(txt)}`;$('#log').appendChild(l);
+function arrive(i,col){S.done[i]=col+1;const txt=S.results[S.perm[col]]||('결과 '+(S.perm[col]+1));drawRes();renderCtl();const cc=colOf(i);
+  $('#banner').innerHTML=`<span style="color:${cc==='#f4f1ea'?'#7a6a5c':cc};filter:brightness(.8)">🐑 ${esc(nm(i))}</span> → <b>${esc(txt)}</b>`;
+  const l=document.createElement('span');l.innerHTML=`${esc(nm(i))} → ${esc(txt)}`;$('#log').appendChild(l);
   if(/당첨|1등/.test(txt))celebrate()}
 function celebrate(){const b=$('#banner');b.animate([{transform:'scale(1)'},{transform:'scale(1.25)'},{transform:'scale(1)'}],{duration:600})}
-$('#bHow').onclick=()=>alert(['🪜 사다리게임 방법','','1. 사다리 탈 사람 이름을 적으면 이름이 쓰인 색깔 양이 생겨요 (2~12명).','2. 사다리 아래 칸에 결과를 적어요 (당첨·꽝, 1등~N등 빠르게 채우기).','3. 🎲 랜덤 사다리를 만들거나, ➖ 가로선 · ↘️ 대각선 · ◠ 동그란 선으로 직접 그려요. 기둥을 누른 채 옆 기둥까지 끌어서 놓아요. 선끼리 바로 이어질 수는 없어요.','4. 🙈 사다리 가리기, 🔀 결과 섞기를 고르고 ▶ 시작!','5. 양을 누르면 그 양이 사다리를 타고 내려가요. 도착한 칸의 결과가 그때 공개돼요.'].join('\n'));
+$('#bHow').onclick=()=>alert(['🪜 사다리게임 방법','','1. 사다리 탈 사람 이름을 적으면 이름이 쓰인 색깔 양이 생겨요 (2~12명).','2. 사다리 아래 칸에 결과를 적어요 (당첨·꽝, 1등~N등 빠르게 채우기).','3. 🎲 랜덤 사다리를 만들거나, ➖ 가로선 · ↘️ 대각선 · ◠ 동그란 선으로 직접 그려요. 동그란 선은 같은 기둥을 따라 위아래로 그리면 위로 돌아가는 고리가 돼요. 선끼리 바로 이어질 수는 없어요.','4. 🙈 사다리·결과 덮기를 누르면 사다리와 결과가 덮여요.','5. 덮인 채로 🔀 결과 섞기, 양 두 마리를 눌러 자리 바꾸기(또는 🔀 양 자리 섞기)로 누가 어디에 설지 정해요.','6. ▶ 시작을 누르면 덮였던 사다리가 공개되고, 양을 누르면 사다리를 타고 내려가요. 도착한 칸의 결과가 그때 공개돼요.'].join('\n'));
 addEventListener('resize',()=>draw());
 all();
 window.__ld={S:()=>S,trace,go,randomLadder};
