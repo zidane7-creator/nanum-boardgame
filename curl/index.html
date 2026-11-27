@@ -92,7 +92,7 @@ const COL=[['#e8503a','빨강'],['#2f78d0','파랑'],['#3f9a55','초록'],['#f5b
 /* =================== 책상 =================== */
 const W=440,L=960,CR=15,START=L-118,SHOTY=L-64,TC={x:0,y:250};
 const SHAPES={rect:['직사각형','네모 반듯한 책상'],tri:['역삼각형','멀리 갈수록 넓어지고, 출발선 쪽이 좁아요'],oval:['타원형','둥근 책상, 가장자리가 휘어 있어요']};
-const TYPES=[['일반 책상','아무것도 없는 깨끗한 책상'],['구멍 책상','동그란 구멍이 게임마다 랜덤 자리에! 빠지면 낙'],['느림 구간 책상','천이 깔린 느림 구간이 게임마다 랜덤 자리에'],['반사 벽 책상','가장자리 곳곳에 튕겨 나오는 고무 벽 (게임마다 랜덤)'],['체크 점수 책상','점수판이 체스판처럼 칸마다 점수'],['모두 다 책상','구멍·느림·반사 벽·체크 점수 전부 (랜덤 자리)']];
+const TYPES=[['깜짝 책상','1초마다 곳곳에 구멍이 뚫리거나 장애물이 솟아올라요 (1초 동안)'],['구멍 책상','동그란 구멍이 게임마다 랜덤 자리에! 빠지면 낙'],['느림 구간 책상','천이 깔린 느림 구간이 게임마다 랜덤 자리에'],['반사 벽 책상','가장자리 곳곳에 튕겨 나오는 고무 벽 (게임마다 랜덤)'],['체크 점수 책상','점수판이 체스판처럼 칸마다 점수'],['모두 다 책상','구멍·느림·반사 벽·체크 점수 전부 (랜덤 자리)']];
 function hw(y,sh){if(sh==='tri')return 220*(1-.6*clamp(y,0,L)/L);if(sh==='oval'){const t=(y-L/2)/(L/2);return t*t>=1?0:220*Math.sqrt(1-t*t)}return 220}
 function fv(x,y,sh){if(sh==='oval')return (x/220)**2+((y-L/2)/(L/2))**2-1;return Math.max(Math.abs(x)-hw(y,sh),-y,y-L)}
 function grad(x,y,sh){const gx=(fv(x+1,y,sh)-fv(x-1,y,sh))/2,gy=(fv(x,y+1,sh)-fv(x,y-1,sh))/2,l=Math.sqrt(gx*gx+gy*gy)||1;return[gx/l,gy/l]}
@@ -107,7 +107,7 @@ function makeLayout(set){const sh=set.shape,ty=set.type,R=Math.random,L={holes:[
   if(ty===3||ty===6)put(L.slows,ty===6?3:3+Math.floor(R()*2),sh==='tri'?36+Math.floor(R()*8):44+Math.floor(R()*12));
   if(ty===4||ty===6){const n=4+Math.floor(R()*3);for(let k=0;k<n;k++){for(let i=0;i<100;i++){const s=R()<.5?-1:1,len=110+R()*110,y0=20+R()*(START-40-len),y1=y0+len;if(L.walls.some(w=>w.s===s&&y0<w.y1+30&&y1>w.y0-30))continue;L.walls.push({s,y0:Math.round(y0),y1:Math.round(y1)});break}}}
   L.holes.forEach(o=>{o.x=Math.round(o.x);o.y=Math.round(o.y)});L.slows.forEach(o=>{o.x=Math.round(o.x);o.y=Math.round(o.y)});return L}
-function geo(set,lay){const ty=set.type,G={holes:[],slows:[],walls:[],checker:ty===5||ty===6,specials:specialsOf(set.shape)};
+function geo(set,lay){const ty=set.type,G={holes:[],slows:[],walls:[],checker:ty===5||ty===6,dyn:ty===1,specials:specialsOf(set.shape)};
   if(lay){if(ty===2||ty===6)G.holes=lay.holes||[];if(ty===3||ty===6)G.slows=lay.slows||[];if(ty===4||ty===6)G.walls=lay.walls||[]}
   return G}
 function scoreAt(x,y,G){for(const s of G.specials)if((x-s.x)**2+(y-s.y)**2<=s.r*s.r)return s.v;
@@ -128,6 +128,19 @@ function stepPhys(caps,set,G,dt){let moving=false;
     const d=Math.sqrt(d2),nx=dx/d,ny=dy/d,ov=2*CR-d;a.x-=nx*ov/2;a.y-=ny*ov/2;b.x+=nx*ov/2;b.y+=ny*ov/2;const rv=(b.vx-a.vx)*nx+(b.vy-a.vy)*ny;if(rv<0){const j2=-(1+RE)*rv/2;a.vx-=j2*nx;a.vy-=j2*ny;b.vx+=j2*nx;b.vy+=j2*ny;moving=true;a.hit=b.hit=performance.now()}}}
   return moving}
 
+
+/* =================== 깜짝 책상: 1초마다 구멍이 뚫리거나 장애물이 솟아요 (1초 유지) =================== */
+const EV_LIFE=1000,EV_OPEN=140;
+function evScale(age){return age<EV_OPEN?age/EV_OPEN:age>EV_LIFE-EV_OPEN?Math.max(0,(EV_LIFE-age)/EV_OPEN):1}
+function spawnEvents(st,now){const sh=st.set.shape,act=(st.ev||[]).filter(e=>now-e.t0<EV_LIFE);const add=[];
+  for(let n=0;n<2;n++){for(let i=0;i<60;i++){const k=Math.random()<.5?'hole':'block',r=k==='hole'?26+Math.random()*10:22+Math.random()*9,y=20+r+Math.random()*(START-60-2*r),h=hw(y,sh)-r-8;if(h<=0)continue;const x=(Math.random()*2-1)*h;
+    if(act.concat(add).some(e=>Math.hypot(e.x-x,e.y-y)<e.r+r+16))continue;add.push({id:(st.evId=(st.evId||0)+1),k,x:Math.round(x),y:Math.round(y),r:Math.round(r),t0:now});break}}
+  st.ev=act.concat(add)}
+function dynPhys(caps,evs,now,dt){let mv=false;for(const e of evs){const age=now-e.t0,sc=evScale(age);if(sc<=.05)continue;const r=e.r*sc;
+  for(const c of caps){if(c.out)continue;const dx=c.x-e.x,dy=c.y-e.y,d=Math.sqrt(dx*dx+dy*dy);
+    if(e.k==='hole'){if(sc>.8&&d<r-5){c.out=1;c.fall={x:e.x,y:e.y,t:0,hole:1};c.vx=c.vy=0;mv=true}}
+    else if(d<r+CR){const nx=d?dx/d:1,ny=d?dy/d:0,ov=r+CR-d;c.x+=nx*ov;c.y+=ny*ov;const vn=c.vx*nx+c.vy*ny;if(vn<0){c.vx-=1.8*vn*nx;c.vy-=1.8*vn*ny}if(age<EV_OPEN+60){c.vx+=nx*120;c.vy+=ny*120}mv=true}}}
+  return mv}
 /* =================== 게임 상태 =================== */
 const blankSet=()=>({teams:2,caps:4,drop:true,shape:'rect',type:1});
 let G=null,isHost=false,MY=null,LV=null;
@@ -141,7 +154,7 @@ function throwsLeft(st,ti){const T=st.tOrder.length,total=T*st.set.caps;let used
 
 /* --- 진행 (방장 또는 한 기기) --- */
 function startGame(){GL=null;fitTeams(G);const empty=G.tOrder.filter(t=>!membersOf(G,t).length);if(empty.length){toast(G.teams[empty[0]].name+'에 사람이 없어요');return false}
-  G.ph='play';G.layout=makeLayout(G.set);G.caps=[];G.n=0;G.moving=false;G.round++;G.cur=newCur();sync();return true}
+  G.ph='play';G.layout=makeLayout(G.set);G.ev=[];G.evT=0;G.caps=[];G.n=0;G.moving=false;G.round++;G.cur=newCur();sync();return true}
 function newCur(){const s=shooterAt(G,G.n);return{ti:s.ti,pid:s.p?s.p.id:null,x:0}}
 function doShot(x,vx,vy){if(G.ph!=='play'||G.moving)return;const sp=Math.sqrt(vx*vx+vy*vy);if(!(sp>20))return;const m=1100/Math.max(1100,sp);
   G.caps.push({id:G.n,t:G.cur.ti,x:clamp(x,-hw(SHOTY,G.set.shape)+CR+4,hw(SHOTY,G.set.shape)-CR-4),y:SHOTY,vx:vx*m,vy:vy*m,out:0});G.n++;G.moving=true;G.cur.shot=1;sync()}
@@ -157,7 +170,7 @@ const HC=[];let lastFr=0;
 function hostNet(){BROKERS.forEach(async url=>{const cl=await mqttOpen(url,8000);if(!cl)return;HC.push(cl);cl.subscribe(base()+'/h',{qos:1});cl.on('connect',()=>cl.subscribe(base()+'/h',{qos:1}));
   cl.on('message',(tp,buf)=>{let d;try{d=JSON.parse(buf.toString())}catch(_){return}if(!d||!d.f||!d.m)return;hostHandle(String(d.f).replace(/[^a-z0-9]/gi,'').slice(0,16),d.m)});render()})}
 function pubAll(m,q){if(G.mode!=='net')return;const s=JSON.stringify(m);HC.forEach(cl=>{try{cl.publish(base()+'/s',s,{qos:q})}catch(_){}})}
-function view(){return{mode:G.mode,ph:G.ph,set:G.set,layout:G.layout,teams:G.teams,tOrder:G.tOrder,players:G.players,caps:G.caps.map(c=>({id:c.id,t:c.t,x:Math.round(c.x*10)/10,y:Math.round(c.y*10)/10,out:c.out})),n:G.n,moving:G.moving,cur:G.cur,final:G.final,room:ROOM,round:G.round,seq:++G.seq}}
+function view(){const nw=performance.now();return{ev:(G.ev||[]).map(e=>({k:e.k,x:e.x,y:e.y,r:e.r,a:Math.round(nw-e.t0)})),mode:G.mode,ph:G.ph,set:G.set,layout:G.layout,teams:G.teams,tOrder:G.tOrder,players:G.players,caps:G.caps.map(c=>({id:c.id,t:c.t,x:Math.round(c.x*10)/10,y:Math.round(c.y*10)/10,out:c.out})),n:G.n,moving:G.moving,cur:G.cur,final:G.final,room:ROOM,round:G.round,seq:++G.seq}}
 function sync(){if(G.mode==='net')pubAll({t:'st',v:view()},1);onView(view())}
 function hostHandle(f,m){if(!G)return;let p=G.players.find(x=>x.id===f);
   if(m.t==='join'){const name=clip(m.name,10);if(!p){if(!name)return;if(G.players.some(x=>x.name===name))return pubAll({t:'err',to:f,msg:'같은 이름이 있어요. 다르게 적어 주세요'},1);if(G.players.length>=40)return;p={id:f,name,team:null};G.players.push(p)}sync();return}
@@ -177,7 +190,7 @@ async function joinRoom(name){try{MY=sessionStorage.getItem('cu-id-'+ROOM)}catch
   const s=$('#jSt');if(s)s.textContent='방에 연결하지 못했어요. 방 코드와 방장 화면을 확인해 주세요'}
 
 /* =================== 화면: 설정 =================== */
-function onView(v){const prevPh=LV&&LV.ph,prevRound=LV&&LV.round;LV=v;if(!isHost)VC=v.caps.map(c=>Object.assign({},c));
+function onView(v){const prevPh=LV&&LV.ph,prevRound=LV&&LV.round;LV=v;if(!isHost&&v.ev){const nw=performance.now();CEV=v.ev.map(e=>({k:e.k,x:e.x,y:e.y,r:e.r,t0:nw-e.a}))}if(!isHost)VC=v.caps.map(c=>Object.assign({},c));
   if(v.ph==='play'||v.ph==='over'){enterGame();if(v.ph==='over'&&prevPh!=='over')setTimeout(showResult,700);else if(v.ph==='play'&&!$('#ov').hidden&&$('#ov').dataset.k==='res')$('#ov').hidden=true}
   else{leaveGame();render()}updHud()}
 const shapeSVG=sh=>{const p=sh==='rect'?'<rect x="6" y="4" width="36" height="52" rx="4"/>':sh==='tri'?'<path d="M4 4 H44 L30 56 H18 Z"/>':'<ellipse cx="24" cy="30" rx="18" ry="26"/>';return`<svg viewBox="0 0 48 60"><g fill="#d9a86a" stroke="#6e4f3a" stroke-width="3">${p}</g><circle cx="24" cy="${sh==='oval'?18:16}" r="7" fill="none" stroke="#e8503a" stroke-width="2"/></svg>`};
@@ -298,18 +311,25 @@ function drawCap(x,y,col,s,alpha,glow){const[ux0,uy0]=upVec(),HT=8,ux=ux0*HT,uy=
   el(0,0,CR-3.6,CR-3.6);const rg=g.createRadialGradient(-4,-5,1,0,0,CR-3);rg.addColorStop(0,'rgba(255,255,255,.9)');rg.addColorStop(.4,'rgba(255,255,255,.22)');rg.addColorStop(1,'rgba(0,0,0,.18)');g.fillStyle=rg;g.fill();
   el(0,0,CR-3.6,CR-3.6);g.strokeStyle='rgba(0,0,0,.25)';g.lineWidth=1.4;g.stroke();el(0,0,CR-5.2,CR-5.2);g.strokeStyle='rgba(255,255,255,.55)';g.lineWidth=1;g.stroke();
   g.restore()}
-let AIM=null,lastT=performance.now(),lastFrame=0,GL=null;
+let AIM=null,lastT=performance.now(),lastFrame=0,GL=null,CEV=[];
 function loop(t){if(!inGame)return;const dt=Math.min(.05,(t-lastT)/1000);lastT=t;
-  if(isHost&&G&&G.ph==='play'&&G.moving){let mv=false;const n=Math.ceil(dt/(1/240));for(let i=0;i<n;i++)mv=stepPhys(G.caps,G.set,GL||(GL=geo(G.set,G.layout)),dt/n)||mv;
-    G.caps.forEach(c=>{if(c.fall)c.fall.t+=dt});if(G.mode==='net'&&t-lastFr>70){lastFr=t;pubAll({t:'fr',c:G.caps.map(c=>[c.id,Math.round(c.x),Math.round(c.y),c.out?1:0])},0)}
-    if(!mv&&G.caps.every(c=>!c.fall||c.fall.t>.5)){afterSettle()}updHud()}
+  const GLc=isHost&&G?(GL||(GL=geo(G.set,G.layout))):null;
+  if(isHost&&G&&G.ph==='play'&&(G.moving||GLc.dyn)){let mv=false;
+    if(GLc.dyn){if(t-G.evT>=EV_LIFE){G.evT=t;spawnEvents(G,t)}G.ev=G.ev.filter(e=>t-e.t0<EV_LIFE)}
+    const n=Math.ceil(dt/(1/240));for(let i=0;i<n;i++){mv=stepPhys(G.caps,G.set,GLc,dt/n)||mv;if(GLc.dyn)mv=dynPhys(G.caps,G.ev,t,dt/n)||mv}
+    G.caps.forEach(c=>{if(c.fall)c.fall.t+=dt});if(G.mode==='net'&&t-lastFr>(GLc.dyn?90:70)){lastFr=t;pubAll({t:'fr',c:G.caps.map(c=>[c.id,Math.round(c.x),Math.round(c.y),c.out?1:0]),ev:GLc.dyn?G.ev.map(e=>[e.k==='hole'?1:2,e.x,e.y,e.r,Math.round(t-e.t0)]):null},0)}
+    if(G.moving&&!mv&&G.caps.every(c=>!c.fall||c.fall.t>.5)){afterSettle()}updHud()}
   else if(!isHost){VC.forEach(c=>{if(c.tx!=null){c.x+=(c.tx-c.x)*Math.min(1,dt*14);c.y+=(c.ty-c.y)*Math.min(1,dt*14)}if(c.out&&!c.fall)c.fall={x:c.x,y:c.y,t:0};if(c.fall)c.fall.t+=dt})}
   draw();requestAnimationFrame(loop)}
-function onFrame(m){const by={};VC.forEach(c=>by[c.id]=c);for(const[id,x,y,out]of m.c){let c=by[id];if(!c){const tm=LV.cur?LV.cur.ti:0;c={id,t:tm,x,y,out:0};VC.push(c)}c.tx=x;c.ty=y;if(out&&!c.out){c.out=1}}updHud()}
+function onFrame(m){if(m.ev){const nw=performance.now();CEV=m.ev.map(([k,x,y,r,a])=>({k:k===1?'hole':'block',x,y,r,t0:nw-a}))}const by={};VC.forEach(c=>by[c.id]=c);for(const[id,x,y,out]of m.c){let c=by[id];if(!c){const tm=LV.cur?LV.cur.ti:0;c={id,t:tm,x,y,out:0};VC.push(c)}c.tx=x;c.ty=y;if(out&&!c.out){c.out=1}}updHud()}
 function draw(){const v=LV;if(!v)return;g.setTransform(DPR,0,0,DPR,0,0);g.clearRect(0,0,CW,CH);const Gg=drawTable(v);
   g.save();g.translate(OX,OY);g.scale(SC,SC);
-  const caps=capsNow();
+  const caps=capsNow(),nw=performance.now(),EVS=(isHost?(G&&G.ev)||[]:CEV).filter(e=>nw-e.t0<EV_LIFE);
+  for(const e of EVS)if(e.k==='hole'){const sc=evScale(nw-e.t0),r=e.r*sc;if(r<1)continue;const rg=g.createRadialGradient(e.x,e.y,1,e.x,e.y,r);rg.addColorStop(0,'#000');rg.addColorStop(.7,'#140c06');rg.addColorStop(1,'#4a2e18');el(e.x,e.y,r+4,r+4);g.fillStyle='rgba(90,55,25,.6)';g.fill();el(e.x,e.y,r,r);g.fillStyle=rg;g.fill();g.strokeStyle='rgba(255,220,150,.35)';g.lineWidth=2;for(let i=0;i<6;i++){const a=i*1.05+e.x;g.beginPath();g.moveTo(e.x+Math.cos(a)*r,e.y+Math.sin(a)*r);g.lineTo(e.x+Math.cos(a)*(r+9),e.y+Math.sin(a)*(r+9));g.stroke()}}
   for(const c of caps){const col=v.teams[c.t]?v.teams[c.t].col:'#888';if(c.out){const f=c.fall;if(!f||f.t>.6)continue;const k=1-f.t/.6;drawCap(f.x+(f.vx||0)*f.t,f.y+(f.vy||0)*f.t,col,f.hole?k*.8:1+f.t*.3,k);continue}drawCap(c.x,c.y,col,1,1,false)}
+  for(const e of EVS)if(e.k==='block'){const sc=evScale(nw-e.t0),r=e.r*Math.min(1,.4+sc*.6);if(sc<=.02)continue;const[ux0,uy0]=upVec(),hh=26*sc,ux=ux0*hh,uy=uy0*hh;
+    g.fillStyle='rgba(0,0,0,.28)';el(e.x+3,e.y+4,r+3,r+3);g.fill();const n=Math.max(2,Math.ceil(Math.hypot(ux,uy)/1.5));for(let i=0;i<=n;i++){const f=i/n;el(e.x+ux*f,e.y+uy*f,r,r);g.fillStyle=i===0?'#5d636a':'#7d838b';g.fill()}
+    const tg=g.createRadialGradient(e.x+ux-r*.3,e.y+uy-r*.3,1,e.x+ux,e.y+uy,r);tg.addColorStop(0,'#dfe3e7');tg.addColorStop(1,'#959ba2');el(e.x+ux,e.y+uy,r,r);g.fillStyle=tg;g.fill();g.strokeStyle='#4f555c';g.lineWidth=2;g.stroke();g.fillStyle='rgba(255,255,255,.75)';g.font='16px Jua';g.textAlign='center';g.fillText('⛰',e.x+ux,e.y+uy+6)}
   // 다음에 칠 병뚜껑
   if(v.ph==='play'&&!v.moving&&v.cur){const col=v.teams[v.cur.ti].col,x=v.cur.x||0;
     if(AIM){const dx=AIM.sx-AIM.ex,dy=AIM.sy-AIM.ey,len=Math.min(220,Math.sqrt(dx*dx+dy*dy)),a=Math.atan2(dy,dx),pw=len/220;
