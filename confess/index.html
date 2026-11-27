@@ -20,15 +20,17 @@ html,body{margin:0;height:100%;background:#070504;color:#efe6d6;font:16px/1.6 "G
 .top .ttl{flex:1;font-size:18px;color:var(--gold);letter-spacing:.08em}
 #cv{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
 #cv.place{cursor:crosshair}
-.dock{position:fixed;left:0;right:0;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:15;display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none}
+.dock{position:fixed;left:14px;right:14px;top:calc(50px + env(safe-area-inset-top,0px));z-index:15;display:flex;align-items:center;gap:6px 12px;flex-wrap:wrap;pointer-events:none}
+.dock .msg{font-size:14px;color:#e9dcc4;text-shadow:0 1px 6px #000;flex:1;min-width:180px}
+@media (max-width:560px){.dock .btn{font-size:15px;padding:8px 18px}.dock .msg{font-size:13px;flex-basis:100%}}
 .dock>*{pointer-events:auto}
 .btn{font:inherit;font-size:17px;color:#2a1d12;background:linear-gradient(#f6ecd8,#e2d2b4);border:0;border-radius:999px;padding:11px 26px;cursor:pointer;box-shadow:0 0 24px rgba(233,201,139,.28),0 3px 0 #8a7556}
 .btn:active{transform:translateY(2px);box-shadow:0 0 18px rgba(233,201,139,.2),0 1px 0 #8a7556}
 .btn.ghost{background:rgba(255,255,255,.06);color:#e8dcc6;box-shadow:none;border:1px solid rgba(232,220,198,.35);font-size:15px;padding:8px 18px}
 .note{font-size:13px;color:var(--dim);text-align:center;text-shadow:0 1px 3px #000}
-#intro{position:fixed;left:50%;bottom:calc(165px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:12;text-align:center;width:min(90vw,520px);pointer-events:none;transition:opacity 2.4s}
-#intro p{margin:6px 0;color:#e9dcc4;text-shadow:0 2px 10px #000}#intro .v{font-size:14px;color:var(--dim)}
-#intro.hide{opacity:0}
+#words{position:fixed;left:50%;top:calc(108px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:12;text-align:center;width:min(92vw,620px);pointer-events:none;transition:opacity 1.4s}
+#words h2{margin:0 0 6px;font-size:clamp(17px,3.8vw,21px);font-weight:700;color:#f0e3c8;text-shadow:0 2px 10px #000}#words p{margin:0;font-size:clamp(13px,3vw,15px);color:#cbbda6;line-height:1.75;text-shadow:0 2px 8px #000}#words small{display:inline;color:var(--gold);font-size:13px;margin-left:4px}
+#words.fade{opacity:0}
 /* 흰 종이 */
 .modal{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px;perspective:1200px}
 .paper{position:relative;width:min(420px,92vw);aspect-ratio:3/4;max-height:78vh;transform-style:preserve-3d;transition:transform 1.1s cubic-bezier(.5,0,.3,1),opacity .6s .7s}
@@ -38,13 +40,14 @@ html,body{margin:0;height:100%;background:#070504;color:#efe6d6;font:16px/1.6 "G
 .paper h3{margin:0 0 4px;color:#5a4632;font-weight:700;font-size:18px}
 .paper .sub{color:#8a7a66;font-size:13px;margin:0 0 8px}
 .paper textarea{flex:1;width:100%;resize:none;border:0;outline:0;background:repeating-linear-gradient(transparent 0 33px,#d9cfbf 33px 34px);line-height:34px;font:26px/34px "Nanum Pen Script",cursive;color:#2b2118;padding:0 2px}
+.paper .pno{text-align:right;font-size:12px;color:#a39377;margin-top:6px}
 .paper .row{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
 .paper .row button{font:inherit;font-size:15px;border-radius:999px;padding:7px 16px;cursor:pointer;border:1px solid #b9a888;background:#fff;color:#4a3a2a}
 .paper .row button.go{background:#4a3524;color:#f6ead3;border-color:#4a3524}
 .paper.fly{transform:translateY(46vh) rotateY(180deg) rotateZ(-8deg) scale(.22);opacity:0}
-#placeBar{position:fixed;left:50%;top:calc(58px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:16;background:rgba(20,14,10,.78);border:1px solid rgba(233,201,139,.4);border-radius:14px;padding:8px 14px;text-align:center;font-size:15px;color:#f0e2c6;width:max-content;max-width:92vw}
-#verse{position:fixed;left:50%;bottom:calc(165px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:14;width:min(88vw,560px);text-align:center;pointer-events:none;opacity:0;transition:opacity 1.6s}
-#verse.on{opacity:1}#verse p{margin:0;font-size:clamp(16px,3.6vw,20px);color:#f3e6cc;text-shadow:0 2px 12px #000,0 0 30px rgba(0,0,0,.8);line-height:1.8}#verse small{display:block;margin-top:6px;color:var(--gold);font-size:14px}
+#placeBar{position:fixed;left:50%;top:calc(54px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:16;background:rgba(20,14,10,.78);border:1px solid rgba(233,201,139,.4);border-radius:14px;padding:8px 14px;text-align:center;font-size:15px;color:#f0e2c6;width:max-content;max-width:92vw}
+
+
 #toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);background:rgba(30,22,16,.9);color:#f3e6cc;padding:9px 16px;border-radius:12px;opacity:0;transition:.3s;z-index:40;pointer-events:none;font-size:15px}#toast.show{opacity:1}
 #err{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;color:#d8cbb5;z-index:5}
 </style>
@@ -52,11 +55,11 @@ html,body{margin:0;height:100%;background:#070504;color:#efe6d6;font:16px/1.6 "G
 <div class="top"><a href="../">← 목장</a><span class="ttl">✝ 죄 고백</span></div>
 <canvas id="cv" aria-label="나무 십자가"></canvas>
 <div id="err" hidden></div>
-<div id="intro"><p>조용히 주님 앞에 나아갑니다</p><p class="v">"만일 우리가 우리 죄를 자백하면 저는 미쁘시고 의로우사<br>우리 죄를 사하시며 모든 불의에서 우리를 깨끗케 하실 것이요" (요한일서 1:9)</p></div>
-<div id="verse"><p></p><small></small></div>
+<div id="words"><h2>조용히 주님 앞에 나아갑니다</h2><p><span id="vt"></span><small id="vr"></small></p></div>
+
 <div id="placeBar" hidden>📌 십자가에서 이 종이를 못 박을 곳을 눌러 주세요<br><button class="btn ghost" id="back" style="margin-top:6px">← 다시 쓰기</button></div>
-<div class="dock" id="dock"><div class="note" style="font-size:15px;color:#e9dcc4;margin-bottom:4px">십자가에 못 박은 죄는 하나님 외엔 어느 누구도 볼 수 없어요.</div><button class="btn" id="write">📝 죄 고백하기</button><div class="note" id="cnt"></div><div class="note">끌어서 둘러보고, 두 손가락이나 휠로 가까이 볼 수 있어요</div></div>
-<div class="modal" id="modal" hidden><div class="paper" id="paper"><div class="face front"><h3>주님, 고백합니다</h3><p class="sub">이 종이는 십자가에 못 박히면 다시는 누구도, 나도 볼 수 없어요. 어디에도 저장되지 않아요.</p><textarea id="sin" maxlength="600" autocomplete="off" spellcheck="false" placeholder="여기에 나의 죄를 적어요…"></textarea><div class="row"><button id="cancel">닫기</button><button class="go" id="nail">✝ 십자가에 못 박기</button></div></div><div class="face back"></div></div></div>
+<div class="dock" id="dock"><button class="btn" id="write">📝 죄 고백하기</button><div class="msg">십자가에 못 박은 죄는 하나님 외엔 어느 누구도 볼 수 없어요.</div></div>
+<div class="modal" id="modal" hidden><div class="paper" id="paper"><div class="face front"><h3>주님, 고백합니다</h3><p class="sub">이 종이는 십자가에 못 박히면 다시는 누구도, 나도 볼 수 없어요. 어디에도 저장되지 않아요.</p><textarea id="sin" maxlength="600" autocomplete="off" spellcheck="false" placeholder="여기에 나의 죄를 적어요…"></textarea><div class="pno" id="pno"></div><div class="row"><button id="cancel">닫기</button><button class="go" id="nail">✝ 십자가에 못 박기</button></div></div><div class="face back"></div></div></div>
 <div id="toast"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
@@ -68,12 +71,12 @@ const T=THREE;
 /* ---------- 못 박힌 종이: 글자는 어디에도 남기지 않고 자리만 기억해요 ---------- */
 const KEY='confess-v1';let PAPERS=[];try{const o=JSON.parse(localStorage.getItem(KEY)||'null');if(o&&Array.isArray(o.p))PAPERS=o.p}catch(_){}
 const savePapers=()=>{try{localStorage.setItem(KEY,JSON.stringify({p:PAPERS}))}catch(_){}};
-const updCnt=()=>{$('#cnt').textContent=PAPERS.length?`십자가에 못 박힌 죄 ${PAPERS.length}장`:''};
+const updCnt=()=>{};
 /* ---------- 장면 ---------- */
 const cv=$('#cv');const R=new T.WebGLRenderer({canvas:cv,antialias:true});R.setPixelRatio(Math.min(2,devicePixelRatio||1));R.outputEncoding=T.sRGBEncoding;R.toneMapping=T.ACESFilmicToneMapping;R.toneMappingExposure=1.05;R.shadowMap.enabled=true;R.shadowMap.type=T.PCFSoftShadowMap;
 const S=new T.Scene();S.background=new T.Color(0x060403);S.fog=new T.FogExp2(0x060403,.07);
 const CAM=new T.PerspectiveCamera(42,1,.1,100);
-const TARGET=new T.Vector3(0,2.85,0);let YAW=0,PITCH=.05,DIST=10;
+const TARGET=new T.Vector3(0,3.75,0);let YAW=0,PITCH=.03,DIST=12.5;
 function placeCam(sh){const x=Math.sin(YAW)*Math.cos(PITCH)*DIST,y=Math.sin(PITCH)*DIST,z=Math.cos(YAW)*Math.cos(PITCH)*DIST;CAM.position.set(TARGET.x+x+(sh||0)*(Math.random()-.5),TARGET.y+y+(sh||0)*(Math.random()-.5),TARGET.z+z);CAM.lookAt(TARGET)}
 /* 나무결 */
 function woodTex(w,h,seed){const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');let s=seed;const r=()=>(s=(s*16807)%2147483647)/2147483647;
@@ -164,24 +167,34 @@ function tryPlace(e){const h=pick(e);if(!h){toast('십자가 위를 눌러 주�
   /* 글자는 이 순간 지워져요 — 어디에도 남지 않아요 */
   $('#sin').value='';
   PLACE=false;cv.classList.remove('place');ghost.visible=false;$('#placeBar').hidden=true;
-  addPaper(d,true);updCnt();setTimeout(()=>{$('#dock').hidden=false;showVerse()},2200)}
+  addPaper(d,true);updCnt();setTimeout(()=>{$('#dock').hidden=false;$('#words').hidden=false;placeWords();nextVerse()},2200)}
 /* ---------- 쓰기 ---------- */
+/* 죄 고백 말씀: 십자가 위에서 돌아가며 보여요 (개역한글) */
 const VERSES=[['만일 우리가 우리 죄를 자백하면 저는 미쁘시고 의로우사 우리 죄를 사하시며 모든 불의에서 우리를 깨끗케 하실 것이요','요한일서 1:9'],
+  ['내가 이르기를 내 허물을 여호와께 자복하리라 하고 주께 내 죄를 아뢰고 내 죄악을 숨기지 아니하였더니 곧 주께서 내 죄의 악을 사하셨나이다','시편 32:5'],
+  ['자기의 죄를 숨기는 자는 형통치 못하나 죄를 자복하고 버리는 자는 불쌍히 여김을 받으리라','잠언 28:13'],
+  ['하나님이여 내 속에 정한 마음을 창조하시고 내 안에 정직한 영을 새롭게 하소서','시편 51:10'],
   ['우리를 거스리고 우리를 대적하는 의문에 쓴 증서를 도말하시고 제하여 버리사 십자가에 못 박으시고','골로새서 2:14'],
+  ['친히 나무에 달려 그 몸으로 우리 죄를 담당하셨으니 이는 우리로 죄에 대하여 죽고 의에 대하여 살게 하려 하심이라','베드로전서 2:24'],
   ['동이 서에서 먼 것 같이 우리 죄과를 우리에게서 멀리 옮기셨으며','시편 103:12'],
-  ['너희 죄가 주홍 같을지라도 눈과 같이 희어질 것이요 진홍 같이 붉을지라도 양털 같이 되리라','이사야 1:18']];
-let VI=Math.floor(Math.random()*VERSES.length);
-function showVerse(){const[v,r]=VERSES[VI++%VERSES.length];const el=$('#verse');el.querySelector('p').textContent=v;el.querySelector('small').textContent=r;el.classList.add('on');setTimeout(()=>el.classList.remove('on'),7000)}
-function openPaper(){const m=$('#modal'),p=$('#paper');p.classList.remove('fly');p.style.transition='none';void p.offsetWidth;p.style.transition='';m.hidden=false;$('#dock').hidden=true;$('#intro').classList.add('hide');setTimeout(()=>$('#sin').focus(),60)}
+  ['너희 죄가 주홍 같을지라도 눈과 같이 희어질 것이요 진홍 같이 붉을지라도 양털 같이 되리라','이사야 1:18'],
+  ['내가 너의 허물을 빽빽한 구름의 사라짐 같이, 너의 죄를 안개의 사라짐 같이 도말하였으니 너는 내게로 돌아오라 내가 너를 구속하였음이니라','이사야 44:22'],
+  ['그러므로 이제 그리스도 예수 안에 있는 자에게는 결코 정죄함이 없나니','로마서 8:1']];
+let VI=0,VT=null;
+function setVerse(i){const[v,r]=VERSES[i%VERSES.length];$('#vt').textContent='"'+v+'"';$('#vr').textContent='('+r+')'}
+function nextVerse(){clearTimeout(VT);const el=$('#words');el.classList.add('fade');setTimeout(()=>{setVerse(++VI);el.classList.remove('fade')},1400);VT=setTimeout(nextVerse,15000)}
+setVerse(0);VT=setTimeout(nextVerse,15000);
+function openPaper(){const m=$('#modal'),p=$('#paper');p.classList.remove('fly');p.style.transition='none';void p.offsetWidth;p.style.transition='';$('#pno').textContent=`나의 ${PAPERS.length+1}번째 죄 고백`;m.hidden=false;$('#dock').hidden=true;setTimeout(()=>$('#sin').focus(),60)}
 $('#write').onclick=openPaper;
-$('#cancel').onclick=()=>{if($('#sin').value.trim()&&!confirm('적은 내용을 지우고 닫을까요?'))return;$('#sin').value='';$('#modal').hidden=true;$('#dock').hidden=false};
+$('#cancel').onclick=()=>{if($('#sin').value.trim()&&!confirm('적은 내용을 지우고 닫을까요?'))return;$('#sin').value='';$('#modal').hidden=true;$('#dock').hidden=false;placeWords()};
 $('#nail').onclick=()=>{if(!$('#sin').value.trim()){toast('종이에 죄를 적어 주세요');$('#sin').focus();return}
   document.activeElement&&document.activeElement.blur();const p=$('#paper');p.classList.add('fly');
-  setTimeout(()=>{$('#modal').hidden=true;PLACE=true;cv.classList.add('place');$('#placeBar').hidden=false},1150)};
-$('#back').onclick=()=>{PLACE=false;cv.classList.remove('place');ghost.visible=false;$('#placeBar').hidden=true;openPaper()};
+  setTimeout(()=>{$('#modal').hidden=true;PLACE=true;cv.classList.add('place');$('#placeBar').hidden=false;$('#words').hidden=true},1150)};
+$('#back').onclick=()=>{PLACE=false;cv.classList.remove('place');ghost.visible=false;$('#placeBar').hidden=true;$('#words').hidden=false;openPaper()};
 /* ---------- 그리기 ---------- */
-function size(){const w=innerWidth,h=innerHeight;R.setSize(w,h,false);CAM.aspect=w/h;CAM.fov=w<h?56:42;CAM.updateProjectionMatrix();if(!size.done){DIST=w<h?12:10;size.done=1}}
-addEventListener('resize',size);size();
+function size(){const w=innerWidth,h=innerHeight;R.setSize(w,h,false);CAM.aspect=w/h;CAM.fov=w<h?52:42;CAM.updateProjectionMatrix();if(!size.done){DIST=w<h?14.5:12.5;size.done=1}}
+function placeWords(){const d=$('#dock');if(d.hidden)return;const b=d.getBoundingClientRect().bottom;$('#words').style.top=Math.round(b+14)+'px'}
+addEventListener('resize',()=>{size();placeWords()});size();placeWords();if(document.fonts)document.fonts.ready.then(placeWords);
 let last=performance.now();
 function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;
   CANDLES.forEach(c=>{const f=.82+Math.sin(now*.011+c.ph)*.08+Math.sin(now*.027+c.ph*2)*.06+Math.random()*.05;c.pl.intensity=c.b*f;c.fl.scale.set(.13*(.9+f*.1),.26*f,1)});
@@ -189,7 +202,7 @@ function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;
   for(let i=ANIMS.length-1;i>=0;i--)if(!ANIMS[i](now))ANIMS.splice(i,1);
   placeCam(SHAKE);SHAKE*=.82;if(SHAKE<.002)SHAKE=0;R.render(S,CAM);requestAnimationFrame(loop)}
 requestAnimationFrame(loop);
-setTimeout(()=>$('#intro').classList.add('hide'),6500);
+
 })();
 </script>
 <script src="../assets/home.js?v=20261127f"></script>
