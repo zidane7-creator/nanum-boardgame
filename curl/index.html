@@ -92,15 +92,23 @@ const COL=[['#e8503a','빨강'],['#2f78d0','파랑'],['#3f9a55','초록'],['#f5b
 /* =================== 책상 =================== */
 const W=440,L=960,CR=15,START=L-118,SHOTY=L-64,TC={x:0,y:250};
 const SHAPES={rect:['직사각형','네모 반듯한 책상'],tri:['역삼각형','멀리 갈수록 넓어지고, 출발선 쪽이 좁아요'],oval:['타원형','둥근 책상, 가장자리가 휘어 있어요']};
-const TYPES=[['일반 책상','아무것도 없는 깨끗한 책상'],['구멍 책상','군데군데 동그란 구멍! 빠지면 낙'],['느림 구간 책상','천이 깔린 동그란 구간에서 느려져요'],['반사 벽 책상','가장자리에 튕겨 나오는 고무 벽'],['체크 점수 책상','점수판이 체스판처럼 칸마다 점수'],['모두 다 책상','구멍·느림·반사 벽·체크 점수 전부']];
+const TYPES=[['일반 책상','아무것도 없는 깨끗한 책상'],['구멍 책상','동그란 구멍이 게임마다 랜덤 자리에! 빠지면 낙'],['느림 구간 책상','천이 깔린 느림 구간이 게임마다 랜덤 자리에'],['반사 벽 책상','가장자리 곳곳에 튕겨 나오는 고무 벽 (게임마다 랜덤)'],['체크 점수 책상','점수판이 체스판처럼 칸마다 점수'],['모두 다 책상','구멍·느림·반사 벽·체크 점수 전부 (랜덤 자리)']];
 function hw(y,sh){if(sh==='tri')return 220*(1-.6*clamp(y,0,L)/L);if(sh==='oval'){const t=(y-L/2)/(L/2);return t*t>=1?0:220*Math.sqrt(1-t*t)}return 220}
 function fv(x,y,sh){if(sh==='oval')return (x/220)**2+((y-L/2)/(L/2))**2-1;return Math.max(Math.abs(x)-hw(y,sh),-y,y-L)}
 function grad(x,y,sh){const gx=(fv(x+1,y,sh)-fv(x-1,y,sh))/2,gy=(fv(x,y+1,sh)-fv(x,y-1,sh))/2,l=Math.sqrt(gx*gx+gy*gy)||1;return[gx/l,gy/l]}
-function geo(set){const sh=set.shape,ty=set.type,sx=(x,y)=>x*hw(y,sh)/220*.86;const G={holes:[],slows:[],walls:[],checker:ty===5||ty===6,specials:[]};
-  if(ty===2||ty===6)G.holes=[[-140,480],[140,580],[-40,710]].map(([x,y])=>({x:sx(x,y),y,r:21}));
-  if(ty===3||ty===6)G.slows=[[90,455],[-120,620],[110,730]].map(([x,y])=>({x:sx(x,y),y,r:50}));
-  if(ty===4||ty===6)for(const s of[-1,1])for(const[y0,y1]of[[120,300],[430,600],[690,820]])G.walls.push({s,y0,y1});
-  for(const[dy,v]of[[-150,120],[150,-20]])for(const s of[-1,1]){const y=TC.y+dy,x=s*Math.max(120,Math.min(178,hw(y,sh)-40));G.specials.push({x,y,r:22,v})}
+/* 구멍·느림 구간·반사 벽은 게임마다 책상 전체에서 랜덤 자리 (점수판·특별 원·출발선과 겹치지 않게) */
+function specialsOf(sh){const sp=[];for(const[dy,v]of[[sh==='oval'?-172:-150,120],[150,-20]])for(const s of[-1,1]){const y=TC.y+dy,x=s*Math.min(178,hw(y,sh)-30);sp.push({x,y,r:22,v})}return sp}
+function makeLayout(set){const sh=set.shape,ty=set.type,R=Math.random,L={holes:[],slows:[],walls:[]},sp=specialsOf(sh),checker=ty===5||ty===6,placed=[];
+  const clear=(x,y,r)=>{if(Math.abs(x)>hw(y,sh)-r-14)return false;
+    if(checker){if(Math.abs(x-TC.x)<140+r+10&&Math.abs(y-TC.y)<140+r+10)return false}else if(Math.hypot(x-TC.x,y-TC.y)<150+r+10)return false;
+    for(const s of sp)if(Math.hypot(x-s.x,y-s.y)<s.r+r+10)return false;for(const q of placed)if(Math.hypot(x-q.x,y-q.y)<q.r+r+22)return false;return true};
+  const put=(arr,n,r)=>{for(let k=0;k<n;k++){for(let i=0;i<800;i++){const y=30+r+R()*(START-60-2*r),h=hw(y,sh)-r-14;if(h<=0)continue;const x=(R()*2-1)*h;if(clear(x,y,r)){const o={x,y,r};arr.push(o);placed.push(o);break}}}};
+  if(ty===2||ty===6)put(L.holes,ty===6?3:3+Math.floor(R()*2),21);
+  if(ty===3||ty===6)put(L.slows,ty===6?3:3+Math.floor(R()*2),sh==='tri'?36+Math.floor(R()*8):44+Math.floor(R()*12));
+  if(ty===4||ty===6){const n=4+Math.floor(R()*3);for(let k=0;k<n;k++){for(let i=0;i<100;i++){const s=R()<.5?-1:1,len=110+R()*110,y0=20+R()*(START-40-len),y1=y0+len;if(L.walls.some(w=>w.s===s&&y0<w.y1+30&&y1>w.y0-30))continue;L.walls.push({s,y0:Math.round(y0),y1:Math.round(y1)});break}}}
+  L.holes.forEach(o=>{o.x=Math.round(o.x);o.y=Math.round(o.y)});L.slows.forEach(o=>{o.x=Math.round(o.x);o.y=Math.round(o.y)});return L}
+function geo(set,lay){const ty=set.type,G={holes:[],slows:[],walls:[],checker:ty===5||ty===6,specials:specialsOf(set.shape)};
+  if(lay){if(ty===2||ty===6)G.holes=lay.holes||[];if(ty===3||ty===6)G.slows=lay.slows||[];if(ty===4||ty===6)G.walls=lay.walls||[]}
   return G}
 function scoreAt(x,y,G){for(const s of G.specials)if((x-s.x)**2+(y-s.y)**2<=s.r*s.r)return s.v;
   if(G.checker){const i=Math.floor((x-TC.x+140)/56),j=Math.floor((y-TC.y+140)/56);if(i<0||j<0||i>4||j>4)return 0;const ring=Math.max(Math.abs(i-2),Math.abs(j-2));return (i+j)%2===0?100-20*ring:60-20*ring}
@@ -128,12 +136,12 @@ const membersOf=(st,ti)=>st.players.filter(p=>p.team===ti);
 function shooterAt(st,n){const T=st.tOrder.length;const ti=st.tOrder[n%T],k=Math.floor(n/T),P=membersOf(st,ti);return{ti,p:P.length?P[k%P.length]:null,k}}
 function newState(mode){return{mode,ph:'setup',set:blankSet(),teams:COL.slice(0,6).map((c,i)=>({name:(i+1)+'팀',col:c[0]})),tOrder:[0,1],players:[],caps:[],n:0,moving:false,seq:0,round:0}}
 function fitTeams(st){const T=st.set.teams;st.tOrder=st.tOrder.filter(t=>t<T);for(let i=0;i<T;i++)if(!st.tOrder.includes(i))st.tOrder.push(i);st.players.forEach(p=>{if(p.team!=null&&p.team>=T)p.team=null})}
-function totals(st){const Gg=geo(st.set),S={};st.tOrder.forEach(t=>S[t]=0);st.caps.forEach(c=>{if(!c.out&&S[c.t]!=null)S[c.t]+=scoreAt(c.x,c.y,Gg)});return S}
+function totals(st){const Gg=geo(st.set,st.layout),S={};st.tOrder.forEach(t=>S[t]=0);st.caps.forEach(c=>{if(!c.out&&S[c.t]!=null)S[c.t]+=scoreAt(c.x,c.y,Gg)});return S}
 function throwsLeft(st,ti){const T=st.tOrder.length,total=T*st.set.caps;let used=0;for(let n=0;n<st.n;n++)if(st.tOrder[n%T]===ti)used++;return st.set.caps-used}
 
 /* --- 진행 (방장 또는 한 기기) --- */
-function startGame(){fitTeams(G);const empty=G.tOrder.filter(t=>!membersOf(G,t).length);if(empty.length){toast(G.teams[empty[0]].name+'에 사람이 없어요');return false}
-  G.ph='play';G.caps=[];G.n=0;G.moving=false;G.round++;G.cur=newCur();sync();return true}
+function startGame(){GL=null;fitTeams(G);const empty=G.tOrder.filter(t=>!membersOf(G,t).length);if(empty.length){toast(G.teams[empty[0]].name+'에 사람이 없어요');return false}
+  G.ph='play';G.layout=makeLayout(G.set);G.caps=[];G.n=0;G.moving=false;G.round++;G.cur=newCur();sync();return true}
 function newCur(){const s=shooterAt(G,G.n);return{ti:s.ti,pid:s.p?s.p.id:null,x:0}}
 function doShot(x,vx,vy){if(G.ph!=='play'||G.moving)return;const sp=Math.sqrt(vx*vx+vy*vy);if(!(sp>20))return;const m=1100/Math.max(1100,sp);
   G.caps.push({id:G.n,t:G.cur.ti,x:clamp(x,-hw(SHOTY,G.set.shape)+CR+4,hw(SHOTY,G.set.shape)-CR-4),y:SHOTY,vx:vx*m,vy:vy*m,out:0});G.n++;G.moving=true;G.cur.shot=1;sync()}
@@ -149,7 +157,7 @@ const HC=[];let lastFr=0;
 function hostNet(){BROKERS.forEach(async url=>{const cl=await mqttOpen(url,8000);if(!cl)return;HC.push(cl);cl.subscribe(base()+'/h',{qos:1});cl.on('connect',()=>cl.subscribe(base()+'/h',{qos:1}));
   cl.on('message',(tp,buf)=>{let d;try{d=JSON.parse(buf.toString())}catch(_){return}if(!d||!d.f||!d.m)return;hostHandle(String(d.f).replace(/[^a-z0-9]/gi,'').slice(0,16),d.m)});render()})}
 function pubAll(m,q){if(G.mode!=='net')return;const s=JSON.stringify(m);HC.forEach(cl=>{try{cl.publish(base()+'/s',s,{qos:q})}catch(_){}})}
-function view(){return{mode:G.mode,ph:G.ph,set:G.set,teams:G.teams,tOrder:G.tOrder,players:G.players,caps:G.caps.map(c=>({id:c.id,t:c.t,x:Math.round(c.x*10)/10,y:Math.round(c.y*10)/10,out:c.out})),n:G.n,moving:G.moving,cur:G.cur,final:G.final,room:ROOM,round:G.round,seq:++G.seq}}
+function view(){return{mode:G.mode,ph:G.ph,set:G.set,layout:G.layout,teams:G.teams,tOrder:G.tOrder,players:G.players,caps:G.caps.map(c=>({id:c.id,t:c.t,x:Math.round(c.x*10)/10,y:Math.round(c.y*10)/10,out:c.out})),n:G.n,moving:G.moving,cur:G.cur,final:G.final,room:ROOM,round:G.round,seq:++G.seq}}
 function sync(){if(G.mode==='net')pubAll({t:'st',v:view()},1);onView(view())}
 function hostHandle(f,m){if(!G)return;let p=G.players.find(x=>x.id===f);
   if(m.t==='join'){const name=clip(m.name,10);if(!p){if(!name)return;if(G.players.some(x=>x.name===name))return pubAll({t:'err',to:f,msg:'같은 이름이 있어요. 다르게 적어 주세요'},1);if(G.players.length>=40)return;p={id:f,name,team:null};G.players.push(p)}sync();return}
@@ -243,12 +251,12 @@ function updHud(){const v=LV;if(!v||(v.ph!=='play'&&v.ph!=='over'))return;const 
   setTimeout(()=>{const want=Math.round($('#sb').getBoundingClientRect().bottom+6+tn.offsetHeight+10);if(Math.abs(want-(window.__curlTop||0))>4){window.__curlTop=want;resize()}},0);
   tn.innerHTML=`<span style="color:${t.col};filter:brightness(1.6)">●</span> ${esc(t.name)} · ${esc(p?p.name:'?')} 차례 <span style="opacity:.7">(${Math.min(v.moving?v.n:v.n+1,T*v.set.caps)}/${T*v.set.caps})</span><small>${v.moving?'굴러가는 중…':myTurn()?'병뚜껑을 뒤로 끌었다가 놓아요 · 출발선을 눌러 옆으로 옮겨요':v.mode==='net'?(p?esc(p.name)+'님 휴대폰에서 쳐요':''):''}</small>`}
 function throwsLeftV(v,ti){const T=v.tOrder.length;let used=0;for(let n=0;n<v.n;n++)if(v.tOrder[n%T]===ti)used++;return v.set.caps-used}
-function totalsLive(){const v=LV,Gg=geo(v.set),S={};v.tOrder.forEach(t=>S[t]=0);capsNow().forEach(c=>{if(!c.out&&S[c.t]!=null)S[c.t]+=scoreAt(c.x,c.y,Gg)});return S}
+function totalsLive(){const v=LV,Gg=geo(v.set,v.layout),S={};v.tOrder.forEach(t=>S[t]=0);capsNow().forEach(c=>{if(!c.out&&S[c.t]!=null)S[c.t]+=scoreAt(c.x,c.y,Gg)});return S}
 /* 그리기 */
 function el(x,y,rx,ry){g.beginPath();g.ellipse(x,y,Math.max(.1,rx),Math.max(.1,ry),0,0,Math.PI*2)}
 function tablePath(sh,pad){g.beginPath();if(sh==='oval'){g.ellipse(0,L/2,220+pad,L/2+pad,0,0,Math.PI*2);return}if(sh==='tri'){g.moveTo(-220-pad,-pad);g.lineTo(220+pad,-pad);g.lineTo(hw(L,'tri')+pad,L+pad);g.lineTo(-hw(L,'tri')-pad,L+pad);g.closePath();return}if(g.roundRect)g.roundRect(-220-pad,-pad,440+2*pad,L+2*pad,14+pad);else g.rect(-220-pad,-pad,440+2*pad,L+2*pad)}
 let woodPat=null;function wood(){if(woodPat)return woodPat;const c=document.createElement('canvas');c.width=220;c.height=440;const x=c.getContext('2d');x.fillStyle='#d9a86a';x.fillRect(0,0,220,440);for(let i=0;i<46;i++){x.strokeStyle=`rgba(${120+Math.random()*40},${70+Math.random()*30},30,${.12+Math.random()*.15})`;x.lineWidth=1+Math.random()*2.5;const X=Math.random()*220;x.beginPath();x.moveTo(X,0);for(let y=0;y<=440;y+=40)x.lineTo(X+Math.sin(y/60+i)*6,y);x.stroke()}woodPat=g.createPattern(c,'repeat');return woodPat}
-function drawTable(v){const sh=v.set.shape,Gg=geo(v.set);g.save();g.translate(OX,OY);g.scale(SC,SC);
+function drawTable(v){const sh=v.set.shape,Gg=geo(v.set,v.layout);g.save();g.translate(OX,OY);g.scale(SC,SC);
   // 그림자·두께
   g.save();g.translate(10,22);tablePath(sh,6);g.fillStyle='rgba(40,25,10,.35)';g.fill();g.restore();
   g.save();g.translate(0,12);tablePath(sh,6);g.fillStyle='#8a5a34';g.fill();g.restore();
@@ -276,9 +284,9 @@ function drawCap(x,y,col,s,alpha,glow){g.save();g.translate(x,y);g.scale(s,s);g.
   if(glow){g.strokeStyle='rgba(255,255,255,.9)';g.lineWidth=4;el(0,0,CR+6,CR+6);g.stroke()}
   g.beginPath();for(let i=0;i<42;i++){const a=i/42*Math.PI*2,r=i%2?CR:CR-2.2;i?g.lineTo(Math.cos(a)*r,Math.sin(a)*r):g.moveTo(Math.cos(a)*r,Math.sin(a)*r)}g.closePath();g.fillStyle=col;g.fill();g.strokeStyle='rgba(0,0,0,.35)';g.lineWidth=1.2;g.stroke();
   const rg=g.createRadialGradient(-4,-5,1,0,0,CR-3);rg.addColorStop(0,'rgba(255,255,255,.85)');rg.addColorStop(.35,'rgba(255,255,255,.25)');rg.addColorStop(1,'rgba(0,0,0,.15)');el(0,0,CR-3.5,CR-3.5);g.fillStyle=rg;g.fill();el(0,0,CR-3.5,CR-3.5);g.strokeStyle='rgba(255,255,255,.5)';g.lineWidth=1;g.stroke();g.restore()}
-let AIM=null,lastT=performance.now(),lastFrame=0;
+let AIM=null,lastT=performance.now(),lastFrame=0,GL=null;
 function loop(t){if(!inGame)return;const dt=Math.min(.05,(t-lastT)/1000);lastT=t;
-  if(isHost&&G&&G.ph==='play'&&G.moving){let mv=false;const n=Math.ceil(dt/(1/240));for(let i=0;i<n;i++)mv=stepPhys(G.caps,G.set,geo(G.set),dt/n)||mv;
+  if(isHost&&G&&G.ph==='play'&&G.moving){let mv=false;const n=Math.ceil(dt/(1/240));for(let i=0;i<n;i++)mv=stepPhys(G.caps,G.set,GL||(GL=geo(G.set,G.layout)),dt/n)||mv;
     G.caps.forEach(c=>{if(c.fall)c.fall.t+=dt});if(G.mode==='net'&&t-lastFr>70){lastFr=t;pubAll({t:'fr',c:G.caps.map(c=>[c.id,Math.round(c.x),Math.round(c.y),c.out?1:0])},0)}
     if(!mv&&G.caps.every(c=>!c.fall||c.fall.t>.5)){afterSettle()}updHud()}
   else if(!isHost){VC.forEach(c=>{if(c.tx!=null){c.x+=(c.tx-c.x)*Math.min(1,dt*14);c.y+=(c.ty-c.y)*Math.min(1,dt*14)}if(c.out&&!c.fall)c.fall={x:c.x,y:c.y,t:0};if(c.fall)c.fall.t+=dt})}
@@ -328,7 +336,7 @@ const fsSync=()=>{$('#gFs').textContent=isFS()?'🗗 작게':'⛶ 전체화면';
 
 render();
 if(ROOM){let n='';try{n=sessionStorage.getItem('cu-name-'+ROOM)||''}catch(_){}if(n){joinRoom(n)}}
-window.__cu={G:()=>G,LV:()=>LV,doShot:(x,vx,vy)=>doShot(x,vx,vy),geo,scoreAt,hostHandle:(f,m)=>hostHandle(f,m)};
+window.__cu={makeLayout,G:()=>G,LV:()=>LV,doShot:(x,vx,vy)=>doShot(x,vx,vy),geo,scoreAt,hostHandle:(f,m)=>hostHandle(f,m)};
 })();
 </script>
 <script src="../assets/home.js?v=20261127e"></script>
