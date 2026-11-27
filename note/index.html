@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://js.tosspayments.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' data: blob: https://api.github.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://api.open-meteo.com https://api.met.no https://wttr.in https://api.mymemory.translated.net https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.doubleclick.net https://www.google.com https://*.tosspayments.com https://0.peerjs.com wss://0.peerjs.com wss://broker.emqx.io:8084 wss://broker.hivemq.com:8884 https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self' blob:; frame-src 'self' https://www.bskorea.or.kr https://*.tosspayments.com; object-src 'none'; base-uri 'self'; form-action 'self' https://*.tosspayments.com">
+<html lang="ko"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://js.tosspayments.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' data: blob: https://firestore.googleapis.com https://api.github.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://api.open-meteo.com https://api.met.no https://wttr.in https://api.mymemory.translated.net https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.doubleclick.net https://www.google.com https://*.tosspayments.com https://0.peerjs.com wss://0.peerjs.com wss://broker.emqx.io:8084 wss://broker.hivemq.com:8884 https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self' blob:; frame-src 'self' https://www.bskorea.or.kr https://*.tosspayments.com; object-src 'none'; base-uri 'self'; form-action 'self' https://*.tosspayments.com">
 <meta name="referrer" content="strict-origin-when-cross-origin"><script async src="https://www.googletagmanager.com/gtag/js?id=G-0WTWY3TPES"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-0WTWY3TPES");</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>게시판 | 치영의 교회 생활 즐기기 · 포스트잇 메모장</title>
@@ -11,6 +11,7 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📌</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Nanum+Pen+Script&family=Gaegu:wght@400;700&family=Do+Hyeon&family=Black+Han+Sans&family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@400;700&family=Hi+Melody&family=Poor+Story&family=Gamja+Flower&family=Sunflower:wght@300;500&family=Dongle&family=Yeon+Sung&display=swap" rel="stylesheet">
 <script src="../assets/jua.js"></script>
+<script src="../assets/share.js?v=20261125b"></script>
 <style>
 :root{--ink:#3b2a20;--cream:#fffaf0;--line:#e3d6c2;--accent:#e8503a;--muted:#7a6a5c}
 *{box-sizing:border-box}
@@ -59,9 +60,9 @@ main.wide{max-width:none}
 </head><body>
 <div class="top"><a href="../">← 목장</a><span class="ttl">📌 게시판</span></div>
 <main>
- <div class="bar"><button class="pri" id="add">📝 포스트잇 붙이기</button><span class="hint" id="cnt"></span><span class="sp"></span><select id="size" title="게시판 크기"><option value="1">📐 보통</option><option value="1.6">📐 크게</option><option value="2.4">📐 아주 크게</option><option value="3.5">📐 매우 크게</option><option value="full">⛶ 화면 가득</option></select><select id="sort"><option value="">붙인 자리 그대로</option><option value="new">🕒 최신순으로 정리</option><option value="color">🎨 색깔별로 정리</option></select></div>
+ <div class="bar"><button class="pri" id="add">📝 포스트잇 붙이기</button><span class="hint" id="cnt"></span><button id="shareBtn" class="sm" hidden>🔗 함께 쓰기</button><span class="hint" id="sync"></span><span class="sp"></span><select id="size" title="게시판 크기"><option value="1">📐 보통</option><option value="1.6">📐 크게</option><option value="2.4">📐 아주 크게</option><option value="3.5">📐 매우 크게</option><option value="full">⛶ 화면 가득</option></select><select id="sort"><option value="">붙인 자리 그대로</option><option value="new">🕒 최신순으로 정리</option><option value="color">🎨 색깔별로 정리</option></select></div>
  <div class="board" id="board"></div><div class="grip" id="grip" title="끌어서 게시판 늘리기">⇕ 끌어서 늘리기</div>
- <p class="hint">포스트잇을 누르면 메모를 보고 고치거나 지울 수 있어요. 두 번 빠르게 누르면(더블클릭) 바로 고쳐요. 끌어서 원하는 자리로 옮길 수 있어요. 메모는 이 기기에 저장돼요.</p>
+ <p class="hint">포스트잇을 누르면 메모를 보고 고치거나 지울 수 있어요. 두 번 빠르게 누르면(더블클릭) 바로 고쳐요. 끌어서 원하는 자리로 옮길 수 있어요. <span id="where">메모는 이 기기에 저장돼요. 🔗 함께 쓰기를 켜면 링크를 받은 사람과 같은 게시판을 실시간으로 함께 써요.</span></p>
 </main>
 <div class="toast" id="toast"></div>
 <script>
@@ -75,7 +76,57 @@ const FONTS=[['','기본'],['Jua','주아'],['Gowun Batang','고운바탕'],['Go
 const TCOL=['#3b2a20','#000000','#d1342a','#e8711f','#c79a00','#2f8a3c','#1f6fb0','#5b3cc4','#c2318f','#7a7a7a'];
 const SIZES=[['2','작게'],['3','보통'],['4','크게'],['5','더 크게'],['6','아주 크게']];
 const KEY='note-board-v1';let N=[];try{N=JSON.parse(localStorage.getItem(KEY)||'[]')||[]}catch(e){}
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(N))}catch(e){toast('저장 공간이 부족해요')}};
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(N))}catch(e){if(!SP)toast('저장 공간이 부족해요')}if(SP)syncUp()};
+/* ---------- 🔗 함께 쓰기 (사역팀 관리부와 같은 온라인 저장소) ---------- */
+const SKEY='note-share-v1';let SH=null,SP=null,LAST={},INF=0,FAIL=false,EDIT=null,DRAG=false,REDRAW=false;try{SH=JSON.parse(localStorage.getItem(SKEY)||'null')}catch(e){}
+const F=['html','color','created','updated','x','y','rot','z'];
+const sig=o=>JSON.stringify(F.map(k=>o[k]==null?null:typeof o[k]==='number'?Math.round(o[k]*100)/100:o[k]));
+const bare=o=>{const d={};F.forEach(k=>{if(o[k]!=null)d[k]=o[k]});return d};
+function syncUI(){const s=$('#sync');if(!s)return;s.textContent=!SP?'':FAIL?'⚠️ 저장 실패 · 연결을 확인해 주세요':INF?'⏳ 저장 중…':'✔ 함께 저장됨';s.style.color=FAIL?'#c0392b':'#3f8a3a'}
+const track=pr=>{INF++;syncUI();pr.then(()=>{FAIL=false},e=>{FAIL=true;console.warn(e)}).finally(()=>{INF--;syncUI()})};
+function syncUp(){const ids=new Set();N.forEach(n=>{ids.add(n.id);const s=sig(n);if(LAST[n.id]!==s){LAST[n.id]=s;track(SP.collection('notes').doc(n.id).set(bare(n)))}});
+  Object.keys(LAST).forEach(id=>{if(!ids.has(id)){delete LAST[id];track(SP.collection('notes').doc(id).delete())}})}
+function applyDown(docs){const seen=new Set(),next=[];
+  docs.forEach(d=>{const v=d.data();if(!v)return;seen.add(d.id);let o=N.find(x=>x.id===d.id);
+    if(o===EDIT||(DRAG&&o&&o.__drag)){if(o)next.push(o);return}
+    LAST[d.id]=sig(v);if(o){F.forEach(k=>{o[k]=v[k]})}else o=Object.assign({id:d.id},v);next.push(o)});
+  if(EDIT&&!seen.has(EDIT.id)&&N.includes(EDIT))next.push(EDIT);
+  Object.keys(LAST).forEach(id=>{if(!seen.has(id)&&!(EDIT&&EDIT.id===id))delete LAST[id]});
+  next.sort((a,b)=>(a.z||a.created||0)-(b.z||b.created||0));N=next;try{localStorage.setItem(KEY,JSON.stringify(N))}catch(e){}
+  if(DRAG)REDRAW=true;else draw()}
+async function connect(){try{SP=await SHARE.space(SH.key);syncUI();
+    SP.collection('notes').onSnapshot(s=>{FAIL=false;applyDown(s.docs);syncUI()},e=>{FAIL=true;syncUI();console.warn(e)});
+    SP.doc('board/meta').get().then(m=>{if(!m.exists&&!m.metadata.fromCache)toast('이 함께 쓰기는 끝났거나 새 링크로 옮겨졌어요. 새 링크를 받아 주세요.')}).catch(()=>{})}
+  catch(e){SP=null;toast('함께 쓰기 저장소에 연결하지 못했어요. 이 기기에 있던 메모를 보여 줘요.')}}
+const upOps=()=>[['board/meta',{created:Date.now()}]].concat(N.map(n=>['notes/'+n.id,bare(n)]));
+const setSH=v=>{SH=v;try{v?localStorage.setItem(SKEY,JSON.stringify(v)):localStorage.removeItem(SKEY)}catch(e){}};
+function shareUI(){const b=$('#shareBtn');if(!window.SHARE||!SHARE.enabled()){b.hidden=true;return}b.hidden=false;
+  b.textContent=SH?(SH.lock?'🔒 함께 쓰는 중':'🔗 함께 쓰는 중'):'🔗 함께 쓰기';b.style.background=SH?'#e6f6df':'';b.onclick=shareDialog;
+  const w=$('#where');if(w&&SH)w.textContent='🔗 함께 쓰는 중이라 링크를 받은 사람과 같은 게시판을 실시간으로 함께 써요.'}
+function shareDialog(){const E=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),H3='<h3 style="margin:0 0 8px;font-size:22px">',PP='<p style="margin:0 0 10px;font-size:15px;line-height:1.6">';
+  if(SH){const url=SHARE.link(SH.id);
+    SHARE.dialog({html:H3+'🔗 함께 쓰는 중이에요</h3>'+PP+'이 링크'+(SH.lock?'와 비밀번호':'')+'를 받은 사람은 이 게시판의 포스트잇을 함께 보고, 붙이고, 고칠 수 있어요. 고친 내용은 바로 모두에게 보여요.</p><input readonly value="'+E(url)+'" style="width:100%;font-size:13px;padding:8px;border:2px solid #cdbda6;border-radius:10px" onclick="this.select()">'+SHARE.pwInfo(SH.pw,SH.lock)+'<p style="font-size:13px;color:#7a6a5c;margin:8px 0 0;line-height:1.5">⚠️ '+(SH.lock?'링크와 비밀번호를 아는 사람만 들어와요.':'링크를 아는 사람은 누구나 볼 수 있으니 함께 쓸 사람에게만 나눠 주세요.')+'</p>',
+      buttons:[['🔗 링크 복사',async()=>{try{await navigator.clipboard.writeText(url);toast('링크를 복사했어요')}catch(e){prompt('이 링크를 복사해 주세요',url)}return true},true],
+        ['🔒 '+(SH.lock?'비밀번호 바꾸기':'비밀번호 걸기'),async()=>{const pw=await SHARE.askPw('새 비밀번호를 정하면 <b>새 링크</b>가 만들어지고 지금 링크는 더 이상 쓸 수 없어요. 함께 쓰는 사람들에게 새 링크와 비밀번호를 다시 보내 주세요.','🔒 '+(SH.lock?'비밀번호 바꾸기':'비밀번호 걸기'),true);if(pw==null||!pw.trim())return true;
+          const old=SH.key,ops=upOps(),m=await SHARE.make(pw);await m.sp.putMany(ops);await SHARE.finish(m);try{await SHARE.wipe(old,ops.map(o=>o[0]))}catch(_){}setSH({id:m.id,key:m.key,lock:m.locked,pw:m.pw});toast('새 링크로 옮겼어요');setTimeout(()=>location.replace(location.pathname),400)}],
+        ['이 기기에서 함께 쓰기 끄기',async()=>{if(!confirm('이 기기에서는 함께 쓰기를 끄고 지금 게시판 내용을 이 기기에만 저장할까요? (다른 사람은 계속 함께 써요)'))return true;setSH(null);location.replace(location.pathname)}]]});return}
+  SHARE.dialog({html:H3+'🔗 여러 사람과 함께 쓰기</h3>'+PP+'지금 이 기기에 있는 포스트잇 '+N.length+'장을 온라인 저장소에 올리고, 함께 쓸 수 있는 링크를 만들어요.</p><ul style="font-size:14px;line-height:1.6;margin:0;padding-left:18px"><li>링크를 받은 사람은 같은 게시판을 실시간으로 보고 포스트잇을 붙이거나 고쳐요</li><li>링크를 아는 사람만 들어올 수 있어요</li></ul>'+SHARE.pwField(),
+    buttons:[['함께 쓰기 시작',async w=>{const pw=w.querySelector('#__newPw').value;w.querySelector('h3').textContent='⏳ 올리는 중…';const m=await SHARE.make(pw);await m.sp.putMany(upOps());await SHARE.finish(m);setSH({id:m.id,key:m.key,lock:m.locked,pw:m.pw});location.replace(location.pathname)},true]]})}
+async function bootShare(){const q=new URLSearchParams(location.search).get('share');
+  if(q&&window.SHARE&&SHARE.enabled()&&(!SH||SH.id!==q)){
+    if(SH&&!confirm('다른 함께 쓰기 게시판 링크예요. 이 기기의 게시판을 이 링크의 게시판으로 바꿀까요?')){history.replaceState(null,'',location.pathname)}
+    else{try{const J=await SHARE.join(q,'board/meta');
+      if(J&&J.cancel)toast('🔒 비밀번호를 적어야 함께 쓰는 게시판에 들어갈 수 있어요');
+      else if(!J)toast('이 함께 쓰기는 끝났거나 링크가 잘못됐어요');
+      else{const mine=SH?[]:N.slice();
+        if(mine.length&&confirm('이 기기에 있던 포스트잇 '+mine.length+'장도 함께 쓰는 게시판에 같이 붙일까요?\n(취소하면 이 기기의 메모는 따로 보관했다가, 함께 쓰기를 끄면 돌아와요)')){const sp=await SHARE.space(J.key);await sp.putMany(mine.map(n=>['notes/'+n.id,bare(n)]))}
+        else if(mine.length){try{localStorage.setItem('note-board-mine',JSON.stringify(mine))}catch(e){}}
+        N=[];setSH({id:q,key:J.key,lock:J.locked,pw:J.pw});toast('🔗 함께 쓰는 게시판에 들어왔어요')}}
+      catch(e){toast('함께 쓰기에 연결하지 못했어요: '+(e&&e.message||e))}
+      history.replaceState(null,'',location.pathname)}}
+  else if(q)history.replaceState(null,'',location.pathname);
+  if(!SH){try{const mine=localStorage.getItem('note-board-mine');if(mine){N=JSON.parse(mine)||[];localStorage.removeItem('note-board-mine');localStorage.setItem(KEY,JSON.stringify(N));draw();toast('이 기기에 따로 보관했던 메모를 다시 꺼냈어요')}}catch(e){}}
+  shareUI();if(SH)connect()}
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const board=$('#board');
 /* 붙여 넣은 글이나 만든 글에서 안전한 꾸밈만 남겨요 */
@@ -106,10 +157,10 @@ function boardH(){const vh=window.innerHeight;if(SZ.h)return SZ.h;if(SZ.k==='ful
 function applySize(){document.querySelector('main').classList.toggle('wide',SZ.k==='full'||+SZ.k>=2.4);$('#size').value=SZ.h?'':SZ.k;if(SZ.h&&!$('#size').value){let o=$('#size').querySelector('[value=""]');if(!o){o=document.createElement('option');o.value='';$('#size').prepend(o)}o.textContent=`📐 직접 늘린 크기`;$('#size').value=''}}
 function bindNote(el,n){el.onpointerdown=e=>{if(e.button)return;const sx=e.clientX,sy=e.clientY,bx=board.getBoundingClientRect(),ox=n.x/100*board.clientWidth,oy=n.y;let moved=false;
   el.setPointerCapture(e.pointerId);
-  el.onpointermove=ev=>{const dx=ev.clientX-sx,dy=ev.clientY-sy;if(!moved&&Math.hypot(dx,dy)<6)return;moved=true;el.classList.add('drag');
+  el.onpointermove=ev=>{const dx=ev.clientX-sx,dy=ev.clientY-sy;if(!moved&&Math.hypot(dx,dy)<6)return;moved=true;DRAG=true;n.__drag=1;el.classList.add('drag');
     const x=Math.min(Math.max(0,ox+dx),board.clientWidth-el.offsetWidth),y=Math.max(0,oy+dy);el.style.left=x+'px';el.style.top=y+'px';n.x=x/board.clientWidth*100;n.y=y};
-  el.onpointerup=()=>{el.onpointermove=el.onpointerup=null;el.classList.remove('drag');
-    if(moved){N=N.filter(x=>x!==n);N.push(n);save();draw();$('#sort').value=''}else{/* 한 번 누르면 보기, 두 번 빠르게 누르면 바로 고치기 */if(CLK.n===n&&Date.now()-CLK.t<320){clearTimeout(CLK.tm);CLK={};openEdit(n)}else{clearTimeout(CLK.tm);CLK={n,t:Date.now(),tm:setTimeout(()=>{CLK={};openView(n)},300)}}}}}}
+  el.onpointerup=()=>{el.onpointermove=el.onpointerup=null;el.classList.remove('drag');DRAG=false;delete n.__drag;REDRAW=false;
+    if(moved){n.z=Date.now();N=N.filter(x=>x!==n);N.push(n);save();draw();$('#sort').value=''}else{/* 한 번 누르면 보기, 두 번 빠르게 누르면 바로 고치기 */if(CLK.n===n&&Date.now()-CLK.t<320){clearTimeout(CLK.tm);CLK={};openEdit(n)}else{clearTimeout(CLK.tm);CLK={n,t:Date.now(),tm:setTimeout(()=>{CLK={};openView(n)},300)}}}}}}
 let CLK={};
 
 /* ---------- 보기 ---------- */
@@ -121,7 +172,7 @@ function openView(n){const m=modal(`<div class="view">${n.html||'<span style="op
   m.querySelector('#del').onclick=()=>{if(!confirm('이 포스트잇을 떼어 낼까요? 되돌릴 수 없어요.'))return;N=N.filter(x=>x!==n);save();draw();close(m);toast('포스트잇을 떼어 냈어요')}}
 /* ---------- 쓰기·고치기 ---------- */
 try{localStorage.removeItem('note-draft-v1')}catch(e){}
-function openEdit(n){const isNew=!n,orig=n?{html:n.html,color:n.color,updated:n.updated}:null;let cur=n;
+function openEdit(n){const isNew=!n,orig=n?{html:n.html,color:n.color,updated:n.updated}:null;let cur=n;EDIT=n||null;
   let color=n?n.color:COLORS[Math.floor(Math.random()*COLORS.length)][0];
   const m=modal(`<div class="cols" style="margin-bottom:8px"><b class="j" style="margin-right:4px">메모지 색</b>${COLORS.map(([c,l])=>`<button class="sw ${c===color?'on':''}" data-c="${c}" title="${l}" style="background:${c}"></button>`).join('')}</div>
    <div class="tools"><button data-cmd="bold" title="굵게"><b>가</b></button><button data-cmd="italic" title="기울임"><i>가</i></button><button data-cmd="underline" title="밑줄"><u>가</u></button><button data-cmd="strikeThrough" title="취소선"><s>가</s></button>
@@ -135,14 +186,14 @@ function openEdit(n){const isNew=!n,orig=n?{html:n.html,color:n.color,updated:n.
   /* 포스트잇에 바로 저장: 글자를 칠 때·꾸밀 때·색을 바꿀 때·바깥을 누를 때·창을 떠날 때 */
   const commit=()=>{clearTimeout(dT);const html=clean(ed.innerHTML),now=Date.now();
     if(!plain(html))return false;
-    if(!cur){const w=board.clientWidth,cw=board.clientWidth<620?150:186;cur={id:uid(),html,color,created:now,updated:now,x:Math.random()*Math.max(1,(w-cw-20))/w*100+1,y:14+Math.random()*Math.max(40,Math.min(board.clientHeight-240,360)),rot:Math.random()*8-4};N.push(cur)}
+    if(!cur){const w=board.clientWidth,cw=board.clientWidth<620?150:186;cur={id:uid(),html,color,created:now,updated:now,z:now,x:Math.random()*Math.max(1,(w-cw-20))/w*100+1,y:14+Math.random()*Math.max(40,Math.min(board.clientHeight-240,360)),rot:Math.random()*8-4};N.push(cur);EDIT=cur}
     else if(cur.html===html&&cur.color===color)return true;
     else{cur.html=html;cur.color=color;cur.updated=now}
     save();draw();const h=m.querySelector('#svh');if(h)h.textContent='✔ 저장됨 '+new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});return true};
   const soon=()=>{clearTimeout(dT);dT=setTimeout(()=>{if(!done)commit()},500)};
   new MutationObserver(soon).observe(ed,{childList:true,subtree:true,characterData:true,attributes:true});
   const onLeave=()=>{if(!done)commit()};addEventListener('pagehide',onLeave);document.addEventListener('visibilitychange',onLeave);
-  new MutationObserver((_,o)=>{if(!document.body.contains(m)){removeEventListener('pagehide',onLeave);document.removeEventListener('visibilitychange',onLeave);o.disconnect();
+  new MutationObserver((_,o)=>{if(!document.body.contains(m)){setTimeout(()=>{if(EDIT===cur)EDIT=null},0);removeEventListener('pagehide',onLeave);document.removeEventListener('visibilitychange',onLeave);o.disconnect();
     if(!done){done=true;const had=!!cur;if(commit())toast(had&&!isNew?'고쳤어요':'📌 포스트잇을 붙였어요')}}}).observe(document.body,{childList:true});
   try{document.execCommand('styleWithCSS',false,false)}catch(_){}
   let saved=null;const keep=()=>{const s=getSelection();if(s.rangeCount&&ed.contains(s.anchorNode))saved=s.getRangeAt(0).cloneRange()};
@@ -168,6 +219,7 @@ $('#grip').onpointerdown=e=>{e.preventDefault();const g=$('#grip');try{g.setPoin
   g.onpointermove=ev=>{const h=Math.max(300,oh+ev.clientY-sy);board.style.minHeight=h+'px'};
   g.onpointerup=ev=>{g.onpointermove=g.onpointerup=null;SZ.h=Math.max(300,oh+ev.clientY-sy)-32;saveSZ();applySize();draw()}};
 applySize();
+bootShare();
 addEventListener('resize',()=>{clearTimeout(window.__rz);window.__rz=setTimeout(draw,150)});
 draw();
 })();
