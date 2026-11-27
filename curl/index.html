@@ -62,9 +62,9 @@ body.playing #homeFab,body.playing #siteNav,body.playing #siteGuideBtn{display:n
 #sb .tm .left{font-size:11px;color:var(--muted);letter-spacing:-1px}
 #gtop{position:absolute;right:8px;bottom:calc(8px + env(safe-area-inset-bottom));display:flex;gap:6px;z-index:3}
 #gtop button{padding:6px 10px;font-size:14px}
-#turn{position:absolute;left:50%;bottom:calc(10px + env(safe-area-inset-bottom));transform:translateX(-50%);background:rgba(59,42,32,.88);color:#fff;font-family:Jua;padding:7px 16px;border-radius:14px;text-align:center;max-width:calc(100vw - 230px);font-size:16px;z-index:2;pointer-events:none}
+#turn{position:absolute;left:50%;top:var(--turnTop,58px);transform:translateX(-50%);background:rgba(59,42,32,.88);color:#fff;font-family:Jua;padding:7px 16px;border-radius:14px;text-align:center;max-width:calc(100vw - 20px);font-size:16px;z-index:2;pointer-events:none;white-space:nowrap}
 #turn small{display:block;font-size:12px;opacity:.8}
-@media(max-width:560px){#turn{left:8px;transform:none;max-width:calc(100vw - 160px);font-size:14px}#gtop button{padding:5px 8px;font-size:12px}}
+@media(max-width:560px){#turn{font-size:14px;white-space:normal;width:max-content;max-width:calc(100vw - 16px)}#gtop button{padding:5px 8px;font-size:12px}}
 .ov{position:fixed;inset:0;z-index:80;background:rgba(30,20,10,.55);display:flex;align-items:center;justify-content:center;padding:14px}
 .ov .box{background:var(--cream);border:3px solid var(--ink);border-radius:22px;max-width:620px;width:100%;max-height:calc(100dvh - 28px);overflow:auto;padding:18px}
 .rank{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;margin:5px 0;background:#fff;border:2px solid var(--line);font-family:Jua;font-size:19px}
@@ -219,7 +219,7 @@ function render(){const app=$('#app');
 
 /* =================== 화면: 게임 =================== */
 const cv=$('#cv'),g=cv.getContext('2d');let CW=0,CH=0,DPR=1,SC=1,OX=0,OY=0,VC=[];
-function resize(){DPR=Math.min(2,devicePixelRatio||1);CW=innerWidth;CH=innerHeight;cv.width=CW*DPR;cv.height=CH*DPR;const top=62,bot=58;SC=Math.min((CW-24)/(W+60),(CH-top-bot)/(L+40));OX=CW/2;OY=top+(CH-top-bot-L*SC)/2}
+function resize(){DPR=Math.min(2,devicePixelRatio||1);CW=innerWidth;CH=innerHeight;cv.width=CW*DPR;cv.height=CH*DPR;const sb=$('#sb').getBoundingClientRect(),tn=$('#turn');$('#game').style.setProperty('--turnTop',Math.round(sb.bottom+6)+'px');const top=Math.round(sb.bottom+6+(tn.offsetHeight||44)+10),bot=58;SC=Math.min((CW-24)/(W+60),(CH-top-bot)/(L+40));OX=CW/2;OY=top+(CH-top-bot-L*SC)/2}
 addEventListener('resize',resize);
 $('#gView').onclick=()=>{$('#vpanel').hidden=!$('#vpanel').hidden};
 $('#vTilt').addEventListener('input',e=>{VIEW.tilt=+e.target.value;applyView()});$('#vYaw').addEventListener('input',e=>{VIEW.yaw=+e.target.value;applyView()});
@@ -240,6 +240,7 @@ function capsNow(){return isHost?G.caps:VC}
 function updHud(){const v=LV;if(!v||(v.ph!=='play'&&v.ph!=='over'))return;const S=v.ph==='over'&&v.final?v.final:totalsLive();
   $('#sb').innerHTML=v.tOrder.map(ti=>{const t=v.teams[ti],left=throwsLeftV(v,ti);return`<div class="tm${v.cur&&v.cur.ti===ti&&v.ph==='play'?' cur':''}"><i style="background:${t.col}"></i>${esc(t.name)}<span class="p">${S[ti]||0}</span><span class="left">${'●'.repeat(Math.max(0,left))}</span></div>`}).join('');
   const tn=$('#turn');if(v.ph==='over'){tn.innerHTML='🏁 경기 끝!';return}const T=v.tOrder.length,c=v.cur,t=v.teams[c.ti],p=v.players.find(x=>x.id===c.pid);
+  setTimeout(()=>{const want=Math.round($('#sb').getBoundingClientRect().bottom+6+tn.offsetHeight+10);if(Math.abs(want-(window.__curlTop||0))>4){window.__curlTop=want;resize()}},0);
   tn.innerHTML=`<span style="color:${t.col};filter:brightness(1.6)">●</span> ${esc(t.name)} · ${esc(p?p.name:'?')} 차례 <span style="opacity:.7">(${Math.min(v.moving?v.n:v.n+1,T*v.set.caps)}/${T*v.set.caps})</span><small>${v.moving?'굴러가는 중…':myTurn()?'병뚜껑을 뒤로 끌었다가 놓아요 · 출발선을 눌러 옆으로 옮겨요':v.mode==='net'?(p?esc(p.name)+'님 휴대폰에서 쳐요':''):''}</small>`}
 function throwsLeftV(v,ti){const T=v.tOrder.length;let used=0;for(let n=0;n<v.n;n++)if(v.tOrder[n%T]===ti)used++;return v.set.caps-used}
 function totalsLive(){const v=LV,Gg=geo(v.set),S={};v.tOrder.forEach(t=>S[t]=0);capsNow().forEach(c=>{if(!c.out&&S[c.t]!=null)S[c.t]+=scoreAt(c.x,c.y,Gg)});return S}
