@@ -508,5 +508,5 @@ drawBooks();stats();
 if(GO_READ){tab=BOOKS[R.b][2];document.querySelectorAll("#tabs button").forEach(x=>x.classList.toggle("on",x.dataset.t===tab));drawBooks();const d=document.querySelector('.book[data-b="'+R.b+'"]');if(d)d.open=true;setTimeout(()=>$("reader").scrollIntoView({behavior:"smooth",block:"start"}),400)}
 ready.then(()=>{lastW=pen.clientWidth;lamb=new Sheep({lamb:true,size:lambPx(),x:45,y:80,label:S.name});drawFlock()});
 </script>
-<script src="../assets/scene.js?v=20261116d"></script><script src="../assets/home.js?v=20261118"></script>
+<script src="../assets/scene.js?v=20261116d"></script><script src="../assets/home.js?v=20261128fs"></script>
 </body></html>

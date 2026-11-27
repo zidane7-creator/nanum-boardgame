@@ -371,5 +371,5 @@ function drawPanel(){if(!G)return;const t=G.teams[G.cur];$("panel").style.setPro
   $("score").innerHTML=G.teams.map((tm,i)=>{const ps=G.pieces.filter(p=>p.team===i);
     return`<div class="srow${i===G.cur?" now":""}" style="--tc:${tm.color}"><span class="dot"></span><span class="nm">${esc(tm.name)}${tm.members.length?` <span class="hint">(${esc(tm.members.join(", "))})</span>`:""}</span><span class="pcs">${ps.map(p=>`<i class="${p.done?"done":p.node!==null?"on":""}" title="${p.no}번 말: ${p.done?"들어옴":p.node!==null?"판 위":"대기"}"></i>`).join("")}</span></div>`}).join("")}
 </script>
-<script src="../assets/scene.js?v=20261116d"></script><script src="../assets/home.js?v=20261118"></script>
+<script src="../assets/scene.js?v=20261116d"></script><script src="../assets/home.js?v=20261128fs"></script>
 </body></html>

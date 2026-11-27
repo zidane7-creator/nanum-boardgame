@@ -158,5 +158,5 @@ async function del(c){if(!confirm(`‘${c.title}’ 카드를 내릴까요? 그�
   try{const list=(await readIndex()).filter(x=>x.id!==c.id);await GH.commit("말씀카드: "+c.title+" 내리기",[{path:"index.json",b64:b64txt(JSON.stringify(list,null,1))}],[c.pc,c.mobile,c.thumb].filter(Boolean));CARDS=list;d();close();render();toast("내렸어요")}catch(e){d();ghErr("내리기",e)}}
 load();
 </script>
-<script src="../assets/scene.js?v=20261116d"></script><script src="../assets/home.js?v=20261118"></script>
+<script src="../assets/scene.js?v=20261116d"></script><script src="../assets/home.js?v=20261128fs"></script>
 </body></html>

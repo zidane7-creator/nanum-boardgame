@@ -20,9 +20,9 @@ html,body{margin:0;height:100%;background:#070504;color:#efe6d6;font:16px/1.6 "G
 .top .ttl{flex:1;font-size:18px;color:var(--gold);letter-spacing:.08em}
 #cv{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
 #cv.place{cursor:crosshair}
-.dock{position:fixed;left:14px;right:14px;top:calc(44px + env(safe-area-inset-top,0px));z-index:15;display:flex;align-items:center;gap:6px 12px;flex-wrap:wrap;pointer-events:none}
-.dock .msg{word-break:keep-all;font-size:14px;color:#e9dcc4;text-shadow:0 1px 6px #000;flex:1;min-width:180px}
-@media (max-width:560px){.dock .btn{font-size:15px;padding:8px 18px}.dock .msg{font-size:13px;flex-basis:100%}}
+.dock{position:fixed;left:14px;top:calc(44px + env(safe-area-inset-top,0px));z-index:15;display:flex;flex-direction:column;align-items:flex-start;gap:6px;pointer-events:none;max-width:min(205px,calc(100vw - 28px))}
+.dock .msg{word-break:keep-all;font-size:13px;line-height:1.5;color:#e9dcc4;text-shadow:0 1px 6px #000}
+@media (max-width:560px){.dock{max-width:calc(100vw - 28px)}.dock .btn{font-size:15px;padding:8px 18px}}
 .dock>*{pointer-events:auto}
 .btn{font:inherit;font-size:17px;color:#2a1d12;background:linear-gradient(#f6ecd8,#e2d2b4);border:0;border-radius:999px;padding:11px 26px;cursor:pointer;box-shadow:0 0 24px rgba(233,201,139,.28),0 3px 0 #8a7556}
 .btn:active{transform:translateY(2px);box-shadow:0 0 18px rgba(233,201,139,.2),0 1px 0 #8a7556}
@@ -76,7 +76,7 @@ const updCnt=()=>{};
 const cv=$('#cv');const R=new T.WebGLRenderer({canvas:cv,antialias:true});R.setPixelRatio(Math.min(2,devicePixelRatio||1));R.outputEncoding=T.sRGBEncoding;R.toneMapping=T.ACESFilmicToneMapping;R.toneMappingExposure=1.05;R.shadowMap.enabled=true;R.shadowMap.type=T.PCFSoftShadowMap;
 const S=new T.Scene();S.background=new T.Color(0x060403);S.fog=new T.FogExp2(0x060403,.07);
 const CAM=new T.PerspectiveCamera(42,1,.1,100);
-const TARGET=new T.Vector3(0,3.75,0);let YAW=0,PITCH=.03,DIST=12.5;
+const TARGET=new T.Vector3(0,3.3,0);let YAW=0,PITCH=.03,DIST=12.5;
 function placeCam(sh){const x=Math.sin(YAW)*Math.cos(PITCH)*DIST,y=Math.sin(PITCH)*DIST,z=Math.cos(YAW)*Math.cos(PITCH)*DIST;CAM.position.set(TARGET.x+x+(sh||0)*(Math.random()-.5),TARGET.y+y+(sh||0)*(Math.random()-.5),TARGET.z+z);CAM.lookAt(TARGET)}
 /* 나무결 */
 function woodTex(w,h,seed){const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');let s=seed;const r=()=>(s=(s*16807)%2147483647)/2147483647;
@@ -198,7 +198,8 @@ $('#nail').onclick=()=>{if(!$('#sin').value.trim()){toast('종이에 죄를 적�
 $('#back').onclick=()=>{PLACE=false;cv.classList.remove('place');ghost.visible=false;$('#placeBar').hidden=true;$('#words').hidden=false;openPaper()};
 /* ---------- 그리기 ---------- */
 function size(){const w=innerWidth,h=innerHeight;R.setSize(w,h,false);CAM.aspect=w/h;CAM.fov=w<h?52:42;CAM.updateProjectionMatrix();if(!size.done){DIST=w<h?14.5:12.5;size.done=1}}
-function placeWords(){const d=$('#dock');if(d.hidden)return;const b=d.getBoundingClientRect().bottom;$('#words').style.top=Math.round(b+2)+'px'}
+function placeWords(){const d=$('#dock'),w=$('#words');if(d.hidden)return;const r=d.getBoundingClientRect(),W=innerWidth,room=W-2*(r.right+16);
+  if(room>=430){w.style.width=Math.min(700,room)+'px';w.style.top=Math.round(r.top)+'px'}else{w.style.width='';w.style.top=Math.round(r.bottom+4)+'px'}}
 addEventListener('resize',()=>{size();placeWords()});size();placeWords();if(document.fonts)document.fonts.ready.then(placeWords);
 let last=performance.now();
 function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;
@@ -210,5 +211,5 @@ requestAnimationFrame(loop);
 
 })();
 </script>
-<script src="../assets/home.js?v=20261127f"></script>
+<script src="../assets/home.js?v=20261128fs"></script>
 </body></html>

@@ -597,5 +597,5 @@ if(ROOM){CFG.mode="multi";document.querySelector("#setup>.card").hidden=true;con
     <div class="row" style="justify-content:center"><input id="jn" maxlength="8" value="${esc(saved)}" placeholder="이름" style="font-size:20px;width:200px"><button class="pri" id="jb">들어가기</button></div></div>`;
   $("jb").onclick=()=>{const n=$("jn").value.trim();if(!n){toast("이름을 적어 주세요");return}joinRoom(n)};$("jn").onkeydown=e=>{if(e.key==="Enter")$("jb").click()};warmPeer()}
 </script>
-<script src="../assets/scene.js?v=20261116d"></script><script src="../assets/home.js?v=20261118"></script>
+<script src="../assets/scene.js?v=20261116d"></script><script src="../assets/home.js?v=20261128fs"></script>
 </body></html>
