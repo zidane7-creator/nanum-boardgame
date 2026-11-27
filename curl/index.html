@@ -91,10 +91,11 @@ const COL=[['#e8503a','빨강'],['#2f78d0','파랑'],['#3f9a55','초록'],['#f5b
 
 /* =================== 책상 =================== */
 const W=440,L=960,CR=15,START=L-118,SHOTY=L-64,TC={x:0,y:250};
-const SHAPES={rect:['직사각형','네모 반듯한 책상'],tri:['역삼각형','멀리 갈수록 넓어지고, 출발선 쪽이 좁아요'],oval:['타원형','둥근 책상, 가장자리가 휘어 있어요']};
+const SHAPES={rect:['직사각형','네모 반듯한 책상'],tri:['역삼각형','멀리 갈수록 넓어지고, 출발선 쪽이 좁아요'],tri2:['삼각형','출발선 쪽이 넓고, 점수판 쪽으로 갈수록 좁아져요'],oval:['타원형','둥근 책상, 가장자리가 휘어 있어요'],dia:['다이아몬드','가운데가 가장 넓고 위아래가 뾰족해요'],cross:['십자가','점수판 쪽 가로대가 넓고 나머지는 좁은 길이에요']};
+const CROSS_Y0=150,CROSS_Y1=350,CROSS_W=92;
 const OPTS=[['hole','🕳️ 구멍','빠지면 낙'],['block','⛰ 장애물','바닥에서 솟아올라 병뚜껑을 튕겨 내요'],['wall','🧱 반사판','부딪히면 그대로 튕겨 나와요'],['slow','🐢 느림 구간','지나가면 확 느려져요']];
 const BOARDS=[['circle','⭕ 원형'],['check','♟️ 체크형'],['square','⬜ 사각형'],['star','⭐ 별'],['donut','🍩 도넛'],['random','🎲 랜덤 모양']];
-function hw(y,sh){if(sh==='tri')return 220*(1-.6*clamp(y,0,L)/L);if(sh==='oval'){const t=(y-L/2)/(L/2);return t*t>=1?0:220*Math.sqrt(1-t*t)}return 220}
+function hw(y,sh){if(sh==='tri')return 220*(1-.6*clamp(y,0,L)/L);if(sh==='tri2')return 70+150*clamp(y,0,L)/L;if(sh==='dia')return Math.max(68,220*(1-Math.abs(clamp(y,0,L)-L*.42)/(L*.58)*.95));if(sh==='cross')return y>=CROSS_Y0&&y<=CROSS_Y1?220:CROSS_W;if(sh==='oval'){const t=(y-L/2)/(L/2);return t*t>=1?0:220*Math.sqrt(1-t*t)}return 220}
 function fv(x,y,sh){if(sh==='oval')return (x/220)**2+((y-L/2)/(L/2))**2-1;return Math.max(Math.abs(x)-hw(y,sh),-y,y-L)}
 function grad(x,y,sh){const gx=(fv(x+1,y,sh)-fv(x-1,y,sh))/2,gy=(fv(x,y+1,sh)-fv(x,y-1,sh))/2,l=Math.sqrt(gx*gx+gy*gy)||1;return[gx/l,gy/l]}
 /* 구멍·느림 구간·반사 벽은 게임마다 책상 전체에서 랜덤 자리 (점수판·특별 원·출발선과 겹치지 않게) */
@@ -194,7 +195,7 @@ async function joinRoom(name){try{MY=sessionStorage.getItem('cu-id-'+ROOM)}catch
 function onView(v){const prevPh=LV&&LV.ph,prevRound=LV&&LV.round;LV=v;if(!isHost&&v.ev){const nw=performance.now();CEV=v.ev.map(e=>({k:e.k,x:e.x,y:e.y,r:e.r,a:e.an||0,t0:nw-e.a}))}if(!isHost)VC=v.caps.map(c=>Object.assign({},c));
   if(v.ph==='play'||v.ph==='over'){enterGame();if(v.ph==='over'&&prevPh!=='over')setTimeout(showResult,700);else if(v.ph==='play'&&!$('#ov').hidden&&$('#ov').dataset.k==='res')$('#ov').hidden=true}
   else{leaveGame();render()}updHud()}
-const shapeSVG=sh=>{const p=sh==='rect'?'<rect x="6" y="4" width="36" height="52" rx="4"/>':sh==='tri'?'<path d="M4 4 H44 L30 56 H18 Z"/>':'<ellipse cx="24" cy="30" rx="18" ry="26"/>';return`<svg viewBox="0 0 48 60"><g fill="#d9a86a" stroke="#6e4f3a" stroke-width="3">${p}</g><circle cx="24" cy="${sh==='oval'?18:16}" r="7" fill="none" stroke="#e8503a" stroke-width="2"/></svg>`};
+const shapeSVG=sh=>{const p=sh==='rect'?'<rect x="6" y="4" width="36" height="52" rx="4"/>':sh==='tri'?'<path d="M4 4 H44 L30 56 H18 Z"/>':sh==='tri2'?'<path d="M18 4 H30 L44 56 H4 Z"/>':sh==='dia'?'<path d="M24 2 L44 26 L30 58 H18 L4 26 Z"/>':sh==='cross'?'<path d="M17 3 H31 V12 H44 V26 H31 V57 H17 V26 H4 V12 H17 Z"/>':'<ellipse cx="24" cy="30" rx="18" ry="26"/>';return`<svg viewBox="0 0 48 60"><g fill="#d9a86a" stroke="#6e4f3a" stroke-width="3">${p}</g><circle cx="24" cy="${sh==='oval'?18:16}" r="7" fill="none" stroke="#e8503a" stroke-width="2"/></svg>`};
 function setCtl(v,can){const s=v.set;return`<div class="grid2"><div><h3>👥 팀 개수</h3><div class="chips">${[2,3,4,5,6].map(n=>`<button data-st="teams" data-v="${n}" class="${s.teams===n?'on':''}" ${can?'':'disabled'}>${n}팀</button>`).join('')}</div>
    <h3>🥤 팀마다 병뚜껑</h3><div class="chips">${[2,3,4,5,6,8,10].map(n=>`<button data-st="caps" data-v="${n}" class="${s.caps===n?'on':''}" ${can?'':'disabled'}>${n}개</button>`).join('')}</div>
    <h3>🕳️ 낙 (책상 밖으로 떨어지기)</h3><div class="chips"><button data-st="drop" data-v="1" class="${s.drop?'on':''}" ${can?'':'disabled'}>낙 있음 — 떨어지면 0점</button><button data-st="drop" data-v="0" class="${!s.drop?'on':''}" ${can?'':'disabled'}>낙 없음 — 가장자리에서 튕겨요</button></div></div>
@@ -273,7 +274,7 @@ function throwsLeftV(v,ti){const T=v.tOrder.length;let used=0;for(let n=0;n<v.n;
 function totalsLive(){const v=LV,Gg=geo(v.set,v.layout),S={};v.tOrder.forEach(t=>S[t]=0);capsNow().forEach(c=>{if(!c.out&&S[c.t]!=null)S[c.t]+=scoreAt(c.x,c.y,Gg)});return S}
 /* 그리기 */
 function el(x,y,rx,ry){g.beginPath();g.ellipse(x,y,Math.max(.1,rx),Math.max(.1,ry),0,0,Math.PI*2)}
-function tablePath(sh,pad){g.beginPath();if(sh==='oval'){g.ellipse(0,L/2,220+pad,L/2+pad,0,0,Math.PI*2);return}if(sh==='tri'){g.moveTo(-220-pad,-pad);g.lineTo(220+pad,-pad);g.lineTo(hw(L,'tri')+pad,L+pad);g.lineTo(-hw(L,'tri')-pad,L+pad);g.closePath();return}if(g.roundRect)g.roundRect(-220-pad,-pad,440+2*pad,L+2*pad,14+pad);else g.rect(-220-pad,-pad,440+2*pad,L+2*pad)}
+function tablePath(sh,pad){g.beginPath();if(sh==='tri2'||sh==='dia'||sh==='cross'){const ys=[];for(let y=0;y<=L;y+=8)ys.push(y);if(sh==='cross')ys.push(CROSS_Y0-.01,CROSS_Y0,CROSS_Y1,CROSS_Y1+.01);if(sh==='dia')ys.push(L*.42);ys.sort((a,b)=>a-b);const P=ys.map(y=>[hw(y,sh),y]);g.moveTo(-P[0][0]-pad,-pad);P.forEach(([h,y],i)=>g.lineTo(-h-pad,i===0?-pad:i===P.length-1?y+pad:y));for(let i=P.length-1;i>=0;i--){const[h,y]=P[i];g.lineTo(h+pad,i===0?-pad:i===P.length-1?y+pad:y)}g.closePath();return}if(sh==='oval'){g.ellipse(0,L/2,220+pad,L/2+pad,0,0,Math.PI*2);return}if(sh==='tri'){g.moveTo(-220-pad,-pad);g.lineTo(220+pad,-pad);g.lineTo(hw(L,'tri')+pad,L+pad);g.lineTo(-hw(L,'tri')-pad,L+pad);g.closePath();return}if(g.roundRect)g.roundRect(-220-pad,-pad,440+2*pad,L+2*pad,14+pad);else g.rect(-220-pad,-pad,440+2*pad,L+2*pad)}
 let woodPat=null;function wood(){if(woodPat)return woodPat;const c=document.createElement('canvas');c.width=220;c.height=440;const x=c.getContext('2d');x.fillStyle='#d9a86a';x.fillRect(0,0,220,440);for(let i=0;i<46;i++){x.strokeStyle=`rgba(${120+Math.random()*40},${70+Math.random()*30},30,${.12+Math.random()*.15})`;x.lineWidth=1+Math.random()*2.5;const X=Math.random()*220;x.beginPath();x.moveTo(X,0);for(let y=0;y<=440;y+=40)x.lineTo(X+Math.sin(y/60+i)*6,y);x.stroke()}woodPat=g.createPattern(c,'repeat');return woodPat}
 function drawTable(v){const sh=v.set.shape,Gg=geo(v.set,v.layout);g.save();g.translate(OX,OY);g.scale(SC,SC);
   // 그림자·두께
