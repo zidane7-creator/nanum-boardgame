@@ -874,10 +874,10 @@ function step(dt){const M=curMap();if(!M)return;let ix=(KEY.d||KEY.arrowright?1:
 const SKY={lobby:0};
 /* 3D 보기: 카메라가 양 뒤쪽 위에서 비스듬히 내려다봐요. 바닥은 원근으로(가로줄로 나눠 그리기), 양·집·나무는 세워서 멀수록 작게 */
 let VIEW3D=(()=>{try{return localStorage.getItem('sheep-3d')!=='0'}catch(_){return true}})();
-const TILT3=56*Math.PI/180;let DD=760;
+const TILT3=42*Math.PI/180;let DD=760;
 function set3D(v){VIEW3D=v;try{localStorage.setItem('sheep-3d',v?'1':'0')}catch(_){}document.querySelectorAll('.b3d').forEach(b=>b.textContent=v?'🗺️ 2D로 보기':'🎥 3D로 보기');camSnap=true}
 function draw(T){const M=curMap();if(!M||!M.bake)return;
-  DD=760*Math.max(1,CH/CW*.95);const V=VIEW3D,SI=V?Math.sin(TILT3):0,CO=V?Math.cos(TILT3):1,H0=V?CH*.66:CH/2,ZZ=V?Z*1.18:Z;
+  DD=760*Math.max(1,CH/CW*.95);const V=VIEW3D,SI=V?Math.sin(TILT3):0,CO=V?Math.cos(TILT3):1,H0=V?CH*.6:CH/2,ZZ=V?Z*.95:Z;
   let tx,ty;if(V){tx=me.x;ty=me.y}else{const vw=CW/Z,vh=CH/Z;tx=M.W>vw?clamp(me.x,vw/2-40,M.W-vw/2+40):M.W/2;ty=M.H>vh?clamp(me.y-20,vh/2-40,M.H-vh/2+40):M.H/2}
   if(camSnap){cam.x=tx;cam.y=ty;camSnap=false}else{cam.x+=(tx-cam.x)*.2;cam.y+=(ty-cam.y)*.2}
   const FAR=V?DD/SI*.97:1e9;
