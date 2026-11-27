@@ -28,8 +28,8 @@ html,body{margin:0;height:100%;background:#070504;color:#efe6d6;font:16px/1.6 "G
 .btn:active{transform:translateY(2px);box-shadow:0 0 18px rgba(233,201,139,.2),0 1px 0 #8a7556}
 .btn.ghost{background:rgba(255,255,255,.06);color:#e8dcc6;box-shadow:none;border:1px solid rgba(232,220,198,.35);font-size:15px;padding:8px 18px}
 .note{font-size:13px;color:var(--dim);text-align:center;text-shadow:0 1px 3px #000}
-#words{position:fixed;left:50%;top:calc(108px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:12;text-align:center;width:min(92vw,620px);pointer-events:none;transition:opacity 1.4s}
-#words h2{margin:0 0 6px;font-size:clamp(17px,3.8vw,21px);font-weight:700;color:#f0e3c8;text-shadow:0 2px 10px #000}#words p{margin:0;word-break:keep-all;overflow-wrap:break-word;text-wrap:balance;font-size:clamp(13px,3vw,15px);color:#cbbda6;line-height:1.75;text-shadow:0 2px 8px #000}#words small{display:inline-block;white-space:nowrap;color:var(--gold);font-size:13px;margin-left:4px}
+#words{position:fixed;left:50%;top:calc(108px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:12;text-align:center;width:min(94vw,700px);pointer-events:none;transition:opacity 1.4s}
+#words h2{margin:0 0 6px;font-size:clamp(17px,3.8vw,21px);font-weight:700;color:#f0e3c8;text-shadow:0 2px 10px #000}#words p{margin:0;word-break:keep-all;overflow-wrap:break-word;font-size:clamp(13px,3vw,15px);color:#cbbda6;line-height:1.75;text-shadow:0 2px 8px #000}#words .vl{display:block}#words .vp{display:inline-block}#words small{display:inline-block;white-space:nowrap;color:var(--gold);font-size:13px;margin-left:4px}
 #words p{transition:opacity 1.4s}#words p.fade{opacity:0}
 /* 흰 종이 */
 .modal{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px;perspective:1200px}
@@ -55,7 +55,7 @@ html,body{margin:0;height:100%;background:#070504;color:#efe6d6;font:16px/1.6 "G
 <div class="top"><a href="../">← 목장</a><span class="ttl">✝ 죄 고백</span></div>
 <canvas id="cv" aria-label="나무 십자가"></canvas>
 <div id="err" hidden></div>
-<div id="words"><h2>조용히 주님 앞에 나아갑니다</h2><p><span id="vt"></span><small id="vr"></small></p></div>
+<div id="words"><h2>조용히 주님 앞에 나아갑니다</h2><p id="vt"></p></div>
 
 <div id="placeBar" hidden>📌 십자가에서 이 종이를 못 박을 곳을 눌러 주세요<br><button class="btn ghost" id="back" style="margin-top:6px">← 다시 쓰기</button></div>
 <div class="dock" id="dock"><button class="btn" id="write">📝 죄 고백하기</button><div class="msg">십자가에 못 박은 죄는 하나님 외엔 어느 누구도 볼 수 없어요.</div></div>
@@ -170,18 +170,23 @@ function tryPlace(e){const h=pick(e);if(!h){toast('십자가 위를 눌러 주�
   addPaper(d,true);updCnt();setTimeout(()=>{$('#dock').hidden=false;$('#words').hidden=false;placeWords();nextVerse()},2200)}
 /* ---------- 쓰기 ---------- */
 /* 죄 고백 말씀: 십자가 위에서 돌아가며 보여요 (개역한글) */
-const VERSES=[['만일 우리가 우리 죄를 자백하면 저는 미쁘시고 의로우사 우리 죄를 사하시며 모든 불의에서 우리를 깨끗케 하실 것이요','요한일서 1:9'],
-  ['내가 이르기를 내 허물을 여호와께 자복하리라 하고 주께 내 죄를 아뢰고 내 죄악을 숨기지 아니하였더니 곧 주께서 내 죄의 악을 사하셨나이다','시편 32:5'],
-  ['자기의 죄를 숨기는 자는 형통치 못하나 죄를 자복하고 버리는 자는 불쌍히 여김을 받으리라','잠언 28:13'],
-  ['하나님이여 내 속에 정한 마음을 창조하시고 내 안에 정직한 영을 새롭게 하소서','시편 51:10'],
-  ['우리를 거스리고 우리를 대적하는 의문에 쓴 증서를 도말하시고 제하여 버리사 십자가에 못 박으시고','골로새서 2:14'],
-  ['친히 나무에 달려 그 몸으로 우리 죄를 담당하셨으니 이는 우리로 죄에 대하여 죽고 의에 대하여 살게 하려 하심이라','베드로전서 2:24'],
-  ['동이 서에서 먼 것 같이 우리 죄과를 우리에게서 멀리 옮기셨으며','시편 103:12'],
-  ['너희 죄가 주홍 같을지라도 눈과 같이 희어질 것이요 진홍 같이 붉을지라도 양털 같이 되리라','이사야 1:18'],
-  ['내가 너의 허물을 빽빽한 구름의 사라짐 같이, 너의 죄를 안개의 사라짐 같이 도말하였으니 너는 내게로 돌아오라 내가 너를 구속하였음이니라','이사야 44:22'],
-  ['그러므로 이제 그리스도 예수 안에 있는 자에게는 결코 정죄함이 없나니','로마서 8:1']];
+/* 줄바꿈 자리를 뜻에 맞게 정해 두었어요: ' / ' 는 줄을 바꾸는 곳, ' | ' 는 화면이 좁을 때만 나누는 곳 */
+const VERSES=[['만일 우리가 우리 죄를 자백하면 | 저는 미쁘시고 의로우사 / 우리 죄를 사하시며 | 모든 불의에서 우리를 깨끗케 하실 것이요','요한일서 1:9'],
+  ['내가 이르기를 | 내 허물을 여호와께 자복하리라 하고 | 주께 내 죄를 아뢰고 / 내 죄악을 숨기지 아니하였더니 | 곧 주께서 내 죄의 악을 사하셨나이다','시편 32:5'],
+  ['자기의 죄를 숨기는 자는 | 형통치 못하나 / 죄를 자복하고 버리는 자는 | 불쌍히 여김을 받으리라','잠언 28:13'],
+  ['하나님이여 | 내 속에 정한 마음을 창조하시고 / 내 안에 정직한 영을 새롭게 하소서','시편 51:10'],
+  ['우리를 거스리고 우리를 대적하는 | 의문에 쓴 증서를 도말하시고 / 제하여 버리사 | 십자가에 못 박으시고','골로새서 2:14'],
+  ['친히 나무에 달려 | 그 몸으로 우리 죄를 담당하셨으니 / 이는 우리로 죄에 대하여 죽고 | 의에 대하여 살게 하려 하심이라','베드로전서 2:24'],
+  ['동이 서에서 먼 것 같이 / 우리 죄과를 우리에게서 멀리 옮기셨으며','시편 103:12'],
+  ['너희 죄가 주홍 같을지라도 | 눈과 같이 희어질 것이요 / 진홍 같이 붉을지라도 | 양털 같이 되리라','이사야 1:18'],
+  ['내가 너의 허물을 | 빽빽한 구름의 사라짐 같이, / 너의 죄를 | 안개의 사라짐 같이 도말하였으니 / 너는 내게로 돌아오라 | 내가 너를 구속하였음이니라','이사야 44:22'],
+  ['그러므로 이제 | 그리스도 예수 안에 있는 자에게는 | 결코 정죄함이 없나니','로마서 8:1']];
 let VI=0,VT=null;
-function setVerse(i){const[v,r]=VERSES[i%VERSES.length];$('#vt').textContent='"'+v+'"';$('#vr').textContent='('+r+')'}
+function setVerse(i){const[v,r]=VERSES[i%VERSES.length],box=$('#vt');box.textContent='';const L=v.split(' / ');
+  L.forEach((ln,li)=>{const row=document.createElement('span');row.className='vl';const P=ln.split(' | ');
+    P.forEach((ph,pi)=>{const s=document.createElement('span');s.className='vp';s.textContent=(li===0&&pi===0?'"':'')+ph+(li===L.length-1&&pi===P.length-1?'"':'');row.appendChild(s);if(pi<P.length-1)row.appendChild(document.createTextNode(' '))});
+    if(li===L.length-1){row.appendChild(document.createTextNode(' '));const rf=document.createElement('small');rf.textContent='('+r+')';row.appendChild(rf)}
+    box.appendChild(row)})}
 function nextVerse(){clearTimeout(VT);const el=$('#words p');el.classList.add('fade');setTimeout(()=>{setVerse(++VI);el.classList.remove('fade')},1400);VT=setTimeout(nextVerse,15000)}
 setVerse(0);VT=setTimeout(nextVerse,15000);
 function openPaper(){const m=$('#modal'),p=$('#paper');p.classList.remove('fly');p.style.transition='none';void p.offsetWidth;p.style.transition='';$('#pno').textContent=`나의 ${PAPERS.length+1}번째 죄 고백`;m.hidden=false;$('#dock').hidden=true;setTimeout(()=>$('#sin').focus(),60)}
