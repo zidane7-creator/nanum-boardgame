@@ -26,7 +26,7 @@ html,body{margin:0;height:100%;background:#070504;color:#efe6d6;font:16px/1.6 "G
 .btn:active{transform:translateY(2px);box-shadow:0 0 18px rgba(233,201,139,.2),0 1px 0 #8a7556}
 .btn.ghost{background:rgba(255,255,255,.06);color:#e8dcc6;box-shadow:none;border:1px solid rgba(232,220,198,.35);font-size:15px;padding:8px 18px}
 .note{font-size:13px;color:var(--dim);text-align:center;text-shadow:0 1px 3px #000}
-#intro{position:fixed;left:50%;bottom:calc(130px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:12;text-align:center;width:min(90vw,520px);pointer-events:none;transition:opacity 2.4s}
+#intro{position:fixed;left:50%;bottom:calc(165px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:12;text-align:center;width:min(90vw,520px);pointer-events:none;transition:opacity 2.4s}
 #intro p{margin:6px 0;color:#e9dcc4;text-shadow:0 2px 10px #000}#intro .v{font-size:14px;color:var(--dim)}
 #intro.hide{opacity:0}
 /* 흰 종이 */
@@ -43,7 +43,7 @@ html,body{margin:0;height:100%;background:#070504;color:#efe6d6;font:16px/1.6 "G
 .paper .row button.go{background:#4a3524;color:#f6ead3;border-color:#4a3524}
 .paper.fly{transform:translateY(46vh) rotateY(180deg) rotateZ(-8deg) scale(.22);opacity:0}
 #placeBar{position:fixed;left:50%;top:calc(58px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:16;background:rgba(20,14,10,.78);border:1px solid rgba(233,201,139,.4);border-radius:14px;padding:8px 14px;text-align:center;font-size:15px;color:#f0e2c6;width:max-content;max-width:92vw}
-#verse{position:fixed;left:50%;bottom:calc(130px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:14;width:min(88vw,560px);text-align:center;pointer-events:none;opacity:0;transition:opacity 1.6s}
+#verse{position:fixed;left:50%;bottom:calc(165px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:14;width:min(88vw,560px);text-align:center;pointer-events:none;opacity:0;transition:opacity 1.6s}
 #verse.on{opacity:1}#verse p{margin:0;font-size:clamp(16px,3.6vw,20px);color:#f3e6cc;text-shadow:0 2px 12px #000,0 0 30px rgba(0,0,0,.8);line-height:1.8}#verse small{display:block;margin-top:6px;color:var(--gold);font-size:14px}
 #toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);background:rgba(30,22,16,.9);color:#f3e6cc;padding:9px 16px;border-radius:12px;opacity:0;transition:.3s;z-index:40;pointer-events:none;font-size:15px}#toast.show{opacity:1}
 #err{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;color:#d8cbb5;z-index:5}
@@ -55,7 +55,7 @@ html,body{margin:0;height:100%;background:#070504;color:#efe6d6;font:16px/1.6 "G
 <div id="intro"><p>조용히 주님 앞에 나아갑니다</p><p class="v">"만일 우리가 우리 죄를 자백하면 저는 미쁘시고 의로우사<br>우리 죄를 사하시며 모든 불의에서 우리를 깨끗케 하실 것이요" (요한일서 1:9)</p></div>
 <div id="verse"><p></p><small></small></div>
 <div id="placeBar" hidden>📌 십자가에서 이 종이를 못 박을 곳을 눌러 주세요<br><button class="btn ghost" id="back" style="margin-top:6px">← 다시 쓰기</button></div>
-<div class="dock" id="dock"><button class="btn" id="write">📝 죄 고백하기</button><div class="note" id="cnt"></div><div class="note">끌어서 둘러보고, 두 손가락이나 휠로 가까이 볼 수 있어요</div></div>
+<div class="dock" id="dock"><div class="note" style="font-size:15px;color:#e9dcc4;margin-bottom:4px">십자가에 못 박은 죄는 하나님 외엔 어느 누구도 볼 수 없어요.</div><button class="btn" id="write">📝 죄 고백하기</button><div class="note" id="cnt"></div><div class="note">끌어서 둘러보고, 두 손가락이나 휠로 가까이 볼 수 있어요</div></div>
 <div class="modal" id="modal" hidden><div class="paper" id="paper"><div class="face front"><h3>주님, 고백합니다</h3><p class="sub">이 종이는 십자가에 못 박히면 다시는 누구도, 나도 볼 수 없어요. 어디에도 저장되지 않아요.</p><textarea id="sin" maxlength="600" autocomplete="off" spellcheck="false" placeholder="여기에 나의 죄를 적어요…"></textarea><div class="row"><button id="cancel">닫기</button><button class="go" id="nail">✝ 십자가에 못 박기</button></div></div><div class="face back"></div></div></div>
 <div id="toast"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
