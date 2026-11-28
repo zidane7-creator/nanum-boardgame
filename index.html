@@ -181,8 +181,6 @@ html.sc-night .tree,html.sc-night .hills,html.sc-night .front{filter:brightness(
 .parade .kid.walk .arm{animation:karm .6s ease-in-out infinite}
 @keyframes kleg{0%,100%{transform:rotate(-22deg)}50%{transform:rotate(22deg)}}
 @keyframes karm{0%,100%{transform:rotate(18deg)}50%{transform:rotate(-18deg)}}
-.parade .kid.sit svg{transform:translateY(17px)}.parade .kid.sit.flip svg{transform:translateY(17px) scaleX(-1)}
-.parade .kid.sit .leg{transform:rotate(80deg)}
 @media (prefers-reduced-motion:reduce){.parade .kid *{animation:none!important}}
 </style><meta property="og:image" content="https://zidane7-creator.github.io/nanum-boardgame/assets/og.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:site_name" content="치영의 교회 생활 즐기기"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://zidane7-creator.github.io/nanum-boardgame/assets/og.jpg">
 <script src="assets/jua.js"></script>
@@ -410,8 +408,20 @@ const KID='<svg viewBox="0 0 100 172" xmlns="http://www.w3.org/2000/svg"><g stro
  '<circle cx="54" cy="46" r="40" fill="#f6d2ad"/>'+
  '<path d="M17 58c-6 0-9 3-8 7 2 5 9 6 14 3" fill="#e8241c"/>'+
  '<circle cx="30" cy="38" r="10" fill="#fff"/></g><circle cx="26" cy="33" r="4.5" fill="#111"/></svg>';
+/* 앉은 모습: 무릎을 세우고 두 팔로 감싸 안고 앉아요 */
+const KID_SIT='<svg viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg"><g stroke="#111" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">'+
+ '<path d="M54 84h34c6 0 9 4 10 10l4 44H52z" fill="#f7d81c"/>'+
+ '<path d="M90 130L44 98" stroke-width="30"/><path d="M90 130L44 98" stroke="#2747d6" stroke-width="22"/>'+
+ '<path d="M44 98L38 132" stroke-width="28"/><path d="M44 98L38 132" stroke="#2747d6" stroke-width="20"/>'+
+ '<path d="M45 132c0 8-5 11-14 11H18c-6 0-8-4-6-7s5-5 10-5h23z" fill="#ff2a1f"/>'+
+ '<path d="M76 94C66 104 56 108 44 110" fill="none" stroke-width="15"/><path d="M76 94C66 104 56 108 44 110" fill="none" stroke="#ffe23a" stroke-width="8"/>'+
+ '<circle cx="42" cy="110" r="7" fill="#f6d2ad" stroke-width="3"/>'+
+ '<circle cx="68" cy="46" r="40" fill="#f6d2ad"/>'+
+ '<path d="M31 58c-6 0-9 3-8 7 2 5 9 6 14 3" fill="#e8241c"/>'+
+ '<circle cx="44" cy="38" r="10" fill="#fff"/></g><circle cx="40" cy="33" r="4.5" fill="#111"/></svg>';
 const KW=small?34:46,KG=small?42:56;
-const K={el:mk(KID,"kid",KW),x:0,on:false};K.el.style.zIndex=6;
+const K={el:mk(KID,"kid",KW),x:0,on:false,sat:false};
+function kidSit(on){if(K.sat===on)return;K.sat=on;const s=K.el.querySelector(".say");K.el.innerHTML=on?KID_SIT:KID;K.el.firstChild.style.width=(on?KW*1.2:KW)+"px";if(s)K.el.appendChild(s)}K.el.style.zIndex=6;
 flock.forEach((f,i)=>{f.el.style.bottom=((i%2)*5)+"px";f.el.style.zIndex=3+(i%2?0:1)});J.el.style.zIndex=5;
 const rnd=(a,b)=>a+Math.random()*(b-a);
 /* 양 떼는 줄지어 같은 방향을 보고 걷고, 예수님은 늘 그 뒤에서 몬다.
@@ -460,8 +470,8 @@ function frame(t){const dt=Math.min(.05,(t-last)/1000);last=t;W=lane.clientWidth
   /* 아이는 예수님이 바라보는 쪽의 뒤에서 따라 걸어요. 우리 안에서는 예수님 곁에 앉아요 */
   {const jd=J.el.classList.contains("flip")?1:-1,inB=phase==="in",tx=inB?jx-JW*.5:jx-jd*KG;
    if(!K.on){K.x=tx;K.on=true}const d=tx-K.x,st=sp*2.4*dt;
-   if(Math.abs(d)>st){K.x+=Math.sign(d)*st;face(K.el,Math.sign(d));mode(K.el,"walk");K.el.classList.remove("sit")}
-   else{K.x=tx;face(K.el,inB?1:jd);mode(K.el,J.el.classList.contains("walk")&&!inB?"walk":"");K.el.classList.toggle("sit",inB&&J.el.classList.contains("sit"))}
+   if(Math.abs(d)>st){K.x+=Math.sign(d)*st;face(K.el,Math.sign(d));mode(K.el,"walk");kidSit(false)}
+   else{K.x=tx;face(K.el,inB?1:jd);mode(K.el,J.el.classList.contains("walk")&&!inB?"walk":"");kidSit(inB&&J.el.classList.contains("sit"))}
    K.el.style.left=K.x+"px"}
   requestAnimationFrame(frame)}
 if(matchMedia("(prefers-reduced-motion: reduce)").matches)all("");else requestAnimationFrame(frame);
