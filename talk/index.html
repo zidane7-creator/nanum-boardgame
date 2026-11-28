@@ -13,28 +13,38 @@
 <style>
 :root{--bg:#b2c7d9;--me:#fee500;--ink:#191919;--sub:#556677}
 *{box-sizing:border-box}[hidden]{display:none!important}
-html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:15px/1.45 "Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;overflow:hidden;-webkit-tap-highlight-color:transparent}
-.app{position:fixed;inset:0;display:flex;flex-direction:column;max-width:720px;margin:0 auto;background:var(--bg);box-shadow:0 0 30px rgba(0,0,0,.12)}
+html,body{margin:0;height:100%;background:#dfe5ea;color:var(--ink);font:15px/1.45 "Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;overflow:hidden;-webkit-tap-highlight-color:transparent}
+.app{position:fixed;inset:0;display:flex;flex-direction:column;max-width:720px;margin:0 auto;background:var(--chatbg,var(--bg));background-size:var(--chatsz,auto);box-shadow:0 0 30px rgba(0,0,0,.12)}
 /* 위쪽 */
-.top{flex:none;display:flex;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top,0px)) 10px 8px;background:rgba(178,199,217,.96);border-bottom:1px solid rgba(0,0,0,.06);z-index:5}
-.top .back{border:0;background:none;font-size:22px;line-height:1;padding:2px 4px;cursor:pointer;color:#222;text-decoration:none}
-.top .ttl{flex:1;min-width:0;display:flex;flex-direction:column}
-.top .ttl b{font-size:17px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.top .ttl small{font-size:11px;color:#4a5b6b;letter-spacing:.02em}
-.top .ib{border:0;background:none;font-size:19px;cursor:pointer;padding:4px 6px;color:#222}
-#homeFab.inbar{margin-right:2px}
+.hdr{flex:none;display:flex;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top,0px)) 10px 8px;background:var(--topbg,rgba(178,199,217,.96));color:var(--topink,#191919);border-bottom:1px solid rgba(0,0,0,.06);z-index:5}
+.hdr .back{border:0;background:none;font-size:26px;line-height:1;padding:2px 4px;cursor:pointer;color:inherit;text-decoration:none}
+.hdr .ttl{flex:1;min-width:0;display:flex;flex-direction:column}
+.hdr .ttl b{font-size:21px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr .ttl small{font-size:13.5px;color:var(--topsub,#4a5b6b);letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr .ib{border:0;background:none;font-size:21px;cursor:pointer;padding:4px 6px;color:inherit}
 /* 사용가이드·화면 이동 버튼은 위쪽에 작게 */
-#siteNav{bottom:auto!important;top:calc(66px + env(safe-area-inset-top,0px));right:10px!important;transform:scale(.78);transform-origin:top right;opacity:.85}
+body.over #siteNav,body.over #homeFab,body.over #siteGuideBtn{display:none!important}
+/* 홈·사용가이드·화면 이동 버튼은 채팅창 밖에: 넓은 화면은 양옆, 좁은 화면은 채팅창 위 줄 */
+@media (max-width:1040px){
+  .app{top:calc(52px + env(safe-area-inset-top,0px))}
+  .hdr{padding-top:8px}
+  #homeFab{top:calc(9px + env(safe-area-inset-top,0px))!important;bottom:auto!important;left:10px!important;padding:5px 12px 5px 9px!important;box-shadow:0 2px 0 #3b2f2a!important}
+  #siteGuideBtn.float{top:calc(9px + env(safe-area-inset-top,0px))!important;right:10px!important}
+  #siteNav{top:calc(8px + env(safe-area-inset-top,0px))!important;bottom:auto!important;right:146px!important;transform:scale(.8);transform-origin:top right}
+}
+@media (max-width:600px){#siteNav{right:60px!important}}
+@media (min-width:1041px){#siteNav{bottom:auto!important;top:calc(60px + env(safe-area-inset-top,0px));right:10px!important;transform:scale(.78);transform-origin:top right;opacity:.85}}
 /* 대화 */
-.chat{flex:1;overflow-y:auto;padding:46px 12px 14px;-webkit-overflow-scrolling:touch}
-.day{display:flex;justify-content:center;margin:14px 0 10px}
-.day span{background:rgba(0,0,0,.12);color:#fff;font-size:12px;border-radius:999px;padding:3px 12px}
+.chat{flex:1;overflow-y:auto;padding:10px 12px 14px;-webkit-overflow-scrolling:touch}
+.day{display:flex;align-items:center;gap:10px;margin:16px 4px 12px}
+.day:before,.day:after{content:"";flex:1;height:1px;background:var(--dayline,rgba(0,0,0,.14))}
+.day span{background:var(--daybg,rgba(0,0,0,.13));color:#fff;font-size:12.5px;border-radius:999px;padding:4px 13px;white-space:nowrap}
 .notice{margin:6px auto 14px;max-width:420px;background:rgba(255,255,255,.75);border-radius:14px;padding:10px 14px;font-size:13px;color:#333;text-align:center;line-height:1.6}
 .notice b{display:block;color:#7a5b16;margin-bottom:2px}
 .row{display:flex;align-items:flex-end;gap:5px;margin:3px 0}
 .row.me{justify-content:flex-end}
 .row.me.first{margin-top:10px}
-.meta{display:flex;flex-direction:column;align-items:flex-end;font-size:10px;color:#555;line-height:1.2;flex:none;padding-bottom:2px}
+.meta{display:flex;flex-direction:column;align-items:flex-end;font-size:10px;color:var(--metaink,#555);line-height:1.2;flex:none;padding-bottom:2px}
 .meta .u{color:#f0b400;font-weight:700;font-size:11px;transition:opacity .35s,transform .35s}
 .meta .u.gone{opacity:0;transform:scale(.4)}
 .bub{position:relative;max-width:min(72%,420px);background:var(--me);border-radius:14px;padding:8px 11px;white-space:pre-wrap;word-break:break-word;font-size:15px;box-shadow:0 1px 0 rgba(0,0,0,.04)}
@@ -43,7 +53,7 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:15px/1
 .row.you{align-items:flex-start;gap:8px;margin-top:10px}
 .pf{width:42px;height:42px;border-radius:16px;flex:none;cursor:pointer;overflow:hidden;background:linear-gradient(#ffe9a8,#ffd1dc)}
 .pf img{width:100%;height:100%;object-fit:cover;object-position:50% 20%;display:block}
-.you .nm{font-size:12px;color:#333;margin:0 0 4px}
+.you .nm{font-size:12px;color:var(--nameink,#333);margin:0 0 4px}
 .you .bub{background:#fff}
 .you .bub:after{display:none}
 .you .col{display:flex;flex-direction:column;max-width:min(74%,430px)}
@@ -57,13 +67,13 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:15px/1
 @keyframes tdot{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-4px);opacity:1}}
 /* 아래 입력창 */
 .inp{flex:none;display:flex;align-items:flex-end;gap:6px;padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));background:#fff}
-.inp .pl{border:0;background:none;font-size:24px;line-height:1;color:#777;cursor:pointer;padding:6px 4px}
+.inp .pl{border:0;background:none;font-size:30px;line-height:1;color:#777;cursor:pointer;padding:6px 4px}
 .inp textarea{flex:1;border:0;outline:0;resize:none;font:inherit;font-size:16px;line-height:1.4;max-height:120px;padding:8px 6px;background:#fff}
-.inp .em{border:0;background:none;font-size:21px;cursor:pointer;padding:6px 2px;color:#777}
+.inp .em{border:0;background:none;font-size:30px;line-height:1;cursor:pointer;padding:4px 4px;color:#666}
 .inp .send{border:0;border-radius:8px;background:#f2f2f2;color:#aaa;font-size:14px;font-weight:700;padding:9px 13px;cursor:default;flex:none}
 .inp .send.on{background:var(--me);color:#3a1d1d;cursor:pointer}
 .emo{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;padding:8px;background:#fff;border-top:1px solid #eee}
-.emo button{border:0;background:none;font-size:24px;padding:4px;cursor:pointer;border-radius:8px}.emo button:hover{background:#f4f4f4}
+.emo button{border:0;background:none;font-size:30px;padding:6px 2px;cursor:pointer;border-radius:8px}.emo button:hover{background:#f4f4f4}
 /* 프로필 */
 .prof{position:fixed;inset:0;z-index:60;background:linear-gradient(#8fa3b5,#53667a);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:30px 20px calc(50px + env(safe-area-inset-bottom,0px))}
 .prof .x{position:absolute;left:14px;top:calc(12px + env(safe-area-inset-top,0px));border:0;background:none;color:#fff;font-size:26px;cursor:pointer}
@@ -75,8 +85,14 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:15px/1
 .prof .acts button{border:0;background:none;color:#fff;font-size:13px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}
 .prof .acts i{font-style:normal;font-size:24px}
 /* 메뉴 */
+/* 배경 고르기 */
+.themes{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:2px 0 8px}
+.themes button{border:2px solid transparent;border-radius:12px;padding:0;cursor:pointer;background:none;display:flex;flex-direction:column;align-items:center;gap:3px;font:11px/1.25 inherit;word-break:keep-all;text-align:center;color:#444}
+.themes button i{display:block;width:100%;aspect-ratio:3/4;border-radius:9px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08);background-size:cover}
+.themes button.on{border-color:#3a1d1d}
+.menu .lb{font-size:13px;color:#666;margin:8px 0 2px}
 .menu{position:fixed;inset:0;z-index:55;background:rgba(0,0,0,.3)}
-.menu .sh{position:absolute;right:0;top:0;bottom:0;width:min(300px,82vw);background:#fff;padding:calc(16px + env(safe-area-inset-top,0px)) 18px 18px;display:flex;flex-direction:column;gap:6px}
+.menu .sh{position:absolute;right:0;top:0;bottom:0;width:min(320px,86vw);overflow-y:auto;background:#fff;padding:calc(16px + env(safe-area-inset-top,0px)) 18px 18px;display:flex;flex-direction:column;gap:6px}
 .menu h3{margin:0 0 6px;font-size:16px}
 .menu .mm{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0f0f0}
 .menu button.it{border:0;background:#f6f6f6;border-radius:10px;padding:11px;text-align:left;font:inherit;cursor:pointer}
@@ -95,9 +111,9 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:15px/1
 </head><body>
 <div class="splash" id="splash"><div class="logo">가까워<i>✝</i></div><div class="w">Gakkawo<span>Talk</span></div><small>예수님과 더 가까워지는 대화</small></div>
 <div class="app">
-  <header class="top" id="menubar">
+  <header class="hdr">
     <a class="back" href="../" aria-label="목장으로">‹</a>
-    <div class="pf" id="pfTop" style="width:34px;height:34px;border-radius:13px"></div>
+    <div class="pf" id="pfTop" style="width:42px;height:42px;border-radius:15px"></div>
     <div class="ttl"><b>예수님</b><small>GakkawoTalk · 언제나 듣고 계세요</small></div>
     <button class="ib" id="menuB" aria-label="메뉴">☰</button>
   </header>
@@ -120,6 +136,7 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:15px/1
 <div class="menu" id="menu" hidden><div class="sh">
   <h3>대화방 서랍</h3>
   <div class="mm"><div class="pf" id="pfMenu" style="width:36px;height:36px;border-radius:13px"></div><div><b>예수님</b><br><small style="color:#888">대화 상대 1명</small></div></div>
+  <div class="lb">🎨 대화방 배경</div><div class="themes" id="themes"></div>
   <button class="it" id="exportB">📋 대화 내용 복사하기</button>
   <button class="it" id="clearB">🗑 대화 모두 지우기</button>
   <small>보낸 톡은 이 기기(브라우저)에만 저장돼요.<br>예수님은 보내자마자 바로 읽으세요. 언제나 듣고 계시니까요.<br>답장은 톡에 담긴 마음에 맞춰 고른 성경 말씀(개역한글)이에요.</small>
@@ -132,6 +149,27 @@ let tt;const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show
 /* 귀여운 예수님 프사 */
 const PF='<img src="../assets/jesus-head.png?v=3" alt="예수님 프로필" draggable="false">';
 ['#pfTop','#pfBig','#pfMenu'].forEach(s=>$(s).innerHTML=PF);
+/* 대화방 배경 10가지 */
+const svg=s=>`url("data:image/svg+xml,${encodeURIComponent(s)}")`;
+const TH=[
+ {n:'기본 하늘',bg:'#b2c7d9'},
+ {n:'햇살 노랑',bg:'#fff1bd',top:'rgba(255,241,189,.96)'},
+ {n:'벚꽃 분홍',bg:'linear-gradient(#fde4ea,#f7c9d6)',top:'rgba(253,228,234,.96)'},
+ {n:'민트 초원',bg:'linear-gradient(#e3f6ea,#bfe5cf)',top:'rgba(227,246,234,.96)'},
+ {n:'라벤더',bg:'linear-gradient(#ece6fa,#d4c8f0)',top:'rgba(236,230,250,.96)'},
+ {n:'노을',bg:'linear-gradient(#ffe0b5,#f8b9b0 60%,#d9a5c9)',top:'rgba(255,224,181,.96)'},
+ {n:'양떼 목장',bg:svg('<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120"><text x="18" y="40" font-size="22" opacity=".35">🐑</text><text x="74" y="98" font-size="18" opacity=".3">🐑</text><text x="80" y="34" font-size="12" opacity=".35">🌼</text><text x="22" y="100" font-size="11" opacity=".35">🌿</text></svg>')+',linear-gradient(#d6efc4,#b4dc98)',sz:'120px 120px,auto',top:'rgba(214,239,196,.96)'},
+ {n:'십자가 언덕',bg:svg('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600" viewBox="0 0 400 600"><path d="M0 520Q120 450 220 490T400 470V600H0Z" fill="#9fc98a" opacity=".55"/><path d="M200 360v120M180 395h40" stroke="#6b4b33" stroke-width="7" stroke-linecap="round" opacity=".35"/></svg>')+',linear-gradient(#cfe8fb,#eaf5ff 70%)',sz:'100% 100%,auto',top:'rgba(207,232,251,.96)'},
+ {n:'성경 종이',bg:'repeating-linear-gradient(transparent 0 31px,rgba(150,120,80,.15) 31px 32px),#f4ead4',top:'rgba(244,234,212,.97)'},
+ {n:'밤하늘 별',bg:svg('<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160"><g fill="#fff"><circle cx="20" cy="30" r="1.2" opacity=".8"/><circle cx="90" cy="14" r=".9" opacity=".6"/><circle cx="140" cy="60" r="1.4" opacity=".9"/><circle cx="60" cy="100" r="1" opacity=".7"/><circle cx="120" cy="130" r=".8" opacity=".6"/><circle cx="30" cy="140" r="1.1" opacity=".8"/></g><text x="100" y="98" font-size="12" opacity=".7">✦</text></svg>')+',linear-gradient(#1c2647,#2e3f6e)',sz:'160px 160px,auto',top:'rgba(28,38,71,.96)',dark:1}];
+const TKEY='gakkawo-bg';let TI=0;try{TI=+localStorage.getItem(TKEY)||0}catch(_){}
+function applyTheme(i){TI=i;const th=TH[i]||TH[0],r=document.documentElement.style;r.setProperty('--chatbg',th.bg);r.setProperty('--chatsz',th.sz||'auto');r.setProperty('--topbg',th.top||'rgba(178,199,217,.96)');
+  r.setProperty('--topink',th.dark?'#f2f4fa':'#191919');r.setProperty('--topsub',th.dark?'#b9c3dd':'#4a5b6b');r.setProperty('--metaink',th.dark?'#c9d1e6':'#555');r.setProperty('--nameink',th.dark?'#e6eaf5':'#333');r.setProperty('--dayline',th.dark?'rgba(255,255,255,.22)':'rgba(0,0,0,.14)');r.setProperty('--daybg',th.dark?'rgba(255,255,255,.16)':'rgba(0,0,0,.13)');
+  document.querySelector('meta[name=theme-color]').content=th.dark?'#1c2647':(th.top||'#b2c7d9');
+  document.querySelectorAll('#themes button').forEach((b,j)=>b.classList.toggle('on',j===i));try{localStorage.setItem(TKEY,i)}catch(_){}}
+$('#themes').innerHTML=TH.map((th,i)=>`<button type="button" data-i="${i}" title="${th.n}"><i style='background:${th.bg.replace(/'/g,"%27")};background-size:${th.sz?th.sz.replace(/120px 120px|160px 160px/,'60px 60px'):'cover'}'></i>${th.n}</button>`).join('');
+$('#themes').addEventListener('click',e=>{const b=e.target.closest('button');if(b)applyTheme(+b.dataset.i)});
+applyTheme(TI);
 /* 시작 로고 */
 setTimeout(()=>$('#splash').classList.add('out'),900);setTimeout(()=>$('#splash').remove(),1500);
 /* 저장된 대화 */
@@ -143,11 +181,12 @@ const dayLabel=t=>{const d=new Date(t);return`${d.getFullYear()}년 ${d.getMonth
 const hm=t=>{const d=new Date(t);let h=d.getHours(),m=d.getMinutes();const ap=h<12?'오전':'오후';h=h%12||12;return`${ap} ${h}:${String(m).padStart(2,'0')}`};
 const minKey=t=>Math.floor(t/60000);
 function render(){const c=$('#chat');let h=`<div class="notice"><b>✝ 예수님과의 대화방이에요</b>"너는 내게 부르짖으라 내가 네게 응답하겠고 네가 알지 못하는 크고 비밀한 일을 네게 보이리라"<br>(예레미야 33장 3절)</div>`;
-  let lastDay='';M.forEach((m,i)=>{const dk=dayKey(m.t);if(dk!==lastDay){h+=`<div class="day"><span>${dayLabel(m.t)}</span></div>`;lastDay=dk}
-    const prev=M[i-1],next=M[i+1],first=!prev||!prev.j!==!m.j||dayKey(prev.t)!==dk||minKey(prev.t)!==minKey(m.t),showT=!next||!next.j!==!m.j||minKey(next.t)!==minKey(m.t)||dayKey(next.t)!==dk;
+  let lastDay='';M.forEach((m,i)=>{const dk=dayKey(m.t);if(dk!==lastDay){h+=`<div class="day"><span>📅 ${dayLabel(m.t)}</span></div>`;lastDay=dk}
+    const prev=M[i-1],next=M[i+1],first=!prev||!prev.j!==!m.j||dayKey(prev.t)!==dk||minKey(prev.t)!==minKey(m.t),showT=true;
     if(m.j){const cont=!first;h+=`<div class="row you${cont?' cont':''}" data-i="${i}"><div class="pf">${PF}</div><div class="col">${cont?'':'<div class="nm">예수님</div>'}<div class="line"><div class="bub">${esc(m.x)}<span class="ref">- ${esc(m.r)}</span></div>${showT?`<div class="meta"><span>${hm(m.t)}</span></div>`:''}</div></div></div>`;return}
     h+=`<div class="row me${first?' first':''}" data-i="${i}"><div class="meta">${m.u?'<span class="u">1</span>':''}${showT?`<span>${hm(m.t)}</span>`:''}</div><div class="bub">${esc(m.x)}</div></div>`});
   if(TYPING)h+=`<div class="row you typing"><div class="pf">${PF}</div><div class="col"><div class="nm">예수님</div><div class="bub"><i></i><i></i><i></i></div></div></div>`;
+  if(!M.length)h+=`<div class="day"><span>📅 ${dayLabel(Date.now())}</span></div>`;
   c.innerHTML=h;c.scrollTop=c.scrollHeight}
 /* 보내기: 예수님이 바로 읽으셔서 1이 곧 사라져요 */
 const ta=$('#msg'),sendB=$('#send');
@@ -215,16 +254,16 @@ $('#emoB').onclick=()=>{$('#emo').hidden=!$('#emo').hidden;$('#chat').scrollTop=
 const STARTS=['예수님, 오늘 하루도 함께해 주셔서 감사해요.','예수님, 요즘 이런 고민이 있어요.','예수님, 용서해 주세요.','예수님, 사랑해요.','예수님, 도와주세요.'];
 let si=0;$('#plusB').onclick=()=>{ta.value=(ta.value?ta.value+'\n':'')+STARTS[si++%STARTS.length];grow();ta.focus()};
 /* 프로필 */
-const openProf=()=>{$('#prof').hidden=false};
+const openProf=()=>{$('#prof').hidden=false;document.body.classList.add('over')};
 document.addEventListener('click',e=>{if(e.target.closest('.pf')&&!e.target.closest('.prof'))openProf()});
-$('#profX').onclick=$('#profChat').onclick=()=>{$('#prof').hidden=true;ta.focus()};
-$('#profPray').onclick=()=>{$('#prof').hidden=true;ta.value='예수님, ';grow();ta.focus()};
+$('#profX').onclick=$('#profChat').onclick=()=>{$('#prof').hidden=true;document.body.classList.remove('over');ta.focus()};
+$('#profPray').onclick=()=>{$('#prof').hidden=true;document.body.classList.remove('over');ta.value='예수님, ';grow();ta.focus()};
 /* 메뉴 */
-$('#menuB').onclick=()=>{$('#menu').hidden=false};
-$('#menu').addEventListener('click',e=>{if(e.target.id==='menu')$('#menu').hidden=true});
-$('#clearB').onclick=()=>{if(!M.length){toast('지울 대화가 없어요');return}if(!confirm('예수님과 나눈 대화를 모두 지울까요? 되돌릴 수 없어요.'))return;M=[];save();render();$('#menu').hidden=true;toast('대화를 모두 지웠어요')};
+$('#menuB').onclick=()=>{$('#menu').hidden=false;document.body.classList.add('over')};
+$('#menu').addEventListener('click',e=>{if(e.target.id==='menu'){$('#menu').hidden=true;document.body.classList.remove('over')}});
+$('#clearB').onclick=()=>{if(!M.length){toast('지울 대화가 없어요');return}if(!confirm('예수님과 나눈 대화를 모두 지울까요? 되돌릴 수 없어요.'))return;M=[];save();render();$('#menu').hidden=true;document.body.classList.remove('over');toast('대화를 모두 지웠어요')};
 $('#exportB').onclick=async()=>{if(!M.length){toast('복사할 대화가 없어요');return}const t=M.map(m=>`[${dayLabel(m.t)} ${hm(m.t)}] ${m.j?'예수님: '+m.x+' ('+m.r+')':'나: '+m.x}`).join('\n');try{await navigator.clipboard.writeText(t);toast('대화 내용을 복사했어요')}catch(_){toast('복사하지 못했어요')}};
-addEventListener('keydown',e=>{if(e.key==='Escape'){$('#prof').hidden=true;$('#menu').hidden=true}});
+addEventListener('keydown',e=>{if(e.key==='Escape'){$('#prof').hidden=true;$('#menu').hidden=true;document.body.classList.remove('over')}});
 /* 혹시 읽기 전에 닫혔던 톡도 바로 읽음 처리 */
 let fix=false;M.forEach(m=>{if(m.u){m.u=0;fix=true}});if(fix)save();
 /* 답장을 받기 전에 나갔다면, 다시 들어왔을 때 답장해 주세요 */
