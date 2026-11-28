@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://js.tosspayments.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' data: blob: https://api.github.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://api.open-meteo.com https://api.met.no https://wttr.in https://api.mymemory.translated.net https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.doubleclick.net https://www.google.com https://*.tosspayments.com https://0.peerjs.com wss://0.peerjs.com wss://broker.emqx.io:8084 wss://broker.hivemq.com:8884 https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self' blob:; frame-src 'self' https://www.bskorea.or.kr https://*.tosspayments.com; object-src 'none'; base-uri 'self'; form-action 'self' https://*.tosspayments.com">
+<meta name="referrer" content="strict-origin-when-cross-origin"><script async src="https://www.googletagmanager.com/gtag/js?id=G-0WTWY3TPES"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-0WTWY3TPES");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<title>가까워톡 | 치영의 교회 생활 즐기기 · GakkawoTalk으로 예수님께 말하기</title>
+<meta name="description" content="예수님과 더 가까워지는 대화, GakkawoTalk(가까워톡) 대화방에서 예수님께 하고 싶은 말을 보내요. 보내자마자 예수님이 바로 읽으세요.">
+<link rel="canonical" href="https://zidane7-creator.github.io/nanum-boardgame/talk/">
+<meta property="og:title" content="가까워톡 — 치영의 교회 생활 즐기기">
+<meta property="og:description" content="예수님께 톡을 보내요. 보내자마자 1이 사라져요">
+<meta property="og:image" content="https://zidane7-creator.github.io/nanum-boardgame/assets/og.jpg">
+<meta name="theme-color" content="#b2c7d9">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💬</text></svg>">
+<style>
+:root{--bg:#b2c7d9;--me:#fee500;--ink:#191919;--sub:#556677}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:15px/1.45 "Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;overflow:hidden;-webkit-tap-highlight-color:transparent}
+.app{position:fixed;inset:0;display:flex;flex-direction:column;max-width:720px;margin:0 auto;background:var(--bg);box-shadow:0 0 30px rgba(0,0,0,.12)}
+/* 위쪽 */
+.top{flex:none;display:flex;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top,0px)) 10px 8px;background:rgba(178,199,217,.96);border-bottom:1px solid rgba(0,0,0,.06);z-index:5}
+.top .back{border:0;background:none;font-size:22px;line-height:1;padding:2px 4px;cursor:pointer;color:#222;text-decoration:none}
+.top .ttl{flex:1;min-width:0;display:flex;flex-direction:column}
+.top .ttl b{font-size:17px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .ttl small{font-size:11px;color:#4a5b6b;letter-spacing:.02em}
+.top .ib{border:0;background:none;font-size:19px;cursor:pointer;padding:4px 6px;color:#222}
+#homeFab.inbar{margin-right:2px}
+/* 사용가이드·화면 이동 버튼은 위쪽에 작게 */
+#siteNav{bottom:auto!important;top:calc(66px + env(safe-area-inset-top,0px));right:10px!important;transform:scale(.78);transform-origin:top right;opacity:.85}
+/* 대화 */
+.chat{flex:1;overflow-y:auto;padding:46px 12px 14px;-webkit-overflow-scrolling:touch}
+.day{display:flex;justify-content:center;margin:14px 0 10px}
+.day span{background:rgba(0,0,0,.12);color:#fff;font-size:12px;border-radius:999px;padding:3px 12px}
+.notice{margin:6px auto 14px;max-width:420px;background:rgba(255,255,255,.75);border-radius:14px;padding:10px 14px;font-size:13px;color:#333;text-align:center;line-height:1.6}
+.notice b{display:block;color:#7a5b16;margin-bottom:2px}
+.row{display:flex;align-items:flex-end;gap:5px;margin:3px 0}
+.row.me{justify-content:flex-end}
+.row.me.first{margin-top:10px}
+.meta{display:flex;flex-direction:column;align-items:flex-end;font-size:10px;color:#555;line-height:1.2;flex:none;padding-bottom:2px}
+.meta .u{color:#f0b400;font-weight:700;font-size:11px;transition:opacity .35s,transform .35s}
+.meta .u.gone{opacity:0;transform:scale(.4)}
+.bub{position:relative;max-width:min(72%,420px);background:var(--me);border-radius:14px;padding:8px 11px;white-space:pre-wrap;word-break:break-word;font-size:15px;box-shadow:0 1px 0 rgba(0,0,0,.04)}
+.row.me.first .bub{border-top-right-radius:3px}
+.row.me.first .bub:after{content:"";position:absolute;right:-6px;top:0;border:7px solid transparent;border-left-color:var(--me);border-top-color:var(--me);border-right:0;border-bottom-width:9px}
+.row.you{align-items:flex-start;gap:8px;margin-top:10px}
+.pf{width:42px;height:42px;border-radius:16px;flex:none;cursor:pointer;overflow:hidden;background:linear-gradient(#ffe9a8,#ffd1dc)}
+.pf img{width:100%;height:100%;object-fit:cover;object-position:50% 20%;display:block}
+.you .nm{font-size:12px;color:#333;margin:0 0 4px}
+.you .bub{background:#fff}
+.you .bub:after{display:none}
+/* 아래 입력창 */
+.inp{flex:none;display:flex;align-items:flex-end;gap:6px;padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));background:#fff}
+.inp .pl{border:0;background:none;font-size:24px;line-height:1;color:#777;cursor:pointer;padding:6px 4px}
+.inp textarea{flex:1;border:0;outline:0;resize:none;font:inherit;font-size:16px;line-height:1.4;max-height:120px;padding:8px 6px;background:#fff}
+.inp .em{border:0;background:none;font-size:21px;cursor:pointer;padding:6px 2px;color:#777}
+.inp .send{border:0;border-radius:8px;background:#f2f2f2;color:#aaa;font-size:14px;font-weight:700;padding:9px 13px;cursor:default;flex:none}
+.inp .send.on{background:var(--me);color:#3a1d1d;cursor:pointer}
+.emo{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;padding:8px;background:#fff;border-top:1px solid #eee}
+.emo button{border:0;background:none;font-size:24px;padding:4px;cursor:pointer;border-radius:8px}.emo button:hover{background:#f4f4f4}
+/* 프로필 */
+.prof{position:fixed;inset:0;z-index:60;background:linear-gradient(#8fa3b5,#53667a);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:30px 20px calc(50px + env(safe-area-inset-bottom,0px))}
+.prof .x{position:absolute;left:14px;top:calc(12px + env(safe-area-inset-top,0px));border:0;background:none;color:#fff;font-size:26px;cursor:pointer}
+.prof .big{width:150px;height:150px;border-radius:52px;overflow:hidden;background:linear-gradient(#ffe9a8,#ffd1dc);box-shadow:0 8px 30px rgba(0,0,0,.25)}
+.prof .big img{width:100%;height:100%;object-fit:cover;object-position:50% 20%}
+.prof h2{margin:14px 0 4px;font-size:22px}
+.prof p{margin:0;opacity:.9;text-align:center;font-size:14px;max-width:320px;word-break:keep-all}
+.prof .acts{display:flex;gap:40px;margin-top:34px;border-top:1px solid rgba(255,255,255,.25);padding-top:20px;width:100%;justify-content:center}
+.prof .acts button{border:0;background:none;color:#fff;font-size:13px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}
+.prof .acts i{font-style:normal;font-size:24px}
+/* 메뉴 */
+.menu{position:fixed;inset:0;z-index:55;background:rgba(0,0,0,.3)}
+.menu .sh{position:absolute;right:0;top:0;bottom:0;width:min(300px,82vw);background:#fff;padding:calc(16px + env(safe-area-inset-top,0px)) 18px 18px;display:flex;flex-direction:column;gap:6px}
+.menu h3{margin:0 0 6px;font-size:16px}
+.menu .mm{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0f0f0}
+.menu button.it{border:0;background:#f6f6f6;border-radius:10px;padding:11px;text-align:left;font:inherit;cursor:pointer}
+.menu small{color:#888;line-height:1.6;margin-top:auto}
+/* 시작 화면 (패러디 로고) */
+.splash{position:fixed;inset:0;z-index:80;background:#fee500;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;transition:opacity .5s}
+.splash.out{opacity:0;pointer-events:none}
+.logo{width:92px;height:80px;background:#3a1d1d;border-radius:50%/46%;position:relative;display:flex;align-items:center;justify-content:center;color:#fee500;font:900 20px/1 "Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.02em}
+.logo i{position:absolute;right:-6px;top:-8px;font-style:normal;font-size:18px;color:#3a1d1d;background:#fff6b0;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 0 rgba(0,0,0,.15)}
+.logo:after{content:"";position:absolute;left:18px;bottom:-9px;border:10px solid transparent;border-top-color:#3a1d1d;border-left-color:#3a1d1d;transform:rotate(8deg)}
+.splash .w{font:800 22px/1 Arial,"Apple SD Gothic Neo",sans-serif;color:#3a1d1d;letter-spacing:.01em}
+.splash .w span{font-weight:400}
+.splash small{color:#5b4a1a;font-size:12px}
+.toast{position:fixed;left:50%;top:40%;transform:translateX(-50%);background:rgba(0,0,0,.72);color:#fff;padding:9px 16px;border-radius:12px;opacity:0;transition:.3s;z-index:90;pointer-events:none;font-size:14px}.toast.show{opacity:1}
+</style>
+</head><body>
+<div class="splash" id="splash"><div class="logo">가까워<i>✝</i></div><div class="w">Gakkawo<span>Talk</span></div><small>예수님과 더 가까워지는 대화</small></div>
+<div class="app">
+  <header class="top" id="menubar">
+    <a class="back" href="../" aria-label="목장으로">‹</a>
+    <div class="pf" id="pfTop" style="width:34px;height:34px;border-radius:13px"></div>
+    <div class="ttl"><b>예수님</b><small>GakkawoTalk · 언제나 듣고 계세요</small></div>
+    <button class="ib" id="menuB" aria-label="메뉴">☰</button>
+  </header>
+  <main class="chat" id="chat"></main>
+  <div class="emo" id="emo" hidden></div>
+  <div class="inp">
+    <button class="pl" id="plusB" aria-label="말씀 붙이기">＋</button>
+    <textarea id="msg" rows="1" maxlength="1000" placeholder="예수님께 하고 싶은 말"></textarea>
+    <button class="em" id="emoB" aria-label="이모티콘">☺</button>
+    <button class="send" id="send">전송</button>
+  </div>
+</div>
+<div class="prof" id="prof" hidden>
+  <button class="x" id="profX" aria-label="닫기">✕</button>
+  <div class="big" id="pfBig"></div>
+  <h2>예수님</h2>
+  <p>"수고하고 무거운 짐 진 자들아 다 내게로 오라 내가 너희를 쉬게 하리라" (마태복음 11장 28절)</p>
+  <div class="acts"><button id="profChat"><i>💬</i>1:1 채팅</button><button id="profPray"><i>🙏</i>기도하기</button></div>
+</div>
+<div class="menu" id="menu" hidden><div class="sh">
+  <h3>대화방 서랍</h3>
+  <div class="mm"><div class="pf" id="pfMenu" style="width:36px;height:36px;border-radius:13px"></div><div><b>예수님</b><br><small style="color:#888">대화 상대 1명</small></div></div>
+  <button class="it" id="exportB">📋 대화 내용 복사하기</button>
+  <button class="it" id="clearB">🗑 대화 모두 지우기</button>
+  <small>보낸 톡은 이 기기(브라우저)에만 저장돼요.<br>예수님은 보내자마자 바로 읽으세요. 언제나 듣고 계시니까요.</small>
+</div></div>
+<div class="toast" id="toast"></div>
+<script>
+(function(){"use strict";
+const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let tt;const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1800)};
+/* 귀여운 예수님 프사 */
+const PF='<img src="../assets/jesus-head.png?v=3" alt="예수님 프로필" draggable="false">';
+['#pfTop','#pfBig','#pfMenu'].forEach(s=>$(s).innerHTML=PF);
+/* 시작 로고 */
+setTimeout(()=>$('#splash').classList.add('out'),900);setTimeout(()=>$('#splash').remove(),1500);
+/* 저장된 대화 */
+const KEY='gakkawo-v1';let M=[];try{const o=JSON.parse(localStorage.getItem(KEY)||'null');if(Array.isArray(o))M=o}catch(_){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(M))}catch(_){}};
+const W='일월화수목금토';
+const dayKey=t=>{const d=new Date(t);return d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate()};
+const dayLabel=t=>{const d=new Date(t);return`${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 ${W[d.getDay()]}요일`};
+const hm=t=>{const d=new Date(t);let h=d.getHours(),m=d.getMinutes();const ap=h<12?'오전':'오후';h=h%12||12;return`${ap} ${h}:${String(m).padStart(2,'0')}`};
+const minKey=t=>Math.floor(t/60000);
+function render(){const c=$('#chat');let h=`<div class="notice"><b>✝ 예수님과의 대화방이에요</b>"너는 내게 부르짖으라 내가 네게 응답하겠고 네가 알지 못하는 크고 비밀한 일을 네게 보이리라"<br>(예레미야 33장 3절)</div>`;
+  let lastDay='';M.forEach((m,i)=>{const dk=dayKey(m.t);if(dk!==lastDay){h+=`<div class="day"><span>${dayLabel(m.t)}</span></div>`;lastDay=dk}
+    const prev=M[i-1],next=M[i+1],first=!prev||dayKey(prev.t)!==dk||minKey(prev.t)!==minKey(m.t),showT=!next||minKey(next.t)!==minKey(m.t)||dayKey(next.t)!==dk;
+    h+=`<div class="row me${first?' first':''}" data-i="${i}"><div class="meta">${m.u?'<span class="u">1</span>':''}${showT?`<span>${hm(m.t)}</span>`:''}</div><div class="bub">${esc(m.x)}</div></div>`});
+  c.innerHTML=h;c.scrollTop=c.scrollHeight}
+/* 보내기: 예수님이 바로 읽으셔서 1이 곧 사라져요 */
+const ta=$('#msg'),sendB=$('#send');
+function grow(){ta.style.height='auto';ta.style.height=Math.min(120,ta.scrollHeight)+'px';sendB.classList.toggle('on',!!ta.value.trim())}
+function send(){const x=ta.value.replace(/\s+$/,'');if(!x.trim())return;const m={t:Date.now(),x,u:1};M.push(m);save();ta.value='';grow();render();ta.focus();
+  const idx=M.length-1;setTimeout(()=>{m.u=0;save();const u=document.querySelector(`#chat .row[data-i="${idx}"] .u`);if(u){u.classList.add('gone');setTimeout(()=>u.remove(),380)}},450)}
+sendB.onclick=send;ta.addEventListener('input',grow);
+ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing&&matchMedia('(pointer:fine)').matches){e.preventDefault();send()}});
+/* 이모티콘 */
+const EM=['🙏','😊','😭','🥹','❤️','🥰','😢','🙇','✨','🌿','☀️','🎉','😔','🤍','✝️','🕊️','👍','😅','🙌','💪','🌸','🍞','🐑','📖'];
+$('#emo').innerHTML=EM.map(e=>`<button>${e}</button>`).join('');
+$('#emo').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const s=ta.selectionStart||ta.value.length;ta.value=ta.value.slice(0,s)+b.textContent+ta.value.slice(ta.selectionEnd||s);grow();ta.focus()});
+$('#emoB').onclick=()=>{$('#emo').hidden=!$('#emo').hidden;$('#chat').scrollTop=1e9};
+/* ＋ : 기도 첫마디 붙이기 */
+const STARTS=['예수님, 오늘 하루도 함께해 주셔서 감사해요.','예수님, 요즘 이런 고민이 있어요.','예수님, 용서해 주세요.','예수님, 사랑해요.','예수님, 도와주세요.'];
+let si=0;$('#plusB').onclick=()=>{ta.value=(ta.value?ta.value+'\n':'')+STARTS[si++%STARTS.length];grow();ta.focus()};
+/* 프로필 */
+const openProf=()=>{$('#prof').hidden=false};
+document.addEventListener('click',e=>{if(e.target.closest('.pf')&&!e.target.closest('.prof'))openProf()});
+$('#profX').onclick=$('#profChat').onclick=()=>{$('#prof').hidden=true;ta.focus()};
+$('#profPray').onclick=()=>{$('#prof').hidden=true;ta.value='예수님, ';grow();ta.focus()};
+/* 메뉴 */
+$('#menuB').onclick=()=>{$('#menu').hidden=false};
+$('#menu').addEventListener('click',e=>{if(e.target.id==='menu')$('#menu').hidden=true});
+$('#clearB').onclick=()=>{if(!M.length){toast('지울 대화가 없어요');return}if(!confirm('예수님과 나눈 대화를 모두 지울까요? 되돌릴 수 없어요.'))return;M=[];save();render();$('#menu').hidden=true;toast('대화를 모두 지웠어요')};
+$('#exportB').onclick=async()=>{if(!M.length){toast('복사할 대화가 없어요');return}const t=M.map(m=>`[${dayLabel(m.t)} ${hm(m.t)}] ${m.x}`).join('\n');try{await navigator.clipboard.writeText(t);toast('대화 내용을 복사했어요')}catch(_){toast('복사하지 못했어요')}};
+addEventListener('keydown',e=>{if(e.key==='Escape'){$('#prof').hidden=true;$('#menu').hidden=true}});
+/* 혹시 읽기 전에 닫혔던 톡도 바로 읽음 처리 */
+let fix=false;M.forEach(m=>{if(m.u){m.u=0;fix=true}});if(fix)save();
+render();grow();
+})();
+</script>
+<script src="../assets/home.js?v=20261128fs"></script>
+</body></html>
