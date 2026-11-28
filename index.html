@@ -406,7 +406,7 @@ const KID='<svg viewBox="0 0 100 172" xmlns="http://www.w3.org/2000/svg"><g stro
  '<g class="leg legL"><path d="M38 122h17v32H38z" fill="#2747d6"/><path d="M55 150c0 8-4 12-14 12H25c-6 0-8-4-6-8s6-4 10-4h26z" fill="#ff2a1f"/></g>'+
  '<path class="arm" d="M48 90c-6 8-8 20-4 32" fill="none" stroke="#111" stroke-width="13"/><path class="arm" d="M48 90c-6 8-8 20-4 32" fill="none" stroke="#ffe23a" stroke-width="7"/>'+
  '<circle cx="54" cy="46" r="40" fill="#f6d2ad"/>'+
- '<path d="M17 58c-6 0-9 3-8 7 2 5 9 6 14 3" fill="#e8241c"/>'+
+ '<path d="M20 62c3-4 10-4 13 0-3 5-10 5-13 0z" fill="#e8241c" stroke-width="3"/>'+
  '<circle cx="30" cy="38" r="10" fill="#fff"/></g><circle cx="26" cy="33" r="4.5" fill="#111"/></svg>';
 /* 앉은 모습: 무릎을 세우고 두 팔로 감싸 안고 앉아요 */
 const KID_SIT='<svg viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg"><g stroke="#111" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">'+
@@ -417,7 +417,7 @@ const KID_SIT='<svg viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg"><g 
  '<path d="M76 94C66 104 56 108 44 110" fill="none" stroke-width="15"/><path d="M76 94C66 104 56 108 44 110" fill="none" stroke="#ffe23a" stroke-width="8"/>'+
  '<circle cx="42" cy="110" r="7" fill="#f6d2ad" stroke-width="3"/>'+
  '<circle cx="68" cy="46" r="40" fill="#f6d2ad"/>'+
- '<path d="M31 58c-6 0-9 3-8 7 2 5 9 6 14 3" fill="#e8241c"/>'+
+ '<path d="M34 62c3-4 10-4 13 0-3 5-10 5-13 0z" fill="#e8241c" stroke-width="3"/>'+
  '<circle cx="44" cy="38" r="10" fill="#fff"/></g><circle cx="40" cy="33" r="4.5" fill="#111"/></svg>';
 const KW=small?34:46,KG=small?42:56;
 const K={el:mk(KID,"kid",KW),x:0,on:false,sat:false};
@@ -439,7 +439,8 @@ let last=performance.now();
 const barn=document.getElementById("barn"),barnF=document.getElementById("barnF"),R=document.documentElement;
 const shelterNow=()=>!!barn&&(R.classList.contains("wx-wet")||R.classList.contains("wx-snow")||R.classList.contains("sc-night"));
 const SX=flock.map((_,i)=>sheepX(i));let TX=[],TJ=0,first=true;
-const SPOTS=N===3?[.2,.6,.8]:[.18,.58,.72,.86];
+/* 양은 앞쪽 짚더미·대야(가운데)를 피해 오른쪽에 모여 자요. 왼쪽은 예수님과 아이 자리 */
+const SPOTS=N===3?[.66,.76,.86]:[.64,.72,.8,.88];
 function barnTargets(){const L=barn.offsetLeft,w=barn.offsetWidth;TJ=L+w*.38;TX=flock.map((_,i)=>L+w*SPOTS[i])}
 function moveTo(st){let done=true;flock.forEach((f,i)=>{const d=TX[i]-SX[i];if(Math.abs(d)>st){SX[i]+=Math.sign(d)*st;face(f.el,Math.sign(d));done=false}else{SX[i]=TX[i]}});
   const d=TJ-jx;if(Math.abs(d)>st){jx+=Math.sign(d)*st;face(J.el,Math.sign(d));done=false}else jx=TJ;return done}
