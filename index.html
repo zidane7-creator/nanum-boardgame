@@ -173,6 +173,17 @@ html.sc-night .tree,html.sc-night .hills,html.sc-night .front{filter:brightness(
 @keyframes jarm{0%,100%{transform:rotate(-9deg)}50%{transform:rotate(9deg)}}
 @keyframes jstaff{0%,100%{transform:rotate(4deg)}50%{transform:rotate(-7deg)}}
 @media (prefers-reduced-motion:reduce){.parade .jesus *{animation:none!important}}
+/* 예수님 뒤를 따라 걷는 아이 */
+.parade .kid{cursor:pointer}
+.parade .kid .leg{transform-box:fill-box;transform-origin:50% 0}
+.parade .kid .arm{transform-box:fill-box;transform-origin:50% 8%}
+.parade .kid.walk .legL{animation:kleg .6s ease-in-out infinite}.parade .kid.walk .legR{animation:kleg .6s ease-in-out -.3s infinite}
+.parade .kid.walk .arm{animation:karm .6s ease-in-out infinite}
+@keyframes kleg{0%,100%{transform:rotate(-22deg)}50%{transform:rotate(22deg)}}
+@keyframes karm{0%,100%{transform:rotate(18deg)}50%{transform:rotate(-18deg)}}
+.parade .kid.sit svg{transform:translateY(17px)}.parade .kid.sit.flip svg{transform:translateY(17px) scaleX(-1)}
+.parade .kid.sit .leg{transform:rotate(80deg)}
+@media (prefers-reduced-motion:reduce){.parade .kid *{animation:none!important}}
 </style><meta property="og:image" content="https://zidane7-creator.github.io/nanum-boardgame/assets/og.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:site_name" content="치영의 교회 생활 즐기기"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://zidane7-creator.github.io/nanum-boardgame/assets/og.jpg">
 <script src="assets/jua.js"></script>
 <style>
@@ -389,6 +400,18 @@ const mk=(html,cls,w)=>{const d=document.createElement("div");d.className="pw "+
 const small=innerWidth<560,SW=small?40:56,JW=small?58:80,GAP=small?34:46,N=small?3:4,JG=small?50:68;
 const flock=[];for(let i=0;i<N;i++){const w=Math.round(SW*(i===N-1?.8:1-.06*i));flock.push({el:mk(SHEEP,"flk",w),w,zz:false})}
 const J={el:mk(JESUS,"jesus",JW)};
+/* 아이: 동그란 얼굴, 노란 옷, 파란 바지, 빨간 신발 — 왼쪽을 보고 서 있는 모습 */
+const KID='<svg viewBox="0 0 100 172" xmlns="http://www.w3.org/2000/svg"><g stroke="#111" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">'+
+ '<g class="leg legR"><path d="M58 122h15v32H58z" fill="#1f3fbf"/><path d="M73 150c0 8-4 12-14 12H45c-6 0-8-4-6-8s6-4 10-4h24z" fill="#e8241c"/></g>'+
+ '<path class="arm" d="M66 90c8 8 10 20 6 32" fill="none" stroke="#111" stroke-width="13"/><path class="arm" d="M66 90c8 8 10 20 6 32" fill="none" stroke="#f7d81c" stroke-width="7"/>'+
+ '<path d="M36 86h40c4 0 6 3 6 7v33H32V93c0-4 1-7 4-7z" fill="#f7d81c"/>'+
+ '<g class="leg legL"><path d="M38 122h17v32H38z" fill="#2747d6"/><path d="M55 150c0 8-4 12-14 12H25c-6 0-8-4-6-8s6-4 10-4h26z" fill="#ff2a1f"/></g>'+
+ '<path class="arm" d="M48 90c-6 8-8 20-4 32" fill="none" stroke="#111" stroke-width="13"/><path class="arm" d="M48 90c-6 8-8 20-4 32" fill="none" stroke="#ffe23a" stroke-width="7"/>'+
+ '<circle cx="54" cy="46" r="40" fill="#f6d2ad"/>'+
+ '<path d="M17 58c-6 0-9 3-8 7 2 5 9 6 14 3" fill="#e8241c"/>'+
+ '<circle cx="30" cy="38" r="10" fill="#fff"/></g><circle cx="26" cy="33" r="4.5" fill="#111"/></svg>';
+const KW=small?34:46,KG=small?42:56;
+const K={el:mk(KID,"kid",KW),x:0,on:false};K.el.style.zIndex=6;
 flock.forEach((f,i)=>{f.el.style.bottom=((i%2)*5)+"px";f.el.style.zIndex=3+(i%2?0:1)});J.el.style.zIndex=5;
 const rnd=(a,b)=>a+Math.random()*(b-a);
 /* 양 떼는 줄지어 같은 방향을 보고 걷고, 예수님은 늘 그 뒤에서 몬다.
@@ -434,8 +457,16 @@ function frame(t){const dt=Math.min(.05,(t-last)/1000);last=t;W=lane.clientWidth
     if(Math.abs(d)<=st){jx=jT;face(J.el,dir);phase="rest";until=t+rnd(1200,2200);mode(J.el,"graze")}else{jx+=Math.sign(d)*st;face(J.el,Math.sign(d))}}
   if(phase==="walk"||phase==="rest"||phase==="turn"){flock.forEach((f,i)=>{SX[i]=sheepX(i);f.el.style.left=SX[i]+"px";face(f.el,dir)});J.el.style.left=jx+"px"}
   else{flock.forEach((f,i)=>f.el.style.left=SX[i]+"px");J.el.style.left=jx+"px"}
+  /* 아이는 예수님이 바라보는 쪽의 뒤에서 따라 걸어요. 우리 안에서는 예수님 곁에 앉아요 */
+  {const jd=J.el.classList.contains("flip")?1:-1,inB=phase==="in",tx=inB?jx-JW*.5:jx-jd*KG;
+   if(!K.on){K.x=tx;K.on=true}const d=tx-K.x,st=sp*2.4*dt;
+   if(Math.abs(d)>st){K.x+=Math.sign(d)*st;face(K.el,Math.sign(d));mode(K.el,"walk");K.el.classList.remove("sit")}
+   else{K.x=tx;face(K.el,inB?1:jd);mode(K.el,J.el.classList.contains("walk")&&!inB?"walk":"");K.el.classList.toggle("sit",inB&&J.el.classList.contains("sit"))}
+   K.el.style.left=K.x+"px"}
   requestAnimationFrame(frame)}
 if(matchMedia("(prefers-reduced-motion: reduce)").matches)all("");else requestAnimationFrame(frame);
+const KSAYS=["예수님 따라가요!","주님과 함께 걸어요 🎵","예수님 기다려요~","나도 주님의 양이에요!"];
+K.el.addEventListener("click",()=>{const old=K.el.querySelector(".say");if(old)old.remove();const b=document.createElement("span");b.className="say";b.textContent=KSAYS[Math.floor(Math.random()*KSAYS.length)];K.el.appendChild(b);setTimeout(()=>b.remove(),2400);K.el.animate([{marginBottom:"0px"},{marginBottom:"16px"},{marginBottom:"0px"}],{duration:420,easing:"ease-out"})});
 const SAYS=["나는 선한 목자라 (요 10:11)","내 양은 내 음성을 듣느니라 (요 10:27)","잃은 양을 찾았노라 (눅 15:6)","여호와는 나의 목자시니 (시 23:1)"];
 J.el.addEventListener("click",()=>{const old=J.el.querySelector(".say");if(old)old.remove();const b=document.createElement("span");b.className="say";b.textContent=SAYS[Math.floor(Math.random()*SAYS.length)];J.el.appendChild(b);setTimeout(()=>b.remove(),2600);
   flock.forEach((f,i)=>setTimeout(()=>{f.el.animate([{marginBottom:"0px"},{marginBottom:"12px"},{marginBottom:"0px"}],{duration:420,easing:"ease-out"})},i*90));
