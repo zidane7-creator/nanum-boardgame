@@ -14,7 +14,8 @@
 :root{--bg:#b2c7d9;--me:#fee500;--ink:#191919;--sub:#556677}
 *{box-sizing:border-box}[hidden]{display:none!important}
 html,body{margin:0;height:100%;background:#dfe5ea;color:var(--ink);font:15px/1.45 "Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;overflow:hidden;-webkit-tap-highlight-color:transparent}
-.app{position:fixed;inset:0;display:flex;flex-direction:column;max-width:720px;margin:0 auto;background:var(--chatbg,var(--bg));background-size:var(--chatsz,auto);box-shadow:0 0 30px rgba(0,0,0,.12)}
+.app{--top:10px;position:fixed;left:50%;top:var(--top);transform:translateX(-50%);aspect-ratio:9/16;height:min(calc(100dvh - var(--top) - 10px - env(safe-area-inset-bottom,0px)),calc((100vw - 16px)*16/9));width:auto;display:flex;flex-direction:column;overflow:hidden;border-radius:18px;background:var(--chatbg,var(--bg));background-size:var(--chatsz,auto);box-shadow:0 10px 40px rgba(0,0,0,.18),0 0 0 1px rgba(0,0,0,.06)}
+@supports not (height:1dvh){.app{height:min(calc(100vh - var(--top) - 10px),calc((100vw - 16px)*16/9))}}
 /* 위쪽 */
 .hdr{flex:none;display:flex;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top,0px)) 10px 8px;background:var(--topbg,rgba(178,199,217,.96));color:var(--topink,#191919);border-bottom:1px solid rgba(0,0,0,.06);z-index:5}
 .hdr .back{border:0;background:none;font-size:26px;line-height:1;padding:2px 4px;cursor:pointer;color:inherit;text-decoration:none}
@@ -23,10 +24,10 @@ html,body{margin:0;height:100%;background:#dfe5ea;color:var(--ink);font:15px/1.4
 .hdr .ttl small{font-size:13.5px;color:var(--topsub,#4a5b6b);letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hdr .ib{border:0;background:none;font-size:21px;cursor:pointer;padding:4px 6px;color:inherit}
 /* 사용가이드·화면 이동 버튼은 위쪽에 작게 */
-body.over #siteNav,body.over #homeFab,body.over #siteGuideBtn{display:none!important}
+
 /* 홈·사용가이드·화면 이동 버튼은 채팅창 밖에: 넓은 화면은 양옆, 좁은 화면은 채팅창 위 줄 */
 @media (max-width:1040px){
-  .app{top:calc(52px + env(safe-area-inset-top,0px))}
+  .app{--top:calc(52px + env(safe-area-inset-top,0px))}
   .hdr{padding-top:8px}
   #homeFab{top:calc(9px + env(safe-area-inset-top,0px))!important;bottom:auto!important;left:10px!important;padding:5px 12px 5px 9px!important;box-shadow:0 2px 0 #3b2f2a!important}
   #siteGuideBtn.float{top:calc(9px + env(safe-area-inset-top,0px))!important;right:10px!important}
@@ -75,7 +76,7 @@ body.over #siteNav,body.over #homeFab,body.over #siteGuideBtn{display:none!impor
 .emo{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;padding:8px;background:#fff;border-top:1px solid #eee}
 .emo button{border:0;background:none;font-size:30px;padding:6px 2px;cursor:pointer;border-radius:8px}.emo button:hover{background:#f4f4f4}
 /* 프로필 */
-.prof{position:fixed;inset:0;z-index:60;background:linear-gradient(#8fa3b5,#53667a);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:30px 20px calc(50px + env(safe-area-inset-bottom,0px))}
+.prof{position:absolute;inset:0;z-index:60;background:linear-gradient(#8fa3b5,#53667a);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:30px 20px calc(50px + env(safe-area-inset-bottom,0px))}
 .prof .x{position:absolute;left:14px;top:calc(12px + env(safe-area-inset-top,0px));border:0;background:none;color:#fff;font-size:26px;cursor:pointer}
 .prof .big{width:150px;height:150px;border-radius:52px;overflow:hidden;background:linear-gradient(#ffe9a8,#ffd1dc);box-shadow:0 8px 30px rgba(0,0,0,.25)}
 .prof .big img{width:100%;height:100%;object-fit:cover;object-position:50% 20%}
@@ -91,7 +92,7 @@ body.over #siteNav,body.over #homeFab,body.over #siteGuideBtn{display:none!impor
 .themes button i{display:block;width:100%;aspect-ratio:3/4;border-radius:9px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08);background-size:cover}
 .themes button.on{border-color:#3a1d1d}
 .menu .lb{font-size:13px;color:#666;margin:8px 0 2px}
-.menu{position:fixed;inset:0;z-index:55;background:rgba(0,0,0,.3)}
+.menu{position:absolute;inset:0;z-index:55;background:rgba(0,0,0,.3)}
 .menu .sh{position:absolute;right:0;top:0;bottom:0;width:min(320px,86vw);overflow-y:auto;background:#fff;padding:calc(16px + env(safe-area-inset-top,0px)) 18px 18px;display:flex;flex-direction:column;gap:6px}
 .menu h3{margin:0 0 6px;font-size:16px}
 .menu .mm{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0f0f0}
@@ -125,7 +126,6 @@ body.over #siteNav,body.over #homeFab,body.over #siteGuideBtn{display:none!impor
     <button class="em" id="emoB" aria-label="이모티콘">☺</button>
     <button class="send" id="send">전송</button>
   </div>
-</div>
 <div class="prof" id="prof" hidden>
   <button class="x" id="profX" aria-label="닫기">✕</button>
   <div class="big" id="pfBig"></div>
@@ -141,6 +141,7 @@ body.over #siteNav,body.over #homeFab,body.over #siteGuideBtn{display:none!impor
   <button class="it" id="clearB">🗑 대화 모두 지우기</button>
   <small>보낸 톡은 이 기기(브라우저)에만 저장돼요.<br>예수님은 보내자마자 바로 읽으세요. 언제나 듣고 계시니까요.<br>답장은 톡에 담긴 마음에 맞춰 고른 성경 말씀(개역한글)이에요.</small>
 </div></div>
+</div>
 <div class="toast" id="toast"></div>
 <script>
 (function(){"use strict";
