@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://js.tosspayments.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' data: blob: https://api.github.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://api.open-meteo.com https://api.met.no https://wttr.in https://api.mymemory.translated.net https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.doubleclick.net https://www.google.com https://*.tosspayments.com https://0.peerjs.com wss://0.peerjs.com wss://broker.emqx.io:8084 wss://broker.hivemq.com:8884 https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self' blob:; frame-src 'self' https://www.bskorea.or.kr https://*.tosspayments.com; object-src 'none'; base-uri 'self'; form-action 'self' https://*.tosspayments.com">
+<meta name="referrer" content="strict-origin-when-cross-origin"><script async src="https://www.googletagmanager.com/gtag/js?id=G-0WTWY3TPES"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-0WTWY3TPES");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>감사일기 | 치영의 교회 생활 즐기기 · 날마다 감사제목 쓰기</title>
+<meta name="description" content="가죽 표지 노트에 날마다 감사제목을 적어요. 한 쪽에 하루, 펼치면 이틀치. 쓰는 대로 자동 저장되고, 쪽마다 감사 말씀이 함께 있어요.">
+<link rel="canonical" href="https://zidane7-creator.github.io/nanum-boardgame/thanks/">
+<meta property="og:title" content="감사일기 — 치영의 교회 생활 즐기기">
+<meta property="og:description" content="가죽 노트에 날마다 감사제목을 적어요">
+<meta property="og:image" content="https://zidane7-creator.github.io/nanum-boardgame/assets/og.jpg">
+<meta name="theme-color" content="#3a2a1e">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📔</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Nanum+Pen+Script&family=Nanum+Myeongjo:wght@800&display=swap" rel="stylesheet">
+<style>
+:root{--P:380px;--H:532px;--ink:#3a2c22;--gold:#e7c983;--paper:#fbf6ea;--line:#d9cdb4}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html,body{margin:0;height:100%;overflow:hidden;color:#f3e7d3;font:16px/1.5 "Gowun Batang",serif;-webkit-tap-highlight-color:transparent}
+body{background:radial-gradient(ellipse at 50% 18%,#6b4b33 0,#3b281b 48%,#1f150e 100%)}
+/* 책상 */
+.desk{position:fixed;left:0;right:0;bottom:0;height:46%;background:linear-gradient(#5a3b25,#3c2716);box-shadow:inset 0 14px 30px rgba(0,0,0,.45)}
+.desk:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(0,0,0,.06) 0 3px,transparent 3px 11px),repeating-linear-gradient(90deg,rgba(255,220,170,.04) 0 1px,transparent 1px 37px);opacity:.9}
+.lamp{position:fixed;left:50%;top:-30vh;width:120vw;height:90vh;transform:translateX(-50%);background:radial-gradient(ellipse at 50% 60%,rgba(255,214,150,.22),transparent 60%);pointer-events:none}
+.top{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;align-items:center;gap:10px;padding:calc(8px + env(safe-area-inset-top,0px)) 14px 8px}
+.top a{color:#e8dcc6;text-decoration:none;border:1px solid rgba(232,220,198,.4);border-radius:14px;padding:3px 10px;font-size:14px}
+.top .ttl{flex:1;font-size:18px;color:var(--gold);letter-spacing:.06em}
+/* 무대 */
+.stage{position:fixed;left:0;right:0;top:48px;bottom:84px;display:flex;align-items:center;justify-content:center;perspective:2000px;perspective-origin:50% 20%}
+.zoomer{transition:transform .5s ease}
+.book{position:relative;width:calc(var(--P)*2);height:var(--H);transform-style:preserve-3d;transition:transform .9s cubic-bezier(.4,.1,.2,1);font-size:calc(var(--P)/24)}
+.book.closed{transform:rotateX(var(--tx,14deg)) rotateY(var(--ty,0deg)) translateX(calc(var(--P)*-.5))}
+.book.open{transform:rotateX(var(--tx,14deg)) rotateY(var(--ty,0deg))}
+.zoomer.zL .book,.zoomer.zR .book{--tx:0deg;--ty:0deg}
+.shadow{position:absolute;left:4%;right:4%;bottom:-6%;height:12%;background:radial-gradient(ellipse,rgba(0,0,0,.55),transparent 70%);transform:translateZ(-8px);filter:blur(4px)}
+.book.closed .shadow{left:52%}
+/* 가죽 판 (뒤표지·앞표지 안쪽) */
+.board{position:absolute;top:-1.6%;height:103.2%;width:calc(var(--P) + 1.6%);border-radius:6px;background:#5b331f var(--leather);box-shadow:0 6px 18px rgba(0,0,0,.5),inset 0 0 0 2px rgba(0,0,0,.25)}
+.board.L{right:50%;border-radius:8px 3px 3px 8px}.board.R{left:50%;border-radius:3px 8px 8px 3px}
+.book.closed .board.L{visibility:hidden}
+/* 쪽 */
+.pg{position:absolute;top:0;width:var(--P);height:var(--H);background:var(--paper);color:var(--ink);overflow:hidden}
+.pg.L{left:0;border-radius:4px 0 0 4px;background:linear-gradient(90deg,var(--paper) 86%,#e7dcc4)}
+.pg.R{left:var(--P);border-radius:0 4px 4px 0;background:linear-gradient(90deg,#e4d8bf,var(--paper) 13%)}
+.book.closed .pg.L{visibility:hidden}
+.spine{position:absolute;left:calc(var(--P) - 8px);width:16px;top:0;height:var(--H);background:linear-gradient(90deg,transparent,rgba(80,55,30,.25) 45%,rgba(80,55,30,.32) 50%,rgba(80,55,30,.25) 55%,transparent);pointer-events:none;z-index:3}
+.book.closed .spine{display:none}
+.ribbon{position:absolute;left:calc(var(--P) + 6px);top:-2%;width:1.1em;height:108%;background:linear-gradient(90deg,#8c1f22,#b3302f,#8c1f22);clip-path:polygon(0 0,100% 0,100% 100%,50% 96%,0 100%);opacity:.92;z-index:4;pointer-events:none;transform:translateZ(1px)}
+.book.closed .ribbon{display:none}
+/* 쪽 안의 글 */
+.pin{position:absolute;inset:0;padding:1.3em 1.5em 1em 1.6em;display:flex;flex-direction:column}
+.pg.R .pin,.leaf .front .pin{padding-left:1.9em}
+.hd{display:flex;align-items:baseline;gap:.5em;border-bottom:2px solid #c9b48e;padding-bottom:.35em;margin-bottom:.3em}
+.hd .dt{font:800 1.35em "Nanum Myeongjo",serif;color:#4a3524}
+.hd .dw{font-size:.95em;color:#8a7458}
+.hd .yr{margin-left:auto;font-size:.8em;color:#a8957a}
+.hd .today{font-size:.75em;background:#c0392b;color:#fff;border-radius:999px;padding:0 .6em;margin-left:.3em}
+.sub{font-size:.85em;color:#9b8566;margin:0 0 .2em}
+.list{flex:1;overflow:auto;scrollbar-width:thin;background:repeating-linear-gradient(transparent 0 calc(1.95em - 1px),var(--line) calc(1.95em - 1px) 1.95em);background-attachment:local}
+.it{display:flex;align-items:flex-start;gap:.35em;min-height:1.95em}
+.it .n{flex:none;width:1.6em;text-align:right;font:1.45em/1.345 "Nanum Pen Script",cursive;color:#b0442f}
+.it textarea,.it .tx{flex:1;border:0;outline:0;background:transparent;resize:none;overflow:hidden;font:1.45em/1.345 "Nanum Pen Script",cursive;color:#2a2018;padding:0;margin:0;min-height:1.345em;white-space:pre-wrap;word-break:break-all}
+.it textarea::placeholder{color:#c4b496}
+.vs{flex:none;margin-top:.5em;padding-top:.5em;border-top:1px dashed #c9b48e;font-size:.82em;line-height:1.6;color:#6d5a44;word-break:keep-all;text-align:center}
+.vs b{display:block;margin-top:.15em;font-weight:400;color:#a3784a;font-size:.95em}
+.pno{position:absolute;bottom:.45em;font-size:.72em;color:#b3a184}
+.pg.L .pno,.leaf .back .pno{left:1.4em}.pg.R .pno,.leaf .front .pno{right:1.4em}
+.future .list{display:flex;align-items:center;justify-content:center;text-align:center;color:#b8a68a;font:1.35em/1.5 "Nanum Pen Script",cursive}
+.inside .pin{align-items:center;justify-content:center;text-align:center}
+/* 넘어가는 장 */
+.leaf{position:absolute;top:0;left:var(--P);width:var(--P);height:var(--H);transform-origin:0 50%;transform-style:preserve-3d;z-index:6}
+.leaf .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;color:var(--ink)}
+.leaf .front{background:linear-gradient(90deg,#e4d8bf,var(--paper) 13%);border-radius:0 4px 4px 0}
+.leaf .back{transform:rotateY(180deg);background:linear-gradient(90deg,var(--paper) 86%,#e7dcc4);border-radius:4px 0 0 4px}
+.leaf .shade{position:absolute;inset:0;pointer-events:none;opacity:0}
+.leaf .front .shade{background:linear-gradient(90deg,rgba(0,0,0,.05),rgba(0,0,0,.35))}
+.leaf .back .shade{background:linear-gradient(270deg,rgba(0,0,0,.05),rgba(0,0,0,.35))}
+.leaf.cover .front{border-radius:3px 8px 8px 3px}
+/* 가죽 앞표지 */
+.cov{position:absolute;inset:0;border-radius:3px 8px 8px 3px;background:#6a3a22 var(--leather);box-shadow:inset 6px 0 10px rgba(0,0,0,.45),inset -2px -2px 6px rgba(0,0,0,.3),inset 2px 2px 4px rgba(255,220,180,.12);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--gold)}
+.cov:before{content:"";position:absolute;inset:5.5%;border:2px dashed rgba(231,201,131,.55);border-radius:6px}
+.cov:after{content:"";position:absolute;left:0;top:0;bottom:0;width:7%;background:linear-gradient(90deg,rgba(0,0,0,.4),rgba(0,0,0,.08));border-radius:3px 0 0 3px}
+.cov .cr{font-size:2.6em;line-height:1;text-shadow:0 1px 0 rgba(255,235,190,.35),0 -1px 0 rgba(0,0,0,.6);opacity:.9}
+.cov h1{margin:.35em 0 .1em;font:800 3.4em/1.1 "Nanum Myeongjo",serif;letter-spacing:.12em;color:#ecd08f;text-shadow:0 2px 0 rgba(0,0,0,.55),0 -1px 0 rgba(255,240,200,.35)}
+.cov .en{font-size:.85em;letter-spacing:.4em;opacity:.75}
+.cov .rule{width:42%;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:1.2em 0 .9em}
+.cov input,.cov .nmv{width:70%;border:0;border-bottom:1.5px solid rgba(231,201,131,.6);background:transparent;outline:0;text-align:center;font:700 1.45em "Gowun Batang",serif;color:#f1d897;text-shadow:0 1px 0 rgba(0,0,0,.5);padding:.15em 0;position:relative;z-index:2}
+.cov input::placeholder{color:rgba(231,201,131,.5);font-weight:400;font-size:.8em}
+.cov .nml{font-size:.85em;opacity:.8;margin-top:.35em}
+.cov .hint{position:absolute;bottom:9%;font-size:.8em;opacity:.7}
+.coverS{position:absolute;top:0;left:var(--P);width:var(--P);height:var(--H);z-index:5;cursor:pointer}
+.book.open .coverS{display:none}
+/* 아래 버튼 */
+.bar{position:fixed;left:0;right:0;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:15;display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;padding:0 70px}
+.bar button{font:inherit;font-size:15px;border:0;border-radius:999px;padding:9px 16px;cursor:pointer;background:linear-gradient(#f6ecd8,#e2d2b4);color:#3a2a1e;box-shadow:0 3px 0 #8a7556}
+.bar button:disabled{opacity:.4;cursor:default}
+.bar button.ghost{background:rgba(255,255,255,.08);color:#efe2cc;box-shadow:none;border:1px solid rgba(239,226,204,.35)}
+.saved{position:fixed;right:16px;top:calc(52px + env(safe-area-inset-top,0px));z-index:16;font-size:13px;color:#e7d6b8;opacity:0;transition:opacity .4s}.saved.on{opacity:.9}
+.tip{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(66px + env(safe-area-inset-bottom,0px));z-index:15;font-size:13px;color:#d9c8aa;text-align:center;width:max-content;max-width:92vw;pointer-events:none}
+@media (max-width:700px){.bar{padding:0 10px;gap:6px;bottom:calc(64px + env(safe-area-inset-bottom,0px))}.bar button{font-size:13px;padding:8px 12px}.stage{bottom:120px}.tip{bottom:calc(112px + env(safe-area-inset-bottom,0px))}}
+@media (prefers-reduced-motion:reduce){.book,.zoomer{transition:none}}
+</style>
+</head><body>
+<div class="lamp"></div><div class="desk"></div>
+<div class="top"><a href="../">← 목장</a><span class="ttl">📔 감사일기</span></div>
+<div class="saved" id="saved">✓ 자동 저장됨</div>
+<div class="stage" id="stage"><div class="zoomer" id="zoomer"><div class="book closed" id="book">
+  <div class="shadow"></div>
+  <div class="board L"></div><div class="board R"></div>
+  <div class="pg L" id="pgL"></div><div class="pg R" id="pgR"></div>
+  <div class="spine"></div><div class="ribbon"></div>
+  <div class="coverS" id="coverS"></div>
+</div></div></div>
+<div class="tip" id="tip"></div>
+<div class="bar" id="bar"></div>
+<script>
+(function(){"use strict";
+const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+/* 가죽 결 (잡음 무늬) */
+const LEATHER=`url("data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220"><filter id="f"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="3" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 .18  0 0 0 0 .09  0 0 0 0 .04  0 0 0 .55 0"/></filter><rect width="100%" height="100%" filter="url(#f)"/></svg>')}")`;
+document.documentElement.style.setProperty('--leather',LEATHER);
+/* ---------- 저장 (쓰는 대로 자동 저장) ---------- */
+const KEY='thanks-v1',MAX=10;let S={name:'',d:{}};
+try{const o=JSON.parse(localStorage.getItem(KEY)||'null');if(o&&o.d)S=o}catch(_){}
+let st;const save=()=>{clearTimeout(st);st=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(S));const s=$('#saved');s.classList.add('on');clearTimeout(s._t);s._t=setTimeout(()=>s.classList.remove('on'),1400)}catch(_){}},300)};
+/* ---------- 날짜 ---------- */
+const pad=n=>String(n).padStart(2,'0'),keyOf=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`,dOf=k=>{const[a,b,c]=k.split('-').map(Number);return new Date(a,b-1,c)};
+const W='일월화수목금토';const TODAY=keyOf(new Date());
+/* 쪽 목록: 감사제목을 쓴 날들 + 오늘 (하루 = 한 쪽) */
+let PAGES=[];function pages(){const s=new Set(Object.keys(S.d).filter(k=>(S.d[k]||[]).some(v=>v.trim())));s.add(TODAY);PAGES=[...s].filter(k=>k<=TODAY).sort();}
+pages();
+/* ---------- 감사 말씀 (개역한글) ---------- */
+const VERSES=[['범사에 감사하라 이것이 그리스도 예수 안에서 너희를 향하신 하나님의 뜻이니라','데살로니가전서 5장 18절'],
+['여호와께 감사하라 그는 선하시며 그 인자하심이 영원함이로다','시편 136편 1절'],
+['아무 것도 염려하지 말고 다만 모든 일에 기도와 간구로 너희 구할 것을 감사함으로 하나님께 아뢰라','빌립보서 4장 6절'],
+['감사함으로 그 문에 들어가며 찬송함으로 그 궁정에 들어가서 그에게 감사하며 그 이름을 송축할지어다','시편 100편 4절'],
+['내 영혼아 여호와를 송축하며 그 모든 은택을 잊지 말지어다','시편 103편 2절'],
+['기도를 항상 힘쓰고 기도에 감사함으로 깨어 있으라','골로새서 4장 2절'],
+['범사에 우리 주 예수 그리스도의 이름으로 항상 아버지 하나님께 감사하며','에베소서 5장 20절'],
+['말할 수 없는 그의 은사를 인하여 하나님께 감사하노라','고린도후서 9장 15절'],
+['내가 전심으로 여호와께 감사하오며 주의 모든 기사를 전하리이다','시편 9편 1절'],
+['이 날은 여호와의 정하신 것이라 이 날에 우리가 즐거워하고 기뻐하리로다','시편 118편 24절'],
+['항상 기뻐하라 쉬지 말고 기도하라','데살로니가전서 5장 16-17절'],
+['감사로 제사를 드리는 자가 나를 영화롭게 하나니','시편 50편 23절'],
+['각양 좋은 은사와 온전한 선물이 다 위로부터 빛들의 아버지께로서 내려오나니','야고보서 1장 17절'],
+['여호와께서 우리를 위하여 대사를 행하셨으니 우리는 기쁘도다','시편 126편 3절'],
+['하나님의 지으신 모든 것이 선하매 감사함으로 받으면 버릴 것이 없나니','디모데전서 4장 4절'],
+['또 무엇을 하든지 말에나 일에나 다 주 예수의 이름으로 하고 그를 힘입어 하나님 아버지께 감사하라','골로새서 3장 17절'],
+['우리 주 예수 그리스도로 말미암아 우리에게 이김을 주시는 하나님께 감사하노니','고린도전서 15장 57절'],
+['여호와는 나의 목자시니 내게 부족함이 없으리로다','시편 23편 1절'],
+['교훈을 받은 대로 믿음에 굳게 서서 감사함을 넘치게 하라','골로새서 2장 7절'],
+['지존자여 여호와께 감사하며 주의 이름을 찬양하며','시편 92편 1절']];
+/* ---------- 쪽 그리기 ---------- */
+function dayHead(k){const d=dOf(k);return`<div class="hd"><span class="dt">${d.getMonth()+1}월 ${d.getDate()}일</span><span class="dw">${W[d.getDay()]}요일</span>${k===TODAY?'<span class="today">오늘</span>':''}<span class="yr">${d.getFullYear()}</span></div>`}
+function verseHTML(pi){const[v,r]=VERSES[pi%VERSES.length];return`<div class="vs">"${esc(v)}"<b>- ${r}</b></div>`}
+function pageHTML(pi,live){
+  if(pi<PAGES.length){const k=PAGES[pi],items=(S.d[k]||[]).slice();if(live&&items.length<MAX)items.push('');
+    const rows=items.map((v,i)=>`<div class="it"><span class="n">${i+1}.</span>${live?`<textarea rows="1" data-k="${k}" placeholder="${i===0&&!v?'오늘 감사한 일을 적어 보세요':''}">${esc(v)}</textarea>`:`<div class="tx">${esc(v)}</div>`}</div>`).join('');
+    return`<div class="pin">${dayHead(k)}<p class="sub">${k===TODAY?'오늘의 감사제목':'이날의 감사제목'}</p><div class="list">${rows}</div>${verseHTML(pi)}</div><span class="pno">${pi+1}</span>`}
+  const last=dOf(PAGES[PAGES.length-1]);const nx=new Date(last);nx.setDate(nx.getDate()+1);
+  return`<div class="pin future"><div class="hd"><span class="dt" style="color:#b8a68a">${nx.getMonth()+1}월 ${nx.getDate()}일</span><span class="dw">${W[nx.getDay()]}요일</span></div><div class="list">내일의 감사는<br>이 쪽에 적혀요</div>${verseHTML(pi)}</div><span class="pno">${pi+1}</span>`}
+function coverHTML(live){return`<div class="cov"><div class="cr">✝</div><h1>감사일기</h1><div class="en">THANKSGIVING</div><div class="rule"></div>${live?`<input id="nm" maxlength="12" placeholder="이름을 적어 주세요" value="${esc(S.name)}" autocomplete="off">`:`<div class="nmv">${esc(S.name)||'&nbsp;'}</div>`}<div class="nml">의 감사일기</div>${live?'<div class="hint">표지를 눌러 펼쳐요</div>':''}</div>`}
+/* ---------- 펼친 상태 ---------- */
+let SP=0,BUSY=false;/* SP=0: 덮음, SP≥1: 왼쪽 쪽 2(SP-1), 오른쪽 쪽 2SP-1 */
+const spMax=()=>Math.floor((PAGES.length-1)/2)+1;
+const spOf=pi=>Math.floor(pi/2)+1;
+function fit(el){el.style.height='auto';el.style.height=el.scrollHeight+'px'}
+function render(){const L=$('#pgL'),R=$('#pgR');
+  if(SP>0){L.innerHTML=pageHTML(2*(SP-1),true);R.innerHTML=pageHTML(2*SP-1,true)}else{L.innerHTML='';R.innerHTML=pageHTML(0,false)}
+  $('#coverS').innerHTML=coverHTML(true);const nm=$('#nm');if(nm){nm.oninput=()=>{S.name=nm.value.trim();save()};nm.onclick=e=>e.stopPropagation()}
+  document.querySelectorAll('#book textarea').forEach(fit);edges();bar()}
+/* 쌓인 종이 두께 */
+function edges(){const lc=Math.min(9,Math.max(0,2*(SP-1)))+1,rc=Math.min(9,Math.max(0,PAGES.length-(2*SP)))+2;
+  const sh=(n,s)=>Array.from({length:n},(_,i)=>`${s*(i+1)}px ${i+1}px 0 ${i%2?'#e9dfc8':'#d8ccb0'}`).join(',');
+  $('#pgL').style.boxShadow=SP>0?sh(lc,-1):'none';$('#pgR').style.boxShadow=sh(rc,1)}
+function bar(){const b=$('#bar');
+  if(SP===0){b.innerHTML='<button id="openB">📖 감사일기 펼치기</button>';$('#openB').onclick=()=>openBook();$('#tip').textContent=S.name?'':'표지에 이름을 적고 펼쳐 보세요';return}
+  $('#tip').textContent='';
+  const tsp=spOf(PAGES.indexOf(TODAY));
+  b.innerHTML=`<button id="prevB" ${SP<=1?'disabled':''}>◀ 이전 장</button><button class="ghost" id="todayB" ${SP===tsp?'disabled':''}>오늘</button><button class="ghost" id="closeB">📕 덮기</button><button id="nextB" ${SP>=spMax()?'disabled':''}>다음 장 ▶</button>`;
+  $('#prevB').onclick=()=>flip(-1);$('#nextB').onclick=()=>flip(1);$('#closeB').onclick=closeBook;$('#todayB').onclick=()=>goTo(tsp)}
+/* ---------- 책장 넘기기 ---------- */
+let AC=null;function rustle(){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const t=AC.currentTime,len=AC.sampleRate*.45,b=AC.createBuffer(1,len,AC.sampleRate),d=b.getChannelData(0);
+  for(let i=0;i<len;i++){const x=i/len;d[i]=(Math.random()*2-1)*Math.sin(Math.PI*x)*Math.pow(1-x,.6)*(.6+.4*Math.random())}
+  const s=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain();f.type='bandpass';f.frequency.setValueAtTime(1800,t);f.frequency.linearRampToValueAtTime(3600,t+.4);f.Q.value=.7;g.gain.value=.22;s.buffer=b;s.connect(f).connect(g).connect(AC.destination);s.start(t)}catch(_){}}
+function makeLeaf(frontHTML,backHTML,cover){const lf=document.createElement('div');lf.className='leaf'+(cover?' cover':'');
+  lf.innerHTML=`<div class="face front">${frontHTML}<div class="shade"></div></div><div class="face back">${backHTML}<div class="shade"></div></div>`;$('#book').appendChild(lf);return lf}
+function animLeaf(lf,from,to,done){rustle();const dur=900,e='cubic-bezier(.45,.05,.25,1)';
+  const k=[{transform:`rotateY(${from}deg)`},{transform:`rotateY(${(from+to)/2}deg) translateZ(30px) skewY(${from>to?-2:2}deg)`},{transform:`rotateY(${to}deg)`}];
+  const a=lf.animate(k,{duration:dur,easing:e,fill:'forwards'});
+  lf.querySelectorAll('.shade').forEach(s=>s.animate([{opacity:0},{opacity:1},{opacity:0}],{duration:dur,easing:e}));
+  a.onfinish=()=>{lf.remove();done()}}
+function flip(dir){if(BUSY)return;const to=SP+dir;if(to<1||to>spMax())return;BUSY=true;unzoom();document.activeElement&&document.activeElement.blur();
+  const a=2*(SP-1);
+  if(dir>0){const lf=makeLeaf(pageHTML(a+1,false),pageHTML(a+2,false));$('#pgR').innerHTML=pageHTML(a+3,false);
+    animLeaf(lf,0,-180,()=>{SP=to;BUSY=false;render()})}
+  else{const lf=makeLeaf(pageHTML(a-1,false),pageHTML(a,false));lf.style.transform='rotateY(-180deg)';$('#pgL').innerHTML=pageHTML(a-2,false);
+    animLeaf(lf,-180,0,()=>{SP=to;BUSY=false;render()})}
+  SP=to;edges();SP=to-dir}
+function goTo(t){if(t===SP||BUSY)return;const d=t>SP?1:-1;const step=()=>{if(SP===t)return;flip(d);const w=setInterval(()=>{if(!BUSY){clearInterval(w);setTimeout(step,60)}},50)};step()}
+function openBook(){if(BUSY||SP>0)return;BUSY=true;pages();const bk=$('#book');document.activeElement&&document.activeElement.blur();
+  const lf=makeLeaf(coverHTML(false),pageHTML(0,false),true);$('#coverS').style.visibility='hidden';$('#pgR').innerHTML=pageHTML(1,false);
+  bk.classList.remove('closed');bk.classList.add('open');
+  animLeaf(lf,0,-180,()=>{$('#coverS').style.visibility='';SP=1;BUSY=false;render();const t=spOf(PAGES.indexOf(TODAY));if(t>1)setTimeout(()=>goTo(t),250);else focusToday()})}
+function closeBook(){if(BUSY||SP===0)return;unzoom();const back=()=>{if(SP>1){flip(-1);const w=setInterval(()=>{if(!BUSY){clearInterval(w);back()}},50);return}
+  BUSY=true;const lf=makeLeaf(coverHTML(false),pageHTML(0,false),true);lf.style.transform='rotateY(-180deg)';$('#pgL').innerHTML='';const bk=$('#book');
+  bk.classList.remove('open');bk.classList.add('closed');animLeaf(lf,-180,0,()=>{SP=0;BUSY=false;render()})};back()}
+function focusToday(){const ta=document.querySelector(`#book textarea[data-k="${TODAY}"]`);if(ta&&innerWidth>700){const all=document.querySelectorAll(`#book textarea[data-k="${TODAY}"]`);const t=all[all.length-1];t.focus()}}
+$('#coverS').addEventListener('click',()=>openBook());
+/* ---------- 감사제목 쓰기 (번호 자동, 자동 저장) ---------- */
+function collect(page){const tas=[...page.querySelectorAll('textarea')];if(!tas.length)return;const k=tas[0].dataset.k;S.d[k]=tas.map(t=>t.value.replace(/\n/g,' ')).filter(v=>v.trim());if(!S.d[k].length)delete S.d[k];save()}
+function renum(list){list.querySelectorAll('.it').forEach((r,i)=>{r.querySelector('.n').textContent=(i+1)+'.'})}
+function addRow(list,k,after){const rows=list.querySelectorAll('.it');if(rows.length>=MAX)return null;const r=document.createElement('div');r.className='it';r.innerHTML=`<span class="n"></span><textarea rows="1" data-k="${k}"></textarea>`;
+  if(after&&after.nextSibling)list.insertBefore(r,after.nextSibling);else list.appendChild(r);renum(list);return r.querySelector('textarea')}
+const book=$('#book');
+book.addEventListener('input',e=>{const t=e.target;if(t.tagName!=='TEXTAREA')return;fit(t);const list=t.closest('.list'),rows=[...list.querySelectorAll('textarea')];
+  if(t===rows[rows.length-1]&&t.value.trim())addRow(list,t.dataset.k);collect(t.closest('.pg'))});
+book.addEventListener('keydown',e=>{const t=e.target;if(t.tagName!=='TEXTAREA'||e.isComposing)return;const list=t.closest('.list'),rows=[...list.querySelectorAll('textarea')],i=rows.indexOf(t);
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();if(!t.value.trim())return;let n=rows[i+1];if(!n||n.value.trim()&&i===rows.length-1)n=addRow(list,t.dataset.k,t.closest('.it'));if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length)}}
+  else if(e.key==='Backspace'&&!t.value&&i>0){e.preventDefault();const p=rows[i-1];t.closest('.it').remove();renum(list);p.focus();p.setSelectionRange(p.value.length,p.value.length);collect(list.closest('.pg'))}
+  else if(e.key==='ArrowUp'&&i>0&&t.selectionStart===0){e.preventDefault();rows[i-1].focus()}
+  else if(e.key==='ArrowDown'&&i<rows.length-1&&t.selectionEnd===t.value.length){e.preventDefault();rows[i+1].focus()}});
+/* 좁은 화면: 쓰는 쪽을 크게 */
+const zoomer=$('#zoomer');
+function unzoom(){zoomer.classList.remove('zL','zR');zoomer.style.transform='';const tp=$('#tip');if(tp&&tp.textContent.startsWith('쪽 바깥'))tp.textContent=''}
+function zoomTo(L){const P=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--P')),z=Math.min(2.1,(innerWidth-16)/P);
+  zoomer.classList.add(L?'zL':'zR');zoomer.classList.remove(L?'zR':'zL');zoomer.style.transform=`scale(${z}) translateX(${L?P/2:-P/2}px)`;$('#tip').textContent='쪽 바깥을 누르면 원래 크기로 돌아가요'}
+const zoomed=()=>zoomer.classList.contains('zL')||zoomer.classList.contains('zR');
+book.addEventListener('focusin',e=>{if(e.target.tagName!=='TEXTAREA'||innerWidth>700)return;zoomTo(!!e.target.closest('#pgL'))});
+book.addEventListener('click',e=>{if(innerWidth>700||SP===0||BUSY||e.target.tagName==='TEXTAREA')return;const pg=e.target.closest('.pg');if(!pg)return;if(zoomed())return;zoomTo(pg.id==='pgL')});
+$('#stage').addEventListener('click',e=>{if(zoomed()&&!e.target.closest('.pg')){document.activeElement&&document.activeElement.blur();unzoom()}});
+/* 키보드 ← → 로 넘기기 (글 쓰는 중이 아닐 때) */
+addEventListener('keydown',e=>{const a=document.activeElement;if(a&&(a.tagName==='TEXTAREA'||a.tagName==='INPUT'))return;
+  if(e.key==='ArrowRight'){SP===0?openBook():flip(1)}else if(e.key==='ArrowLeft'){SP===1?closeBook():flip(-1)}});
+/* 밀어서 넘기기 */
+let sx=null;book.addEventListener('touchstart',e=>{if(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT'||zoomer.classList.contains('zL')||zoomer.classList.contains('zR'))return sx=null;sx=e.touches[0].clientX},{passive:true});
+book.addEventListener('touchend',e=>{if(sx==null)return;const dx=e.changedTouches[0].clientX-sx;sx=null;if(Math.abs(dx)<50)return;if(dx<0){SP===0?openBook():flip(1)}else{SP===1?closeBook():flip(-1)}});
+/* 마우스를 따라 살짝 기울어져요 */
+addEventListener('pointermove',e=>{if(e.pointerType!=='mouse')return;const x=e.clientX/innerWidth-.5,y=e.clientY/innerHeight-.5;book.style.setProperty('--ty',(x*6).toFixed(2)+'deg');book.style.setProperty('--tx',(14+y*5).toFixed(2)+'deg')});
+/* ---------- 크기 ---------- */
+function size(){const st=$('#stage').getBoundingClientRect(),P=Math.floor(Math.min(420,(innerWidth-28)/2,(st.height-30)/1.4));
+  document.documentElement.style.setProperty('--P',P+'px');document.documentElement.style.setProperty('--H',Math.round(P*1.4)+'px');unzoom();document.querySelectorAll('#book textarea').forEach(fit)}
+addEventListener('resize',size);size();render();if(document.fonts)document.fonts.ready.then(()=>document.querySelectorAll('#book textarea').forEach(fit));
+window.__th={S:()=>S,PAGES:()=>PAGES,flip,openBook,closeBook,goTo,SP:()=>SP};
+})();
+</script>
+<script src="../assets/home.js?v=20261128fs"></script>
+</body></html>
